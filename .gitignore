@@ -80,6 +80,7 @@ audit_evidence/
 !/RUNBOOK.md
 !/RUNBOOK_BROWSER_MAPS_DISCOVERY.md
 !/auto_loop_plan.md
+!/PHASE3_FINAL_PATCH_MANIFEST.md
 
 # Credentials, tokens, and secret material / 凭据、令牌与秘密材料
 credentials/

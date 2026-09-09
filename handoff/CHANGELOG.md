@@ -41,3 +41,7 @@
 - Created one complete visible first-party evidence record for `Instant Replay Sports` / `ithacainstantreplaysports@yahoo.com`.
 - Confirmed the blocker: complete evidence remained in `lead_discovery_results.id=293` with `linked_lead_id=NULL`; existing same-identity `leads.id=1085` was not safely updated, leaving V2/MX/SAFE FSP at zero.
 - No deployment occurred; SMTP, IMAP, production-file writes, scheduler changes, and frozen-file changes were all zero.
+## Phase 3D — 2026-09-09
+
+- 中文：复现并修复已有线索官方证据关联；新增 9 项回归，312 项测试及 59 子测试通过。新鲜生产 DB 开发副本中关联 1085，真实 MX/V2 通过，开发 SAFE FSP 新增 1，重放幂等。重新生成六制品发布包与最终 SHA 清单。生产与冻结文件未改，未部署。
+- English: Reproduced and fixed existing-lead official-evidence linkage. Added nine regressions; 312 tests and 59 subtests pass. A fresh development production-DB copy linked lead 1085, passed real MX/frozen V2, and inserted one development SAFE FSP idempotently. Regenerated six release artifacts and final SHA manifest. No production/frozen changes or deployment.

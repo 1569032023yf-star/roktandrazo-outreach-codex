@@ -1,0 +1,2 @@
+# Preserve exact release package bytes / 保留发布包精确字节
+PHASE3_RELEASE_PACKAGE/** -text
