@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BD Operations Center / BD运营中心</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#c9d1d9;--muted:#8b949e;--blue:#58a6ff;--green:#3fb950;--yellow:#d29922;--red:#f85149}
+body{font-family:-apple-system,Segoe UI,Microsoft YaHei,PingFang SC,sans-serif;background:var(--bg);color:var(--text);padding:0}
+nav{position:sticky;top:0;z-index:100;background:var(--card);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;gap:4px;height:48px}
+nav a{color:var(--muted);text-decoration:none;padding:8px 14px;border-radius:6px;font-size:13px}
+nav a:hover,nav a.active{color:var(--blue);background:rgba(88,166,255,0.1)}
+nav .brand{font-weight:700;color:var(--blue);margin-right:16px;font-size:15px}
+main{max-width:1400px;margin:0 auto;padding:20px}
+h2{font-size:16px;color:var(--blue);margin:20px 0 12px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px}
+.card .v{font-size:24px;font-weight:700}.card .l{font-size:11px;color:var(--muted);margin-top:2px}
+.card .s{font-size:10px;color:var(--muted)}.g{color:var(--green)}.y{color:var(--yellow)}.r{color:var(--red)}.b{color:var(--blue)}
+.row{display:flex;gap:16px;flex-wrap:wrap}.col{flex:1;min-width:300px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)}
+th{color:var(--muted);font-weight:600;position:sticky;top:48px;background:var(--card)}
+tr:hover{background:rgba(88,166,255,0.05)}
+.badge{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.badge-ok{background:rgba(63,185,80,0.15);color:var(--green)}
+.badge-warn{background:rgba(210,153,34,0.15);color:var(--yellow)}
+.badge-err{background:rgba(248,81,73,0.15);color:var(--red)}
+.badge-info{background:rgba(88,166,255,0.15);color:var(--blue)}
+.warning-bar{background:rgba(210,153,34,0.1);border:1px solid var(--yellow);border-radius:8px;padding:10px 16px;margin-bottom:12px;font-size:12px}
+.warning-bar .title{font-weight:600;color:var(--yellow)}.warning-bar a{color:var(--blue);margin-left:8px}
+.progress{height:6px;background:var(--border);border-radius:3px;margin:4px 0;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:width .3s}
+.empty{text-align:center;color:var(--muted);padding:30px;font-size:13px}
+.footer{font-size:10px;color:var(--muted);text-align:center;padding:12px;border-top:1px solid var(--border);margin-top:20px}
+.tab-content{display:none}.tab-content.active{display:block}
+</style>
+</head>
+<body>
+<nav>
+<span class="brand">BD Ops Center / 运营中心</span>
+<a href="#overview" class="active" onclick="switchTab('overview')">Overview / 总览</a>
+<a href="#engagement" onclick="switchTab('engagement')">Send & Engagement / 发送与互动</a>
+<a href="#inventory" onclick="switchTab('inventory')">Inventory / 库存</a>
+<a href="#review" onclick="switchTab('review','/review')">Manual Review / 人工审核</a>
+<a href="#search" onclick="switchTab('search')">Search / 检索进度</a>
+<a href="#health" onclick="switchTab('health')">Health / 系统状态</a>
+<span style="margin-left:auto;font-size:11px;color:var(--muted)" id="clock">--</span>
+</nav>
+<main>
+<div id="loading" style="text-align:center;padding:60px;color:var(--muted)">Loading / 加载中...</div>
+
+<div id="warnings" class="warning-bar" style="display:none"></div>
+
+<div id="tab-overview" class="tab-content active">
+<div class="kpi-grid" id="kpi-today"><div class="card"><div class="v">--</div><div class="l">Planned Today / 今日计划</div></div></div>
+<h2>Tracking / 打开追踪</h2><div class="kpi-grid" id="kpi-tracking"></div>
+<h2>Inventory / 库存</h2><div class="kpi-grid" id="kpi-inventory"></div>
+<h2>Final Send Plan</h2><div id="plan-summary"></div>
+</div>
+
+<div id="tab-engagement" class="tab-content"><h2>Today's Sends / 今日发送</h2><div id="today-table"></div></div>
+<div id="tab-inventory" class="tab-content"><h2>Inventory Breakdown / 库存明细</h2><div id="inventory-detail"></div></div>
+<div id="tab-search" class="tab-content"><h2>Inventory Search / 检索进度</h2><div id="search-detail"></div></div>
+<div id="tab-health" class="tab-content"><h2>System Health / 系统状态</h2><div id="health-detail"></div>
+<h2>Delivery Guard / 交付守护器</h2><div class="kpi-grid" id="kpi-guard"></div></div>
+
+<div id="tab-review" class="tab-content" style="height:80vh">
+<iframe id="reviewFrame" src="/review" style="width:100%;height:100%;border:none;border-radius:8px"></iframe>
+</div>
+</main>
+<div class="footer">BD Operations Center / Last updated: <span id="lastUpdate">--</span> / Timezone: Asia/Shanghai</div>
+
+<script>
+let cache = {};
+
+function switchTab(name, url) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  const tab = document.getElementById('tab-' + name);
+  if (tab) tab.classList.add('active');
+  document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+  const link = document.querySelector('nav a[href="#' + name + '"]');
+  if (link) link.classList.add('active');
+  if (name === 'review' && url) {
+    const frame = document.getElementById('reviewFrame');
+    if (frame && !frame.src.endsWith(url)) frame.src = url;
+  }
+}
+
+function fmt(n) { return n == null ? '--' : Number(n).toLocaleString(); }
+function badge(s, cls) { return '<span class="badge badge-' + cls + '">' + s + '</span>'; }
+
+async function fetchOps(endpoint) {
+  try {
+    const r = await fetch('/api/ops/' + endpoint);
+    if (!r.ok) throw new Error(r.status);
+    return await r.json();
+  } catch (e) {
+    return { error: e.message };
+  }
+}
+
+async function refreshAll() {
+  document.getElementById('loading').style.display = 'none';
+  try {
+    const s = await fetchOps('summary');
+    if (s.error) return;
+    cache = s;
+    renderOverview(s);
+    renderWarnings(s);
+    renderEngagement(s);
+    renderInventory(s);
+    renderSearch(s);
+    renderHealth(s);
+    renderGuard();
+    fetchScheduler();
+    document.getElementById('lastUpdate').textContent = new Date().toLocaleString('zh-CN', {timeZone:'Asia/Shanghai'});
+  } catch(e) { console.error(e); }
+  document.getElementById('clock').textContent = new Date().toLocaleString('zh-CN', {timeZone:'Asia/Shanghai'});
+}
+
+function renderOverview(s) {
+  const t = s.today || {}, inv = s.inventory || {}, tr = s.tracking || {}, fp = s.final_plan || {};
+
+  document.getElementById('kpi-today').innerHTML =
+    '<div class="card"><div class="v b">' + fmt((t.planned_new||0)+(t.planned_fw||0)) + '</div><div class="l">Planned Today / 今日计划</div></div>' +
+    '<div class="card"><div class="v g">' + fmt((t.sent_new||0)+(t.sent_fw||0)) + '</div><div class="l">Sent Today / 今日已发送</div></div>' +
+    '<div class="card"><div class="v">' + fmt(t.sent_new||0) + '</div><div class="l">New Outreach / 首次开发</div></div>' +
+    '<div class="card"><div class="v">' + fmt(t.sent_fw||0) + '</div><div class="l">Follow-up / 二次跟进</div></div>' +
+    '<div class="card"><div class="v r">' + fmt(t.failed||0) + '</div><div class="l">Failed / 失败</div></div>' +
+    '<div class="card"><div class="v y">' + fmt(t.skipped||0) + '</div><div class="l">Skipped / 跳过</div></div>' +
+    '<div class="card"><div class="v b">' + fmt(t.unique_orgs_sent||0) + '</div><div class="l">Unique Orgs / 独有组织</div></div>' +
+    '<div class="card"><div class="v g">' + fmt(t.replies||0) + '</div><div class="l">Replies / 回复</div></div>' +
+    '<div class="card"><div class="v r">' + fmt(t.hard_bounces||0) + '</div><div class="l">Hard Bounces / 硬退信</div></div>';
+
+  document.getElementById('kpi-tracking').innerHTML =
+    '<div class="card"><div class="v b">' + fmt(tr.messages_with_open) + '</div><div class="l">Messages With Open Signals / 有打开信号</div></div>' +
+    '<div class="card"><div class="v">' + fmt(tr.total_open_signals) + '</div><div class="l">Total Open Signals / 总打开信号</div></div>' +
+    '<div class="card"><div class="v">' + (tr.coverage||0) + '%</div><div class="l">Open-Signal Coverage / 打开信号覆盖率</div><div class="s">Not confirmed read rate</div></div>' +
+    '<div class="card"><div class="v">' + (tr.available ? badge('Connected','ok') : badge('Unavailable','err')) + '</div><div class="l">Tracking Worker</div></div>';
+
+  document.getElementById('kpi-inventory').innerHTML =
+    '<div class="card"><div class="v b">' + fmt(inv.org_outreach_opps) + '</div><div class="l">Outreach Opportunities / 发送机会</div></div>' +
+    '<div class="card"><div class="v g">' + fmt(inv.send_prep_candidates) + '</div><div class="l">Send-Prep Candidates / 可进入发送</div></div>' +
+    '<div class="card"><div class="v y">' + fmt(inv.manual_review) + '</div><div class="l">Manual Review / 人工审核</div></div>' +
+    '<div class="card"><div class="v">' + fmt(inv.website_lookup) + '</div><div class="l">Website Lookup / 网站查找</div></div>' +
+    '<div class="card"><div class="v">' + fmt(inv.contact_form_only) + '</div><div class="l">Contact Form Only / 仅联系表</div></div>' +
+    '<div class="card"><div class="v r">' + fmt(inv.permanently_suppressed) + '</div><div class="l">Suppressed / 禁联</div></div>';
+
+  const gaps = inv.gaps || {}, targets = inv.targets || {};
+  document.getElementById('kpi-inventory').innerHTML +=
+    '<div class="card" style="grid-column:span 2"><div class="l" style="margin-bottom:6px">Target / 库存目标</div>' +
+    '<div style="font-size:11px">Current: ' + fmt(inv.org_outreach_opps) + ' / Target: ' + fmt(targets.target) + '</div>' +
+    '<div>Critical 40: <span class="' + ((gaps.to_40||0)>0?'r':'g') + '">' + (gaps.to_40>0?'-'+gaps.to_40:'OK') + '</span></div>' +
+    '<div>Warning 80: <span class="' + ((gaps.to_80||0)>0?'y':'g') + '">' + (gaps.to_80>0?'-'+gaps.to_80:'OK') + '</span></div>' +
+    '<div>Target 120: <span class="' + ((gaps.to_120||0)>0?'y':'g') + '">' + (gaps.to_120>0?'-'+gaps.to_120:'OK') + '</span></div></div>';
+
+  const plan = fp.by_status || {};
+  document.getElementById('plan-summary').innerHTML =
+    '<div class="kpi-grid"><div class="card"><div class="v b">' + fmt(fp.total||0) + '</div><div class="l">Total Plan Entries</div></div>' +
+    '<div class="card"><div class="v g">' + fmt(plan.planned||0) + '</div><div class="l">Planned / 计划中</div></div>' +
+    '<div class="card"><div class="v y">' + fmt(plan.sent||0) + '</div><div class="l">Sent / 已发送</div></div></div>';
+}
+
+function renderWarnings(s) {
+  const w = s.data_quality || {}, ws = w.warnings || [];
+  const div = document.getElementById('warnings');
+  if (ws.length === 0) { div.style.display = 'none'; return; }
+  div.style.display = 'block';
+  div.innerHTML = '<div class="title">Data Quality Alerts / 数据质量警告 (' + ws.length + ')</div>' +
+    ws.map(w => '<div>' + w.zh + ' / ' + w.en + ' (' + w.count + ')' + (w.link ? '<a href="'+w.link+'">View / 查看</a>' : '') + '</div>').join('');
+}
+
+function renderEngagement(s) {
+  document.getElementById('today-table').innerHTML =
+    '<table><tr><th>Store</th><th>Type</th><th>Status</th><th>Sent</th><th>Open Signals</th><th>Replies</th><th>Bounces</th></tr>' +
+    '<tr><td colspan="7" class="empty">View detailed data on Overview tab</td></tr></table>';
+}
+
+function renderInventory(s) {
+  const inv = s.inventory || {};
+  document.getElementById('inventory-detail').innerHTML =
+    '<div class="kpi-grid">' +
+    Object.entries({total:inv.total_leads,send_prep:inv.send_prep_candidates,strict_a0_loc:inv.strict_a0_locations,
+      strict_a0_org:inv.strict_a0_organizations,opportunities:inv.org_outreach_opps,manual:inv.manual_review,
+      website:inv.website_lookup,contact_form:inv.contact_form_only,low_prio:inv.low_priority,
+      prev_sent:inv.previously_sent,suppressed:inv.permanently_suppressed,bounce_rec:inv.bounce_recovery,
+      staging:inv.unprocessed_staging})
+    .map(([k,v]) => '<div class="card"><div class="v">' + fmt(v) + '</div><div class="l">' + k + '</div></div>').join('') +
+    '</div>';
+}
+
+function renderSearch(s) {
+  const sc = s.search || {};
+  document.getElementById('search-detail').innerHTML =
+    '<div class="kpi-grid">' +
+    '<div class="card"><div class="v b">' + (sc.active_city||'--') + ', ' + (sc.active_state||'--') + '</div><div class="l">Active City / 当前城市</div></div>' +
+    '<div class="card"><div class="v">' + fmt(sc.queries_executed) + ' / ' + fmt(sc.queries_total) + '</div><div class="l">Queries / 检索进度</div></div>' +
+    '<div class="card"><div class="v">' + fmt(sc.unique_locations) + '</div><div class="l">Unique Locations / 唯一地点</div></div>' +
+    '<div class="card"><div class="v">' + fmt(sc.unique_organizations) + '</div><div class="l">Unique Organizations / 唯一组织</div></div>' +
+    '<div class="card"><div class="v">' + fmt(sc.raw_records) + '</div><div class="l">Raw Records / 原始记录</div></div>' +
+    '<div class="card" style="grid-column:span 2"><div class="l">City Status / 城市状态</div><div class="v" style="font-size:14px">' + (sc.city_status||'--') + '</div></div>' +
+    '</div>';
+}
+
+function renderHealth(s) {
+  const h = s.health || {}, comps = h.components || {};
+  document.getElementById('health-detail').innerHTML =
+    '<div class="kpi-grid">' +
+    Object.entries(comps).map(([k,v]) => {
+      const st = v.status || 'unknown';
+      const cls = st === 'healthy' ? 'g' : (st === 'warning' ? 'y' : 'r');
+      return '<div class="card"><div class="v ' + cls + '">' + st.toUpperCase() + '</div><div class="l">' + k + '</div></div>';
+    }).join('') +
+    '<div class="card"><div class="v ' + (h.in_send_window?'g':'y') + '">' + (h.in_send_window?'IN WINDOW':'OUTSIDE') + '</div><div class="l">Send Window / 发送窗口</div><div class="s">' + (h.current_time_cst||'') + '</div></div>' +
+    '<div class="card"><div class="v">' + (h.risk_gate||'--') + '</div><div class="l">Risk Gate</div></div></div>' +
+    '<h2>Scheduler / 调度器</h2><div class="kpi-grid" id="kpi-scheduler"></div>';
+    '<div class="card"><div class="v">' + (h.manual_pause||'false') + '</div><div class="l">Manual Pause</div></div>' +
+    '</div>';
+}
+
+async function renderGuard() {
+  try {
+    const r = await fetch('/api/ops/guard');
+    const g = await r.json();
+    const status = g.status || {};
+    document.getElementById('kpi-guard').innerHTML =
+      '<div class="card"><div class="v ' + (g.running?'g':'r') + '">' + (g.running?'RUNNING':'STOPPED') + '</div><div class="l">Guard Process</div><div class="s">PID: ' + (status.pid||'--') + '</div></div>' +
+      '<div class="card"><div class="v ' + (g.running?'g':'r') + '">' + (status.system_required?'ACTIVE':'INACTIVE') + '</div><div class="l">System Awake / 系统保持唤醒</div></div>' +
+      '<div class="card"><div class="v ' + (status.display_required?'b':'y') + '">' + (status.display_required?'ACTIVE':'INACTIVE') + '</div><div class="l">Display Awake / 显示保持开启</div></div>' +
+      '<div class="card"><div class="v ' + (status.ac_power?'g':'r') + '">' + (status.ac_power?'ONLINE':'BATTERY') + '</div><div class="l">AC Power / AC电源</div></div>' +
+      '<div class="card"><div class="v">' + (status.current_mode||'--') + '</div><div class="l">Current Mode / 当前模式</div></div>' +
+      '<div class="card"><div class="v ' + (g.heartbeat_fresh?'g':'r') + '">' + (g.heartbeat_fresh?'FRESH':'STALE') + '</div><div class="l">Last Heartbeat / 最近心跳</div><div class="s">' + ((status.last_heartbeat_at||'').substr(11,8)) + '</div></div>' +
+      '<div class="card"><div class="v ' + (status.critical_window?'b':'') + '">' + (status.critical_window?'IN CRITICAL':'NORMAL') + '</div><div class="l">Critical Window / 关键窗口</div></div>' +
+      '<div class="card"><div class="v">' + (status.restart_count||0) + '</div><div class="l">Restart Count / 重启次数</div><div class="s">Last error: ' + ((status.last_error||'none').substr(0,40)) + '</div></div>';
+  } catch(e) {
+    document.getElementById('kpi-guard').innerHTML = '<div class="card"><div class="v r">OFFLINE</div><div class="l">Delivery Guard / 交付守护器</div><div class="s">API unavailable</div></div>';
+  }
+}
+
+async function fetchScheduler() {
+  try {
+    const r = await fetch('/api/ops/scheduler');
+    const s = await r.json();
+    const jobs = s.poller ? s.poller.jobs : {};
+    document.getElementById('kpi-scheduler').innerHTML =
+      '<div class="card"><div class="v b">' + (s.scheduler_authority||'--') + '</div><div class="l">Authority / 权威</div></div>' +
+      '<div class="card"><div class="v g">' + (s.ops_center||'--') + '</div><div class="l">Ops Center</div></div>' +
+      '<div class="card"><div class="v ' + (s.outreach_enabled?'r':'y') + '">' + (s.outreach_enabled?'ENABLED':'DISABLED') + '</div><div class="l">Outreach Task</div></div>' +
+      '<div class="card"><div class="v">' + (s.today_pilot||'--') + '</div><div class="l">Today Pilot</div></div>' +
+      '<div class="card"><div class="v b">' + Object.keys(jobs).length + '</div><div class="l">Poller Jobs</div></div>' +
+      Object.entries(jobs).map(([k,v]) => '<div class="card"><div class="v ' + (v.error?'r':'g') + '">' +
+        (v.error ? 'ERR' : 'OK') + '</div><div class="l">' + k + ' poller</div><div class="s">' +
+        (v.last_run||'').substr(11,8) + (v.error ? ' | '+v.error : '') + '</div></div>').join('') +
+      '<div class="card"><div class="v ' + (s.wake_timer==='unavailable_cannot_create_tasks'?'r':'g') + '">' + (s.wake_timer||'--') + '</div><div class="l">Wake Timer</div></div>';
+  } catch(e) {}
+}
+
+// Auto-refresh
+let refreshInterval;
+function startRefresh() {
+  refreshAll();
+  refreshInterval = setInterval(refreshAll, 30000);
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { clearInterval(refreshInterval); refreshInterval = setInterval(refreshAll, 120000); }
+  else { clearInterval(refreshInterval); refreshInterval = setInterval(refreshAll, 30000); refreshAll(); }
+});
+
+startRefresh();
+</script>
+</body>
+</html>

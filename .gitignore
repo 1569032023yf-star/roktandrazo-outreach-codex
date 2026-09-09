@@ -1,0 +1,103 @@
+# Rokt&Razo Codex development repository / Codex 开发仓库
+
+# Environment and production configuration / 环境与生产配置
+.env
+.env.*
+!.env.example
+*.env.bak*
+*.env.backup*
+
+# Databases and production-derived copies / 数据库及生产派生副本
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+data/
+
+# Python environments and caches / Python 环境与缓存
+.venv/
+venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs, process state, and runtime output / 日志、进程状态与运行时输出
+logs/
+output/
+**/runtime/
+*.log
+*.pid
+*.lock
+*.status
+*.status.json
+debug_*.txt
+
+# Browser and Playwright runtime artifacts / 浏览器与 Playwright 运行制品
+browser_cache/
+browser-cache/
+.cache/
+playwright-report/
+test-results/
+ms-playwright/
+**/chromium-*/
+**/user-data-dir/
+
+# Production backups and archived runtime copies / 生产备份与归档运行副本
+backup/
+backups/
+_audit_quarantine/
+_retired/
+_archived_scripts/
+*.bak
+*.bak_*
+*.bak-*
+*.audit-disabled
+*.ARCHIVED_*
+
+# Generated merchant and send-plan data / 生成的商户及发送计划数据
+/*.json
+/fast_discovery_results*.json
+/new_city_candidates*.json
+/inventory_audit.json
+/inventory_checkpoint.json
+/temp_cities.json
+/today_send_plan_*.json
+/tonight_pending_*.json
+**/checkpoint.json
+**/*_audit.json
+/CURRENT_STATUS.md
+
+# Raw audit evidence and root-level historical reports / 原始审计证据及根目录历史报告
+audit_evidence/
+/*.md
+!/GUARDRAILS.md
+!/ICP_V1.md
+!/PROJECT_SKILLS.md
+!/RUNBOOK.md
+!/RUNBOOK_BROWSER_MAPS_DISCOVERY.md
+!/auto_loop_plan.md
+
+# Credentials, tokens, and secret material / 凭据、令牌与秘密材料
+credentials/
+credentials.*
+*credentials*.json
+tokens/
+tokens.*
+*tokens*.json
+secrets/
+.secrets*
+secret.*
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Tool and platform artifacts / 工具与平台制品
+node_modules/
+.DS_Store
+Thumbs.db
+nul

@@ -1,0 +1,238 @@
+{
+  "executed_at": "2026-09-09T01:58:06.796411+00:00",
+  "max_real_merchants": 20,
+  "rehearsal_merchants_selected": 20,
+  "google_maps_requests": 16,
+  "official_website_requests": 8,
+  "dns_mx_lookups": 0,
+  "network_errors": 6,
+  "real_smtp_connections": 0,
+  "real_imap_connections": 0,
+  "blocked_subprocesses": 0,
+  "new_unique_places": 0,
+  "website_verified": 1,
+  "visible_first_party_emails": 1,
+  "full_evidence_records": 1,
+  "v2_accepted": 0,
+  "mx_accepted": 0,
+  "safe_fsp_candidates_after_rehearsal": 0,
+  "guessed_email": 0,
+  "third_party_email": 0,
+  "directory_social_as_official": 0,
+  "identity_mismatch": 0,
+  "inventory_job": {
+    "status": "completed",
+    "stop_reason": "",
+    "actual": 33,
+    "gap": 0
+  },
+  "summaries": {
+    "discovery": {
+      "status": "query_completed",
+      "city": "Ithaca",
+      "state": "NY",
+      "provider": "browser_maps",
+      "query_family": "game store",
+      "page_cursor": "8",
+      "next_page_cursor": "",
+      "results_seen": 5,
+      "new_unique_places": 0,
+      "duplicate_places": 5,
+      "leads_created": 0,
+      "provider_errors": 0,
+      "validation_statuses": {
+        "duplicate_place": 5
+      },
+      "error": ""
+    },
+    "website": {
+      "status": "website_resolution",
+      "city": "Ithaca",
+      "state": "NY",
+      "provider": "browser_maps",
+      "query_family": "",
+      "page_cursor": "",
+      "next_page_cursor": "",
+      "results_seen": 15,
+      "new_unique_places": 0,
+      "duplicate_places": 0,
+      "leads_created": 0,
+      "provider_errors": 0,
+      "validation_statuses": {
+        "identity_review": 2,
+        "not_found": 11,
+        "network_retry": 1,
+        "website_resolved": 1
+      },
+      "error": ""
+    },
+    "evidence": {
+      "status": "staging_postprocess",
+      "city": "Ithaca",
+      "state": "NY",
+      "provider": "browser_maps",
+      "query_family": "",
+      "page_cursor": "",
+      "next_page_cursor": "",
+      "results_seen": 1,
+      "new_unique_places": 0,
+      "duplicate_places": 0,
+      "leads_created": 0,
+      "provider_errors": 0,
+      "validation_statuses": {
+        "manual_review_needed": 1
+      },
+      "error": ""
+    }
+  },
+  "selected_merchants": [
+    {
+      "source": "discovery",
+      "business_name": "Cantrip Cards & Games",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "discovery",
+      "business_name": "Great Escape Adventures - Ithaca",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "discovery",
+      "business_name": "The Brain Shoppe",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "discovery",
+      "business_name": "Alphabet Soup",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "discovery",
+      "business_name": "Riverwood",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "production_db_copy",
+      "business_name": "The Outdoor Store",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "production_db_copy",
+      "business_name": "Autumn Leaves Used Books",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "production_db_copy",
+      "business_name": "One Green Horse",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "production_db_copy",
+      "business_name": "Bev and Co",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "production_db_copy",
+      "business_name": "Kleins Archery",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "production_db_copy",
+      "business_name": "Found in Ithaca",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "production_db_copy",
+      "business_name": "Instant Replay Sports",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "production_db_copy",
+      "business_name": "Gourdlandia",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "production_db_copy",
+      "business_name": "Midas Menagerie",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "production_db_copy",
+      "business_name": "Young’s Gold Silver Coins & Antiquities",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "production_db_copy",
+      "business_name": "Sundrees",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "production_db_copy",
+      "business_name": "Finger Lakes Running",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "production_db_copy",
+      "business_name": "The Treasure Chest Ithaca",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "production_db_copy",
+      "business_name": "The Cornell Store",
+      "city": "Ithaca",
+      "state": "NY"
+    },
+    {
+      "source": "production_db_copy",
+      "business_name": "The Entertainment Zone Arcade",
+      "city": "Ithaca",
+      "state": "NY"
+    }
+  ],
+  "evidence_records": [
+    {
+      "id": 293,
+      "linked_lead_id": null,
+      "website": "http://ithacainstantreplaysports.com",
+      "official_match": 1,
+      "raw_payload_json": "{\"official_email_evidence\": {\"content_hash\": \"c44dbf0f03495fdcbd76dcdbb5510b05078f10f1bf0f0dba323816cbcee73827\", \"email\": \"ithacainstantreplaysports@yahoo.com\", \"email_source_type\": \"official_page_visible\", \"fetched_at\": \"2026-09-09T01:57:51.767571+00:00\", \"final_url\": \"https://ithacainstantreplaysports.com/\", \"http_status\": 200, \"http_success\": true, \"requested_url\": \"http://ithacainstantreplaysports.com\", \"tls_success\": true, \"visible_text_excerpt\": \"with WordPress managed by IONOS Triphammer 607.277.7366 | The Rink 607.216.0056 ithacainstantreplaysports@yahoo.com IthacaInstantReplaySports@yahoo.com Facebook Instagram Facebook Instagram Home About Us On Going Promoti\"}, \"osm_lat\": 42.479826, \"osm_lon\": -76.481952, \"osm_shop\": \"sports\"}",
+      "evidence": {
+        "content_hash": "c44dbf0f03495fdcbd76dcdbb5510b05078f10f1bf0f0dba323816cbcee73827",
+        "email": "ithacainstantreplaysports@yahoo.com",
+        "email_source_type": "official_page_visible",
+        "fetched_at": "2026-09-09T01:57:51.767571+00:00",
+        "final_url": "https://ithacainstantreplaysports.com/",
+        "http_status": 200,
+        "http_success": true,
+        "requested_url": "http://ithacainstantreplaysports.com",
+        "tls_success": true,
+        "visible_text_excerpt": "with WordPress managed by IONOS Triphammer 607.277.7366 | The Rink 607.216.0056 ithacainstantreplaysports@yahoo.com IthacaInstantReplaySports@yahoo.com Facebook Instagram Facebook Instagram Home About Us On Going Promoti"
+      }
+    }
+  ],
+  "v2_results": [],
+  "production_db_writes": 0,
+  "production_files_changed": 0,
+  "scheduler_changes": 0,
+  "frozen_files_changed": 0,
+  "inventory_rehearsal_pass": true,
+  "ready_for_production_deployment": false
+}

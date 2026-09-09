@@ -1,0 +1,7 @@
+# Development/test only. Do not install into the production interpreter.
+# 仅用于开发与测试；禁止安装到生产 Python。
+pytest==9.1.1
+tzdata==2026.3
+playwright==1.62.0
+httpx==0.28.1
+dnspython==2.8.0
