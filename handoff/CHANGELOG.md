@@ -49,3 +49,7 @@
 
 - 中文：只读部署前检查发现 Windows 与 WorkBuddy 的 PreSend/Outreach 重复 active 触发器，按手册中止；尚未暂停调度、备份、部署或运行生产 Inventory。生产写入为 0，等待维护与恢复范围确认。
 - English: Read-only pre-deployment checks found overlapping active Windows and WorkBuddy PreSend/Outreach triggers. Aborted per runbook before any hold, backup, deployment, or live Inventory. Zero production writes; awaiting maintenance/resume scope clarification.
+## Phase 4A 后续授权 / Follow-up authorization
+
+- 中文：WorkBuddy 四个主要阶段已 PAUSED；禁用重复 Windows 任务遭操作系统拒绝，复核仍启用 2/2。未部署，等待管理员禁用；不恢复调度。
+- English: Four main WorkBuddy stages are PAUSED. OS denied disabling duplicate Windows tasks; both remain enabled. No deployment; awaiting administrator action, with no scheduler resume.

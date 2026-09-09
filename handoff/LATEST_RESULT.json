@@ -3,7 +3,7 @@
   "CURRENT_PHASE": "PHASE 4A / 生产部署前置检查",
   "STATUS": "BLOCKED_BEFORE_DEPLOYMENT / 部署前阻塞",
   "READY_FOR_PRODUCTION": false,
-  "CURRENT_BLOCKER": "Duplicate active PreSend/Outreach triggers in Windows and WorkBuddy; maintenance ownership unresolved / Windows 与 WorkBuddy 同时启用 PreSend/Outreach，维护与恢复范围未确定",
+  "CURRENT_BLOCKER": "Windows Disable-ScheduledTask denied by OS; both duplicate tasks still enabled / 操作系统拒绝禁用任务，两个重复任务仍启用",
   "FULL_SUITE": "312 tests and 59 subtests passed in Phase 3D; not rerun / Phase 3D 312 项及 59 子测试通过，本次未重跑",
   "FROZEN_FILES_CHANGED": 0,
   "PRODUCTION_FILES_CHANGED": 0,
@@ -13,5 +13,5 @@
     "handoff/phases/PHASE4A_PREDEPLOYMENT_BLOCKER.md",
     "handoff/phases/PHASE3_FINAL_PATCH_MANIFEST.md"
   ],
-  "NEXT_ACTION": "Confirm temporary hold of duplicate Windows triggers and WorkBuddy UI pause/resume; no scheduler migration / 确认重复 Windows 触发器临时暂停范围及 WorkBuddy UI 暂停/恢复，不迁移调度器"
+  "NEXT_ACTION": "Administrator disables only RoktRazo-BD-PreSend and RoktRazo-BD-Outreach, then revalidate; do not resume WorkBuddy / 管理员仅禁用上述两个重复任务后重新核验，不恢复 WorkBuddy"
 }

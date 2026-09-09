@@ -47,3 +47,22 @@ Confirm how duplicate Windows triggers should be held while the existing canonic
 
 All Inventory before/after counts and data-quality delta results remain NOT_RUN, not zero-yield claims.
 所有 Inventory 前后计数与数据质量增量均为未运行，不声称零产出。
+## 后续授权与权限阻塞 / Follow-up authorization and permission blocker
+
+用户已授权仅禁用重复 Windows 任务且不恢复 WorkBuddy。再次只读核验确认 WorkBuddy Inventory、PreSend、Preflight、Outreach 均 PAUSED；Recovery Sync 仍 ACTIVE，未修改。尝试禁用 RoktRazo-BD-PreSend 时操作系统返回 Access denied，命令随即停止。随后核验 PreSend 与 Outreach 均仍 Enabled=true。未删除任务、未恢复调度、未备份或部署、未运行 Inventory。
+The user authorized disabling duplicate Windows tasks only and no WorkBuddy resume. Read-only verification confirmed WorkBuddy Inventory, PreSend, Preflight and Outreach PAUSED; Recovery Sync remains ACTIVE and unchanged. Disable-ScheduledTask for RoktRazo-BD-PreSend returned OS Access denied and execution stopped. Subsequent verification found both PreSend and Outreach still Enabled=true. No tasks were deleted, no scheduling resumed, and no backup, deployment or Inventory run occurred.
+
+WINDOWS_DUPLICATE_TASKS_DISABLED = 0/2
+ROLLBACK_READY = false
+TARGET_HASH_MATCH = NOT_RUN
+INVENTORY_RUN_PASS = NOT_RUN
+SAFE_FSP_BEFORE = NOT_MEASURED
+SAFE_FSP_AFTER = NOT_MEASURED
+PHASE4A_INVENTORY_VALIDATION_PASS = false
+
+需管理员 PowerShell 执行下列两个命令后重新核验；不要禁用非重复 PostSend，不恢复 WorkBuddy。 / An administrator must run these two commands before revalidation; do not disable nonduplicate PostSend or resume WorkBuddy.
+
+```powershell
+Disable-ScheduledTask -TaskName 'RoktRazo-BD-PreSend'
+Disable-ScheduledTask -TaskName 'RoktRazo-BD-Outreach'
+```
