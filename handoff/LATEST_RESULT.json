@@ -1,18 +1,17 @@
 {
   "PROJECT": "Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化",
-  "CURRENT_PHASE": "PHASE 3D / 已有线索证据关联",
-  "STATUS": "VALIDATED_NOT_DEPLOYED / 验证通过，未部署",
-  "READY_FOR_PRODUCTION": true,
-  "CURRENT_BLOCKER": "NONE / 无",
-  "FULL_SUITE": "312 passed; 59 subtests passed / 312 项及 59 子测试通过",
+  "CURRENT_PHASE": "PHASE 4A / 生产部署前置检查",
+  "STATUS": "BLOCKED_BEFORE_DEPLOYMENT / 部署前阻塞",
+  "READY_FOR_PRODUCTION": false,
+  "CURRENT_BLOCKER": "Duplicate active PreSend/Outreach triggers in Windows and WorkBuddy; maintenance ownership unresolved / Windows 与 WorkBuddy 同时启用 PreSend/Outreach，维护与恢复范围未确定",
+  "FULL_SUITE": "312 tests and 59 subtests passed in Phase 3D; not rerun / Phase 3D 312 项及 59 子测试通过，本次未重跑",
   "FROZEN_FILES_CHANGED": 0,
   "PRODUCTION_FILES_CHANGED": 0,
   "PRODUCTION_DB_WRITES": 0,
   "REAL_SMTP_CONNECTIONS": 0,
   "LATEST_REPORTS": [
-    "handoff/phases/PHASE3D_VALIDATION_RESULTS.md",
-    "handoff/phases/PHASE3_FINAL_PATCH_MANIFEST.md",
-    "handoff/phases/PHASE3C_DEPLOYMENT_RUNBOOK.md"
+    "handoff/phases/PHASE4A_PREDEPLOYMENT_BLOCKER.md",
+    "handoff/phases/PHASE3_FINAL_PATCH_MANIFEST.md"
   ],
-  "NEXT_ACTION": "Await explicit production deployment approval; do not deploy automatically / 等待明确生产部署批准，不自动部署"
+  "NEXT_ACTION": "Confirm temporary hold of duplicate Windows triggers and WorkBuddy UI pause/resume; no scheduler migration / 确认重复 Windows 触发器临时暂停范围及 WorkBuddy UI 暂停/恢复，不迁移调度器"
 }

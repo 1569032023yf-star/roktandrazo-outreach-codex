@@ -45,3 +45,7 @@
 
 - 中文：复现并修复已有线索官方证据关联；新增 9 项回归，312 项测试及 59 子测试通过。新鲜生产 DB 开发副本中关联 1085，真实 MX/V2 通过，开发 SAFE FSP 新增 1，重放幂等。重新生成六制品发布包与最终 SHA 清单。生产与冻结文件未改，未部署。
 - English: Reproduced and fixed existing-lead official-evidence linkage. Added nine regressions; 312 tests and 59 subtests pass. A fresh development production-DB copy linked lead 1085, passed real MX/frozen V2, and inserted one development SAFE FSP idempotently. Regenerated six release artifacts and final SHA manifest. No production/frozen changes or deployment.
+## Phase 4A — 2026-09-09
+
+- 中文：只读部署前检查发现 Windows 与 WorkBuddy 的 PreSend/Outreach 重复 active 触发器，按手册中止；尚未暂停调度、备份、部署或运行生产 Inventory。生产写入为 0，等待维护与恢复范围确认。
+- English: Read-only pre-deployment checks found overlapping active Windows and WorkBuddy PreSend/Outreach triggers. Aborted per runbook before any hold, backup, deployment, or live Inventory. Zero production writes; awaiting maintenance/resume scope clarification.
