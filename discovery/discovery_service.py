@@ -258,6 +258,7 @@ class DiscoveryService:
         city_row: dict,
         max_results: int = 20,
         fetcher: Any | None = None,
+        staging_ids: list[int] | None = None,
     ) -> DiscoveryRunSummary:
         """Process staged Places rows into A0, manual review, or contact-form pools."""
         city_id = int(city_row["id"])
@@ -270,6 +271,8 @@ class DiscoveryService:
                 LIMIT ?""",
             (city_id, *STAGING_POSTPROCESS_STATUSES, max(1, int(max_results or 20))),
         ).fetchall()
+        if staging_ids is not None:
+            rows = self._linked_retry_rows(city_row, staging_ids, require_website=True)
         summary = DiscoveryRunSummary(
             status="staging_postprocess",
             city=city_row["city"],
@@ -289,7 +292,8 @@ class DiscoveryService:
             summary.status = "staging_postprocess_empty"
         return summary
 
-    def run_website_resolution(self, city_row: dict, resolver: Any, max_results: int = 20) -> DiscoveryRunSummary:
+    def run_website_resolution(self, city_row: dict, resolver: Any, max_results: int = 20,
+                               staging_ids: list[int] | None = None) -> DiscoveryRunSummary:
         """Resolve missing official websites; directory/social URLs remain hints only."""
         rows = self.conn.execute(
             """SELECT * FROM lead_discovery_results
@@ -298,6 +302,8 @@ class DiscoveryService:
                ORDER BY discovered_at,id LIMIT ?""",
             (int(city_row["id"]), max(1, int(max_results))),
         ).fetchall()
+        if staging_ids is not None:
+            rows = self._linked_retry_rows(city_row, staging_ids, require_website=False)
         summary = DiscoveryRunSummary(
             status="website_resolution", city=city_row["city"], state=city_row["state"],
             provider=self.provider.provider_name, results_seen=len(rows),
@@ -327,6 +333,108 @@ class DiscoveryService:
             summary.validation_statuses[status] = summary.validation_statuses.get(status, 0) + 1
         if not rows:
             summary.status = "website_resolution_empty"
+        return summary
+
+    def _linked_retry_allowed(self, row: dict, city_row: dict) -> bool:
+        """Fail closed on history/identity; a linkage alone is not official evidence."""
+        lead_row = self.conn.execute('SELECT * FROM leads WHERE id=?', (row.get('linked_lead_id'),)).fetchone()
+        if not lead_row or self._row_outside_active_city(row, city_row):
+            return False
+        if (not str(row.get('city') or '').strip()
+                or str(row.get('city')).strip().lower() != str(city_row.get('city') or '').strip().lower()
+                or _normalize_state(row.get('state')) != _normalize_state(city_row.get('state'))):
+            return False
+        lead = dict(lead_row)
+        from discovery.website_resolver import _official_url
+        if row.get('website') and not _official_url(row['website']):
+            return False
+        if lead.get('email_source_type') in {'guessed', 'third_party', 'directory', 'social_media'}:
+            return False
+        if str(lead.get('email') or '').strip() or lead.get('status') not in {'new', 'manual_review_needed'}:
+            return False
+        if lead.get('review_status') in {'rejected', 'identity_review'}:
+            return False
+        if lead.get('review_reason_code') not in {'website_lookup_required', 'review_recovery', 'no_public_email_or_form'}:
+            return False
+        if row.get('validation_status') not in {*STAGING_POSTPROCESS_STATUSES, 'manual_review_needed', 'review_recovery'}:
+            return False
+        reason = str(row.get('rejection_reason') or '')
+        if reason and not reason.startswith(('website_resolution:not_found:', 'website_resolution:network_error:', 'website_resolution:network_retry:')):
+            return False
+        if row.get('history_crosscheck_result') in BLOCKING_HISTORY_RESULTS - {'exact_duplicate'}:
+            return False
+        if normalize_business_name(lead.get('store_name', '')) != normalize_business_name(row.get('business_name', '')):
+            return False
+        if (str(lead.get('city') or '').strip().lower() != str(row.get('city') or '').strip().lower()
+                or _normalize_state(lead.get('state')) != _normalize_state(row.get('state'))):
+            return False
+        if lead.get('formatted_address') and row.get('formatted_address') and normalize_address(lead['formatted_address']) != normalize_address(row['formatted_address']):
+            return False
+        if lead.get('organization_key') and lead['organization_key'] != _gen_organization_key({**lead, 'organization_key': ''}):
+            return False
+        if lead.get('review_reason_code') == 'no_public_email_or_form' and not row.get('official_match'):
+            return False
+        if lead.get('review_reason_code') == 'review_recovery' and lead.get('review_reason_detail') != 'review_recovery=official_site_unavailable':
+            return False
+        checks = cross_check(self.conn, lead)
+        members = {lead['id'], *(r['id'] for r in checks.get('related_leads', []))}
+        if lead.get('organization_key'):
+            members.update(r[0] for r in self.conn.execute('SELECT id FROM leads WHERE organization_key=?', (lead['organization_key'],)))
+        for lid in members:
+            member = dict(self.conn.execute('SELECT * FROM leads WHERE id=?', (lid,)).fetchone())
+            history = cross_check(self.conn, member)
+            if any(history.get(k) for k in ('previously_sent', 'hard_bounced', 'suppressed', 'unsubscribed', 'rejected', 'replied')):
+                return False
+            if member.get('status') not in {'new', 'manual_review_needed', 'approved_manual_send'}:
+                return False
+        return True
+
+    def _linked_retry_rows(self, city_row, ids, require_website):
+        rows = []
+        for sid in ids:
+            row = self.conn.execute('SELECT * FROM lead_discovery_results WHERE id=? AND active_city_id=?', (sid, city_row['id'])).fetchone()
+            if row and bool(str(row['website'] or '').strip()) == require_website and self._linked_retry_allowed(dict(row), city_row):
+                rows.append(row)
+        return rows
+
+    def run_linked_backlog(self, city_row, resolver, max_results=20, fetcher=None):
+        """Bounded active-city re-entry; retry metadata is separate from provider facts."""
+        limit = min(20, max(0, int(max_results)))
+        rows = self.conn.execute("""SELECT s.* FROM lead_discovery_results s JOIN leads l ON l.id=s.linked_lead_id
+            WHERE s.active_city_id=? AND trim(coalesce(l.email,''))=''
+            ORDER BY coalesce(json_extract(CASE WHEN json_valid(s.raw_payload_json) THEN s.raw_payload_json ELSE '{}' END,
+                '$.linked_backlog_retry.last_attempt_at'), ''), s.id""", (city_row['id'],)).fetchall()
+        eligible = [dict(r) for r in rows if self._linked_retry_allowed(dict(r), city_row)]
+        selected = eligible[:limit]
+        summary = {'eligible': len(eligible), 'processed': len(selected), 'website_processed': 0,
+                   'postprocess_processed': 0, 'existing_leads_linked': 0}
+        for row in selected:
+            payload = json.loads(row.get('raw_payload_json') or '{}')
+            previous = payload.get('linked_backlog_retry', {})
+            payload['linked_backlog_retry'] = {**previous, 'last_attempt_at': utc_now(),
+                'attempts': int(previous.get('attempts', 0)) + 1,
+                'original_validation_status': previous.get('original_validation_status', row['validation_status']),
+                'original_rejection_reason': previous.get('original_rejection_reason', row['rejection_reason'])}
+            self.conn.execute('UPDATE lead_discovery_results SET raw_payload_json=? WHERE id=?', (json.dumps(payload), row['id']))
+            self._linked_backlog_active = row['linked_lead_id']
+            self.conn.execute('SAVEPOINT linked_retry_attempt')
+            try:
+                web = self.run_website_resolution(city_row, resolver, max_results=1, staging_ids=[row['id']])
+                post = self.run_staging_postprocess(city_row, max_results=1, fetcher=fetcher, staging_ids=[row['id']])
+                summary['website_processed'] += web.results_seen
+                summary['postprocess_processed'] += post.results_seen
+                summary['existing_leads_linked'] += post.existing_leads_linked
+            except Exception as exc:
+                self.conn.execute('ROLLBACK TO linked_retry_attempt')
+                summary['errors'] = summary.get('errors', 0) + 1
+                payload['linked_backlog_retry']['last_error_type'] = type(exc).__name__
+                self.conn.execute('UPDATE lead_discovery_results SET raw_payload_json=? WHERE id=?', (json.dumps(payload), row['id']))
+            finally:
+                self.conn.execute('RELEASE linked_retry_attempt')
+                self._linked_backlog_active = None
+                # Preserve provenance even when the existing evidence gate rejects a retry.
+                self.conn.execute('UPDATE lead_discovery_results SET linked_lead_id=? WHERE id=? AND linked_lead_id IS NULL',
+                                  (row['linked_lead_id'], row['id']))
         return summary
 
     def run_web_directory_probe(self, city_row: dict) -> str:
@@ -636,6 +744,8 @@ class DiscoveryService:
         return "manual_review_needed", lead_id
 
     def _insert_a0_candidate(self, discovery_id: int, candidate: dict) -> tuple[str, int | None]:
+        if getattr(self, '_linked_backlog_active', None):
+            return self._link_existing_evidence(discovery_id, candidate) or ('identity_review', None)
         merged = self._link_existing_evidence(discovery_id, candidate)
         if merged is not None:
             return merged
@@ -717,6 +827,8 @@ class DiscoveryService:
 
             if len(matches) != 1:
                 return finish("identity_review", "ambiguous_existing_identity")
+            if getattr(self, '_linked_backlog_active', None) and matches[0]['id'] != self._linked_backlog_active:
+                return finish('identity_review', 'linked_identity_mismatch')
             lead = dict(self.conn.execute("SELECT * FROM leads WHERE id=?", (matches[0]["id"],)).fetchone())
             org = str(lead.get("organization_key") or "")
             if org and candidate.get("organization_key") and org != candidate["organization_key"]:
@@ -791,6 +903,17 @@ class DiscoveryService:
             self.conn.execute("RELEASE existing_evidence")
 
     def _insert_review_candidate(self, discovery_id: int, candidate: dict, status: str, reason: str) -> int | None:
+        if getattr(self, '_linked_backlog_active', None):
+            if candidate.get('official_email_evidence'):
+                result = self._link_existing_evidence(discovery_id, candidate)
+                return result[1] if result else None
+            previous = self.conn.execute('SELECT official_match FROM lead_discovery_results WHERE id=?', (discovery_id,)).fetchone()
+            self._update_result(discovery_id, status, '', self._linked_backlog_active,
+                '' if reason in {'official_site_unavailable', 'no_public_email_or_form'} else reason,
+                candidate.get('evidence_url', ''), candidate.get('evidence_snippet', ''),
+                candidate.get('evidence_method', ''), candidate.get('contact_form_url', ''),
+                int(bool(candidate.get('official_match') or (reason == 'official_site_unavailable' and previous and previous[0]))))
+            return None
         candidate["auto_sendable"] = 0
         candidate["manual_sendable"] = 0
         candidate.setdefault("review_status", "pending")

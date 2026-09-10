@@ -65,3 +65,8 @@
 
 - 中文：离线复现BroadReady34/30误完成。新鲜副本全量空邮箱482，排除51联系表单/3已发送后为428；其中166无staging关联。已关联262条状态亦非直接安全消费状态。按第7节停止，无源码或生产更改，未执行修复测试/Inventory；冻结SHA未变。
 - English: Reproduced BroadReady34/30 false completion offline. Fresh copy has482 empty emails, or428 excluding51 contact-form/3 sent;166 lack linked staging. All262 linked rows also lack directly consumable safe statuses. Stopped under section7 without source/production changes or fix tests/Inventory; frozen hashes unchanged.
+
+## Phase 4A.1B — 2026-09-10 已关联积压重连 / Linked backlog reconnection
+
+- 中文：完成262条精确路由审计；仅修改两个生产源文件，加入当前城市有界安全重入和冻结V2唯一组织完成信号。166条未关联待补库不变。322项及76子测试通过；冻结0变更。首轮开发驱动位置被护栏拦截，换用开发驱动和新副本后真实复验18条：解析11、后处理7、新邮箱/完整证据/关联增量均0，SAFE 1→1，BroadReady34但正确记录partial、gap29。未部署、未恢复调度，生产写入/邮件/FSP/授权均0。窄补丁可审查，不表示库存目标达成。
+- English: Completed exact routing audit of262 rows; changed only two production source files for bounded current-city safe re-entry and frozen-V2 unique-org completion. The166 actionable unlinked leads are unchanged.322 tests and76 subtests pass; frozen changes0. Initial external driver location was blocked by guards; a development driver and fresh copy then processed18 real rows:11 resolution,7 postprocess, zero new email/full-evidence/linkage, SAFE1→1. BroadReady34 correctly yields partial with gap29. No deployment/resume or production/mail/FSP/authorization writes. The narrow patch is review-ready, not inventory-target-complete.

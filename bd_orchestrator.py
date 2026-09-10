@@ -382,246 +382,69 @@ def _resolve_active_discovery_state() -> tuple[str | None, str | None]:
     return raw, None
 
 
+def _count_safe_ready_pool(conn):
+    """Read-only frozen V2 selection; never materialize a plan or authorization."""
+    from campaign_eligible_v2 import select_candidates_for_plan_v2
+    count = conn.execute("SELECT COUNT(*) FROM leads").fetchone()[0]
+    rows = select_candidates_for_plan_v2(conn, max(1, count))
+    return len({str(r.get('organization_key') or '').strip() for r in rows
+                if str(r.get('organization_key') or '').strip()})
+
+
 def stage_inventory(run_id: str, business_date: str, dry_run: bool):
     target = inventory_target_for_date(business_date)
-    if target != INVENTORY_TARGET:
-        log(f"  [WEEKEND] Inventory target raised to {target} (weekend buffer)")
-    header(f"STAGE: Inventory — Target {target} Sendable Orgs, send_enabled=false")
+    header(f"STAGE: Inventory — Target {target}, send_enabled=false")
     if dry_run:
-        # A dry run is deliberately a read-only capacity preview. It never
-        # seeds/advances city cursors or invokes a Places/website provider.
         conn = get_db()
         try:
             a0 = len(get_sendable_leads(limit=target + 1, conn=conn))
-            broad_ready = _count_broad_ready_pool()
+            broad = _count_broad_ready_pool()
+            safe = _count_safe_ready_pool(conn)
         finally:
             conn.close()
-        preview = {'strict_a0': a0, 'broad_ready': broad_ready,
-                   'target': target,
-                   'gap': max(0, target - broad_ready)}
-        log(f"[DRY RUN] Inventory preview: BroadReady={broad_ready}/{target} (A0={a0}); no provider, website, cursor, or DB writes")
-        return preview
+        return {'strict_a0': a0, 'broad_ready': broad, 'safe_ready_unique_orgs': safe,
+                'target': target, 'gap': max(0, target - safe)}
     set_execution_mode('inventory_recovery')
     update_job_run(run_id, current_step='inventory_start', target=target)
-
-    # Lock
     if not acquire_run_lock(f'inventory:{business_date}', run_id):
-        log("[LOCKED] Inventory already running for today")
         finish_job_run(run_id, 'stopped', stop_reason='lock_conflict')
         return False
-
     try:
         from retail_city_queue import activate_next_city, seed_default_queue
-        # P1.7C final wiring: state-scoped Discovery. Fail-closed — no nationwide fallback.
+        from discovery.discovery_service import DiscoveryService
+        from discovery.website_resolver import ProviderWebsiteResolver
         active_state, state_error = _resolve_active_discovery_state()
         if state_error:
-            log(f"[BLOCKED] Discovery stage stopped: {state_error} (no nationwide fallback)")
             finish_job_run(run_id, 'stopped', stop_reason=state_error)
             return False
-        city_conn = get_db()
+        conn = get_db()
         try:
-            with city_conn:
-                seed_default_queue(city_conn)
-                active_retail_city = activate_next_city(city_conn, state=active_state)
-        except RuntimeError:
-            log(f"[BLOCKED] Discovery stage stopped: ACTIVE_STATE_EXHAUSTED = {active_state} (wait for human decision on next state)")
-            finish_job_run(run_id, 'stopped', stop_reason=f'ACTIVE_STATE_EXHAUSTED:{active_state}')
-            return False
+            with conn:
+                seed_default_queue(conn)
+                city = activate_next_city(conn, state=active_state)
+            log(f"Active city: {city['city']}, {city['state']}; existing linked backlog only")
+            service = DiscoveryService(conn)
+            # Reuse both canonical lane limits; no new discovery or unlinked processing
+            # during this intentionally narrow linked-backlog release.
+            limit = min(20, max(0, int(os.getenv('WORKBUDDY_WEBSITE_RESOLUTION_MAX', '20'))),
+                        max(0, int(os.getenv('WORKBUDDY_STAGING_POSTPROCESS_MAX', '20'))))
+            with conn:
+                summary = service.run_linked_backlog(city, ProviderWebsiteResolver(service.provider), max_results=limit)
+            log(f"Linked backlog: {summary}")
+            safe = _count_safe_ready_pool(conn)
+            broad = _count_broad_ready_pool()
+            gap = max(0, target - safe)
+            finish_job_run(run_id, 'completed' if gap == 0 else 'partial', actual=safe, gap=gap,
+                           stop_reason='' if gap == 0 else 'linked_backlog_budget_exhausted')
+            log(f"SAFE_READY_UNIQUE_ORGS={safe}/{target}; BroadReady={broad} (informational only)")
+            return gap == 0
         finally:
-            city_conn.close()
-        log(f"Active retail city (state scope={active_state}): {active_retail_city['city']}, {active_retail_city['state']} (no city switching)")
-
-        # Lane A: new place discovery. Provider failures are fail-closed and checkpointed.
-        try:
-            from discovery.discovery_service import DiscoveryService
-
-            discovery_pages = int(os.getenv("WORKBUDDY_DISCOVERY_MAX_PAGES", "1"))
-            discovery_conn = get_db()
-            discovery_conn.row_factory = sqlite3.Row
-            discovery_service = DiscoveryService(discovery_conn)
-            with discovery_conn:
-                discovery_summary = discovery_service.run_places_batch(
-                    active_retail_city,
-                    max_pages=max(1, discovery_pages),
-                )
-            log(
-                "  Lane A discovery: "
-                f"{discovery_summary.status} | provider={discovery_summary.provider} | "
-                f"query={discovery_summary.query_family or '-'} | seen={discovery_summary.results_seen} | "
-                f"new_unique={discovery_summary.new_unique_places} | leads_created={discovery_summary.leads_created}"
-            )
-            from discovery.website_resolver import ProviderWebsiteResolver
-            resolution_limit = int(os.getenv("WORKBUDDY_WEBSITE_RESOLUTION_MAX", "20"))
-            with discovery_conn:
-                website_summary = discovery_service.run_website_resolution(
-                    active_retail_city,
-                    ProviderWebsiteResolver(discovery_service.provider),
-                    max_results=max(1, resolution_limit),
-                )
-            log(
-                "  Lane B website resolution: "
-                f"processed={website_summary.results_seen} | statuses={website_summary.validation_statuses}"
-            )
-            postprocess_limit = int(os.getenv("WORKBUDDY_STAGING_POSTPROCESS_MAX", "20"))
-            with discovery_conn:
-                post_summary = discovery_service.run_staging_postprocess(
-                    active_retail_city,
-                    max_results=max(1, postprocess_limit),
-                )
-            discovery_conn.close()
-            log(
-                "  Lane B/C/D staging: "
-                f"{post_summary.status} | processed={post_summary.results_seen} | "
-                f"leads_created={post_summary.leads_created} | statuses={post_summary.validation_statuses}"
-            )
-        except Exception as e:
-            log(f"  [WARN] Lane A discovery unavailable: {e}")
-
-        # Count current through the same gate used by Pre-Send.
-        # Inventory target is measured against the main pool (Broad Outreach Ready),
-        # not Strict A0 (the priority layer). Use broad_ready so an already-met
-        # target short-circuits instead of running a futile website-recovery loop.
-        a0 = len(get_sendable_leads(limit=target + 1))
-        broad_ready = _count_broad_ready_pool()
-
-        remaining = max(0, target - broad_ready)
-        log(f"Current A0: {a0}, BroadReady: {broad_ready}/{target}, to collect: {remaining}")
-
-        if remaining == 0:
-            log("[DONE] Inventory target met")
-            finish_job_run(run_id, 'completed', actual=broad_ready, gap=0)
-            return True
-
-        collected = 0
-        loop = 0
-        max_loops = 5
-
-        while remaining > 0 and loop < max_loops:
-            loop += 1
-            log(f"\n  Inventory loop {loop}/{max_loops}: need {remaining}")
-
-            # ── Unified Website Recovery via http_scan_website ──
-            # Uses direct-first → proxy fallback → curl fallback strategy.
-            # Network failures are classified, not confused with "no email".
-            try:
-                from inventory_monitor_executor import http_scan_website
-                import time as _time
-
-                conn = get_db()
-                c = conn.cursor()
-                # Query ALL leads needing website enrichment across all states (P1.7C: no 3-state hard filter)
-                candidates = c.execute("""
-                    SELECT * FROM leads
-                    WHERE status NOT IN ('sent','bounced','do_not_contact')
-                    AND (email IS NULL OR email='')
-                    AND official_website IS NOT NULL AND official_website != ''
-                    -- exclude leads already submitted to manual_email_submission in this lane
-                    -- (prevents the same 34-site pool being rescanned every loop/day)
-                    AND NOT EXISTS (
-                        SELECT 1 FROM manual_email_submission ms
-                        WHERE ms.lead_id = leads.id
-                          AND COALESCE(ms.submitted_by,'') = 'inventory_lane'
-                    )
-                    ORDER BY CASE WHEN state='TN' THEN 0 WHEN state='AR' THEN 1 ELSE 2 END,
-                             city, id
-                    LIMIT 35
-                """).fetchall()
-                conn.close()
-
-                log(f"  Processing {len(candidates)} Website Recovery candidates (all 3 states)...")
-
-                ssl_stats = {
-                    'direct_success': 0, 'direct_failed': 0,
-                    'curl_success': 0, 'curl_failed': 0,
-                    'no_email': 0, 'network_errors': 0,
-                    'emails_found': 0,
-                }
-                log(f"  Processing {min(len(candidates), 35)} candidates with unified HTTP scanner...")
-                
-                for i, cand in enumerate(candidates[:35]):
-                    cd = dict(cand)
-                    website = cd.get('official_website', '')
-                    if not website:
-                        continue
-                    
-                    scan_ss = {}
-                    email, ev_url, ev_snippet, result_type = http_scan_website(website, scan_ss)
-
-                    # Use the actual page where the email was found as evidence URL,
-                    # not the homepage — so verification re-checks the same page.
-                    evidence_url = ev_url or website
-                    evidence_snippet = ev_snippet or email or result_type
-
-                    if email and '@' in email and not is_suppressed(email):
-                        ssl_stats['emails_found'] += 1
-                        log(f"    [{i+1}] ✅ {cd['store_name'][:30]} → {email} ({result_type})")
-                        if not dry_run:
-                            conn2 = get_db()
-                            try:
-                                from manual_email_workflow import submit_manual_email
-                                with conn2:
-                                    result = submit_manual_email(
-                                        conn2, cd['id'], 'inventory_lane',
-                                        email=email, evidence_url=evidence_url,
-                                        evidence_snippet=evidence_snippet,
-                                        evidence_method='official_contact_page',
-                                        contact_role='business_email',
-                                        notes=f'Unified scanner: {result_type}',
-                                    )
-                                log(f"        hygiene={result.get('final_status')}")
-                            finally:
-                                conn2.close()
-                        collected += 1
-                    elif result_type in ('no_email_found', 'website_scanned_no_email'):
-                        ssl_stats['no_email'] += 1
-                        log(f"    [{i+1}] 📄 {cd['store_name'][:30]} — scanned, no email")
-                    elif 'curl' in result_type and 'fail' not in result_type:
-                        ssl_stats['curl_success'] += 1
-                    elif 'network' in result_type or 'ssl' in result_type or 'timeout' in result_type:
-                        ssl_stats['network_errors'] += 1
-                        log(f"    [{i+1}] ⚠️ {cd['store_name'][:30]} — {result_type}")
-                    elif 'direct' in result_type:
-                        ssl_stats['direct_success'] += 1
-                    else:
-                        ssl_stats['network_errors'] += 1
-                        log(f"    [{i+1}] ? {cd['store_name'][:30]} — {result_type}")
-                    
-                    # Refresh Ops Center after each
-                    _time.sleep(0.15)
-
-                log(f"  Result: direct_ok={ssl_stats['direct_success']} curl_ok={ssl_stats['curl_success']}")
-                log(f"          emails_found={ssl_stats['emails_found']} no_email={ssl_stats['no_email']}")
-                log(f"          network_err={ssl_stats['network_errors']}")
-            except Exception as e:
-                import traceback
-                log(f"  [WARN] Unified scanner error: {e}")
-                log(traceback.format_exc()[-200:])
-
-            # Recheck through the production main pool gate (Broad Outreach Ready).
-            # Strict A0 (get_sendable_leads) is the priority layer, NOT the main pool —
-            # inventory target is measured against the main pool per production policy.
-            a0 = len(get_sendable_leads(limit=target + 1))
-            broad_ready = _count_broad_ready_pool()
-            remaining = max(0, target - broad_ready)
-            log(f"  After loop {loop}: A0={a0}, BroadReady={broad_ready}, remaining={remaining}")
-
-        final_broad = _count_broad_ready_pool()
-        final_a0 = a0
-        final_gap = max(0, target - final_broad)
-
-        if final_gap == 0:
-            finish_job_run(run_id, 'completed', actual=final_broad, gap=0)
-        else:
-            finish_job_run(run_id, 'partial', actual=final_broad, gap=final_gap,
-                           stop_reason='max_loops_reached')
-
-        log(f"\nInventory done: BroadReady={final_broad}/{target} (A0={final_a0})")
-        return final_gap == 0
-
+            conn.close()
+    except Exception as exc:
+        finish_job_run(run_id, 'stopped', stop_reason=f'linked_backlog_error:{type(exc).__name__}')
+        raise
     finally:
-        # ALWAYS release lock, even on crash
         release_run_lock(f'inventory:{business_date}', run_id)
-
 
 # ═══════════════════════════════════════════════════════════
 # Stage: end-of-day (17:30) — Dashboard + Daily Summary

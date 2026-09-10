@@ -1,0 +1,32 @@
+{
+  "run_id": "phase4a1b-dev-20260910T072212Z",
+  "city": "Ithaca",
+  "broad_ready_before": 34,
+  "linked_backlog_eligible": 18,
+  "linked_backlog_processed": 18,
+  "website_resolution_processed": 11,
+  "safe_postprocess_processed": 7,
+  "new_existing_leads_linked": 0,
+  "new_visible_first_party_emails": 0,
+  "new_full_evidence_records": 0,
+  "safe_ready_before": 1,
+  "safe_ready_after": 1,
+  "target_met": false,
+  "job_status": "partial",
+  "summary": {
+    "eligible": 18,
+    "processed": 18,
+    "website_processed": 11,
+    "postprocess_processed": 7,
+    "existing_leads_linked": 0
+  },
+  "unlinked_unchanged": true,
+  "protected_tables_unchanged": true,
+  "frozen_files_changed": 0,
+  "production_db_writes": 0,
+  "smtp": 0,
+  "imap": 0,
+  "fsp_created": 0,
+  "authorization_created": 0,
+  "legacy_scanner_used_as_safe_authority": false
+}
