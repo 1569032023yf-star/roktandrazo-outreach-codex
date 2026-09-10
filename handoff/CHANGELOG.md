@@ -61,3 +61,7 @@
 
 - 中文：按新增明确授权完成一次MX/V2测量。91原始域名字符串归一为90唯一域名，MX正常32、NXDOMAIN51、无路由7、DNS错误0。V2/SAFE均1，1085通过；冻结0变更，邮件/计划/授权/调度变更均0。调度继续暂停。
 - English: Completed one explicitly authorized MX/V2 measurement. 91 raw domain strings normalize to 90 unique domains: 32 OK, 51 NXDOMAIN, 7 no route, 0 DNS errors. V2/SAFE both equal one; lead 1085 passes. Zero frozen, mail, plan, authorization or scheduler changes. Scheduling remains held.
+## Phase 4A.1 — 2026-09-10 审计停止 / Audit stop
+
+- 中文：离线复现BroadReady34/30误完成。新鲜副本全量空邮箱482，排除51联系表单/3已发送后为428；其中166无staging关联。已关联262条状态亦非直接安全消费状态。按第7节停止，无源码或生产更改，未执行修复测试/Inventory；冻结SHA未变。
+- English: Reproduced BroadReady34/30 false completion offline. Fresh copy has482 empty emails, or428 excluding51 contact-form/3 sent;166 lack linked staging. All262 linked rows also lack directly consumable safe statuses. Stopped under section7 without source/production changes or fix tests/Inventory; frozen hashes unchanged.
