@@ -53,3 +53,7 @@
 
 - 中文：WorkBuddy 四个主要阶段已 PAUSED；禁用重复 Windows 任务遭操作系统拒绝，复核仍启用 2/2。未部署，等待管理员禁用；不恢复调度。
 - English: Four main WorkBuddy stages are PAUSED. OS denied disabling duplicate Windows tasks; both remain enabled. No deployment; awaiting administrator action, with no scheduler resume.
+## Phase 4A — 2026-09-10 部署 / Deployment
+
+- 中文：按批准 commit 部署六个制品，目标6/6、冻结0变更，已建最新在线回滚备份。唯一一次生产 Inventory 完成，官网+2、可见第一方邮箱/完整证据各+1，无新增 lead/schema/发送记录。验收后91域名MX被安全审查拒绝，SAFE AFTER待测；调度不恢复。
+- English: Deployed six artifacts from the approved commit with 6/6 target hashes, zero frozen changes and fresh online rollback backup. One production Inventory completed: two websites and one visible first-party email/full evidence record; no new lead/schema/send records. Safety review blocked post-run 91-domain MX; SAFE AFTER remains pending. Scheduling stays held.
