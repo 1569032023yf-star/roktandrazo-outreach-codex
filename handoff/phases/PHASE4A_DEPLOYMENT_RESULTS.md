@@ -1,5 +1,7 @@
 # Phase 4A 部署结果 / Deployment results
 
+> 2026-09-10T02:29:18Z 更新：最终 MX/V2 验收通过，SAFE AFTER=1，调度仍暂停。以下待测描述保留为部署时历史；以 PHASE4A_FINAL_MX_ACCEPTANCE.md 为准。 / Update: final MX/V2 acceptance passed, SAFE AFTER=1, scheduling remains held. Pending descriptions below are deployment-time history; PHASE4A_FINAL_MX_ACCEPTANCE.md is authoritative.
+
 ## 状态 / Status
 
 已部署批准的 Phase 3D 六文件补丁；一次生产 Inventory 已成功完成。调度保持暂停，最终 SAFE FSP 统计待安全审查授权，不可宣称全部验收完成。

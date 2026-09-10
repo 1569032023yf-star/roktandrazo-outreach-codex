@@ -1,17 +1,18 @@
 {
   "PROJECT": "Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化",
-  "CURRENT_PHASE": "PHASE 4A / 生产部署与 Inventory 验证",
-  "STATUS": "DEPLOYED_INVENTORY_COMPLETED_ACCEPTANCE_PENDING / 已部署且 Inventory 完成，最终验收待完成",
-  "READY_FOR_PRODUCTION": false,
-  "CURRENT_BLOCKER": "Post-run 91-domain MX/V2 measurement rejected by safety reviewer; explicit network approval required / 安全审查拒绝验收后91域名MX/V2统计，需明确联网批准",
+  "CURRENT_PHASE": "PHASE 4A FINAL ACCEPTANCE / 生产部署最终验收",
+  "STATUS": "ACCEPTED_SCHEDULING_HELD / 验收通过，调度仍暂停",
+  "READY_FOR_PRODUCTION": true,
+  "CURRENT_BLOCKER": "NONE / 无",
   "FULL_SUITE": "Phase 3D: 312 tests and 59 subtests passed; not rerun / Phase 3D 312项及59子测试通过，本次未重跑",
   "FROZEN_FILES_CHANGED": 0,
   "PRODUCTION_FILES_CHANGED": 6,
   "PRODUCTION_DB_WRITES": "AUTHORIZED_INVENTORY_ONLY / 仅获批 Inventory 写入",
   "REAL_SMTP_CONNECTIONS": 0,
   "LATEST_REPORTS": [
-    "handoff/phases/PHASE4A_DEPLOYMENT_RESULTS.md",
-    "handoff/phases/PHASE3_FINAL_PATCH_MANIFEST.md"
+    "handoff/phases/PHASE4A_FINAL_MX_ACCEPTANCE.md",
+    "handoff/phases/PHASE4A_FINAL_MX_ACCEPTANCE.json",
+    "handoff/phases/PHASE4A_DEPLOYMENT_RESULTS.md"
   ],
-  "NEXT_ACTION": "Authorize post-run MX for 91 public domains and complete acceptance; keep scheduling held / 明确批准91个公开域名的验收后MX查询，完成验收；保持调度暂停"
+  "NEXT_ACTION": "STOP; await Ian's separate scheduler-resume authorization / 停止；等待 Ian 单独批准恢复调度"
 }

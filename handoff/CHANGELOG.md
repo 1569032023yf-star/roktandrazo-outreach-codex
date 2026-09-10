@@ -57,3 +57,7 @@
 
 - 中文：按批准 commit 部署六个制品，目标6/6、冻结0变更，已建最新在线回滚备份。唯一一次生产 Inventory 完成，官网+2、可见第一方邮箱/完整证据各+1，无新增 lead/schema/发送记录。验收后91域名MX被安全审查拒绝，SAFE AFTER待测；调度不恢复。
 - English: Deployed six artifacts from the approved commit with 6/6 target hashes, zero frozen changes and fresh online rollback backup. One production Inventory completed: two websites and one visible first-party email/full evidence record; no new lead/schema/send records. Safety review blocked post-run 91-domain MX; SAFE AFTER remains pending. Scheduling stays held.
+## Phase 4A 最终验收 / Final acceptance — 2026-09-10
+
+- 中文：按新增明确授权完成一次MX/V2测量。91原始域名字符串归一为90唯一域名，MX正常32、NXDOMAIN51、无路由7、DNS错误0。V2/SAFE均1，1085通过；冻结0变更，邮件/计划/授权/调度变更均0。调度继续暂停。
+- English: Completed one explicitly authorized MX/V2 measurement. 91 raw domain strings normalize to 90 unique domains: 32 OK, 51 NXDOMAIN, 7 no route, 0 DNS errors. V2/SAFE both equal one; lead 1085 passes. Zero frozen, mail, plan, authorization or scheduler changes. Scheduling remains held.
