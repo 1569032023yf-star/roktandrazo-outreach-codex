@@ -400,9 +400,12 @@ def stage_inventory(run_id: str, business_date: str, dry_run: bool):
             a0 = len(get_sendable_leads(limit=target + 1, conn=conn))
             broad = _count_broad_ready_pool()
             safe = _count_safe_ready_pool(conn)
+            planned = conn.execute("SELECT COUNT(*) FROM final_send_plan WHERE status='planned'").fetchone()[0]
         finally:
             conn.close()
         return {'strict_a0': a0, 'broad_ready': broad, 'safe_ready_unique_orgs': safe,
+                'BROAD_READY': broad, 'READ_ONLY_V2_SAFE_UNIQUE_ORGS': safe,
+                'MATERIALIZED_FSP_PLANNED': planned,
                 'target': target, 'gap': max(0, target - safe)}
     set_execution_mode('inventory_recovery')
     update_job_run(run_id, current_step='inventory_start', target=target)
@@ -419,24 +422,44 @@ def stage_inventory(run_id: str, business_date: str, dry_run: bool):
             return False
         conn = get_db()
         try:
+            safe = _count_safe_ready_pool(conn)
+            broad = _count_broad_ready_pool()
+            planned = conn.execute("SELECT COUNT(*) FROM final_send_plan WHERE status='planned'").fetchone()[0]
+            log(f"BROAD_READY={broad}; READ_ONLY_V2_SAFE_UNIQUE_ORGS={safe}; MATERIALIZED_FSP_PLANNED={planned}")
+            if safe >= target:
+                finish_job_run(run_id, 'completed', actual=safe, gap=0, stop_reason='target_met')
+                return True
             with conn:
                 seed_default_queue(conn)
                 city = activate_next_city(conn, state=active_state)
-            log(f"Active city: {city['city']}, {city['state']}; existing linked backlog only")
+            log(f"Active city: {city['city']}, {city['state']}; new discovery then linked backlog")
             service = DiscoveryService(conn)
-            # Reuse both canonical lane limits; no new discovery or unlinked processing
-            # during this intentionally narrow linked-backlog release.
+            resolver = ProviderWebsiteResolver(service.provider)
+            # Keep the deployed safe new-merchant lanes. Existing linked rows use
+            # the guarded backlog lane, never the normal lane as a safety bypass.
+            with conn:
+                discovered = service.run_places_batch(city, max_pages=max(1, int(os.getenv('WORKBUDDY_DISCOVERY_MAX_PAGES', '1'))))
+            log(f"NEW_DISCOVERY_PATH_EXECUTED=true; DISCOVERY_RESULTS_SEEN={discovered.results_seen}; NEW_UNIQUE_PLACES={discovered.new_unique_places}")
+            with conn:
+                websites = service.run_website_resolution(city, resolver,
+                    max_results=max(1, int(os.getenv('WORKBUDDY_WEBSITE_RESOLUTION_MAX', '20'))), unlinked_only=True)
+            log(f"WEBSITE_RESOLUTION_PROCESSED={websites.results_seen}")
+            with conn:
+                processed = service.run_staging_postprocess(city,
+                    max_results=max(1, int(os.getenv('WORKBUDDY_STAGING_POSTPROCESS_MAX', '20'))), unlinked_only=True)
+            log(f"NORMAL_STAGING_POSTPROCESS_PROCESSED={processed.results_seen}")
             limit = min(20, max(0, int(os.getenv('WORKBUDDY_WEBSITE_RESOLUTION_MAX', '20'))),
                         max(0, int(os.getenv('WORKBUDDY_STAGING_POSTPROCESS_MAX', '20'))))
             with conn:
-                summary = service.run_linked_backlog(city, ProviderWebsiteResolver(service.provider), max_results=limit)
-            log(f"Linked backlog: {summary}")
+                summary = service.run_linked_backlog(city, resolver, max_results=limit)
+            log(f"LINKED_BACKLOG_PATH_EXECUTED=true; Linked backlog: {summary}")
             safe = _count_safe_ready_pool(conn)
             broad = _count_broad_ready_pool()
             gap = max(0, target - safe)
             finish_job_run(run_id, 'completed' if gap == 0 else 'partial', actual=safe, gap=gap,
-                           stop_reason='' if gap == 0 else 'linked_backlog_budget_exhausted')
-            log(f"SAFE_READY_UNIQUE_ORGS={safe}/{target}; BroadReady={broad} (informational only)")
+                           stop_reason='target_met' if gap == 0 else 'safe_inventory_gap')
+            planned = conn.execute("SELECT COUNT(*) FROM final_send_plan WHERE status='planned'").fetchone()[0]
+            log(f"READ_ONLY_V2_SAFE_UNIQUE_ORGS={safe}/{target}; BROAD_READY={broad}; MATERIALIZED_FSP_PLANNED={planned}")
             return gap == 0
         finally:
             conn.close()

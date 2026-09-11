@@ -1,5 +1,13 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.1C — 2026-09-11
+
+- 恢复标准 Inventory 的有界新 Discovery、网站解析、安全后处理，再执行已关联积压；SAFE 达标提前跳过补库，BroadReady 仅展示。 / Restored bounded new discovery, website resolution and safe postprocess before linked backlog; skip replenishment when SAFE meets target, with BroadReady informational only.
+- 生产源仅两文件，新增正常通道 unlinked_only 过滤；保留 4A.1B 保护及166条未关联 lead 的延后范围。 / Only two production-source files; added normal-lane unlinked_only filtering while preserving 4A.1B safeguards and deferral of 166 unlinked leads.
+- 328测试及76子测试通过，冻结文件变化0。一次新鲜副本演练两条路径均执行，积压18/18，SAFE 1→1，新增证据0。 / 328 tests and 76 subtests passed, with zero frozen changes. One fresh-copy run executed both lanes, processed 18/18 backlog rows, retained SAFE 1→1 and created zero new evidence.
+- 新 Discovery 的 GBK 输出编码异常导致 scrape_error，并非证明无商户；未重复 Inventory，限制写入详细报告。 / New Discovery returned scrape_error due to GBK output encoding, not proof of absent merchants; Inventory was not repeated and the limitation is disclosed in the detailed report.
+- 未部署、未写生产、未发送邮件、未创建FSP/授权、未改变调度；仅提交开发代码与双语交接。 / No deployment, production writes, mail, FSP/authorization creation or scheduler changes; only development code and bilingual handoff are committed.
+
 ## Repository initialization — 2026-09-09 / 仓库初始化 — 2026-09-09
 
 ### 中文

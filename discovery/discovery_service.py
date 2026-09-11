@@ -259,6 +259,7 @@ class DiscoveryService:
         max_results: int = 20,
         fetcher: Any | None = None,
         staging_ids: list[int] | None = None,
+        unlinked_only: bool = False,
     ) -> DiscoveryRunSummary:
         """Process staged Places rows into A0, manual review, or contact-form pools."""
         city_id = int(city_row["id"])
@@ -267,9 +268,10 @@ class DiscoveryService:
         rows = self.conn.execute(
             f"""SELECT * FROM lead_discovery_results
                 WHERE active_city_id=? AND validation_status IN ({placeholders})
+                  AND (?=0 OR linked_lead_id IS NULL)
                 ORDER BY discovered_at ASC, id ASC
                 LIMIT ?""",
-            (city_id, *STAGING_POSTPROCESS_STATUSES, max(1, int(max_results or 20))),
+            (city_id, *STAGING_POSTPROCESS_STATUSES, int(unlinked_only), max(1, int(max_results or 20))),
         ).fetchall()
         if staging_ids is not None:
             rows = self._linked_retry_rows(city_row, staging_ids, require_website=True)
@@ -293,14 +295,15 @@ class DiscoveryService:
         return summary
 
     def run_website_resolution(self, city_row: dict, resolver: Any, max_results: int = 20,
-                               staging_ids: list[int] | None = None) -> DiscoveryRunSummary:
+                               staging_ids: list[int] | None = None, unlinked_only: bool = False) -> DiscoveryRunSummary:
         """Resolve missing official websites; directory/social URLs remain hints only."""
         rows = self.conn.execute(
             """SELECT * FROM lead_discovery_results
                WHERE active_city_id=? AND COALESCE(website,'')=''
                  AND validation_status IN ('website_lookup_pending','manual_review_needed')
+                 AND (?=0 OR linked_lead_id IS NULL)
                ORDER BY discovered_at,id LIMIT ?""",
-            (int(city_row["id"]), max(1, int(max_results))),
+            (int(city_row["id"]), int(unlinked_only), max(1, int(max_results))),
         ).fetchall()
         if staging_ids is not None:
             rows = self._linked_retry_rows(city_row, staging_ids, require_website=False)
