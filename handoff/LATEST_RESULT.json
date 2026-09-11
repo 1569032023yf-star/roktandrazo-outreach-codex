@@ -1,17 +1,18 @@
 {
   "PROJECT": "Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化",
   "CURRENT_PHASE": "PHASE 4A.1C / 新发现与已关联积压共存",
-  "STATUS": "ROUTING_VALIDATED_WITH_PROVIDER_LIMITATION / 路由验证通过，存在供应商演练限制",
+  "STATUS": "UTF8_REHEARSAL_PASS_AWAITING_PATCH_APPROVAL / UTF-8演练通过，等待补丁批准",
   "READY_FOR_PRODUCTION": false,
-  "CURRENT_BLOCKER": "Production approval required; SAFE 1/30; new Discovery acquisition unproven in this run due to GBK scrape_error / 生产需批准；SAFE为1/30；本次GBK抓取错误使新增商户获取未获证实",
+  "CURRENT_BLOCKER": "Explicit controlled production patch approval required; SAFE remains 3/30 / 受控生产补丁仍需明确批准；SAFE仍为3/30",
   "FULL_SUITE": "328 passed + 76 subtests; 0 failed, 0 errors / 328项及76子测试通过，失败与错误均0",
   "FROZEN_FILES_CHANGED": 0,
   "PRODUCTION_FILES_CHANGED": 0,
   "PRODUCTION_DB_WRITES": 0,
   "REAL_SMTP_CONNECTIONS": 0,
   "LATEST_REPORTS": [
-    "handoff/phases/PHASE4A1C_DISCOVERY_AND_BACKLOG.md",
-    "handoff/phases/PHASE4A1C_COPY_VALIDATION.json"
+    "handoff/phases/PHASE4A1C_UTF8_REHEARSAL.md",
+    "handoff/phases/PHASE4A1C_UTF8_REHEARSAL_RESULT.json",
+    "handoff/phases/PHASE4A1C_DISCOVERY_AND_BACKLOG.md"
   ],
-  "NEXT_ACTION": "Review the two-file routing patch with the GBK limitation; separately authorize any UTF-8 rehearsal; do not deploy or resume scheduling / 审查两文件路由补丁及GBK限制；UTF-8复验须另行授权；不部署、不恢复调度"
+  "NEXT_ACTION": "Review and explicitly approve the two-file controlled production patch; do not deploy or resume scheduling without authorization / 审查并明确批准两文件受控生产补丁；未经授权不部署、不恢复调度"
 }

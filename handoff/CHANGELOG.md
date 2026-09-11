@@ -1,5 +1,13 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.1C UTF-8 rehearsal — 2026-09-11 / UTF-8 演练 — 2026-09-11
+
+- 在精确提交 `7013b335ad4b1eec33cd559825ece7d5aaead70c` 上，以 `python -X utf8` 对新鲜生产数据库只读副本执行一次且仅一次标准 Inventory；代码未变。 / Ran exactly one canonical Inventory with `python -X utf8` on a fresh read-only-derived production database copy at exact commit `7013b335ad4b1eec33cd559825ece7d5aaead70c`; code was unchanged.
+- UTF-8 标志和输出编码确认成功，先前 U+274C/GBK 错误消失；provider 正常解析18/18条详情，新增唯一地点10。 / UTF-8 mode and stdout encoding were confirmed, eliminating the prior U+274C/GBK error; the provider normally parsed 18/18 details and found 10 new unique places.
+- 正常网站解析2、安全后处理6、积压20/20；新增可见第一方邮箱1、完整证据2，冻结V2 SAFE从1增至3。 / Normal website resolution processed two, safe postprocess six, and backlog 20/20; one visible first-party email and two full evidence records were added, with frozen-V2 SAFE increasing from 1 to 3.
+- Provider 状态 `paused_by_runtime_limit` 是单页有界执行后的正常暂停，错误为空；UTF-8 provider 演练通过。 / Provider status `paused_by_runtime_limit` is the expected bounded pause after one page, with an empty error; the UTF-8 provider rehearsal passed.
+- 生产文件/数据库、调度、SMTP、IMAP、FSP、授权和冻结文件变化均为0；未部署。 / Production files/database, scheduling, SMTP, IMAP, FSP, authorization and frozen-file changes were all zero; nothing was deployed.
+
 ## Phase 4A.1C — 2026-09-11
 
 - 恢复标准 Inventory 的有界新 Discovery、网站解析、安全后处理，再执行已关联积压；SAFE 达标提前跳过补库，BroadReady 仅展示。 / Restored bounded new discovery, website resolution and safe postprocess before linked backlog; skip replenishment when SAFE meets target, with BroadReady informational only.
