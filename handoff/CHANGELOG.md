@@ -1,5 +1,10 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.3 Lead Factory zero-yield fix / Lead Factory零产出修复 — 2026-09-16
+
+- 修复重复 Maps cursor 的两页无新增耗尽推进，并将已关联积压的无网站/无公开邮箱结果持久化为终态；发送、V2、MX与生产均未改变。 / Fixed two-empty-page Maps cursor progression and terminalized linked backlog no-website/no-public-email results; sending, V2, MX, and production were unchanged.
+- 定向测试20项及17子测试通过。生产副本网站解析演练超时，未声称40 SAFE产量，未部署。 / Targeted tests passed 20 plus 17 subtests. Production-copy website resolution timed out; no 40-SAFE yield was claimed and nothing was deployed.
+
 ## Phase 4A.2 MX-only selective proxy narrow fix — 2026-09-16 / 仅MX选择性代理窄修复 — 2026-09-16
 
 - 确认根因：MX Worker 请求使用默认 `urllib` opener，因而会继承进程级 `HTTP_PROXY`、`HTTPS_PROXY` 或 `ALL_PROXY`；该风险与非 MX HTTP 流量共享。 / Confirmed root cause: the MX Worker request used urllib's default opener and therefore inherited process-wide `HTTP_PROXY`, `HTTPS_PROXY`, or `ALL_PROXY`; the risk was shared with non-MX HTTP traffic.

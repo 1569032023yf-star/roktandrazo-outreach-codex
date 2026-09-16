@@ -233,7 +233,13 @@ class DiscoveryService:
             summary.duplicate_places += page_dup
             summary.next_page_cursor = page.next_page_cursor
             self._checkpoint_after_page(city_id, query_family, current_cursor, page, page_new, page_dup)
-            if not page.next_page_cursor:
+            # A provider cursor is only a continuation hint, not proof of new
+            # inventory.  Browser-backed providers can repeat a completed page
+            # while returning a non-empty cursor.  After two consecutive pages
+            # with no new place, complete this query family so the existing
+            # city/query state machine can advance normally.
+            exhausted_by_duplicates = self._query_consecutive_empty_pages(city_id, query_family) >= 2
+            if not page.next_page_cursor or exhausted_by_duplicates:
                 self._complete_query(city_id, query_family)
                 summary.status = "query_completed"
                 break
@@ -410,7 +416,7 @@ class DiscoveryService:
         eligible = [dict(r) for r in rows if self._linked_retry_allowed(dict(r), city_row)]
         selected = eligible[:limit]
         summary = {'eligible': len(eligible), 'processed': len(selected), 'website_processed': 0,
-                   'postprocess_processed': 0, 'existing_leads_linked': 0}
+                   'postprocess_processed': 0, 'existing_leads_linked': 0, 'terminalized': 0}
         for row in selected:
             payload = json.loads(row.get('raw_payload_json') or '{}')
             previous = payload.get('linked_backlog_retry', {})
@@ -427,6 +433,10 @@ class DiscoveryService:
                 summary['website_processed'] += web.results_seen
                 summary['postprocess_processed'] += post.results_seen
                 summary['existing_leads_linked'] += post.existing_leads_linked
+                terminal = self._linked_backlog_terminal_outcome(row['id'])
+                if terminal:
+                    self._terminalize_linked_backlog(row['id'], terminal)
+                    summary['terminalized'] += 1
             except Exception as exc:
                 self.conn.execute('ROLLBACK TO linked_retry_attempt')
                 summary['errors'] = summary.get('errors', 0) + 1
@@ -439,6 +449,40 @@ class DiscoveryService:
                 self.conn.execute('UPDATE lead_discovery_results SET linked_lead_id=? WHERE id=? AND linked_lead_id IS NULL',
                                   (row['linked_lead_id'], row['id']))
         return summary
+
+    def _linked_backlog_terminal_outcome(self, discovery_id: int) -> str:
+        """Return a durable existing-stage outcome, never for retryable failures."""
+        row = self.conn.execute(
+            """SELECT s.validation_status, s.rejection_reason, l.review_reason_code
+               FROM lead_discovery_results s JOIN leads l ON l.id=s.linked_lead_id
+               WHERE s.id=?""",
+            (discovery_id,),
+        ).fetchone()
+        if not row:
+            return ""
+        value = dict(row)
+        if str(value.get('rejection_reason') or '').startswith('website_resolution:not_found:'):
+            return 'website_not_found'
+        if (value.get('validation_status') == 'manual_review_needed'
+                and value.get('review_reason_code') == 'no_public_email_or_form'):
+            return 'no_public_email'
+        return ''
+
+    def _terminalize_linked_backlog(self, discovery_id: int, outcome: str) -> None:
+        """Advance a completed linked row in its existing staging-status field."""
+        row = self.conn.execute(
+            'SELECT raw_payload_json FROM lead_discovery_results WHERE id=?', (discovery_id,)
+        ).fetchone()
+        payload = _raw_payload({'raw_payload_json': row[0] if row else ''})
+        retry = dict(payload.get('linked_backlog_retry') or {})
+        retry.update({'terminal_outcome': outcome, 'terminal_at': utc_now()})
+        payload['linked_backlog_retry'] = retry
+        self.conn.execute(
+            """UPDATE lead_discovery_results
+               SET validation_status=?, raw_payload_json=?
+               WHERE id=?""",
+            (outcome, json.dumps(payload, sort_keys=True), discovery_id),
+        )
 
     def run_web_directory_probe(self, city_row: dict) -> str:
         page = self.provider.search_web_directories(city_row["city"], city_row["state"], city_row.get("active_query_family") or "", "")
@@ -1213,6 +1257,7 @@ class DiscoveryService:
                 query_family,
             ),
         )
+
         self.conn.execute(
             f"""UPDATE retail_city_queue
                 SET active_provider=?, active_source=?, active_query_family=?, page_cursor=?,
@@ -1234,6 +1279,15 @@ class DiscoveryService:
                 city_id,
             ),
         )
+
+    def _query_consecutive_empty_pages(self, city_id: int, query_family: str) -> int:
+        row = self.conn.execute(
+            """SELECT consecutive_pages_without_new_place
+               FROM lead_discovery_query_state
+               WHERE active_city_id=? AND provider=? AND query_family=?""",
+            (city_id, self.provider.provider_name, query_family),
+        ).fetchone()
+        return int(row[0] or 0) if row else 0
 
     def _complete_query(self, city_id: int, query_family: str) -> None:
         now = utc_now()

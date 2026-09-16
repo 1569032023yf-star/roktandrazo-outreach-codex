@@ -13,6 +13,7 @@ import bd_orchestrator
 from discovery.discovery_service import DiscoveryService
 from discovery.models import ProviderPage
 from discovery.providers.mock_provider import MockPlacesProvider
+from outreach_control import INVENTORY_TARGET
 from retail_city_queue import activate_next_city
 from tests.test_discovery_service import DiscoveryDb, MockFetcher, result
 from tests.schema_fixture import create_test_database
@@ -53,13 +54,13 @@ class DiscoveryCoexistenceTests(unittest.TestCase):
             self.assertEqual(calls,['run_places_batch','run_website_resolution','run_staging_postprocess','run_linked_backlog'])
             self.assertEqual(finish.call_args.args[1],'partial')
             self.assertEqual(finish.call_args.kwargs['stop_reason'],'safe_inventory_gap')
-            self.assertEqual(finish.call_args.kwargs['gap'],29)
+            self.assertEqual(finish.call_args.kwargs['gap'],INVENTORY_TARGET - 1)
             self.assertTrue(service.run_website_resolution.call_args.kwargs['unlinked_only'])
             self.assertTrue(service.run_staging_postprocess.call_args.kwargs['unlinked_only'])
 
     def test_safe_target_met_skips_all_replenishment(self):
         with DiscoveryDb() as conn:
-            outcome,calls,finish,constructor,_=self.canonical(conn,30)
+            outcome,calls,finish,constructor,_=self.canonical(conn,INVENTORY_TARGET)
             self.assertTrue(outcome)
             self.assertEqual(calls,[])
             constructor.assert_not_called()

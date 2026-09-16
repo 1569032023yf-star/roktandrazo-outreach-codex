@@ -5,6 +5,7 @@ from types import SimpleNamespace
 from unittest.mock import patch, Mock
 
 import bd_orchestrator
+from outreach_control import INVENTORY_TARGET
 from tests.test_discovery_service import DiscoveryDb, MockFetcher, result
 from tests import test_phase3d_existing_linkage as linkage
 
@@ -140,4 +141,4 @@ class LinkedBacklogTests(unittest.TestCase):
                 getdb.return_value.row_factory=sqlite3.Row
                 self.assertFalse(bd_orchestrator.stage_inventory('test','2026-09-10',False))
                 self.assertEqual(finish.call_args.args[1],'partial')
-                self.assertEqual(finish.call_args.kwargs['gap'],30)
+                self.assertEqual(finish.call_args.kwargs['gap'],INVENTORY_TARGET)

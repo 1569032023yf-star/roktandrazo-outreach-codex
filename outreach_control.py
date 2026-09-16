@@ -5,6 +5,7 @@ It is safe to import in tests and migration verification.
 """
 from __future__ import annotations
 
+import os
 from datetime import datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -22,7 +23,17 @@ FOLLOW_UP_MAX = 5
 # False = 生产 PreSend 不得创建任何 message_type='follow_up' 的 FSP。
 # 历史 follow-up 代码与数据全部保留，只是生产当前不使用。
 FOLLOW_UP_ENABLED = False
-INVENTORY_TARGET = 30  # weekday sendable orgs target
+def _configured_inventory_target() -> int:
+    """Return a safe-inventory target without changing the send quota."""
+    default = NEW_OUTREACH_TARGET + 10
+    try:
+        configured = int(os.getenv("SAFE_INVENTORY_TARGET", str(default)))
+    except ValueError:
+        configured = default
+    return max(NEW_OUTREACH_TARGET, configured)
+
+
+INVENTORY_TARGET = _configured_inventory_target()  # weekday safe-org target; default 50
 INVENTORY_WARNING_THRESHOLD = 20
 INVENTORY_CRITICAL_THRESHOLD = 10
 SEND_START = time(23, 0)
@@ -70,17 +81,18 @@ def outreach_batch_date(now: datetime | None = None) -> str:
 
 
 def inventory_target_for_date(business_date: str) -> int:
-    """Inventory 累积目标：工作日 30，周末（周六/周日）缓冲 60。
+    """Inventory target: configurable weekday safe-org target; weekend buffer is at least 60.
 
     business_date 是 Asia/Shanghai 业务日期（ISO 字符串），本地 naive date 的
     weekday() 即 Mon=0 … Sun=6。周末补库存缓冲，确保周一发送窗口有充足库存。
-    解析失败 fail-safe 回退到工作日目标 30。
+    解析失败 fail-safe 回退到工作日目标。This only controls replenishment;
+    NEW_OUTREACH_TARGET remains the frozen 40-recipient send quota.
     """
     try:
         d = datetime.fromisoformat(str(business_date)).date()
     except (ValueError, TypeError):
         return INVENTORY_TARGET
-    return 60 if d.weekday() >= 5 else INVENTORY_TARGET
+    return max(60, INVENTORY_TARGET) if d.weekday() >= 5 else INVENTORY_TARGET
 
 
 def may_start_smtp_request(now: datetime | None = None) -> bool:
