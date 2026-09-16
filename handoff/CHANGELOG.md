@@ -1,5 +1,12 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.2 MX-only selective proxy narrow fix — 2026-09-16 / 仅MX选择性代理窄修复 — 2026-09-16
+
+- 确认根因：MX Worker 请求使用默认 `urllib` opener，因而会继承进程级 `HTTP_PROXY`、`HTTPS_PROXY` 或 `ALL_PROXY`；该风险与非 MX HTTP 流量共享。 / Confirmed root cause: the MX Worker request used urllib's default opener and therefore inherited process-wide `HTTP_PROXY`, `HTTPS_PROXY`, or `ALL_PROXY`; the risk was shared with non-MX HTTP traffic.
+- 仅修改 `preflight_gate.py`：`query_mx` 现使用本地 opener；仅当配置 `BD_MX_HTTPS_PROXY` 时将它用于该 HTTPS Worker 请求，否则用空 `ProxyHandler` 直接连接并忽略全局代理。 / Changed only `preflight_gate.py`: `query_mx` now uses a local opener; it applies `BD_MX_HTTPS_PROXY` only to that HTTPS Worker request, or uses an empty `ProxyHandler` for direct traffic that ignores global proxies.
+- 未改变 V2/MX 状态语义、资格策略、授权、发送、数据库 schema 或调度。6项选择性路由测试与V2传输回归通过；全套为335通过及76子测试、0失败、0错误。 / V2/MX status semantics, eligibility policy, authorization, sending, database schema, and scheduling were unchanged. Six selective-routing tests and the V2 transport regression passed; the full suite reported 335 passed plus 76 subtests, with zero failures and errors.
+- 使用三个公开域名完成一次受控网络演练，显式设置冲突全局代理；MX Worker 三项均正常且仅使用 MX 专用代理。SMTP、IMAP、生产文件/数据库写入均为0；未部署。 / Completed one controlled network rehearsal over three public domains with deliberately conflicting global proxies; all three MX Worker results were normal and only the MX-specific proxy was used. SMTP, IMAP, production file/database writes were zero; nothing was deployed.
+
 ## Phase 4A.1C UTF-8 rehearsal — 2026-09-11 / UTF-8 演练 — 2026-09-11
 
 - 在精确提交 `7013b335ad4b1eec33cd559825ece7d5aaead70c` 上，以 `python -X utf8` 对新鲜生产数据库只读副本执行一次且仅一次标准 Inventory；代码未变。 / Ran exactly one canonical Inventory with `python -X utf8` on a fresh read-only-derived production database copy at exact commit `7013b335ad4b1eec33cd559825ece7d5aaead70c`; code was unchanged.

@@ -125,12 +125,28 @@ def _parse_ts(ts):
 
 # ── Worker MX 查询 ──────────────────────────────────────────
 
+def _mx_worker_opener(ctx):
+    """Build an MX-only opener without inheriting process-wide proxy state.
+
+    Worker MX routing is deliberately narrower than ordinary urllib traffic:
+    only an explicitly configured ``BD_MX_HTTPS_PROXY`` applies, and only to
+    this HTTPS Worker request.  An empty ProxyHandler is intentional: it
+    prevents urllib's default opener from consulting HTTP(S)_PROXY/ALL_PROXY.
+    """
+    proxy = (os.environ.get("BD_MX_HTTPS_PROXY") or "").strip()
+    proxies = {"https": proxy} if proxy else {}
+    return urllib.request.build_opener(
+        urllib.request.ProxyHandler(proxies),
+        urllib.request.HTTPSHandler(context=ctx),
+    )
+
 def query_mx(domain):
     """调用 Worker MX 端点查询域名 MX。
 
     返回 (mx_status, checked_at)。任何网络/解析异常都返回
     ('dns_error', <当前时间>)，绝不抛出。超时 10s。
-    注意：urllib 默认读取环境变量 HTTPS_PROXY（本机走 127.0.0.1:3213 代理）。
+    仅当 BD_MX_HTTPS_PROXY 明确配置时才使用该本地 request opener；
+    不继承进程级 HTTP_PROXY / HTTPS_PROXY / ALL_PROXY。
     """
     now_iso = datetime.now(ASIA_SH).isoformat()
     domain = (domain or "").strip().lower().rstrip("/")
@@ -151,7 +167,7 @@ def query_mx(domain):
             },
             method="POST",
         )
-        resp = urllib.request.urlopen(req, timeout=MX_TIMEOUT_SEC, context=ctx)
+        resp = _mx_worker_opener(ctx).open(req, timeout=MX_TIMEOUT_SEC)
         data = json.loads(resp.read().decode("utf-8", errors="replace"))
         worker_status = data.get("mx_status") or ""
         checked_at = data.get("checked_at") or now_iso

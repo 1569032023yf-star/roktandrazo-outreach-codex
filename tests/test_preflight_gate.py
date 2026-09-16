@@ -164,16 +164,20 @@ class PreflightGateTestCase(unittest.TestCase):
             {"domain": "example.com", "mx_status": "mx_pass", "checked_at": "2026-08-06T04:00:00Z"}
         ).encode()
         fake.status = 200
-        with mock.patch.object(g.urllib.request, "urlopen", return_value=fake) as m:
+        opener = mock.Mock()
+        opener.open.return_value = fake
+        with mock.patch.object(g.urllib.request, "build_opener", return_value=opener):
             status, ts = g.query_mx("Example.com")
         self.assertEqual(status, "ok")
-        self.assertTrue(m.called)
+        self.assertTrue(opener.open.called)
         # 请求体里域名应为小写
-        body = json.loads(m.call_args[0][0].data)
+        body = json.loads(opener.open.call_args[0][0].data)
         self.assertEqual(body["domain"], "example.com")
 
     def test_query_mx_network_error_returns_dns_error(self):
-        with mock.patch.object(g.urllib.request, "urlopen", side_effect=OSError("boom")), \
+        opener = mock.Mock()
+        opener.open.side_effect = OSError("boom")
+        with mock.patch.object(g.urllib.request, "build_opener", return_value=opener), \
              mock.patch.object(g, "_mx_via_dns", return_value=("dns_error", iso(NOW))):
             status, ts = g.query_mx("example.com")
         self.assertEqual(status, "dns_error")
@@ -184,8 +188,11 @@ class PreflightGateTestCase(unittest.TestCase):
         for worker, expected in cases.items():
             fake = mock.Mock()
             fake.read.return_value = json.dumps({"mx_status": worker}).encode()
-            with mock.patch.object(g.urllib.request, "urlopen", return_value=fake):
+            opener = mock.Mock()
+            opener.open.return_value = fake
+            with mock.patch.object(g.urllib.request, "build_opener", return_value=opener):
                 self.assertEqual(g.query_mx("x.com")[0], expected)
+
 
     # ── dns freshness ──────────────────────────────────────
     def test_dns_stale_cache_is_replaced_by_successful_live_refresh(self):
@@ -360,6 +367,70 @@ class PreflightGateTestCase(unittest.TestCase):
         self.assertFalse(res["pass"])
         self.assertTrue(res["smtp_blocked"])
         self.assertIn("planned_rows_present", res["blocks"])
+
+
+class MxSelectiveProxyRoutingTests(unittest.TestCase):
+    """MX Worker routing is local; all policy and non-MX traffic stay untouched."""
+
+    @staticmethod
+    def _success_opener():
+        response = mock.Mock()
+        response.read.return_value = json.dumps({"mx_status": "mx_pass"}).encode()
+        opener = mock.Mock()
+        opener.open.return_value = response
+        return opener
+
+    @staticmethod
+    def _proxy_handler(build_opener_mock):
+        return next(arg for arg in build_opener_mock.call_args.args
+                    if isinstance(arg, g.urllib.request.ProxyHandler))
+
+    def test_mx_worker_uses_configured_mx_proxy_only(self):
+        opener = self._success_opener()
+        with mock.patch.dict(os.environ, {"BD_MX_HTTPS_PROXY": "http://127.0.0.1:3213"}, clear=True), \
+             mock.patch.object(g.urllib.request, "build_opener", return_value=opener) as build:
+            self.assertEqual(g.query_mx("example.com")[0], "ok")
+        self.assertEqual(self._proxy_handler(build).proxies, {"https": "http://127.0.0.1:3213"})
+
+    def test_mx_proxy_overrides_global_https_proxy(self):
+        opener = self._success_opener()
+        with mock.patch.dict(os.environ, {
+            "HTTPS_PROXY": "http://some-other-proxy:9999",
+            "BD_MX_HTTPS_PROXY": "http://127.0.0.1:3213",
+        }, clear=True), mock.patch.object(g.urllib.request, "build_opener", return_value=opener) as build:
+            self.assertEqual(g.query_mx("example.com")[0], "ok")
+        self.assertEqual(self._proxy_handler(build).proxies, {"https": "http://127.0.0.1:3213"})
+
+    def test_mx_does_not_inherit_global_proxy_when_config_absent(self):
+        opener = self._success_opener()
+        with mock.patch.dict(os.environ, {"HTTPS_PROXY": "http://some-other-proxy:9999"}, clear=True), \
+             mock.patch.object(g.urllib.request, "build_opener", return_value=opener) as build:
+            self.assertEqual(g.query_mx("example.com")[0], "ok")
+        self.assertEqual(self._proxy_handler(build).proxies, {})
+
+    def test_mx_proxy_does_not_modify_unrelated_urllib_routing(self):
+        original_urlopen = g.urllib.request.urlopen
+        with mock.patch.dict(os.environ, {"BD_MX_HTTPS_PROXY": "http://127.0.0.1:3213"}, clear=True):
+            # urllib may enumerate the custom variable, but it is not a standard HTTPS proxy key.
+            self.assertNotIn("https", g.urllib.request.getproxies_environment())
+            opener = self._success_opener()
+            with mock.patch.object(g.urllib.request, "build_opener", return_value=opener):
+                self.assertEqual(g.query_mx("example.com")[0], "ok")
+            self.assertIs(g.urllib.request.urlopen, original_urlopen)
+
+    def test_proxy_error_keeps_existing_fail_closed_fallback(self):
+        opener = mock.Mock()
+        opener.open.side_effect = OSError("proxy unavailable")
+        with mock.patch.dict(os.environ, {"BD_MX_HTTPS_PROXY": "http://127.0.0.1:3213"}, clear=True), \
+             mock.patch.object(g.urllib.request, "build_opener", return_value=opener), \
+             mock.patch.object(g, "_mx_via_dns", return_value=("dns_error", iso(NOW))):
+            self.assertEqual(g.query_mx("example.com")[0], "dns_error")
+
+    def test_valid_mocked_worker_pass_remains_ok(self):
+        opener = self._success_opener()
+        with mock.patch.dict(os.environ, {}, clear=True), \
+             mock.patch.object(g.urllib.request, "build_opener", return_value=opener):
+            self.assertEqual(g.query_mx("example.com")[0], "ok")
 
 
 if __name__ == "__main__":
