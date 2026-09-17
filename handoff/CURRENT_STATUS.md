@@ -1,12 +1,12 @@
 PROJECT = Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化
-CURRENT_PHASE = PHASE 4A.3G / BrowserMaps 子进程生命周期窄修复
-STATUS = LIFECYCLE_FIX_VALIDATED_AWAITING_FINAL_THROUGHPUT_REHEARSAL / 生命周期修复已验证，等待最终吞吐演练
+CURRENT_PHASE = PHASE 4A.3H / 最终生产副本 Lead Factory 吞吐验收
+STATUS = COMPLETED_NOT_ACCEPTED_ZERO_WEBSITE_RESOLUTION_YIELD / 已完成但未验收：官网解析产出为零
 READY_FOR_PRODUCTION = false
-CURRENT_BLOCKER = No code blocker; final production-copy throughput rehearsal requires separate explicit authorization / 无代码阻塞；最终生产副本吞吐演练需要单独明确授权
+CURRENT_BLOCKER = WEBSITE_RESOLUTION_LOW_SUCCESS: 0/11 resolved; 6 bounded timeouts and 5 not-found, so no email/evidence/SAFE growth / 网站解析低成功率：11次中0成功，6次有界超时、5次未找到，因此无邮箱、证据或SAFE增长
 FULL_SUITE = 341 passed + 76 subtests; 0 failed, 0 errors / 341项及76子测试通过，失败与错误均0
 FROZEN_FILES_CHANGED = 1 (authorized routing-only preflight_gate.py; V2 policy unchanged) / 1（已授权，仅preflight_gate.py路由变化；V2策略未变）
 PRODUCTION_FILES_CHANGED = 0
 PRODUCTION_DB_WRITES = 0
 REAL_SMTP_CONNECTIONS = 0
-LATEST_REPORTS = handoff/phases/PHASE4A3G_BROWSERMAPS_LIFECYCLE_FIX.md, handoff/phases/PHASE4A3F_BROWSER_MAPS_PARITY_THROUGHPUT.md
-NEXT_ACTION = Await separate explicit authorization for one final production-copy BrowserMaps throughput rehearsal; do not deploy or resume scheduling / 等待单独明确授权后进行一次最终生产副本 BrowserMaps 吞吐演练；不得部署或恢复调度
+LATEST_REPORTS = handoff/phases/PHASE4A3H_FINAL_THROUGHPUT.md, handoff/phases/PHASE4A3G_BROWSERMAPS_LIFECYCLE_FIX.md
+NEXT_ACTION = Stop; obtain explicit direction for the measured website-resolution low-success blocker; do not deploy or resume scheduling / 停止；等待针对实测网站解析低成功率阻塞点的明确指示；不得部署或恢复调度

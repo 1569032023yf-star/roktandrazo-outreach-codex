@@ -1,5 +1,12 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.3H final production-copy throughput acceptance / 最终生产副本吞吐验收 — 2026-09-17
+
+- 在新鲜 SQLite 在线备份副本上完成一次且仅一次 BrowserMaps direct 标准 Inventory；来源生产库只读，`integrity_check=ok`，生产写入、SMTP、IMAP、生产 FSP/授权和调度变更均为0。 / Completed exactly one BrowserMaps-direct canonical Inventory on a fresh SQLite online-backup copy; the production source was read-only, `integrity_check=ok`, and production writes, SMTP, IMAP, production FSP/authorization and scheduler changes were all zero.
+- Maps 读取8条但新增唯一地点0；18条可重试 linked backlog 全部处理，11次官网解析中0成功、6次在约45秒有界超时、5次官网未找到，后续记录继续处理，9条终态化。 / Maps read eight results but added zero unique places; all 18 retryable linked-backlog rows were processed. Of 11 website resolutions, zero succeeded, six timed out at about 45 seconds and five found no website; later rows continued and nine were terminalized.
+- 新可见第一方邮箱、完整证据、V2 eligible、只读 SAFE 与计划 FSP 增量均为0；低于40时未运行 FSP/授权模拟。生命周期守卫活跃，运行后专用 Playwright/BrowserMaps 进程为0。 / New visible first-party emails, full evidence, V2 eligible results, read-only SAFE and planned FSP growth were all zero; no FSP/authorization simulation ran below 40. The lifecycle guard was active, with zero dedicated Playwright/BrowserMaps processes after the run.
+- 结论：吞吐未获证明，不能准备受控生产补丁；真实主阻塞为 `WEBSITE_RESOLUTION_LOW_SUCCESS`，而非 V2/MX、发送或孤儿进程。遥测 JSON 在运行完成后因本地集合序列化失败，p50/p95明确记录为未捕获；未重跑网络或 Inventory。 / Decision: throughput is not proven and the controlled production patch is not ready; the real blocker is `WEBSITE_RESOLUTION_LOW_SUCCESS`, not V2/MX, sending or process orphans. The telemetry JSON failed after completion because of a local set-serialization issue, so p50/p95 are explicitly not captured; no network or Inventory was rerun.
+
 ## Phase 4A.3G BrowserMaps child lifecycle narrow fix / BrowserMaps 子进程生命周期窄修复 — 2026-09-17
 
 - 单次生产等价诊断确认有效超时为45秒，`join(timeout)` 正常返回且 Python 子进程可终止；根因是 Playwright Node 与 Chromium 后代在 Python 子进程终止后仍存活。 / A single production-parity diagnosis confirmed the effective timeout is 45 seconds, `join(timeout)` returns, and the Python child terminates; the root cause is surviving Playwright Node and Chromium descendants.
