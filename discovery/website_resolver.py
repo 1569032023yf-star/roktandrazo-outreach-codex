@@ -2,7 +2,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import multiprocessing
+import os
 import re
+import time
 from typing import Any
 from urllib.parse import urlsplit, urlunsplit
 
@@ -63,13 +66,47 @@ def score_candidate(subject: dict[str, Any], candidate: Any) -> tuple[int, list[
 
 
 class ProviderWebsiteResolver:
-    def __init__(self, provider, minimum_score: int = 80) -> None:
+    def __init__(self, provider, minimum_score: int = 80, timeout_seconds: float | None = None) -> None:
         self.provider = provider
         self.minimum_score = minimum_score
+        self.timeout_seconds = timeout_seconds if timeout_seconds is not None else float(os.getenv("WEBSITE_RESOLUTION_TIMEOUT_SECONDS", "45"))
+
+    @staticmethod
+    def _provider_call(provider, query, city, state, result_pipe):
+        try:
+            result_pipe.send(("ok", provider.search_places(query, city, state, "", 10)))
+        except BaseException as exc:
+            result_pipe.send(("error", f"{type(exc).__name__}:{exc}"))
+        finally:
+            result_pipe.close()
+
+    def _bounded_search(self, query: str, city: str, state: str):
+        """Run one provider lookup with a hard, cleaned-up deadline."""
+        parent, child = multiprocessing.Pipe(duplex=False)
+        process = multiprocessing.get_context("spawn").Process(
+            target=self._provider_call, args=(self.provider, query, city, state, child), daemon=False,
+        )
+        started = time.monotonic()
+        process.start(); child.close()
+        process.join(max(0.1, self.timeout_seconds))
+        elapsed_ms = int((time.monotonic() - started) * 1000)
+        if process.is_alive():
+            process.terminate(); process.join(5)
+            parent.close()
+            return None, WebsiteResolution("network_retry", error=f"provider_timeout:{elapsed_ms}ms"), elapsed_ms
+        if not parent.poll():
+            parent.close()
+            return None, WebsiteResolution("network_retry", error="provider_process_no_result"), elapsed_ms
+        kind, value = parent.recv(); parent.close()
+        if kind != "ok":
+            return None, WebsiteResolution("network_retry", error=value), elapsed_ms
+        return value, None, elapsed_ms
 
     def resolve(self, subject: dict[str, Any]) -> WebsiteResolution:
         query = " ".join(filter(None, [subject.get("business_name"), subject.get("formatted_address"), subject.get("phone")]))
-        page = self.provider.search_places(query, subject.get("city") or "", subject.get("state") or "", "", 10)
+        page, failure, _elapsed_ms = self._bounded_search(query, subject.get("city") or "", subject.get("state") or "")
+        if failure:
+            return failure
         if not page.ok:
             return WebsiteResolution("network_retry", error=page.error or page.status)
         ranked = []
