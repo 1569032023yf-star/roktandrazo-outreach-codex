@@ -1,12 +1,12 @@
 PROJECT = Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化
-CURRENT_PHASE = PHASE 4A.3B / 网站解析吞吐阻塞修复
-STATUS = FULL_SUITE_PASS_AWAITING_MEASURED_COPY_REHEARSAL / 全套测试通过，等待有测量的副本演练
+CURRENT_PHASE = PHASE 4A.3C / 生产副本吞吐实测
+STATUS = NETWORK_GUARDRAIL_PROVEN_PROVIDER_CONFIG_BLOCKED / 网络护栏已证实，provider配置受阻
 READY_FOR_PRODUCTION = false
-CURRENT_BLOCKER = Measured bounded-throughput rehearsal on a production DB copy remains required; no 40-SAFE claim / 仍需生产数据库副本的有测量有界吞吐演练；不能声称40 SAFE
+CURRENT_BLOCKER = GOOGLE_MAPS_API_KEY is not configured for website resolver; throughput cannot create SAFE inventory / 网站解析器未配置GOOGLE_MAPS_API_KEY，无法产生SAFE库存
 FULL_SUITE = 339 passed + 76 subtests; 0 failed, 0 errors / 339项及76子测试通过，失败与错误均0
 FROZEN_FILES_CHANGED = 1 (authorized routing-only preflight_gate.py; V2 policy unchanged) / 1（已授权，仅preflight_gate.py路由变化；V2策略未变）
 PRODUCTION_FILES_CHANGED = 0
 PRODUCTION_DB_WRITES = 0
 REAL_SMTP_CONNECTIONS = 0
-LATEST_REPORTS = handoff/phases/PHASE4A3_LEAD_FACTORY_ZERO_YIELD.md, handoff/phases/PHASE4A2_MX_SELECTIVE_PROXY.md
-NEXT_ACTION = Diagnose bounded website-resolution timeout before any controlled production patch; do not deploy or resume scheduling / 在任何受控生产补丁前诊断有界网站解析超时；不要部署或恢复调度
+LATEST_REPORTS = handoff/phases/PHASE4A3C_MEASURED_THROUGHPUT.md, handoff/phases/PHASE4A3B_WEBSITE_RESOLUTION_THROUGHPUT.md, handoff/phases/PHASE4A3_LEAD_FACTORY_ZERO_YIELD.md
+NEXT_ACTION = Obtain explicit authorization to configure or verify the Maps provider credential, then rerun only the production-copy throughput measurement; do not deploy or resume scheduling / 获得明确授权后配置或验证 Maps Provider 凭据，再仅重跑生产库副本吞吐测量；不得部署或恢复调度

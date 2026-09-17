@@ -1,17 +1,18 @@
 {
   "PROJECT": "Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化",
-  "CURRENT_PHASE": "PHASE 4A.3 / Lead Factory零产出窄修复",
-  "STATUS": "DEVELOPMENT_FIX_VALIDATED_NETWORK_YIELD_BLOCKED / 开发修复验证通过，网络产量受阻",
+  "CURRENT_PHASE": "PHASE 4A.3C / Measured production-copy throughput acceptance / 生产副本吞吐实测验收",
+  "STATUS": "NETWORK_GUARDRAIL_PROVEN_PROVIDER_CONFIG_BLOCKED / 网络护栏已证实，Provider 配置受阻",
   "READY_FOR_PRODUCTION": false,
-  "CURRENT_BLOCKER": "Bounded production-copy website resolution exceeded the controlled timeout; no 40-SAFE yield claim is available / 有界生产副本网站解析超过受控时限；不能声称达到40 SAFE产量",
-  "FULL_SUITE": "337 passed + 76 subtests before stale assertions were corrected; final targeted suite 20 passed + 17 subtests / 修正过期断言前337项及76子测试；最终定向测试20项及17子测试通过",
+  "CURRENT_BLOCKER": "GOOGLE_MAPS_API_KEY is not configured for website resolver; all 11 required external resolutions returned retryable configuration failures. / 网站解析器未配置 GOOGLE_MAPS_API_KEY；11 个需外部解析的条目均返回可重试配置失败。",
+  "FULL_SUITE": "339 passed, 76 subtests passed; 0 failed, 0 errors / 339 项测试与 76 个子测试通过；0 失败，0 错误",
   "FROZEN_FILES_CHANGED": "1 (authorized routing-only preflight_gate.py; V2 policy unchanged) / 1（已授权，仅preflight_gate.py路由变化；V2策略未变）",
   "PRODUCTION_FILES_CHANGED": 0,
   "PRODUCTION_DB_WRITES": 0,
   "REAL_SMTP_CONNECTIONS": 0,
   "LATEST_REPORTS": [
-    "handoff/phases/PHASE4A3_LEAD_FACTORY_ZERO_YIELD.md",
-    "handoff/phases/PHASE4A2_MX_SELECTIVE_PROXY.md"
+    "handoff/phases/PHASE4A3C_MEASURED_THROUGHPUT.md",
+    "handoff/phases/PHASE4A3B_WEBSITE_RESOLUTION_THROUGHPUT.md",
+    "handoff/phases/PHASE4A3_LEAD_FACTORY_ZERO_YIELD.md"
   ],
-  "NEXT_ACTION": "Diagnose bounded website-resolution timeout before any controlled production patch; do not deploy or resume scheduling / 在任何受控生产补丁前诊断有界网站解析超时；不要部署或恢复调度"
+  "NEXT_ACTION": "Obtain explicit authorization to configure or verify the Maps provider credential, then rerun only the production-copy throughput measurement; do not deploy or resume scheduling. / 获得明确授权后配置或验证 Maps Provider 凭据，再仅重跑生产库副本吞吐测量；不得部署或恢复调度。"
 }

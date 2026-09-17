@@ -1,5 +1,11 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.3C measured production-copy throughput / 生产副本吞吐实测 — 2026-09-17
+
+- 发布既有的生产副本测量结果，未重新执行 Discovery 或联网演练。 / Published the existing production-copy measurement without rerunning discovery or the network rehearsal.
+- 批处理护栏已证实：18 条可重试积压均被处理，11 次外部解析配置失败后均继续处理下一条线索。 / The batch guardrail is proven: all 18 retryable backlog rows were processed, and each of the 11 external-resolution configuration failures continued to the next lead.
+- `GOOGLE_MAPS_API_KEY` 未配置，属于 Provider 配置阻塞，并非超时、DNS/TLS 或 V2/MX 策略失败；因此尚未具备受控生产补丁条件。 / `GOOGLE_MAPS_API_KEY` is not configured. This is a Provider configuration blocker—not a timeout, DNS/TLS, or V2/MX policy failure—so the controlled production patch is not ready.
+
 ## Phase 4A.3 Lead Factory zero-yield fix / Lead Factory零产出修复 — 2026-09-16
 
 - 修复重复 Maps cursor 的两页无新增耗尽推进，并将已关联积压的无网站/无公开邮箱结果持久化为终态；发送、V2、MX与生产均未改变。 / Fixed two-empty-page Maps cursor progression and terminalized linked backlog no-website/no-public-email results; sending, V2, MX, and production were unchanged.
