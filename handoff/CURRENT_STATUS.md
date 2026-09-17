@@ -1,12 +1,12 @@
 PROJECT = Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化
-CURRENT_PHASE = PHASE 4A.3C / 生产副本吞吐实测
-STATUS = NETWORK_GUARDRAIL_PROVEN_PROVIDER_CONFIG_BLOCKED / 网络护栏已证实，provider配置受阻
+CURRENT_PHASE = PHASE 4A.3F / BrowserMaps 生产等价吞吐验收
+STATUS = BROWSERMAPS_PROCESS_LIFECYCLE_BLOCKED / BrowserMaps 子进程生命周期受阻
 READY_FOR_PRODUCTION = false
-CURRENT_BLOCKER = GOOGLE_MAPS_API_KEY is not configured for website resolver; throughput cannot create SAFE inventory / 网站解析器未配置GOOGLE_MAPS_API_KEY，无法产生SAFE库存
+CURRENT_BLOCKER = BrowserMaps direct website-resolution child remained alive beyond its finite timeout and stopped the only canonical development-copy Inventory rehearsal / BrowserMaps direct 网站解析子进程超过有限时限仍存活，阻断唯一的标准开发副本 Inventory 演练
 FULL_SUITE = 339 passed + 76 subtests; 0 failed, 0 errors / 339项及76子测试通过，失败与错误均0
 FROZEN_FILES_CHANGED = 1 (authorized routing-only preflight_gate.py; V2 policy unchanged) / 1（已授权，仅preflight_gate.py路由变化；V2策略未变）
 PRODUCTION_FILES_CHANGED = 0
 PRODUCTION_DB_WRITES = 0
 REAL_SMTP_CONNECTIONS = 0
-LATEST_REPORTS = handoff/phases/PHASE4A3C_MEASURED_THROUGHPUT.md, handoff/phases/PHASE4A3B_WEBSITE_RESOLUTION_THROUGHPUT.md, handoff/phases/PHASE4A3_LEAD_FACTORY_ZERO_YIELD.md
-NEXT_ACTION = Obtain explicit authorization to configure or verify the Maps provider credential, then rerun only the production-copy throughput measurement; do not deploy or resume scheduling / 获得明确授权后配置或验证 Maps Provider 凭据，再仅重跑生产库副本吞吐测量；不得部署或恢复调度
+LATEST_REPORTS = handoff/phases/PHASE4A3F_BROWSER_MAPS_PARITY_THROUGHPUT.md, handoff/phases/PHASE4A3C_MEASURED_THROUGHPUT.md, handoff/phases/PHASE4A3B_WEBSITE_RESOLUTION_THROUGHPUT.md
+NEXT_ACTION = Inspect the specific BrowserMaps child-process timeout/lifecycle behavior under explicit authorization before any further production-copy rehearsal; do not deploy or resume scheduling / 获得明确授权后检查特定 BrowserMaps 子进程超时/生命周期行为，再进行任何生产副本演练；不得部署或恢复调度

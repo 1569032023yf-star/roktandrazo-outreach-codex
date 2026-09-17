@@ -1,5 +1,11 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.3F BrowserMaps production-parity throughput / BrowserMaps 生产等价吞吐 — 2026-09-17
+
+- 使用 BrowserMaps direct、已安装的 Playwright/Chromium 和生产抓取代理路由，对新鲜生产数据库副本进行唯一一次受控标准 Inventory 演练；未使用 Google Places。 / Ran the one controlled canonical Inventory rehearsal on a fresh production database copy with BrowserMaps direct, installed Playwright/Chromium, and the production scraper-proxy route; Google Places was not used.
+- BrowserMaps 网站解析子进程超过八分钟仍存活，未能遵守现有有限单次时限，因此受控停止开发演练；未运行第二次 Inventory，所有未完成的吞吐/Safe 指标均记录为 `NOT_RUN`。 / A BrowserMaps website-resolution child remained alive for more than eight minutes and did not honor the existing finite per-attempt limit, so the development rehearsal was stopped; no second Inventory was run and incomplete throughput/SAFE metrics are recorded as `NOT_RUN`.
+- 未写生产数据库或文件，SMTP、IMAP、生产 FSP/授权均为 0；该子进程生命周期问题是下一项具体 blocker，尚未准备受控生产补丁。 / No production database or file writes occurred; SMTP, IMAP, production FSP, and authorization were all zero. The child-process lifecycle issue is the next specific blocker; the controlled production patch is not ready.
+
 ## Phase 4A.3C measured production-copy throughput / 生产副本吞吐实测 — 2026-09-17
 
 - 发布既有的生产副本测量结果，未重新执行 Discovery 或联网演练。 / Published the existing production-copy measurement without rerunning discovery or the network rehearsal.
