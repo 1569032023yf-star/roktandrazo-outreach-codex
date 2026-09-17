@@ -1,5 +1,11 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.3I website-resolver yield diagnosis / 网站解析器产出诊断 — 2026-09-17
+
+- 静态审计确认 resolver 固定传入候选限制10，BrowserMaps会逐一打开最多10个详情页；最坏情况下无法可靠地完成45秒 deadline。但三条已知正样本控制不支持将候选扇出断言为主根因。 / Static audit confirms that the resolver passes candidate limit 10 and BrowserMaps opens up to ten detail pages; this cannot reliably fit the 45-second deadline in the worst case. However, three known-positive controls do not support asserting candidate fan-out as the primary cause.
+- limit 1/3/10 的完整预期域名成功数分别为0/3、0/3和1/3。11条原4A.3H cohort 在候选生成前全部成为network_retry：8次resolver deadline、1次页面导航超时、2次socket错误；解析成功、真实未找到官网和identity review均为0。 / Fully resolved expected-domain successes at limits 1/3/10 were 0/3, 0/3 and 1/3. All eleven original 4A.3H cohort cases became network retries before candidate collection: eight resolver deadlines, one page-navigation timeout and two socket errors; resolved, genuine no-website and identity-review counts were all zero.
+- 未修改源码或生产文件；生命周期定向测试2通过，完整套件341通过及76子测试、失败/错误均0。BrowserMaps/Playwright专用残留进程为0。最终Inventory演练仍未获准。 / No source or production files changed; two targeted lifecycle tests passed and the full suite passed 341 plus 76 subtests with zero failures/errors. Dedicated BrowserMaps/Playwright residual processes were zero. The final Inventory rehearsal remains unapproved.
+
 ## Phase 4A.3H final production-copy throughput acceptance / 最终生产副本吞吐验收 — 2026-09-17
 
 - 在新鲜 SQLite 在线备份副本上完成一次且仅一次 BrowserMaps direct 标准 Inventory；来源生产库只读，`integrity_check=ok`，生产写入、SMTP、IMAP、生产 FSP/授权和调度变更均为0。 / Completed exactly one BrowserMaps-direct canonical Inventory on a fresh SQLite online-backup copy; the production source was read-only, `integrity_check=ok`, and production writes, SMTP, IMAP, production FSP/authorization and scheduler changes were all zero.

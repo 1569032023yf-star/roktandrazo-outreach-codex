@@ -1,12 +1,12 @@
 PROJECT = Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化
-CURRENT_PHASE = PHASE 4A.3H / 最终生产副本 Lead Factory 吞吐验收
-STATUS = COMPLETED_NOT_ACCEPTED_ZERO_WEBSITE_RESOLUTION_YIELD / 已完成但未验收：官网解析产出为零
+CURRENT_PHASE = PHASE 4A.3I / 网站解析器产出诊断
+STATUS = DIAGNOSED_NOT_READY_TRANSPORT_FAILURE_BEFORE_CANDIDATE_COLLECTION / 已诊断但未就绪：候选收集前发生传输失败
 READY_FOR_PRODUCTION = false
-CURRENT_BLOCKER = WEBSITE_RESOLUTION_LOW_SUCCESS: 0/11 resolved; 6 bounded timeouts and 5 not-found, so no email/evidence/SAFE growth / 网站解析低成功率：11次中0成功，6次有界超时、5次未找到，因此无邮箱、证据或SAFE增长
+CURRENT_BLOCKER = BrowserMaps direct transport/navigation fails before candidate collection: 11/11 cohort network_retry, so candidate-limit reduction is not evidence-supported / BrowserMaps direct 在候选收集前发生传输/导航失败：11/11 cohort为network_retry，因此没有证据支持降低候选限制
 FULL_SUITE = 341 passed + 76 subtests; 0 failed, 0 errors / 341项及76子测试通过，失败与错误均0
 FROZEN_FILES_CHANGED = 1 (authorized routing-only preflight_gate.py; V2 policy unchanged) / 1（已授权，仅preflight_gate.py路由变化；V2策略未变）
 PRODUCTION_FILES_CHANGED = 0
 PRODUCTION_DB_WRITES = 0
 REAL_SMTP_CONNECTIONS = 0
-LATEST_REPORTS = handoff/phases/PHASE4A3H_FINAL_THROUGHPUT.md, handoff/phases/PHASE4A3G_BROWSERMAPS_LIFECYCLE_FIX.md
-NEXT_ACTION = Stop; obtain explicit direction for the measured website-resolution low-success blocker; do not deploy or resume scheduling / 停止；等待针对实测网站解析低成功率阻塞点的明确指示；不得部署或恢复调度
+LATEST_REPORTS = handoff/phases/PHASE4A3I_WEBSITE_RESOLVER_YIELD.md, handoff/phases/PHASE4A3H_FINAL_THROUGHPUT.md
+NEXT_ACTION = Stop; obtain explicit authorization for a narrow BrowserMaps transport/navigation remedy before any final Inventory rehearsal; do not deploy or resume scheduling / 停止；在最终Inventory演练前，等待针对BrowserMaps传输/导航补救的明确授权；不得部署或恢复调度
