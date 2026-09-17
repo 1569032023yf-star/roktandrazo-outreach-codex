@@ -2,12 +2,86 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import ctypes
 import multiprocessing
 import os
 import re
 import time
 from typing import Any
 from urllib.parse import urlsplit, urlunsplit
+
+
+_JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000
+_JOB_OBJECT_EXTENDED_LIMIT_INFORMATION = 9
+_PROCESS_SET_QUOTA = 0x0100
+_PROCESS_TERMINATE = 0x0001
+
+
+def _attach_kill_on_close_job(pid: int):
+    """Attach a Windows child tree to a close-to-kill Job Object.
+
+    Playwright starts a Node driver and Chromium descendants.  Terminating only
+    the multiprocessing Python child leaves those descendants alive on Windows.
+    Closing this Job Object terminates every resolver-owned descendant too.
+    Non-Windows platforms retain their existing multiprocessing behavior.
+    """
+    if os.name != "nt":
+        return None
+    from ctypes import wintypes
+
+    class _BasicLimit(ctypes.Structure):
+        _fields_ = [
+            ("PerProcessUserTimeLimit", ctypes.c_longlong), ("PerJobUserTimeLimit", ctypes.c_longlong),
+            ("LimitFlags", wintypes.DWORD), ("MinimumWorkingSetSize", ctypes.c_size_t),
+            ("MaximumWorkingSetSize", ctypes.c_size_t), ("ActiveProcessLimit", wintypes.DWORD),
+            ("Affinity", ctypes.c_size_t), ("PriorityClass", wintypes.DWORD), ("SchedulingClass", wintypes.DWORD),
+        ]
+
+    class _IoCounters(ctypes.Structure):
+        _fields_ = [(name, ctypes.c_ulonglong) for name in (
+            "ReadOperationCount", "WriteOperationCount", "OtherOperationCount",
+            "ReadTransferCount", "WriteTransferCount", "OtherTransferCount",
+        )]
+
+    class _ExtendedLimit(ctypes.Structure):
+        _fields_ = [("BasicLimitInformation", _BasicLimit), ("IoInfo", _IoCounters),
+                   ("ProcessMemoryLimit", ctypes.c_size_t), ("JobMemoryLimit", ctypes.c_size_t),
+                   ("PeakProcessMemoryUsed", ctypes.c_size_t), ("PeakJobMemoryUsed", ctypes.c_size_t)]
+
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel32.CreateJobObjectW.argtypes = [ctypes.c_void_p, wintypes.LPCWSTR]
+    kernel32.CreateJobObjectW.restype = wintypes.HANDLE
+    kernel32.SetInformationJobObject.argtypes = [wintypes.HANDLE, ctypes.c_int, ctypes.c_void_p, wintypes.DWORD]
+    kernel32.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+    kernel32.OpenProcess.restype = wintypes.HANDLE
+    kernel32.AssignProcessToJobObject.argtypes = [wintypes.HANDLE, wintypes.HANDLE]
+    job = kernel32.CreateJobObjectW(None, None)
+    if not job:
+        return None
+    child = kernel32.OpenProcess(_PROCESS_SET_QUOTA | _PROCESS_TERMINATE, False, int(pid))
+    assigned = False
+    try:
+        if not child:
+            return None
+        limits = _ExtendedLimit()
+        limits.BasicLimitInformation.LimitFlags = _JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+        if not kernel32.SetInformationJobObject(job, _JOB_OBJECT_EXTENDED_LIMIT_INFORMATION,
+                                                 ctypes.byref(limits), ctypes.sizeof(limits)):
+            return None
+        if not kernel32.AssignProcessToJobObject(job, child):
+            return None
+        assigned = True
+        return job
+    finally:
+        if child:
+            kernel32.CloseHandle(child)
+        if job and not assigned:
+            kernel32.CloseHandle(job)
+
+
+def _close_kill_job(job) -> None:
+    if job:
+        ctypes.WinDLL("kernel32", use_last_error=True).CloseHandle(job)
 
 from discovery.normalizer import normalize_business_name, normalize_phone, normalized_domain
 
@@ -88,19 +162,25 @@ class ProviderWebsiteResolver:
         )
         started = time.monotonic()
         process.start(); child.close()
-        process.join(max(0.1, self.timeout_seconds))
-        elapsed_ms = int((time.monotonic() - started) * 1000)
-        if process.is_alive():
-            process.terminate(); process.join(5)
-            parent.close()
-            return None, WebsiteResolution("network_retry", error=f"provider_timeout:{elapsed_ms}ms"), elapsed_ms
-        if not parent.poll():
-            parent.close()
-            return None, WebsiteResolution("network_retry", error="provider_process_no_result"), elapsed_ms
-        kind, value = parent.recv(); parent.close()
-        if kind != "ok":
-            return None, WebsiteResolution("network_retry", error=value), elapsed_ms
-        return value, None, elapsed_ms
+        job = _attach_kill_on_close_job(process.pid)
+        try:
+            process.join(max(0.1, self.timeout_seconds))
+            elapsed_ms = int((time.monotonic() - started) * 1000)
+            if process.is_alive():
+                process.terminate(); process.join(5)
+                parent.close()
+                return None, WebsiteResolution("network_retry", error=f"provider_timeout:{elapsed_ms}ms"), elapsed_ms
+            if not parent.poll():
+                parent.close()
+                return None, WebsiteResolution("network_retry", error="provider_process_no_result"), elapsed_ms
+            kind, value = parent.recv(); parent.close()
+            if kind != "ok":
+                return None, WebsiteResolution("network_retry", error=value), elapsed_ms
+            return value, None, elapsed_ms
+        finally:
+            # On Windows, this kills the driver/browser tree even if the Python
+            # child has already exited or was terminated for a timeout.
+            _close_kill_job(job)
 
     def resolve(self, subject: dict[str, Any]) -> WebsiteResolution:
         query = " ".join(filter(None, [subject.get("business_name"), subject.get("formatted_address"), subject.get("phone")]))

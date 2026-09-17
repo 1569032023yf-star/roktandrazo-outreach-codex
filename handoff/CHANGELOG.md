@@ -1,5 +1,11 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.3G BrowserMaps child lifecycle narrow fix / BrowserMaps 子进程生命周期窄修复 — 2026-09-17
+
+- 单次生产等价诊断确认有效超时为45秒，`join(timeout)` 正常返回且 Python 子进程可终止；根因是 Playwright Node 与 Chromium 后代在 Python 子进程终止后仍存活。 / A single production-parity diagnosis confirmed the effective timeout is 45 seconds, `join(timeout)` returns, and the Python child terminates; the root cause is surviving Playwright Node and Chromium descendants.
+- 仅修改 `discovery/website_resolver.py`：Windows 子进程进入带 `KILL_ON_JOB_CLOSE` 的 Job Object，resolver 返回或超时时关闭 Job Object 并清理其后代。 / Changed only `discovery/website_resolver.py`: Windows children enter a `KILL_ON_JOB_CLOSE` Job Object, which is closed on resolver return or timeout to clean descendants.
+- 强制超时、超时后下一条线索和 BrowserMaps direct 单次真实解析均通过；真实尝试在45037ms返回，Playwright/Chromium 孤儿均为0。完整套件341通过及76子测试，0失败、0错误；未重跑完整 Inventory、未部署。 / Forced timeout, next-lead-after-timeout, and one real BrowserMaps direct attempt passed; the real attempt returned at 45037ms with zero Playwright/Chromium orphans. The full suite passed 341 plus 76 subtests, with zero failures and errors; no full Inventory was rerun and nothing was deployed.
+
 ## Phase 4A.3F BrowserMaps production-parity throughput / BrowserMaps 生产等价吞吐 — 2026-09-17
 
 - 使用 BrowserMaps direct、已安装的 Playwright/Chromium 和生产抓取代理路由，对新鲜生产数据库副本进行唯一一次受控标准 Inventory 演练；未使用 Google Places。 / Ran the one controlled canonical Inventory rehearsal on a fresh production database copy with BrowserMaps direct, installed Playwright/Chromium, and the production scraper-proxy route; Google Places was not used.
