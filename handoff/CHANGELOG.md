@@ -1,5 +1,11 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.3J existing Maps Place URL reuse diagnosis / 既有 Maps Place URL 复用诊断 — 2026-09-18
+
+- 在新鲜 SQLite 在线备份副本上仅审计固定 11 条 4A.3H/4A.3I cohort 并直达其既有 Maps Place URL；未搜索 Maps、未运行完整 Inventory、未写生产库或生产文件，SMTP/IMAP 均为0。 / On a fresh SQLite online-backup copy, audited only the fixed eleven-row 4A.3H/4A.3I cohort and navigated only its stored Maps Place URL; no Maps search or full Inventory ran, no production database/file was written, and SMTP/IMAP were both zero.
+- cohort 中仅1/11有精确 Google Maps Place URL，10/11为空；三个既有正样本控制项亦无可复用的发现来源 URL。唯一的直达详情页在9870ms加载，但返回 Google 所有的 `google.cn`，不接受为商户第一方官网。 / Only 1/11 cohort rows had an exact Google Maps Place URL and 10/11 were empty; the three existing positive controls also had no reusable discovery provenance URL. The sole direct detail page loaded in 9870ms but returned Google-owned `google.cn`, which is not accepted as a first-party merchant website.
+- 因未得到合法官网解析或正样本匹配，直达详情快速路径未获证明，未修改源码或生产补丁范围。定向生命周期测试2项通过；完整套件341项及76子测试通过，失败/错误均0；浏览器残留进程为0。 / Because no legitimate official-site resolution or known-positive match was obtained, the direct-detail fast path is not proven; no source or production-patch file was changed. Two targeted lifecycle tests passed; the full suite passed 341 plus 76 subtests with zero failures/errors; browser residual processes were zero.
+
 ## Phase 4A.3I website-resolver yield diagnosis / 网站解析器产出诊断 — 2026-09-17
 
 - 静态审计确认 resolver 固定传入候选限制10，BrowserMaps会逐一打开最多10个详情页；最坏情况下无法可靠地完成45秒 deadline。但三条已知正样本控制不支持将候选扇出断言为主根因。 / Static audit confirms that the resolver passes candidate limit 10 and BrowserMaps opens up to ten detail pages; this cannot reliably fit the 45-second deadline in the worst case. However, three known-positive controls do not support asserting candidate fan-out as the primary cause.

@@ -1,12 +1,12 @@
 PROJECT = Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化
-CURRENT_PHASE = PHASE 4A.3I / 网站解析器产出诊断
-STATUS = DIAGNOSED_NOT_READY_TRANSPORT_FAILURE_BEFORE_CANDIDATE_COLLECTION / 已诊断但未就绪：候选收集前发生传输失败
+CURRENT_PHASE = PHASE 4A.3J / 既有 Maps Place URL 复用诊断
+STATUS = SOURCE_URL_FAST_PATH_NOT_PROVEN / source_url 快速路径未获证明
 READY_FOR_PRODUCTION = false
-CURRENT_BLOCKER = BrowserMaps direct transport/navigation fails before candidate collection: 11/11 cohort network_retry, so candidate-limit reduction is not evidence-supported / BrowserMaps direct 在候选收集前发生传输/导航失败：11/11 cohort为network_retry，因此没有证据支持降低候选限制
+CURRENT_BLOCKER = 10/11 exact cohort rows lack a persisted Google Maps Place URL; the sole direct detail response returned a Google-owned domain, not a first-party merchant website / 11条固定cohort中10条未持久化 Google Maps Place URL；唯一直达详情响应返回 Google 所有域名，而非商户第一方官网
 FULL_SUITE = 341 passed + 76 subtests; 0 failed, 0 errors / 341项及76子测试通过，失败与错误均0
 FROZEN_FILES_CHANGED = 1 (authorized routing-only preflight_gate.py; V2 policy unchanged) / 1（已授权，仅preflight_gate.py路由变化；V2策略未变）
 PRODUCTION_FILES_CHANGED = 0
 PRODUCTION_DB_WRITES = 0
 REAL_SMTP_CONNECTIONS = 0
-LATEST_REPORTS = handoff/phases/PHASE4A3I_WEBSITE_RESOLVER_YIELD.md, handoff/phases/PHASE4A3H_FINAL_THROUGHPUT.md
-NEXT_ACTION = Stop; obtain explicit authorization for a narrow BrowserMaps transport/navigation remedy before any final Inventory rehearsal; do not deploy or resume scheduling / 停止；在最终Inventory演练前，等待针对BrowserMaps传输/导航补救的明确授权；不得部署或恢复调度
+LATEST_REPORTS = handoff/phases/PHASE4A3J_SOURCE_URL_FAST_PATH.md, handoff/phases/PHASE4A3I_WEBSITE_RESOLVER_YIELD.md
+NEXT_ACTION = Stop; obtain explicit authorization for a separate narrow source_url persistence and Google-owned-domain handling remedy before any final Inventory rehearsal; do not deploy or resume scheduling / 停止；在最终Inventory演练前，等待针对source_url持久化与Google所有域名处理的独立窄修复明确授权；不得部署或恢复调度
