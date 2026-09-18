@@ -1,5 +1,11 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.3M development Playwright allowlist and fresh duplicate-backfill rerun / 开发 Playwright 允许名单与新鲜重复回填重跑 — 2026-09-18
+
+- 仅修改开发安全护栏：动态解析当前 Python 安装的 Playwright driver 树，且只在 `ROKT_DEV_CONTROLLED_WEB=1` 时允许其中的 `node.exe`；任意 Node、其他全局程序、SMTP/IMAP 与生产数据库路径仍被拒绝。定向安全测试9项通过。/ Changed only the development safety guard: dynamically resolves the active Python Playwright driver tree and allows only its `node.exe` when `ROKT_DEV_CONTROLLED_WEB=1`; arbitrary Node, other global programs, SMTP/IMAP, and production DB paths remain blocked. Nine targeted safety tests passed.
+- 同参数的一页 BrowserMaps direct 演练首次实际获得5条新鲜事实：全部为重复项，均含合法官网与精确 Place 来源；真实 `_upsert_result` 仅对1条空官网执行回填，未覆盖已有官网或来源。/ The same one-page BrowserMaps-direct rehearsal collected five fresh facts: all were duplicates with legitimate websites and exact Place sources; real `_upsert_result` backfilled only one empty website and never overwrote existing website or source fields.
+- 该回填记录未产生官方可见邮箱或完整证据，冻结 V2 对其无邮箱关联 lead 诚实拒绝且无需 MX。完整套件350通过及76子测试、失败/错误均0；生产源变更、生产写入、SMTP、IMAP、部署和调度变更均为0。/ That backfilled record produced no visible official email or full evidence; frozen V2 honestly rejected its no-email linked lead and required no MX. The full suite passed 350 plus 76 subtests with zero failures/errors; production-source changes, production writes, SMTP, IMAP, deployment, and scheduler changes were all zero.
+
 ## Phase 4A.3L fresh BrowserMaps duplicate-backfill acceptance / 新鲜 BrowserMaps 重复回填验收 — 2026-09-18
 
 - 在生产数据库的新鲜 SQLite 在线备份副本上，按受限范围调用一个 BrowserMaps direct 查询族的一页、最多5条；副本完整性为 `ok`。/ On a fresh SQLite online-backup copy of the production database, invoked one bounded BrowserMaps-direct query family for one page and at most five records; copy integrity was `ok`.

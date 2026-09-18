@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import imaplib
+import importlib.util
 import os
 from pathlib import Path
 import smtplib
@@ -50,6 +51,42 @@ def _blocked_transport(*_args, **_kwargs):
     raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
 
 
+def _active_playwright_driver_root() -> Path | None:
+    """Return the active interpreter's installed Playwright driver tree only."""
+    try:
+        spec = importlib.util.find_spec("playwright")
+        locations = list(spec.submodule_search_locations or []) if spec else []
+        if not locations:
+            return None
+        driver_root = (Path(locations[0]).resolve() / "driver").resolve()
+        return driver_root if driver_root.is_dir() else None
+    except (ImportError, OSError, ValueError):
+        return None
+
+
+def _is_active_playwright_driver(command_path: Path) -> bool:
+    """Allow only node.exe shipped in the current interpreter's Playwright package."""
+    driver_root = _active_playwright_driver_root()
+    return bool(
+        os.environ.get("ROKT_DEV_CONTROLLED_WEB") == "1"
+        and command_path.name.lower() == "node.exe"
+        and driver_root
+        and _within(command_path, driver_root)
+    )
+
+
+def _subprocess_is_allowed(args, cwd: Path) -> bool:
+    """Fail-closed subprocess decision shared by the guard and its regression tests."""
+    command = args if isinstance(args, (list, tuple)) else []
+    executable = Path(str(command[0])).name.lower() if command else ""
+    tokens = {str(part) for part in command[1:]}
+    command_path = Path(str(command[0])).resolve() if command else Path()
+    python_names = {Path(sys.executable).name.lower(), "python", "python.exe", "python3", "python3.exe"}
+    safe_cwd = _within(cwd, ROOT) or _within(cwd, Path(tempfile.gettempdir()))
+    safe_python = executable in python_names and not ({"-I", "-S"} & tokens)
+    return safe_cwd and (safe_python or _is_active_playwright_driver(command_path))
+
+
 def _install_transport_guards() -> None:
     original_create_connection = socket.create_connection
     original_connect = socket.socket.connect
@@ -85,23 +122,11 @@ def _install_transport_guards() -> None:
 
 def _install_process_guard() -> None:
     original_popen = subprocess.Popen
-    python_names = {Path(sys.executable).name.lower(), "python", "python.exe", "python3", "python3.exe"}
 
     class GuardedPopen(original_popen):
         def __init__(self, args, *positional, **kwargs):
-            command = args if isinstance(args, (list, tuple)) else []
-            executable = Path(str(command[0])).name.lower() if command else ""
             cwd = Path(kwargs.get("cwd") or ROOT).resolve()
-            tokens = {str(part) for part in command[1:]}
-            safe_cwd = _within(cwd, ROOT) or _within(cwd, Path(tempfile.gettempdir()))
-            command_path = Path(str(command[0])).resolve() if command else Path()
-            playwright_driver = (
-                os.environ.get("ROKT_DEV_CONTROLLED_WEB") == "1"
-                and executable == "node.exe"
-                and _within(command_path, ROOT / ".venv" / "Lib" / "site-packages" / "playwright")
-            )
-            safe_python = executable in python_names and not ({"-I", "-S"} & tokens)
-            if not safe_cwd or not (safe_python or playwright_driver):
+            if not _subprocess_is_allowed(args, cwd):
                 raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
             child_env = dict(kwargs.get("env") or os.environ)
             child_env["ROKT_DEVELOPMENT_ONLY"] = "1"
