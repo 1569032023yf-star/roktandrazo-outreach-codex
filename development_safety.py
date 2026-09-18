@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parent
 MARKER = ROOT / ".development-copy"
 PRODUCTION_ROOT = Path(r"C:\Users\15690\WorkBuddy\2026-06-05-15-31-42\roktandrazo-outreach")
 _INSTALLED = False
+_EXPLICIT_SAFE_DB_PATH: str | None = None
 
 
 class DevelopmentSafetyError(RuntimeError):
@@ -45,6 +46,16 @@ def assert_safe_database_path(value: str | os.PathLike[str]) -> Path | None:
     if not allowed or _within(candidate, PRODUCTION_ROOT):
         raise DevelopmentSafetyError(f"DEVELOPMENT_DB_PATH_BLOCKED: {candidate}")
     return candidate
+
+
+def _select_safe_database_path(explicit_path: str | os.PathLike[str] | None) -> str:
+    """Preserve an explicitly supplied, validated development database path."""
+    if explicit_path:
+        candidate = assert_safe_database_path(explicit_path)
+        if candidate is None:
+            raise DevelopmentSafetyError("DEVELOPMENT_DB_PATH_MUST_BE_FILE_BACKED")
+        return str(candidate)
+    return str(ROOT / "data" / "bd_leads_dev_runtime.db")
 
 
 def _blocked_transport(*_args, **_kwargs):
@@ -139,14 +150,19 @@ def _install_process_guard() -> None:
 
 
 def install() -> None:
-    global _INSTALLED
-    if _INSTALLED:
-        return
+    global _INSTALLED, _EXPLICIT_SAFE_DB_PATH
     if not MARKER.is_file():
         raise DevelopmentSafetyError("DEVELOPMENT_MARKER_MISSING")
+    if _EXPLICIT_SAFE_DB_PATH is None:
+        _EXPLICIT_SAFE_DB_PATH = _select_safe_database_path(os.environ.get("WORKBUDDY_BD_DB_PATH"))
     os.environ["ROKT_DEVELOPMENT_ONLY"] = "1"
     os.environ["ROKT_DEV_ROOT"] = str(ROOT)
-    os.environ["WORKBUDDY_BD_DB_PATH"] = str(ROOT / "data" / "bd_leads_dev_runtime.db")
+    # env_loader may load the default development value after sitecustomize.
+    # Re-running this idempotent guard before bd_db restores the caller's
+    # already-validated explicit development-copy path.
+    os.environ["WORKBUDDY_BD_DB_PATH"] = _EXPLICIT_SAFE_DB_PATH
+    if _INSTALLED:
+        return
     os.environ.update({
         "BD_SMTP_HOST": "127.0.0.1", "BD_SMTP_PORT": "1",
         "BD_SMTP_USER": "AUDIT_DISABLED", "BD_SMTP_PASS": "AUDIT_DISABLED",
