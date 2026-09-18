@@ -1,12 +1,12 @@
 PROJECT = Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化
-CURRENT_PHASE = PHASE 4A.3Q / 官网解析网络重试根因与窄修复
-STATUS = STOPPED_COHORT_PROVENANCE_GAP / 因队列血缘缺口停止
+CURRENT_PHASE = PHASE 4A.3R / 确定性 11 条官网解析诊断
+STATUS = STOPPED_SEARCH_TRANSPORT_FAILURE / 因 BrowserMaps 搜索传输故障停止
 READY_FOR_PRODUCTION = false
-CURRENT_BLOCKER = COHORT_PROVENANCE_GAP: the fresh copy has 11 eligible no-website rows while Phase 4A.3P measured 10 after a copy-only duplicate-website backfill; the exact ten cannot be identified without an explicit deterministic manifest or authorization to measure all eleven. / 队列血缘缺口：新副本有11条可处理无官网记录，而4A.3P在副本内重复官网回填后测量10条；若无明确的确定性清单或授权测量全部11条，无法识别精确十条。
+CURRENT_BLOCKER = BROWSERMAPS_SEARCH_TRANSPORT_FAILURE: the authorized deterministic cohort measured zero resolver candidates before any detail-page fanout; results include zero-card responses, navigation timeout, ERR_NETWORK_CHANGED, and bounded child non-return. / BrowserMaps 搜索传输故障：经授权的确定性队列在任何详情页扇出前即测得零解析候选，包含零候选卡返回、导航超时、ERR_NETWORK_CHANGED 和受限子进程未返回。
 FULL_SUITE = 354 passed + 76 subtests; 0 failed, 0 errors (previous final baseline; no source code changed in Phase 4A.3P) / 354项及76子测试通过，失败与错误均0（此前最终基线；4A.3P未改源码）
 FROZEN_FILES_CHANGED = 0
 PRODUCTION_FILES_CHANGED = 0
 PRODUCTION_DB_WRITES = 0
 REAL_SMTP_CONNECTIONS = 0
-LATEST_REPORTS = handoff/phases/PHASE4A3Q_WEBSITE_RESOLVER_NETWORK_RETRY.md
-NEXT_ACTION = STOP. Obtain explicit authorization either for a deterministic eleven-row resolver measurement or for a durable manifest of the exact Phase 4A.3P ten-row cohort. Do not deploy, resume scheduling, run Inventory, or relax policy. / 停止。须明确授权确定性的11条 resolver 测量，或提供4A.3P精确10条队列的持久清单。不得部署、恢复调度、运行Inventory或放宽策略。
+LATEST_REPORTS = handoff/phases/PHASE4A3R_DETERMINISTIC_11_RESOLVER.md
+NEXT_ACTION = STOP. Do not deploy or run Inventory. Any next action needs separate explicit authorization for a narrow BrowserMaps search-transport diagnosis; do not apply a detail-fanout patch because the measured path never began detail visits. / 停止。不得部署或运行 Inventory。下一步必须另行明确授权，且仅可针对 BrowserMaps 搜索传输做窄诊断；测量路径未开始详情访问，故不得应用详情页扇出补丁。
