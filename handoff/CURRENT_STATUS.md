@@ -1,12 +1,12 @@
 PROJECT = Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化
-CURRENT_PHASE = PHASE 4A.3P / 最终生产副本标准 Inventory 重跑
-STATUS = CANONICAL_INVENTORY_COMPLETED_PARTIAL_SAFE_GAP / 标准 Inventory 已完成但存在 SAFE 缺口
+CURRENT_PHASE = PHASE 4A.3Q / 官网解析网络重试根因与窄修复
+STATUS = STOPPED_COHORT_PROVENANCE_GAP / 因队列血缘缺口停止
 READY_FOR_PRODUCTION = false
-CURRENT_BLOCKER = Measured website-resolution network retry: 10/10 linked-backlog website attempts were network_retry; Maps returned 8 duplicates, resulting in 0 new official emails, 0 full evidence, and V2 SAFE 0. / 已测量官网解析网络重试：linked-backlog 的10/10官网尝试均为network_retry；Maps返回8条重复，导致新增官方邮箱0、完整证据0、V2 SAFE为0。
+CURRENT_BLOCKER = COHORT_PROVENANCE_GAP: the fresh copy has 11 eligible no-website rows while Phase 4A.3P measured 10 after a copy-only duplicate-website backfill; the exact ten cannot be identified without an explicit deterministic manifest or authorization to measure all eleven. / 队列血缘缺口：新副本有11条可处理无官网记录，而4A.3P在副本内重复官网回填后测量10条；若无明确的确定性清单或授权测量全部11条，无法识别精确十条。
 FULL_SUITE = 354 passed + 76 subtests; 0 failed, 0 errors (previous final baseline; no source code changed in Phase 4A.3P) / 354项及76子测试通过，失败与错误均0（此前最终基线；4A.3P未改源码）
 FROZEN_FILES_CHANGED = 0
 PRODUCTION_FILES_CHANGED = 0
 PRODUCTION_DB_WRITES = 0
 REAL_SMTP_CONNECTIONS = 0
-LATEST_REPORTS = handoff/phases/PHASE4A3P_FINAL_INVENTORY_RERUN.md
-NEXT_ACTION = STOP. Do not deploy or resume scheduling. Obtain separate explicit authorization for a narrow diagnosis of the measured website-resolution network-retry blocker; do not relax policy. / 停止。不得部署或恢复调度。须为已测量官网解析网络重试阻塞项取得单独明确授权后再作窄诊断；不得放宽策略。
+LATEST_REPORTS = handoff/phases/PHASE4A3Q_WEBSITE_RESOLVER_NETWORK_RETRY.md
+NEXT_ACTION = STOP. Obtain explicit authorization either for a deterministic eleven-row resolver measurement or for a durable manifest of the exact Phase 4A.3P ten-row cohort. Do not deploy, resume scheduling, run Inventory, or relax policy. / 停止。须明确授权确定性的11条 resolver 测量，或提供4A.3P精确10条队列的持久清单。不得部署、恢复调度、运行Inventory或放宽策略。
