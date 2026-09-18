@@ -1,19 +1,19 @@
 {
   "PROJECT": "Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化",
-  "CURRENT_PHASE": "PHASE 4A.3J / Existing Maps Place URL reuse diagnosis / 既有 Maps Place URL 复用诊断",
-  "STATUS": "SOURCE_URL_FAST_PATH_NOT_PROVEN / source_url 快速路径未获证明",
+  "CURRENT_PHASE": "PHASE 4A.3K / Duplicate discovery website/provenance backfill / 重复发现官网与来源回填",
+  "STATUS": "DUPLICATE_ENRICHMENT_FIXED_NOT_YET_YIELD_PROVEN / 重复富集已修复但产出尚未证明",
   "READY_FOR_PRODUCTION": false,
-  "CURRENT_BLOCKER": "10/11 exact cohort rows lack a persisted Google Maps Place URL; the sole direct detail response returned a Google-owned domain, not a first-party merchant website. / 11条固定cohort中10条未持久化 Google Maps Place URL；唯一直达详情响应返回 Google 所有域名，而非商户第一方官网。",
-  "FULL_SUITE": "341 passed, 76 subtests passed; 0 failed, 0 errors / 341 项测试与 76 个子测试通过；0 失败，0 错误",
+  "CURRENT_BLOCKER": "The duplicate backfill path is fixed, but the only real matching cache replay had no website and no new source_url to backfill; no downstream yield is evidenced. / 重复回填路径已修复，但唯一真实匹配缓存重放没有官网且没有新的source_url可回填；尚无下游产出证据。",
+  "FULL_SUITE": "346 passed, 76 subtests passed; 0 failed, 0 errors / 346 项测试与 76 个子测试通过；0 失败，0 错误",
   "FROZEN_FILES_CHANGED": "1 (authorized routing-only preflight_gate.py; V2 policy unchanged) / 1（已授权，仅preflight_gate.py路由变化；V2策略未变）",
   "PRODUCTION_FILES_CHANGED": 0,
   "PRODUCTION_DB_WRITES": 0,
   "REAL_SMTP_CONNECTIONS": 0,
   "LATEST_REPORTS": [
-    "handoff/phases/PHASE4A3J_SOURCE_URL_FAST_PATH.md",
-    "handoff/phases/PHASE4A3I_WEBSITE_RESOLVER_YIELD.md"
+    "handoff/phases/PHASE4A3K_DUPLICATE_ENRICHMENT_BACKFILL.md",
+    "handoff/phases/PHASE4A3J_SOURCE_URL_FAST_PATH.md"
   ],
-  "NEXT_ACTION": "Stop; obtain explicit authorization for a separate narrow source_url persistence and Google-owned-domain handling remedy before any final Inventory rehearsal; do not deploy or resume scheduling. / 停止；在最终Inventory演练前，等待针对source_url持久化与Google所有域名处理的独立窄修复明确授权；不得部署或恢复调度。",
+  "NEXT_ACTION": "Stop; obtain explicit authorization for a new bounded production-copy replenishment source with fresh BrowserMaps provider facts before any final Inventory rehearsal; do not deploy or resume scheduling. / 停止；在最终Inventory演练前，等待针对含新鲜BrowserMaps provider事实的新有界生产副本补库来源的明确授权；不得部署或恢复调度。",
   "INVENTORY_COMPLETED": true,
   "MAPS_NEW_UNIQUE": 0,
   "WEBSITE_RESOLUTION_ATTEMPTS": 11,
@@ -55,5 +55,15 @@
   "FAST_PATH_IMPLEMENTED": false,
   "SEARCH_SKIPPED_WHEN_EXACT_SOURCE_URL_AVAILABLE": true,
   "ROOT_CAUSE_CONFIRMED": "SOURCE_URL_COVERAGE_GAP_10_OF_11_EMPTY_PLUS_UNSAFE_GOOGLE_OWNED_FALLBACK",
-  "READY_FOR_FINAL_INVENTORY_REHEARSAL": false
+  "READY_FOR_FINAL_INVENTORY_REHEARSAL": false,
+  "DUPLICATE_ENRICHMENT_GAP_CONFIRMED": true,
+  "CACHE_MATCH_COUNT": 1,
+  "CACHE_MATCH_WITH_WEBSITE": 0,
+  "CACHE_MATCH_WITH_MAPS_SOURCE_URL": 1,
+  "SOURCE_URL_BACKFILLED": 0,
+  "WEBSITE_BACKFILLED": 0,
+  "GOOGLE_OWNED_WEBSITE_REJECTED": 0,
+  "DUPLICATE_ENRICHMENT_PATH_FIXED": true,
+  "SOURCE_URL_FAST_PATH_EVIDENCE_SUPPORTED": false,
+  "PHASE4A3K_V2_MX_RECOMPUTE": "NOT_RUN_NO_BACKFILLED_WEBSITES"
 }

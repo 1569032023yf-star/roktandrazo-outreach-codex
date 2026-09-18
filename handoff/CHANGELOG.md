@@ -1,5 +1,11 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.3K duplicate discovery website/provenance backfill / 重复发现官网与来源回填 — 2026-09-18
+
+- 修复 `_upsert_result()` 的重复更新数据丢失：仅对空 `website` 回填合法、非 Google 自有 BrowserMaps 官网；仅对空 `source_url` 回填精确 Google Maps Place URL；已有字段绝不覆盖，证据、历史、验证状态、V2 和 MX 均未改变。 / Fixed duplicate-update data loss in `_upsert_result()`: only an empty `website` can receive a legitimate non-Google BrowserMaps website and only an empty `source_url` can receive an exact Google Maps Place URL; existing fields are never overwritten, and evidence, history, validation status, V2, and MX remain unchanged.
+- BrowserMaps 外链过滤现在拒绝 `google.com`、`google.cn`、区域 Google 域名以及已识别的 Google 重定向/内部主机；保留既有明确允许的 `sites.google.com` 与 `*.business.site`。 / BrowserMaps external-link filtering now rejects `google.com`, `google.cn`, regional Google domains, and identified Google redirect/internal hosts; the existing explicit `sites.google.com` and `*.business.site` allowances remain.
+- 新鲜生产副本仅重放一个匹配缓存记录：其无官网且已有精确来源 URL，因此没有实际字段回填、后处理、直达详情或 V2/MX 重算。定向测试27项及9子测试通过；最终完整套件346项及76子测试通过，失败/错误均0。 / A fresh production copy replayed only one matching cache record: it had no website and an already-present exact source URL, so no actual field backfill, postprocess, direct-detail test, or V2/MX recomputation ran. Targeted tests passed 27 plus 9 subtests; the final full suite passed 346 plus 76 subtests with zero failures/errors.
+
 ## Phase 4A.3J existing Maps Place URL reuse diagnosis / 既有 Maps Place URL 复用诊断 — 2026-09-18
 
 - 在新鲜 SQLite 在线备份副本上仅审计固定 11 条 4A.3H/4A.3I cohort 并直达其既有 Maps Place URL；未搜索 Maps、未运行完整 Inventory、未写生产库或生产文件，SMTP/IMAP 均为0。 / On a fresh SQLite online-backup copy, audited only the fixed eleven-row 4A.3H/4A.3I cohort and navigated only its stored Maps Place URL; no Maps search or full Inventory ran, no production database/file was written, and SMTP/IMAP were both zero.

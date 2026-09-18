@@ -195,8 +195,15 @@ def _is_external_link(href: str) -> bool:
     """
     if not href or not href.startswith('http'):
         return False
-    netloc = urlparse(href).netloc.lower()
-    if 'google.com' in netloc and 'sites.google.com' not in netloc and 'business.site' not in netloc:
+    netloc = urlparse(href).netloc.lower().rstrip('.')
+    # Maps can surface a country-specific Google host (for example google.cn)
+    # as an apparent external link. Keep the existing explicitly permitted
+    # hosted-site exceptions, but reject Google-owned/internal/redirect hosts.
+    permitted_google_host = netloc == 'sites.google.com' or netloc == 'business.site' or netloc.endswith('.business.site')
+    google_family = bool(re.fullmatch(r'(?:[a-z0-9-]+\.)*google\.[a-z.]+', netloc))
+    google_internal = google_family or netloc in {'goo.gl', 'g.page'} or netloc.endswith('.googleusercontent.com') \
+        or netloc.endswith('.googleapis.com') or netloc.endswith('.gstatic.com') or netloc.endswith('.googleadservices.com')
+    if google_internal and not permitted_google_host:
         return False
     if 'maps/place' in href or 'google.com/maps' in href or 'google.com/search' in href:
         return False

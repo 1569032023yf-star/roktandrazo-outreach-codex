@@ -61,6 +61,33 @@ CONTACT_FORM_RE = re.compile(r"<form\b[^>]*>.*?</form>", re.IGNORECASE | re.DOTA
 NOISE_EMAIL_PREFIXES = ("noreply@", "no-reply@", "example@", "privacy@", "copyright@")
 
 
+def _is_google_owned_host(value: str) -> bool:
+    """Return true for Google internal/redirect hosts, except permitted hosted sites."""
+    host_value = str(value or "").lower().rstrip(".")
+    if host_value in {"sites.google.com", "business.site"} or host_value.endswith(".business.site"):
+        return False
+    return bool(re.fullmatch(r"(?:[a-z0-9-]+\.)*google\.[a-z.]+", host_value)) or host_value in {"goo.gl", "g.page"} \
+        or host_value.endswith(".googleusercontent.com") or host_value.endswith(".googleapis.com") \
+        or host_value.endswith(".gstatic.com") or host_value.endswith(".googleadservices.com")
+
+
+def _browser_maps_place_source(value: str) -> str:
+    """Accept only an exact, provider-originated Google Maps place URL."""
+    parsed = urllib.parse.urlsplit(str(value or "").strip())
+    if parsed.scheme not in {"http", "https"} or not _is_google_owned_host(parsed.netloc):
+        return ""
+    return str(value).strip() if parsed.path.lower().startswith("/maps/place/") else ""
+
+
+def _safe_browser_maps_website(value: str) -> str:
+    """Keep official-site rules while rejecting Google-owned pseudo-websites."""
+    from discovery.website_resolver import _official_url
+    website = _official_url(value)
+    if not website or _is_google_owned_host(urllib.parse.urlsplit(website).netloc):
+        return ""
+    return website
+
+
 class _VisibleTextParser(HTMLParser):
     """Extract visible text and mailto targets, excluding hidden/script content."""
 
@@ -575,16 +602,26 @@ class DiscoveryService:
             ).fetchone()
         if existing:
             current = self.conn.execute(
-                "SELECT raw_payload_json FROM lead_discovery_results WHERE id=?",
+                "SELECT raw_payload_json, website, source_url, normalized_domain FROM lead_discovery_results WHERE id=?",
                 (existing["id"],),
             ).fetchone()
             stored_payload = _raw_payload({"raw_payload_json": current[0] if current else ""})
             merged_payload = dict(result.raw_payload or {})
             if stored_payload.get("official_email_evidence"):
                 merged_payload["official_email_evidence"] = stored_payload["official_email_evidence"]
+            existing_website = str(current["website"] or "").strip() if current else ""
+            existing_source_url = str(current["source_url"] or "").strip() if current else ""
+            incoming_source_url = _browser_maps_place_source(result.source_url) if result.provider == "browser_maps" else ""
+            incoming_website = _safe_browser_maps_website(result.website) if result.provider == "browser_maps" else ""
+            website_backfill = incoming_website if not existing_website else ""
+            source_url_backfill = incoming_source_url if not existing_source_url else ""
+            backfill_domain = normalized_domain(website_backfill) if website_backfill else ""
             self.conn.execute(
                 """UPDATE lead_discovery_results SET last_seen_at=?, source_query=COALESCE(source_query, ?),
-                   raw_payload_json=?, raw_types_json=?, normalized_domain=COALESCE(NULLIF(normalized_domain,''), ?),
+                   raw_payload_json=?, raw_types_json=?,
+                   website=CASE WHEN NULLIF(trim(website),'') IS NULL AND ?<>'' THEN ? ELSE website END,
+                   source_url=CASE WHEN NULLIF(trim(source_url),'') IS NULL AND ?<>'' THEN ? ELSE source_url END,
+                   normalized_domain=CASE WHEN NULLIF(trim(website),'') IS NULL AND ?<>'' THEN ? ELSE normalized_domain END,
                    country=COALESCE(NULLIF(country,''), ?)
                    WHERE id=?""",
                 (
@@ -592,7 +629,12 @@ class DiscoveryService:
                     result.source_query,
                     json.dumps(merged_payload, sort_keys=True, default=str),
                     json.dumps(result.types),
-                    norm_domain,
+                    website_backfill,
+                    website_backfill,
+                    source_url_backfill,
+                    source_url_backfill,
+                    website_backfill,
+                    backfill_domain,
                     result.country,
                     existing["id"],
                 ),
