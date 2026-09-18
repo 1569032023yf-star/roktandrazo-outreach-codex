@@ -1,12 +1,12 @@
 PROJECT = Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化
-CURRENT_PHASE = PHASE 4A.3R / 确定性 11 条官网解析诊断
-STATUS = STOPPED_SEARCH_TRANSPORT_FAILURE / 因 BrowserMaps 搜索传输故障停止
+CURRENT_PHASE = PHASE 4A.3S / Google Maps 页面形态与直接 Place 处理
+STATUS = VALIDATED_READY_FOR_FINAL_INVENTORY / 已验证，可进行最终 Inventory
 READY_FOR_PRODUCTION = false
-CURRENT_BLOCKER = BROWSERMAPS_SEARCH_TRANSPORT_FAILURE: the authorized deterministic cohort measured zero resolver candidates before any detail-page fanout; results include zero-card responses, navigation timeout, ERR_NETWORK_CHANGED, and bounded child non-return. / BrowserMaps 搜索传输故障：经授权的确定性队列在任何详情页扇出前即测得零解析候选，包含零候选卡返回、导航超时、ERR_NETWORK_CHANGED 和受限子进程未返回。
+CURRENT_BLOCKER = NONE_FOR_FINAL_INVENTORY_REHEARSAL; production deployment remains separately unauthorized. / 最终 Inventory 演练无阻塞；生产部署仍需单独授权。
 FULL_SUITE = 354 passed + 76 subtests; 0 failed, 0 errors (previous final baseline; no source code changed in Phase 4A.3P) / 354项及76子测试通过，失败与错误均0（此前最终基线；4A.3P未改源码）
 FROZEN_FILES_CHANGED = 0
 PRODUCTION_FILES_CHANGED = 0
 PRODUCTION_DB_WRITES = 0
 REAL_SMTP_CONNECTIONS = 0
-LATEST_REPORTS = handoff/phases/PHASE4A3R_DETERMINISTIC_11_RESOLVER.md
-NEXT_ACTION = STOP. Do not deploy or run Inventory. Any next action needs separate explicit authorization for a narrow BrowserMaps search-transport diagnosis; do not apply a detail-fanout patch because the measured path never began detail visits. / 停止。不得部署或运行 Inventory。下一步必须另行明确授权，且仅可针对 BrowserMaps 搜索传输做窄诊断；测量路径未开始详情访问，故不得应用详情页扇出补丁。
+LATEST_REPORTS = handoff/phases/PHASE4A3S_MAPS_PAGE_SHAPE.md
+NEXT_ACTION = STOP. Await explicit authorization for one final development production-copy Inventory rehearsal; do not deploy. / 停止。等待明确授权进行一次最终开发生产副本 Inventory 演练；不得部署。

@@ -287,6 +287,33 @@ def extract_detail_fields(page, maps_url: str) -> dict:
     return result
 
 
+def extract_direct_place_data(page, maps_url: str) -> dict | None:
+    """Read an already-loaded Maps place panel without entering list-result waits.
+
+    A search URL can render a single place panel while retaining `/maps/search/`
+    in the address bar.  This deliberately returns nothing unless a concrete
+    merchant title and at least one identity field are present.
+    """
+    try:
+        title = (page.query_selector('h1').inner_text() or '').strip() if page.query_selector('h1') else ''
+        address_el = page.query_selector('[data-item-id="address"]')
+        phone_el = page.query_selector('[data-item-id^="phone"]')
+        address = (address_el.inner_text() or '').strip() if address_el else ''
+        phone = (phone_el.inner_text() or '').strip() if phone_el else ''
+        authority = page.query_selector('a[data-item-id="authority"]')
+        href = authority.get_attribute('href') if authority else ''
+        website = href.split('?')[0].rstrip('/') if _is_external_link(href or '') else ''
+        if not title or not (address or phone or website):
+            return None
+        return {
+            'business_name': title, 'formatted_address': address, 'phone': phone,
+            'website': website, 'google_maps_url': maps_url, 'rating': '',
+            'category': 'store', 'raw_text': title[:500],
+        }
+    except Exception:
+        return None
+
+
 def scrape_google_maps(
     query: str,
     city: str = '',
@@ -367,6 +394,20 @@ def scrape_google_maps(
                     'cost_units': 0,
                     'errors': errors,
                     'collected_at': utc_now(),
+                }
+
+            # A precise search can render the target's place panel directly
+            # while the address bar remains a `/maps/search/` URL.  Avoid the
+            # list-only 15-second wait and empty scrolling in that case.
+            direct_place = extract_direct_place_data(page, page.url)
+            if direct_place:
+                results_data.append(direct_place)
+                print("  Direct Maps place panel detected; returning one candidate.")
+                return {
+                    'provider': 'browser_maps', 'query': query, 'city': city, 'state': state,
+                    'page_cursor': '', 'next_page_cursor': '', 'status': 'ok', 'error': '',
+                    'results': results_data, 'request_count': 1, 'cost_units': 0,
+                    'errors': errors, 'collected_at': utc_now(),
                 }
 
             print("[2/4] Reading search results...")
