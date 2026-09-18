@@ -1,5 +1,11 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.3L fresh BrowserMaps duplicate-backfill acceptance / 新鲜 BrowserMaps 重复回填验收 — 2026-09-18
+
+- 在生产数据库的新鲜 SQLite 在线备份副本上，按受限范围调用一个 BrowserMaps direct 查询族的一页、最多5条；副本完整性为 `ok`。/ On a fresh SQLite online-backup copy of the production database, invoked one bounded BrowserMaps-direct query family for one page and at most five records; copy integrity was `ok`.
+- 未返回提供方结果：开发安全传输护栏先正确阻止未启用受控 Web 的调用；启用获准的受控 Web 后，开发安全子进程护栏又在浏览器导航前阻止全局安装的 Playwright Node 驱动。/ No provider results returned: the development transport guard correctly stopped the call before controlled Web was enabled; after the allowed controlled-Web flag, the development subprocess guard stopped the globally installed Playwright Node driver before browser navigation.
+- 未修改源码来绕过此新阻塞，未产生回填、后处理、证据或 V2/MX 重算；生产写入、SMTP、IMAP、生产 FSP/授权、部署和调度变更均为0。/ No source change bypassed this new blocker; no backfill, postprocess, evidence, or V2/MX recomputation occurred; production writes, SMTP, IMAP, production FSP/authorization, deployment, and scheduler changes were all zero.
+
 ## Phase 4A.3K duplicate discovery website/provenance backfill / 重复发现官网与来源回填 — 2026-09-18
 
 - 修复 `_upsert_result()` 的重复更新数据丢失：仅对空 `website` 回填合法、非 Google 自有 BrowserMaps 官网；仅对空 `source_url` 回填精确 Google Maps Place URL；已有字段绝不覆盖，证据、历史、验证状态、V2 和 MX 均未改变。 / Fixed duplicate-update data loss in `_upsert_result()`: only an empty `website` can receive a legitimate non-Google BrowserMaps website and only an empty `source_url` can receive an exact Google Maps Place URL; existing fields are never overwritten, and evidence, history, validation status, V2, and MX remain unchanged.

@@ -1,12 +1,12 @@
 PROJECT = Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化
-CURRENT_PHASE = PHASE 4A.3K / 重复发现官网与来源回填
-STATUS = DUPLICATE_ENRICHMENT_FIXED_NOT_YET_YIELD_PROVEN / 重复富集已修复但产出尚未证明
+CURRENT_PHASE = PHASE 4A.3L / 新鲜 BrowserMaps 重复回填验收
+STATUS = FRESH_PROVIDER_MEASUREMENT_BLOCKED_BY_DEV_PLAYWRIGHT_GUARD / 新鲜提供方测量被开发 Playwright 护栏阻止
 READY_FOR_PRODUCTION = false
-CURRENT_BLOCKER = The duplicate backfill path is fixed, but the only real matching cache replay had no website and no new source_url to backfill; no downstream yield is evidenced / 重复回填路径已修复，但唯一真实匹配缓存重放没有官网且没有新的source_url可回填；尚无下游产出证据
+CURRENT_BLOCKER = The fresh BrowserMaps direct driver is blocked by the development safety subprocess allowlist before navigation; no provider facts were collected / 新鲜 BrowserMaps direct 驱动在导航前被开发安全子进程允许名单阻止；未收集到提供方事实
 FULL_SUITE = 346 passed + 76 subtests; 0 failed, 0 errors / 346项及76子测试通过，失败与错误均0
 FROZEN_FILES_CHANGED = 1 (authorized routing-only preflight_gate.py; V2 policy unchanged) / 1（已授权，仅preflight_gate.py路由变化；V2策略未变）
 PRODUCTION_FILES_CHANGED = 0
 PRODUCTION_DB_WRITES = 0
 REAL_SMTP_CONNECTIONS = 0
-LATEST_REPORTS = handoff/phases/PHASE4A3K_DUPLICATE_ENRICHMENT_BACKFILL.md, handoff/phases/PHASE4A3J_SOURCE_URL_FAST_PATH.md
-NEXT_ACTION = Stop; obtain explicit authorization for a new bounded production-copy replenishment source with fresh BrowserMaps provider facts before any final Inventory rehearsal; do not deploy or resume scheduling / 停止；在最终Inventory演练前，等待针对含新鲜BrowserMaps provider事实的新有界生产副本补库来源的明确授权；不得部署或恢复调度
+LATEST_REPORTS = handoff/phases/PHASE4A3L_FRESH_DUPLICATE_BACKFILL.md, handoff/phases/PHASE4A3K_DUPLICATE_ENRICHMENT_BACKFILL.md
+NEXT_ACTION = Stop; obtain explicit approval for the narrow development safety Playwright-driver allowlist blocker before repeating any fresh provider measurement; do not deploy or resume scheduling / 停止；在重复任何新鲜提供方测量前，等待针对开发安全 Playwright 驱动允许名单这一窄阻塞的明确批准；不得部署或恢复调度
