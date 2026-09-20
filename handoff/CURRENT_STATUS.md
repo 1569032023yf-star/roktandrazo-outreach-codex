@@ -1,12 +1,12 @@
 PROJECT = Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化
-CURRENT_PHASE = PHASE 4A.6 / 第一方邮箱补全扩展
+CURRENT_PHASE = PHASE 4A.7 / 城市队列自动推进接线
 STATUS = DEVELOPMENT_VALIDATED_AWAITING_PRODUCTION_REVIEW / 开发验证完成，等待生产评审
 READY_FOR_PRODUCTION = false
-CURRENT_BLOCKER = Production review and explicit deployment authorization required; the newly evidenced domain is fail-closed on MX dns_error. / 需要生产评审与明确部署授权；新增证据域名因 MX dns_error 保持失败关闭。
-FULL_SUITE = 346 passed; 0 failed; 0 errors (project unittest) / 346 项通过，失败与错误均为 0（项目 unittest）
+CURRENT_BLOCKER = Production review and explicit deployment authorization are required; city advancement remains fail-closed while any retryable or unprocessed work exists. / 需要生产评审与明确部署授权；任何可重试或未处理工作存在时，城市推进保持失败关闭。
+FULL_SUITE = 354 passed; 0 failed; 0 errors (project unittest) / 354 项通过，失败与错误均为 0（项目 unittest）
 FROZEN_FILES_CHANGED = 0
 PRODUCTION_FILES_CHANGED = 0
 PRODUCTION_DB_WRITES = 0
 REAL_SMTP_CONNECTIONS = 0
-LATEST_REPORTS = handoff/phases/PHASE4A6_FIRST_PARTY_EMAIL_ENRICHMENT.md; handoff/phases/PHASE4A5_GENERAL_INBOX_REFERRAL_ROUTING.md
-NEXT_ACTION = STOP. Review the development-only bounded first-party email enrichment patch; do not deploy, resume scheduling, or send without separate authorization. / 停止。评审仅开发环境的有界第一方邮箱补全补丁；未经单独授权不得部署、恢复调度或发送。
+LATEST_REPORTS = handoff/phases/PHASE4A7_CITY_QUEUE_ADVANCEMENT.md; handoff/phases/PHASE4A6_FIRST_PARTY_EMAIL_ENRICHMENT.md
+NEXT_ACTION = STOP. Review the development-only city queue advancement wiring; do not deploy, resume scheduling, run production Inventory, or send without separate authorization. / 停止。评审仅开发环境的城市队列推进接线；未经单独授权不得部署、恢复调度、运行生产 Inventory 或发送。

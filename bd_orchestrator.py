@@ -413,7 +413,7 @@ def stage_inventory(run_id: str, business_date: str, dry_run: bool):
         finish_job_run(run_id, 'stopped', stop_reason='lock_conflict')
         return False
     try:
-        from retail_city_queue import activate_next_city, seed_default_queue
+        from retail_city_queue import activate_next_city, complete_active_city_if_exhausted, seed_default_queue
         from discovery.discovery_service import DiscoveryService
         from discovery.website_resolver import ProviderWebsiteResolver
         active_state, state_error = _resolve_active_discovery_state()
@@ -431,9 +431,10 @@ def stage_inventory(run_id: str, business_date: str, dry_run: bool):
                 return True
             with conn:
                 seed_default_queue(conn)
+                service = DiscoveryService(conn)
+                complete_active_city_if_exhausted(conn, service.provider.provider_name, state=active_state)
                 city = activate_next_city(conn, state=active_state)
             log(f"Active city: {city['city']}, {city['state']}; new discovery then linked backlog")
-            service = DiscoveryService(conn)
             resolver = ProviderWebsiteResolver(service.provider)
             # Keep the deployed safe new-merchant lanes. Existing linked rows use
             # the guarded backlog lane, never the normal lane as a safety bypass.
@@ -453,6 +454,11 @@ def stage_inventory(run_id: str, business_date: str, dry_run: bool):
             with conn:
                 summary = service.run_linked_backlog(city, resolver, max_results=limit)
             log(f"LINKED_BACKLOG_PATH_EXECUTED=true; Linked backlog: {summary}")
+            # A city may finish its final retry/staging item during this run.
+            # Mark it terminal now; the next canonical Inventory invocation
+            # activates the next pending city through the existing queue.
+            with conn:
+                complete_active_city_if_exhausted(conn, service.provider.provider_name, state=active_state)
             safe = _count_safe_ready_pool(conn)
             broad = _count_broad_ready_pool()
             gap = max(0, target - safe)
