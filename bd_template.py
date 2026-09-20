@@ -4,6 +4,7 @@ Roktandrazo BD Outreach - Email Template V5 (LOCKED 2026-08-03)
 Templates:
   retail_distributor_v5_locked     — ACTIVE_LOCKED (puzzle/toy/game/book/hobby stores)
   custom_printing_production_v5_locked — ACTIVE_LOCKED (gift/museum/artist/designer/custom production)
+  general_inbox_referral_v1_locked — ACTIVE_LOCKED (public generic inboxes only)
   follow_up_v1_locked              — LOCKED_DISABLED (FOLLOW_UP_ENABLED=false)
 
 Routing: route_template_for_lead(lead) → template_key based on store_type.
@@ -125,6 +126,41 @@ CUSTOM_BODY_HTML = """<p>Hi {greeting},</p>
 {signature}
 """
 
+# ── General Public Inbox Referral Template ───────────────
+# This is intentionally a separate locked template. It does not replace or
+# share the two existing locked new-outreach templates.
+
+def _subject_general_inbox_referral_for(store_name: str) -> str:
+    return f"Could you connect us with the right contact at {store_name}?"
+
+
+GENERAL_INBOX_REFERRAL_BODY_TEXT = """Hi {greeting},
+
+I'm Ian from rokt&razo. We create premium jigsaw puzzles and family card games, and also support custom product development and production for U.S. retailers and brands.
+
+Could you please connect us with, or forward this note to, the appropriate Purchasing, Product, Sales, or Business Development contact at {store_name}?
+
+We would be glad to share our catalogue and a short overview of our puzzle, card game, and custom-production capabilities with the right person.
+
+{pixel}
+
+{signature}
+"""
+
+
+GENERAL_INBOX_REFERRAL_BODY_HTML = """<p>Hi {greeting},</p>
+
+<p>I'm Ian from <strong>rokt&amp;razo</strong>. We create premium jigsaw puzzles and family card games, and also support custom product development and production for U.S. retailers and brands.</p>
+
+<p>Could you please connect us with, or forward this note to, the appropriate Purchasing, Product, Sales, or Business Development contact at {store_name}?</p>
+
+<p>We would be glad to share our catalogue and a short overview of our puzzle, card game, and custom-production capabilities with the right person.</p>
+
+{pixel}
+
+{signature}
+"""
+
 # ── Template Registry ────────────────────────────────────
 
 import hashlib as _hashlib
@@ -147,6 +183,15 @@ _TEMPLATE_REGISTRY = {
         "signature_text": SIGNATURE_TEXT,
         "signature_html": SIGNATURE_HTML,
         "canonical_subject_prefix": "Custom Production & Procurement Support for ",
+    },
+    "general_inbox_referral_v1_locked": {
+        "status": "ACTIVE_LOCKED",
+        "subject_fn": _subject_general_inbox_referral_for,
+        "body_text": GENERAL_INBOX_REFERRAL_BODY_TEXT,
+        "body_html": GENERAL_INBOX_REFERRAL_BODY_HTML,
+        "signature_text": SIGNATURE_TEXT,
+        "signature_html": SIGNATURE_HTML,
+        "canonical_subject_prefix": "Could you connect us with the right contact at ",
     },
     "follow_up_v1_locked": {
         "status": "LOCKED_DISABLED",
@@ -205,6 +250,21 @@ _RETAIL_DISTRIBUTOR_TYPES = frozenset({
     "childrens_store", "childrens store",
 })
 
+# Exact local-part match only. No plus-address expansion, name guessing, or
+# recipient creation is permitted by template routing.
+_GENERIC_PUBLIC_INBOX_LOCAL_PARTS = frozenset({
+    "info", "service", "support", "hello", "contact", "office",
+})
+
+
+def is_generic_public_inbox(email: str) -> bool:
+    """Return true only for the approved, exact public inbox local-parts."""
+    value = str(email or "").strip().lower()
+    if value.count("@") != 1:
+        return False
+    local_part, domain = value.split("@", 1)
+    return bool(domain.strip()) and local_part in _GENERIC_PUBLIC_INBOX_LOCAL_PARTS
+
 
 def route_template_for_lead(lead: dict) -> str:
     """Determine which template to use based on store_type.
@@ -216,6 +276,12 @@ def route_template_for_lead(lead: dict) -> str:
     override = (lead.get("template_override") or "").strip()
     if override in _TEMPLATE_REGISTRY:
         return override
+
+    # Generic public inboxes receive a referral/forwarding request. This only
+    # changes the message for the existing verified recipient; it never creates
+    # or guesses an address. Named/direct inboxes retain the prior routing.
+    if is_generic_public_inbox(lead.get("email", "")):
+        return "general_inbox_referral_v1_locked"
     
     store_type = (lead.get("store_type") or "").strip().lower().replace("-", "_")
     
@@ -468,8 +534,14 @@ def get_email_for_lead(lead: dict, template_key: str = None, tracking: dict = No
     else:
         pixel = _pixel_html_for_email(email_addr)
     
-    body_text = tpl["body_text"].format(greeting=greeting, pixel="", signature=tpl["signature_text"])
-    body_html = tpl["body_html"].format(greeting=greeting, pixel=pixel, signature=tpl["signature_html"])
+    body_text = tpl["body_text"].format(
+        greeting=greeting, store_name=store_name or "your organization",
+        pixel="", signature=tpl["signature_text"],
+    )
+    body_html = tpl["body_html"].format(
+        greeting=greeting, store_name=store_name or "your organization",
+        pixel=pixel, signature=tpl["signature_html"],
+    )
 
     # 排版压缩：消除 {pixel} 空占位 + 署名尾部硬编码空行造成的大空白
     body_text, body_html = _compact_render(body_text, body_html)
@@ -498,10 +570,17 @@ def get_email_for_lead(lead: dict, template_key: str = None, tracking: dict = No
         "body_text": body_text,
         "body_html": body_html,
         "body_html_no_pixel": _compact_render(
-            "", tpl["body_html"].format(greeting=greeting, pixel="", signature=tpl["signature_html"])
+            "", tpl["body_html"].format(
+                greeting=greeting, store_name=store_name or "your organization",
+                pixel="", signature=tpl["signature_html"],
+            )
         )[1],
         "has_pixel": bool(pixel),
-        "routing_reason": "manual_override" if lead.get("template_override") else "store_type",
+        "routing_reason": (
+            "manual_override" if lead.get("template_override")
+            else "generic_public_inbox" if is_generic_public_inbox(lead.get("email", ""))
+            else "store_type"
+        ),
         "store_type": lead.get("store_type", ""),
     }
 
