@@ -31,7 +31,10 @@ class CityQueueAdvancementTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.db = Path(self.temp.name) / "phase4a7.db"
         conn = sqlite3.connect(self.db)
-        conn.execute("CREATE TABLE leads (id INTEGER PRIMARY KEY, email TEXT)")
+        conn.execute("""CREATE TABLE leads (
+            id INTEGER PRIMARY KEY, email TEXT, status TEXT, review_status TEXT,
+            review_reason_code TEXT, review_reason_detail TEXT
+        )""")
         conn.execute("CREATE TABLE send_log (id INTEGER PRIMARY KEY, status TEXT)")
         conn.commit()
         conn.close()
@@ -57,6 +60,16 @@ class CityQueueAdvancementTests(unittest.TestCase):
                    (active_city_id, provider, query_family, query_text, status, completed_at)
                    VALUES (?, ?, ?, ?, 'completed', CURRENT_TIMESTAMP)""",
                 (self.city["id"], self.provider, family, f"{family} Ithaca NY"),
+            )
+        self.conn.commit()
+
+    def _record_three_empty_batches(self):
+        for _ in range(3):
+            self.conn.execute(
+                """INSERT INTO provider_request_audit
+                   (active_city_id, provider, status, result_count, request_count, requested_at)
+                   VALUES (?, ?, 'ok', 0, 1, CURRENT_TIMESTAMP)""",
+                (self.city["id"], self.provider),
             )
         self.conn.commit()
 
@@ -100,15 +113,41 @@ class CityQueueAdvancementTests(unittest.TestCase):
 
     def test_linked_backlog_retry_prevents_completion_without_lead_mutation(self):
         self._complete_query_matrix()
-        self.conn.execute("INSERT INTO leads (id, email) VALUES (9001, '')")
+        self.conn.execute(
+            """INSERT INTO leads (id, email, status, review_status, review_reason_code, review_reason_detail)
+               VALUES (9001, '', 'manual_review_needed', 'pending',
+                       'review_recovery', 'review_recovery=official_site_unavailable')"""
+        )
         self.conn.commit()
         self._insert_discovery("manual_review_needed", linked_lead_id=9001)
         lead_before = tuple(self.conn.execute("SELECT id, email FROM leads WHERE id=9001").fetchone())
         self.assertFalse(complete_active_city_if_exhausted(self.conn, self.provider, state="NY"))
         self.assertEqual(tuple(self.conn.execute("SELECT id, email FROM leads WHERE id=9001").fetchone()), lead_before)
 
+    def test_terminal_manual_review_does_not_pin_exhausted_city(self):
+        self._complete_query_matrix()
+        self._record_three_empty_batches()
+        self.conn.execute(
+            """INSERT INTO leads (id, email, status, review_reason_code)
+               VALUES (9002, 'already-checked@example.test', 'manual_review_needed', 'hygiene_failed')"""
+        )
+        self._insert_discovery("manual_review_needed", linked_lead_id=9002)
+        checks = city_completion_checks(self.conn, self.city["id"], self.provider)
+        self.assertTrue(checks["all_candidates_classified"])
+        self.assertTrue(complete_active_city_if_exhausted(self.conn, self.provider, state="NY"))
+
+    def test_last_three_empty_batches_is_independent_persisted_evidence(self):
+        self._complete_query_matrix()
+        before = city_completion_checks(self.conn, self.city["id"], self.provider)
+        self.assertTrue(before["all_query_families"])
+        self.assertTrue(before["two_empty_pages"])
+        self.assertFalse(before["last_three_batches_empty"])
+        self._record_three_empty_batches()
+        self.assertTrue(city_completion_checks(self.conn, self.city["id"], self.provider)["last_three_batches_empty"])
+
     def test_genuinely_exhausted_city_terminalizes_then_next_ny_city_activates(self):
         self._complete_query_matrix()
+        self._record_three_empty_batches()
         self.assertTrue(complete_active_city_if_exhausted(self.conn, self.provider, state="NY"))
         terminal = self.conn.execute("SELECT status, completion_reason FROM retail_city_queue WHERE id=?", (self.city["id"],)).fetchone()
         self.assertEqual(tuple(terminal), ("search_matrix_exhausted", "search_matrix_exhausted"))

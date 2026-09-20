@@ -1,12 +1,12 @@
 PROJECT = Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化
-CURRENT_PHASE = PHASE 4A.7 / 城市队列自动推进接线
+CURRENT_PHASE = PHASE 4A.7A / 生产副本城市完成语义审计
 STATUS = DEVELOPMENT_VALIDATED_AWAITING_PRODUCTION_REVIEW / 开发验证完成，等待生产评审
 READY_FOR_PRODUCTION = false
-CURRENT_BLOCKER = Production review and explicit deployment authorization are required; city advancement remains fail-closed while any retryable or unprocessed work exists. / 需要生产评审与明确部署授权；任何可重试或未处理工作存在时，城市推进保持失败关闭。
-FULL_SUITE = 354 passed; 0 failed; 0 errors (project unittest) / 354 项通过，失败与错误均为 0（项目 unittest）
+CURRENT_BLOCKER = Production review and explicit deployment authorization are required; Ithaca correctly remains active with 10 pending query families and retryable/unprocessed work. / 需要生产评审与明确部署授权；Ithaca 仍有 10 个待处理查询族及可重试/未处理工作，正确保持 active。
+FULL_SUITE = 356 passed; 0 failed; 0 errors (project unittest) / 356 项通过，失败与错误均为 0（项目 unittest）
 FROZEN_FILES_CHANGED = 0
 PRODUCTION_FILES_CHANGED = 0
 PRODUCTION_DB_WRITES = 0
 REAL_SMTP_CONNECTIONS = 0
-LATEST_REPORTS = handoff/phases/PHASE4A7_CITY_QUEUE_ADVANCEMENT.md; handoff/phases/PHASE4A6_FIRST_PARTY_EMAIL_ENRICHMENT.md
-NEXT_ACTION = STOP. Review the development-only city queue advancement wiring; do not deploy, resume scheduling, run production Inventory, or send without separate authorization. / 停止。评审仅开发环境的城市队列推进接线；未经单独授权不得部署、恢复调度、运行生产 Inventory 或发送。
+LATEST_REPORTS = handoff/phases/PHASE4A7A_COMPLETION_SEMANTICS_AUDIT.md; handoff/phases/PHASE4A7_CITY_QUEUE_ADVANCEMENT.md
+NEXT_ACTION = STOP. Review the narrowed development city-completion semantics correction; do not deploy, resume scheduling, run production Inventory, or send without separate authorization. / 停止。评审已收窄的开发城市完成语义修正；未经单独授权不得部署、恢复调度、运行生产 Inventory 或发送。

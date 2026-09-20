@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import sqlite3
 from datetime import datetime, timezone
+from urllib.parse import urlsplit
 
 from outreach_control import DEFAULT_RETAIL_CITIES, RETAIL_QUERY_FAMILIES, RETAIL_SOURCES, all_city_completion_conditions_met
 
@@ -143,18 +144,36 @@ def city_completion_checks(conn: sqlite3.Connection, city_id: int, provider: str
     if not queue:
         return {key: False for key in _COMPLETION_KEYS}
     city = dict(queue)
-    query_total, query_completed = conn.execute(
-        """SELECT COUNT(*), SUM(CASE WHEN status='completed' THEN 1 ELSE 0 END)
+    query_rows = conn.execute(
+        """SELECT status, page_cursor, consecutive_pages_without_new_place, completed_at
            FROM lead_discovery_query_state WHERE active_city_id=? AND provider=?""",
         (city_id, provider),
-    ).fetchone()
+    ).fetchall()
+    query_total = len(query_rows)
+    query_completed = sum(1 for row in query_rows if row["status"] == "completed")
     queries_complete = (
         int(query_total or 0) == len(RETAIL_QUERY_FAMILIES)
         and int(query_completed or 0) == int(query_total or 0)
     )
-    # Discovery completes a query only when its provider cursor ends or the
-    # existing two-consecutive-no-new-place guard fires.  That is the durable
-    # queue signal used for the completion gates below.
+    # Discovery calls _complete_query only after a provider cursor ends or the
+    # existing two-consecutive-no-new-place guard fires.  Require its durable
+    # checkpoint fields too; mere row presence never proves page exhaustion.
+    two_empty_pages = queries_complete and all(
+        str(row["page_cursor"] or "") == "" and row["completed_at"]
+        for row in query_rows
+    )
+    # The audit table does not persist a per-page new-unique counter.  A last
+    # three result_count=0 sequence is therefore a deliberately stronger,
+    # independently persisted proof than query completion, never an alias.
+    last_three = conn.execute(
+        """SELECT status, result_count FROM provider_request_audit
+           WHERE active_city_id=? AND provider=? ORDER BY id DESC LIMIT 3""",
+        (city_id, provider),
+    ).fetchall()
+    last_three_batches_empty = len(last_three) == 3 and all(
+        row["status"] == "ok" and int(row["result_count"] or 0) == 0
+        for row in last_three
+    )
     web_reason_complete = city.get("web_directory_status") in {
         "completed", "not_required", "not_applicable", "web_directory_provider_not_configured",
     }
@@ -162,7 +181,7 @@ def city_completion_checks(conn: sqlite3.Connection, city_id: int, provider: str
         """SELECT 1 FROM lead_discovery_results WHERE active_city_id=?
            AND validation_status IN
            ('validation_pending','history_check_pending','website_lookup_pending',
-            'email_extraction_pending','manual_review_needed') LIMIT 1""",
+            'email_extraction_pending') LIMIT 1""",
         (city_id,),
     ).fetchone() is not None
     retryable_network = conn.execute(
@@ -172,29 +191,81 @@ def city_completion_checks(conn: sqlite3.Connection, city_id: int, provider: str
            LIMIT 1""",
         (city_id,),
     ).fetchone() is not None
-    linked_retry = conn.execute(
-        """SELECT 1 FROM lead_discovery_results d
-           JOIN leads l ON l.id=d.linked_lead_id
-           WHERE d.active_city_id=? AND d.linked_lead_id IS NOT NULL
-             AND COALESCE(l.email, '')=''
-             AND d.validation_status IN
-             ('validation_pending','history_check_pending','website_lookup_pending',
-              'email_extraction_pending','manual_review_needed')
-           LIMIT 1""",
+    candidate_rows = conn.execute(
+        """SELECT d.*, l.email AS linked_email, l.status AS linked_status,
+                  l.review_status AS linked_review_status,
+                  l.review_reason_code AS linked_review_reason_code,
+                  l.review_reason_detail AS linked_review_reason_detail
+           FROM lead_discovery_results d LEFT JOIN leads l ON l.id=d.linked_lead_id
+           WHERE d.active_city_id=?""",
         (city_id,),
-    ).fetchone() is not None
-    no_open_work = not (staged_pending or retryable_network or linked_retry)
+    ).fetchall()
+    retryable_manual = any(_manual_review_retryable(dict(row)) for row in candidate_rows)
+    linked_retry = any(_linked_backlog_retryable(dict(row)) for row in candidate_rows)
+    no_open_work = not (staged_pending or retryable_network or retryable_manual or linked_retry)
     return {
         "all_query_families": queries_complete,
         "all_sources_or_reasons": web_reason_complete,
         "pagination_complete": queries_complete,
-        "two_empty_pages": queries_complete,
+        "two_empty_pages": two_empty_pages,
         "all_candidates_classified": no_open_work,
         "no_unprocessed_candidates": no_open_work,
         "official_site_recheck": no_open_work,
         "review_recovery": no_open_work,
-        "last_three_batches_empty": queries_complete,
+        "last_three_batches_empty": last_three_batches_empty,
     }
+
+
+def _manual_review_retryable(row: dict) -> bool:
+    """Keep only records reachable by an existing automatic retry lane open."""
+    if row.get("validation_status") != "manual_review_needed":
+        return False
+    # The normal resolver owns unlinked, website-less manual-review rows.
+    if row.get("linked_lead_id") is None:
+        return not str(row.get("website") or "").strip()
+    return _linked_backlog_retryable(row)
+
+
+def _linked_backlog_retryable(row: dict) -> bool:
+    """Conservative durable mirror of the existing linked-backlog entry gate.
+
+    Terminal manual-review outcomes (for example hygiene failures and identity
+    reviews) are intentionally excluded.  This function performs no network,
+    no lead mutation, and no evidence mutation.
+    """
+    if row.get("linked_lead_id") is None or str(row.get("linked_email") or "").strip():
+        return False
+    if row.get("linked_status") not in {"new", "manual_review_needed"}:
+        return False
+    if row.get("linked_review_status") in {"rejected", "identity_review"}:
+        return False
+    if row.get("linked_review_reason_code") not in {
+        "website_lookup_required", "review_recovery", "no_public_email_or_form",
+    }:
+        return False
+    if row.get("validation_status") not in {
+        "validation_pending", "history_check_pending", "website_lookup_pending",
+        "email_extraction_pending", "manual_review_needed", "review_recovery",
+    }:
+        return False
+    reason = str(row.get("rejection_reason") or "")
+    if reason and not reason.startswith((
+        "website_resolution:not_found:", "website_resolution:network_error:", "website_resolution:network_retry:",
+    )):
+        return False
+    if row.get("history_crosscheck_result") in {
+        "suppressed_or_unsubscribed", "bounced", "previously_sent", "exact_duplicate", "rejected",
+    }:
+        return False
+    website = str(row.get("website") or "").strip()
+    if website and urlsplit(website).scheme not in {"http", "https"}:
+        return False
+    if (row.get("linked_review_reason_code") == "review_recovery"
+            and row.get("linked_review_reason_detail") != "review_recovery=official_site_unavailable"):
+        return False
+    if row.get("linked_review_reason_code") == "no_public_email_or_form" and not row.get("official_match"):
+        return False
+    return True
 
 
 _COMPLETION_KEYS = frozenset({
