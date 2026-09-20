@@ -1,10 +1,10 @@
 {
   "PROJECT": "Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化",
-  "CURRENT_PHASE": "PHASE 4A.5 / General inbox referral routing / 通用公开收件箱转介路由",
+  "CURRENT_PHASE": "PHASE 4A.6 / First-party email enrichment expansion / 第一方邮箱补全扩展",
   "STATUS": "DEVELOPMENT_VALIDATED_AWAITING_PRODUCTION_REVIEW",
   "READY_FOR_PRODUCTION": false,
-  "CURRENT_BLOCKER": "Production review and explicit deployment authorization required; no deployment was requested. / 需要生产评审与明确部署授权；本阶段未请求部署。",
-  "FULL_SUITE": "340 passed; 0 failed; 0 errors (project .venv)",
+  "CURRENT_BLOCKER": "Production review and explicit deployment authorization required; newly evidenced domain remains fail-closed on MX dns_error. / 需要生产评审与明确部署授权；新增证据域名因 MX dns_error 保持失败关闭。",
+  "FULL_SUITE": "346 passed; 0 failed; 0 errors (project unittest)",
   "FROZEN_FILES_CHANGED": 0,
   "PRODUCTION_FILES_CHANGED": 0,
   "PRODUCTION_DB_WRITES": 0,
@@ -22,6 +22,15 @@
   "NEW_RECIPIENTS_CREATED": 0,
   "V2_POLICY_CHANGED": false,
   "MX_POLICY_CHANGED": false,
-  "LATEST_REPORTS": ["handoff/phases/PHASE4A5_GENERAL_INBOX_REFERRAL_ROUTING.md"],
-  "NEXT_ACTION": "STOP; await production review and separate explicit authorization before deployment or sending. / 停止；部署或发送前等待生产评审及另行明确授权。"
+  "PHASE4A6_COHORT_SIZE": 4,
+  "PHASE4A6_BASELINE_VISIBLE_FIRST_PARTY_EMAILS": 0,
+  "PHASE4A6_AFTER_VISIBLE_FIRST_PARTY_EMAILS": 1,
+  "PHASE4A6_FULL_EVIDENCE_PERSISTED": true,
+  "PHASE4A6_RECOVERED_BY_DISCOVERED_INTERNAL_LINK": 1,
+  "PHASE4A6_MX_STATUS": "dns_error",
+  "PHASE4A6_FROZEN_V2_ELIGIBLE": false,
+  "V2_POLICY_CHANGED": false,
+  "MX_POLICY_CHANGED": false,
+  "LATEST_REPORTS": ["handoff/phases/PHASE4A6_FIRST_PARTY_EMAIL_ENRICHMENT.md", "handoff/phases/PHASE4A5_GENERAL_INBOX_REFERRAL_ROUTING.md"],
+  "NEXT_ACTION": "STOP; await production review and separate explicit authorization before deployment, scheduler resume, or sending. / 停止；部署、恢复调度或发送前等待生产评审及另行明确授权。"
 }

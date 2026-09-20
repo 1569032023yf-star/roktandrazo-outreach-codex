@@ -47,6 +47,12 @@ STAGING_POSTPROCESS_STATUSES = (
     "history_check_pending",
 )
 EMAIL_RE = re.compile(r"(?<![\w.+-])([A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+)")
+EXPLICIT_OBFUSCATED_EMAIL_RE = re.compile(
+    r"(?<![\w.+-])([A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+)\s*"
+    r"(?:\[\s*at\s*\]|\(\s*at\s*\)|\bat\b)\s*"
+    r"([A-Za-z0-9-]+(?:\s*(?:\[\s*dot\s*\]|\(\s*dot\s*\)|\bdot\b)\s*[A-Za-z0-9-]+)+)(?![\w.-])",
+    re.IGNORECASE,
+)
 WEBSITE_SCAN_PATHS = (
     ("", "official_homepage"),
     ("contact", "official_contact_page"),
@@ -56,6 +62,27 @@ WEBSITE_SCAN_PATHS = (
     ("partnership", "official_partnership_page"),
     ("privacy", "official_privacy_page"),
     ("terms", "official_terms_page"),
+)
+FIRST_PARTY_PATH_VARIANTS = (
+    ("contact-us", "official_contact_page"),
+    ("pages/contact", "official_contact_page"),
+    ("about-us", "official_about_page"),
+    ("team", "official_team_page"),
+    ("staff", "official_staff_page"),
+    ("sales", "official_sales_page"),
+    ("business", "official_business_page"),
+    ("support", "official_support_page"),
+    ("customer-service", "official_customer_service_page"),
+    ("vendors", "official_vendor_page"),
+    ("dealers", "official_dealer_page"),
+    ("distribution", "official_distribution_page"),
+    ("partnerships", "official_partnership_page"),
+)
+MAX_FIRST_PARTY_PAGES_PER_SITE = 12
+FIRST_PARTY_LINK_HINTS = (
+    "contact", "about", "team", "staff", "sales", "business", "wholesale",
+    "vendor", "vendors", "dealer", "dealers", "distribution", "partnership",
+    "partnerships", "support", "customer", "service",
 )
 CONTACT_FORM_RE = re.compile(r"<form\b[^>]*>.*?</form>", re.IGNORECASE | re.DOTALL)
 NOISE_EMAIL_PREFIXES = ("noreply@", "no-reply@", "example@", "privacy@", "copyright@")
@@ -98,9 +125,12 @@ class _VisibleTextParser(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.visibility_stack: list[bool] = [True]
         self.parts: list[str] = []
+        self.links: list[tuple[str, str]] = []
+        self._anchors: list[dict[str, Any]] = []
 
     def handle_starttag(self, tag: str, attrs) -> None:
-        attrs_map = {str(k).lower(): str(v or "").lower() for k, v in attrs}
+        raw_attrs = {str(k).lower(): str(v or "") for k, v in attrs}
+        attrs_map = {key: value.lower() for key, value in raw_attrs.items()}
         style = attrs_map.get("style", "").replace(" ", "")
         visible = self.visibility_stack[-1] and not (
             tag.lower() in self._NON_VISIBLE
@@ -112,17 +142,25 @@ class _VisibleTextParser(HTMLParser):
         if tag.lower() not in self._VOID:
             self.visibility_stack.append(visible)
         if visible:
-            href = attrs_map.get("href", "")
-            if href.startswith("mailto:"):
+            href = raw_attrs.get("href", "")
+            if href.lower().startswith("mailto:"):
                 self.parts.append(href[7:].split("?", 1)[0])
+            if tag.lower() == "a" and href:
+                self._anchors.append({"href": href, "parts": []})
 
-    def handle_endtag(self, _tag: str) -> None:
+    def handle_endtag(self, tag: str) -> None:
+        if tag.lower() == "a" and self._anchors:
+            anchor = self._anchors.pop()
+            self.links.append((str(anchor["href"]), " ".join(anchor["parts"])))
         if len(self.visibility_stack) > 1:
             self.visibility_stack.pop()
 
     def handle_data(self, data: str) -> None:
         if self.visibility_stack[-1] and data.strip():
-            self.parts.append(data.strip())
+            clean = data.strip()
+            self.parts.append(clean)
+            for anchor in self._anchors:
+                anchor["parts"].append(clean)
 
 
 def _visible_text_from_html(html: str) -> str:
@@ -132,6 +170,16 @@ def _visible_text_from_html(html: str) -> str:
     except Exception:
         return ""
     return " ".join(parser.parts)
+
+
+def _visible_page_content(html: str) -> tuple[str, list[tuple[str, str]]]:
+    """Return human-visible text and human-visible anchors only."""
+    parser = _VisibleTextParser()
+    try:
+        parser.feed(str(html or ""))
+    except Exception:
+        return "", []
+    return " ".join(parser.parts), parser.links
 
 
 class UrlLibWebsiteFetcher:
@@ -954,7 +1002,8 @@ class DiscoveryService:
                 and valid_http and valid_time and re.fullmatch(r"[a-fA-F0-9]{64}", str(ev.get("content_hash", "")))
                 and urllib.parse.urlsplit(str(ev.get("final_url", ""))).scheme == "https"
                 and all(urllib.parse.urlsplit(str(ev.get(k, ""))).scheme in {"http", "https"}
-                        and host(str(ev.get(k, ""))) == website_host for k in ("requested_url", "final_url")))
+                        and _same_party_domain(str(ev.get(k, "")), candidate.get("official_website", ""))
+                        for k in ("requested_url", "final_url")))
             if not valid:
                 return finish("identity_review", "invalid_official_evidence")
             existing_email = str(lead.get("email") or "").strip()
@@ -1440,6 +1489,27 @@ def _with_scheme(url: str) -> str:
     return "https://" + text
 
 
+def _same_party_domain(left: str, right: str) -> bool:
+    left_domain, right_domain = normalized_domain(left), normalized_domain(right)
+    return bool(left_domain and right_domain and (
+        left_domain == right_domain
+        or left_domain.endswith("." + right_domain)
+        or right_domain.endswith("." + left_domain)
+    ))
+
+
+def _canonical_same_party_url(base_url: str, value: str, official_website: str) -> str:
+    """Keep a canonical http(s) URL only when it remains on the official party."""
+    try:
+        parsed = urllib.parse.urlsplit(urllib.parse.urljoin(base_url, str(value or "").strip()))
+    except (TypeError, ValueError):
+        return ""
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        return ""
+    candidate = urllib.parse.urlunsplit((parsed.scheme, parsed.netloc, parsed.path, parsed.query, ""))
+    return candidate if _same_party_domain(candidate, official_website) else ""
+
+
 def _scan_urls(website: str) -> list[tuple[str, str]]:
     base = _with_scheme(website)
     if not base:
@@ -1456,47 +1526,102 @@ def _scan_urls(website: str) -> list[tuple[str, str]]:
     return urls
 
 
+def _fixed_first_party_urls(website: str) -> list[tuple[str, str]]:
+    """Expand the established probe set while preserving one bounded page budget."""
+    base = _with_scheme(website)
+    if not base:
+        return []
+    parsed = urllib.parse.urlsplit(base)
+    root = urllib.parse.urlunsplit((parsed.scheme or "https", parsed.netloc, "", "", ""))
+    candidates = list(WEBSITE_SCAN_PATHS) + list(FIRST_PARTY_PATH_VARIANTS)
+    urls: list[tuple[str, str]] = []
+    seen: set[str] = set()
+    for path, method in candidates:
+        url = root if not path else urllib.parse.urljoin(root + "/", path)
+        canonical = _canonical_same_party_url(root, url, website)
+        if canonical and canonical not in seen:
+            seen.add(canonical)
+            urls.append((canonical, method))
+    return urls
+
+
+def _discovered_first_party_links(page: dict, website: str) -> list[tuple[str, str]]:
+    """Return prioritized, visible, same-party homepage links with no crawler depth."""
+    _text, links = _visible_page_content(str(page.get("html") or ""))
+    candidates: list[tuple[int, str, str]] = []
+    seen: set[str] = set()
+    for href, label in links:
+        url = _canonical_same_party_url(str(page.get("final_url") or website), href, website)
+        if not url or url in seen:
+            continue
+        haystack = f"{urllib.parse.urlsplit(url).path} {label}".lower()
+        matching_hints = [hint for hint in FIRST_PARTY_LINK_HINTS if hint in haystack]
+        if not matching_hints:
+            continue
+        seen.add(url)
+        candidates.append((-len(matching_hints), url, "official_discovered_internal_link"))
+    candidates.sort(key=lambda item: (item[0], item[1]))
+    return [(url, method) for _rank, url, method in candidates]
+
+
+def _verified_official_page(url: str, method: str, website: str, fetcher: Any) -> dict:
+    try:
+        fetched = fetcher.fetch(url)
+    except Exception:
+        return {}
+    if not isinstance(fetched, dict):
+        # A plain string cannot prove HTTP or TLS success and therefore cannot
+        # become first-party evidence.
+        return {}
+    text = str(fetched.get("text") or "")
+    html = str(fetched.get("html") or "")
+    final_url = str(fetched.get("final_url") or url)
+    status = int(fetched.get("status") or 0)
+    http_success = 200 <= status < 400
+    tls_success = bool(fetched.get("tls_verified", False))
+    same_party = _same_party_domain(final_url, website)
+    if not text or not http_success or not tls_success or not same_party:
+        return {}
+    return {
+        "url": final_url,
+        "requested_url": url,
+        "final_url": final_url,
+        "method": method,
+        "text": text,
+        "html": html,
+        "http_status": status,
+        "http_success": http_success,
+        "tls_success": tls_success,
+        "fetched_at": str(fetched.get("fetched_at") or utc_now()),
+        "content_hash": hashlib.sha256(text.encode("utf-8")).hexdigest(),
+    }
+
+
 def _fetch_official_pages(website: str, fetcher: Any) -> list[dict]:
+    fixed = _fixed_first_party_urls(website)
+    if not fixed:
+        return []
     pages: list[dict] = []
-    for url, method in _scan_urls(website):
-        try:
-            fetched = fetcher.fetch(url)
-        except Exception:
-            fetched = ""
-        if isinstance(fetched, dict):
-            text = str(fetched.get("text") or "")
-            html = str(fetched.get("html") or "")
-            final_url = str(fetched.get("final_url") or url)
-            status = int(fetched.get("status") or 0)
-            requested_domain = normalized_domain(url)
-            final_domain = normalized_domain(final_url)
-            same_party = bool(requested_domain and final_domain and (
-                requested_domain == final_domain or requested_domain.endswith("." + final_domain) or final_domain.endswith("." + requested_domain)
-            ))
-            tls_success = bool(fetched.get("tls_verified", False))
-            http_success = 200 <= status < 400
-            if not http_success or not tls_success or not same_party:
-                text = ""
-        else:
-            # A plain string cannot prove HTTP or TLS success and therefore
-            # cannot be promoted as first-party evidence.
-            text = ""
-            html = ""
-            final_url = url
-        if text:
-            pages.append({
-                "url": final_url,
-                "requested_url": url,
-                "final_url": final_url,
-                "method": method,
-                "text": text,
-                "html": html,
-                "http_status": status,
-                "http_success": http_success,
-                "tls_success": tls_success,
-                "fetched_at": str(fetched.get("fetched_at") or utc_now()),
-                "content_hash": hashlib.sha256(text.encode("utf-8")).hexdigest(),
-            })
+    seen: set[str] = set()
+    homepage_url, homepage_method = fixed[0]
+    homepage = _verified_official_page(homepage_url, homepage_method, website, fetcher)
+    if homepage:
+        pages.append(homepage)
+        seen.add(homepage["final_url"])
+    queue = _discovered_first_party_links(homepage, website) if homepage else []
+    queue.extend(fixed[1:])
+    attempted = 1
+    for url, method in queue:
+        if attempted >= MAX_FIRST_PARTY_PAGES_PER_SITE:
+            break
+        canonical = _canonical_same_party_url(website, url, website)
+        if not canonical or canonical in seen:
+            continue
+        attempted += 1
+        page = _verified_official_page(canonical, method, website, fetcher)
+        if page:
+            seen.add(page["final_url"])
+            pages.append(page)
     return pages
 
 
@@ -1543,13 +1668,26 @@ def _snippet_from_text(text: str, needle: str, max_len: int = 220) -> str:
 def _extract_email_evidence(pages: list[dict]) -> dict:
     candidates = []
     for page in pages:
-        for match in EMAIL_RE.finditer(page["text"]):
-            email = _clean_email(match.group(1))
+        visible_candidates: list[tuple[str, str, bool]] = [
+            (match.group(1), match.group(1), False) for match in EMAIL_RE.finditer(page["text"])
+        ]
+        for match in EXPLICIT_OBFUSCATED_EMAIL_RE.finditer(page["text"]):
+            decoded_domain = re.sub(
+                r"(?:\[\s*dot\s*\]|\(\s*dot\s*\)|\bdot\b)",
+                ".",
+                match.group(2),
+                flags=re.IGNORECASE,
+            )
+            decoded_domain = re.sub(r"\s*\.\s*", ".", decoded_domain)
+            decoded = f"{match.group(1)}@{decoded_domain}"
+            visible_candidates.append((decoded, match.group(0), True))
+        for raw_email, visible_source, is_obfuscated in visible_candidates:
+            email = _clean_email(raw_email)
             if not email:
                 continue
-            snippet = _snippet_from_text(page["text"], email)
+            snippet = _snippet_from_text(page["text"], visible_source)
             local = email.split("@", 1)[0].lower()
-            method = page["method"]
+            method = page["method"] + ("_explicit_obfuscated_email" if is_obfuscated else "")
             score = 0
             if any(word in method for word in ("wholesale", "vendor", "partnership")):
                 score += 400

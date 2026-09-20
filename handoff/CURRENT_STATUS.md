@@ -1,12 +1,12 @@
 PROJECT = Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化
-CURRENT_PHASE = PHASE 4A.5 / 通用公开收件箱转介路由
+CURRENT_PHASE = PHASE 4A.6 / 第一方邮箱补全扩展
 STATUS = DEVELOPMENT_VALIDATED_AWAITING_PRODUCTION_REVIEW / 开发验证完成，等待生产评审
 READY_FOR_PRODUCTION = false
-CURRENT_BLOCKER = Production review and explicit deployment authorization required; no deployment was requested. / 需要生产评审与明确部署授权；本阶段未请求部署。
-FULL_SUITE = 340 passed; 0 failed; 0 errors (project .venv) / 340 项通过，失败与错误均为 0（项目 .venv）
+CURRENT_BLOCKER = Production review and explicit deployment authorization required; the newly evidenced domain is fail-closed on MX dns_error. / 需要生产评审与明确部署授权；新增证据域名因 MX dns_error 保持失败关闭。
+FULL_SUITE = 346 passed; 0 failed; 0 errors (project unittest) / 346 项通过，失败与错误均为 0（项目 unittest）
 FROZEN_FILES_CHANGED = 0
 PRODUCTION_FILES_CHANGED = 0
 PRODUCTION_DB_WRITES = 0
 REAL_SMTP_CONNECTIONS = 0
-LATEST_REPORTS = handoff/phases/PHASE4A5_GENERAL_INBOX_REFERRAL_ROUTING.md
-NEXT_ACTION = STOP. Review the development-only generic inbox referral routing patch; do not deploy or send without separate authorization. / 停止。评审仅开发环境的通用收件箱转介路由补丁；未经单独授权不得部署或发送。
+LATEST_REPORTS = handoff/phases/PHASE4A6_FIRST_PARTY_EMAIL_ENRICHMENT.md; handoff/phases/PHASE4A5_GENERAL_INBOX_REFERRAL_ROUTING.md
+NEXT_ACTION = STOP. Review the development-only bounded first-party email enrichment patch; do not deploy, resume scheduling, or send without separate authorization. / 停止。评审仅开发环境的有界第一方邮箱补全补丁；未经单独授权不得部署、恢复调度或发送。
