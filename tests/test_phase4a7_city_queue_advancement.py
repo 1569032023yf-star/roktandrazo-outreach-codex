@@ -53,22 +53,28 @@ class CityQueueAdvancementTests(unittest.TestCase):
         self.conn.close()
         self.temp.cleanup()
 
-    def _complete_query_matrix(self):
+    def _complete_query_matrix(self, duplicate_only: bool = False):
         for family in RETAIL_QUERY_FAMILIES:
             self.conn.execute(
                 """INSERT INTO lead_discovery_query_state
-                   (active_city_id, provider, query_family, query_text, status, completed_at)
-                   VALUES (?, ?, ?, ?, 'completed', CURRENT_TIMESTAMP)""",
-                (self.city["id"], self.provider, family, f"{family} Ithaca NY"),
+                   (active_city_id, provider, query_family, query_text, status, page_cursor,
+                    pages_processed, new_unique_places, duplicate_places,
+                    consecutive_pages_without_new_place, completed_at)
+                   VALUES (?, ?, ?, ?, 'completed', '', ?, ?, ?, ?, CURRENT_TIMESTAMP)""",
+                (
+                    self.city["id"], self.provider, family, f"{family} Ithaca NY",
+                    2 if duplicate_only else 1, 0, 20 if duplicate_only else 0,
+                    2 if duplicate_only else 0,
+                ),
             )
         self.conn.commit()
 
-    def _record_three_empty_batches(self):
+    def _record_duplicate_only_batches(self):
         for _ in range(3):
             self.conn.execute(
                 """INSERT INTO provider_request_audit
                    (active_city_id, provider, status, result_count, request_count, requested_at)
-                   VALUES (?, ?, 'ok', 0, 1, CURRENT_TIMESTAMP)""",
+                   VALUES (?, ?, 'ok', 20, 1, CURRENT_TIMESTAMP)""",
                 (self.city["id"], self.provider),
             )
         self.conn.commit()
@@ -126,7 +132,7 @@ class CityQueueAdvancementTests(unittest.TestCase):
 
     def test_terminal_manual_review_does_not_pin_exhausted_city(self):
         self._complete_query_matrix()
-        self._record_three_empty_batches()
+        self._record_duplicate_only_batches()
         self.conn.execute(
             """INSERT INTO leads (id, email, status, review_reason_code)
                VALUES (9002, 'already-checked@example.test', 'manual_review_needed', 'hygiene_failed')"""
@@ -136,18 +142,29 @@ class CityQueueAdvancementTests(unittest.TestCase):
         self.assertTrue(checks["all_candidates_classified"])
         self.assertTrue(complete_active_city_if_exhausted(self.conn, self.provider, state="NY"))
 
-    def test_last_three_empty_batches_is_independent_persisted_evidence(self):
+    def test_duplicate_only_exhaustion_does_not_require_zero_raw_provider_results(self):
+        self._complete_query_matrix(duplicate_only=True)
+        self._record_duplicate_only_batches()
+        checks = city_completion_checks(self.conn, self.city["id"], self.provider)
+        self.assertTrue(checks["all_query_families"])
+        self.assertTrue(checks["two_empty_pages"])
+        self.assertTrue(checks["last_three_batches_empty"])
+        self.assertTrue(complete_active_city_if_exhausted(self.conn, self.provider, state="NY"))
+
+    def test_completed_status_without_durable_checkpoint_does_not_exhaust_query(self):
         self._complete_query_matrix()
-        before = city_completion_checks(self.conn, self.city["id"], self.provider)
-        self.assertTrue(before["all_query_families"])
-        self.assertTrue(before["two_empty_pages"])
-        self.assertFalse(before["last_three_batches_empty"])
-        self._record_three_empty_batches()
-        self.assertTrue(city_completion_checks(self.conn, self.city["id"], self.provider)["last_three_batches_empty"])
+        self.conn.execute(
+            """UPDATE lead_discovery_query_state SET pages_processed=0
+               WHERE active_city_id=? AND query_family=?""",
+            (self.city["id"], RETAIL_QUERY_FAMILIES[0]),
+        )
+        self.conn.commit()
+        checks = city_completion_checks(self.conn, self.city["id"], self.provider)
+        self.assertFalse(checks["all_query_families"])
+        self.assertFalse(checks["two_empty_pages"])
 
     def test_genuinely_exhausted_city_terminalizes_then_next_ny_city_activates(self):
         self._complete_query_matrix()
-        self._record_three_empty_batches()
         self.assertTrue(complete_active_city_if_exhausted(self.conn, self.provider, state="NY"))
         terminal = self.conn.execute("SELECT status, completion_reason FROM retail_city_queue WHERE id=?", (self.city["id"],)).fetchone()
         self.assertEqual(tuple(terminal), ("search_matrix_exhausted", "search_matrix_exhausted"))

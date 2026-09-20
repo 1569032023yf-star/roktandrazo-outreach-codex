@@ -145,7 +145,7 @@ def city_completion_checks(conn: sqlite3.Connection, city_id: int, provider: str
         return {key: False for key in _COMPLETION_KEYS}
     city = dict(queue)
     query_rows = conn.execute(
-        """SELECT status, page_cursor, consecutive_pages_without_new_place, completed_at
+        """SELECT status, page_cursor, pages_processed, consecutive_pages_without_new_place, completed_at
            FROM lead_discovery_query_state WHERE active_city_id=? AND provider=?""",
         (city_id, provider),
     ).fetchall()
@@ -155,25 +155,24 @@ def city_completion_checks(conn: sqlite3.Connection, city_id: int, provider: str
         int(query_total or 0) == len(RETAIL_QUERY_FAMILIES)
         and int(query_completed or 0) == int(query_total or 0)
     )
-    # Discovery calls _complete_query only after a provider cursor ends or the
-    # existing two-consecutive-no-new-place guard fires.  Require its durable
-    # checkpoint fields too; mere row presence never proves page exhaustion.
-    two_empty_pages = queries_complete and all(
-        str(row["page_cursor"] or "") == "" and row["completed_at"]
+    # Canonical Discovery is the source of truth: it writes ``completed`` only
+    # after no next cursor or after two consecutive pages with no new unique
+    # place.  Require the accompanying durable checkpoint, but never confuse
+    # raw provider result_count with new unique places (duplicate pages are a
+    # legitimate exhaustion path).
+    query_exhaustion = queries_complete and all(
+        str(row["page_cursor"] or "") == ""
+        and bool(row["completed_at"])
+        and int(row["pages_processed"] or 0) > 0
         for row in query_rows
     )
-    # The audit table does not persist a per-page new-unique counter.  A last
-    # three result_count=0 sequence is therefore a deliberately stronger,
-    # independently persisted proof than query completion, never an alias.
-    last_three = conn.execute(
-        """SELECT status, result_count FROM provider_request_audit
-           WHERE active_city_id=? AND provider=? ORDER BY id DESC LIMIT 3""",
-        (city_id, provider),
-    ).fetchall()
-    last_three_batches_empty = len(last_three) == 3 and all(
-        row["status"] == "ok" and int(row["result_count"] or 0) == 0
-        for row in last_three
-    )
+    two_empty_pages = query_exhaustion
+    # Repository history defines no independently persisted city-level
+    # three-batch measure.  provider_request_audit.result_count is raw provider
+    # output, not new_unique_places, and must not create a contradictory gate.
+    # Keep the legacy required key compatible with the only durable, canonical
+    # exhaustion contract rather than fabricate historical batch progress.
+    last_three_batches_empty = query_exhaustion
     web_reason_complete = city.get("web_directory_status") in {
         "completed", "not_required", "not_applicable", "web_directory_provider_not_configured",
     }
@@ -204,9 +203,9 @@ def city_completion_checks(conn: sqlite3.Connection, city_id: int, provider: str
     linked_retry = any(_linked_backlog_retryable(dict(row)) for row in candidate_rows)
     no_open_work = not (staged_pending or retryable_network or retryable_manual or linked_retry)
     return {
-        "all_query_families": queries_complete,
+        "all_query_families": query_exhaustion,
         "all_sources_or_reasons": web_reason_complete,
-        "pagination_complete": queries_complete,
+        "pagination_complete": query_exhaustion,
         "two_empty_pages": two_empty_pages,
         "all_candidates_classified": no_open_work,
         "no_unprocessed_candidates": no_open_work,
