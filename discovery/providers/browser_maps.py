@@ -18,7 +18,9 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
+import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -31,11 +33,30 @@ from discovery.providers.base import SearchProvider
 
 
 CACHE_DIR = Path(os.getenv("BROWSER_MAPS_CACHE_DIR", str(PROJECT_DIR / "data" / "browser_maps_cache")))
+_RESULT_TEXT_FIELDS = {
+    "provider", "provider_result_id", "place_id", "business_name", "formatted_address",
+    "city", "state", "country", "postal_code", "phone", "website", "business_status",
+    "primary_type", "source_query", "source_url", "next_page_cursor", "fetched_at",
+}
+
+
+def _sanitize_provider_text(value: Any) -> str:
+    """Remove display-only control/private-use glyphs from provider fields."""
+    value = str(value or "")
+    cleaned = "".join(
+        " " if ord(char) < 32 or ord(char) == 127 or unicodedata.category(char) == "Co" else char
+        for char in value
+    )
+    return " ".join(cleaned.split())
 
 
 def _cache_key(query: str, city: str, state: str, page: str) -> str:
     """Generate a cache filename from query parameters."""
-    safe = f"{query}_{city}_{state}_{page}".lower().replace(' ', '_').replace('/', '_')
+    parts = (_sanitize_provider_text(value) for value in (query, city, state, page))
+    safe = "_".join(parts).lower()
+    safe = re.sub(r'[<>:"/\\|?*]', '_', safe)
+    safe = re.sub(r'\s+', '_', safe)
+    safe = re.sub(r'_+', '_', safe).strip('._') or 'empty'
     # Truncate for filesystem safety
     if len(safe) > 180:
         import hashlib
@@ -56,7 +77,7 @@ def _load_cache(query: str, city: str, state: str, page: str) -> ProviderPage | 
         results = []
         for r in raw.get('results', []):
             results.append(PlaceSearchResult(**{
-                k: r.get(k, '') if k not in ('types', 'raw_payload') else r.get(k, [])
+                k: _sanitize_provider_text(r.get(k, '')) if k in _RESULT_TEXT_FIELDS else r.get(k, [])
                 for k in PlaceSearchResult.__dataclass_fields__
                 if k in r
             }))
@@ -155,19 +176,19 @@ def _scrape_direct(query: str, city: str, state: str, max_results: int, headless
                     provider=r.get('provider', 'browser_maps'),
                     provider_result_id=r.get('provider_result_id', ''),
                     place_id=r.get('place_id', ''),
-                    business_name=r.get('business_name', ''),
-                    formatted_address=r.get('formatted_address', ''),
-                    city=r.get('city', city),
-                    state=r.get('state', state),
-                    country=r.get('country', 'US'),
-                    postal_code=r.get('postal_code', ''),
-                    phone=r.get('phone', ''),
-                    website=r.get('website', ''),
-                    business_status=r.get('business_status', ''),
-                    primary_type=r.get('primary_type', ''),
+                    business_name=_sanitize_provider_text(r.get('business_name', '')),
+                    formatted_address=_sanitize_provider_text(r.get('formatted_address', '')),
+                    city=_sanitize_provider_text(r.get('city', city)),
+                    state=_sanitize_provider_text(r.get('state', state)),
+                    country=_sanitize_provider_text(r.get('country', 'US')),
+                    postal_code=_sanitize_provider_text(r.get('postal_code', '')),
+                    phone=_sanitize_provider_text(r.get('phone', '')),
+                    website=_sanitize_provider_text(r.get('website', '')),
+                    business_status=_sanitize_provider_text(r.get('business_status', '')),
+                    primary_type=_sanitize_provider_text(r.get('primary_type', '')),
                     types=r.get('types', []),
-                    source_query=r.get('source_query', query),
-                    source_url=r.get('source_url', ''),
+                    source_query=_sanitize_provider_text(r.get('source_query', query)),
+                    source_url=_sanitize_provider_text(r.get('source_url', '')),
                     raw_payload=r.get('raw_payload', {}),
                     next_page_cursor='',
                     fetched_at=r.get('fetched_at', utc_now()),

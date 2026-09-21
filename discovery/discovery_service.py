@@ -410,9 +410,10 @@ class DiscoveryService:
                     )
                 status = "website_resolved"
             else:
+                terminal_status = "website_not_found" if status == "not_found" else row["validation_status"]
                 self.conn.execute(
-                    "UPDATE lead_discovery_results SET rejection_reason=?,last_seen_at=? WHERE id=?",
-                    (f"website_resolution:{status}:{result.error}"[:500], utc_now(), row["id"]),
+                    "UPDATE lead_discovery_results SET validation_status=?,rejection_reason=?,last_seen_at=? WHERE id=?",
+                    (terminal_status, f"website_resolution:{status}:{result.error}"[:500], utc_now(), row["id"]),
                 )
             summary.validation_statuses[status] = summary.validation_statuses.get(status, 0) + 1
         if not rows:
@@ -767,6 +768,8 @@ class DiscoveryService:
             return "outside_active_city", None
         website = str(row.get("website") or "").strip()
         if not website:
+            if row.get("validation_status") == "website_not_found":
+                return "website_not_found", None
             return "website_lookup_pending", None
         pages = _fetch_official_pages(website, fetcher)
         if not pages:

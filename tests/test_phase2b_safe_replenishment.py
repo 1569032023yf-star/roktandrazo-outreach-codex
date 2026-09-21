@@ -94,7 +94,7 @@ class SafeReplenishmentTests(unittest.TestCase):
             result_summary = service.run_website_resolution(city, resolver)
             self.assertEqual(result_summary.validation_statuses, {"not_found": 1})
             row = conn.execute("SELECT website,validation_status FROM lead_discovery_results").fetchone()
-            self.assertEqual((row["website"], row["validation_status"]), ("", "website_lookup_pending"))
+            self.assertEqual((row["website"], row["validation_status"]), ("", "website_not_found"))
 
     def test_identity_mismatch_and_cross_domain_redirect_fail_closed(self):
         with DiscoveryDb() as conn:
