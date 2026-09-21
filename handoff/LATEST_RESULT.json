@@ -1,11 +1,11 @@
 {
   "PROJECT": "Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化",
-  "CURRENT_PHASE": "PHASE 4A.8 / Website-resolution liveness and BrowserMaps cache hygiene / 官网解析活性与 BrowserMaps 缓存卫生",
-  "STATUS": "DEVELOPMENT_VALIDATED_WITH_REPLAY_LIMITATION",
+  "CURRENT_PHASE": "PHASE 4A.8A / Linked-backlog drain validation / 已关联积压排空验证",
+  "STATUS": "DEVELOPMENT_VALIDATED_RETRY_BACKLOG_REMAINS",
   "READY_FOR_PRODUCTION": false,
-  "CURRENT_BLOCKER": "Twelve independent legitimate linked-backlog retries remain. Their bounded development-copy drain was interrupted by an isolated SQLite lock and requires separate controlled revalidation; no policy was weakened. / 仍有 12 条独立合法的 linked-backlog 重试；其有界开发副本排空被隔离 SQLite 锁中断，需单独受控复验；未放宽任何规则。",
+  "CURRENT_BLOCKER": "Canonical bounded replay processed all 12 legitimate linked-backlog retries but produced no durable terminal outcome; all 12 remain retryable, so Ithaca must remain active and cannot advance. / 既有有界重放已处理全部 12 条合法 linked-backlog 重试，但未产生可持久化终结结果；12 条均保持可重试，Ithaca 必须继续 active，不能推进。",
   "FULL_SUITE": "362 passed; 0 failed; 0 errors (project unittest)",
-  "TARGETED_TESTS": "13 passed; 0 failed; 0 errors",
+  "TARGETED_TESTS": "5 passed; 0 failed; 0 errors (Phase 4A.8 targeted regression)",
   "FROZEN_FILES_CHANGED": 0,
   "PRODUCTION_FILES_CHANGED": 0,
   "PRODUCTION_DB_WRITES": 0,
@@ -28,10 +28,18 @@
   "REPLAY_POISONED_BROWSERMAPS_RESULT_COUNT": 1,
   "REPLAY_POISONED_OFFICIAL_WEBSITE_COUNT": 0,
   "REPLAY_POISONED_OUTCOME": "website_not_found",
+  "REPLAY_LINKED_RETRY_ROWS_BEFORE": 12,
+  "REPLAY_LINKED_RETRY_ROWS_AFTER": 12,
+  "REPLAY_LINKED_BACKLOG_PROCESSED": 12,
+  "REPLAY_LINKED_BACKLOG_TERMINALIZED": 0,
+  "REPLAY_CITY_COMPLETION_ALL_MET": false,
+  "REPLAY_ITHACA_STATUS": "active",
+  "REPLAY_NEXT_CITY": null,
   "REPLAY_CITY_ADVANCEMENT": "blocked_by_12_independent_linked_backlog_retries",
   "LATEST_REPORTS": [
+    "handoff/phases/PHASE4A8A_LINKED_BACKLOG_DRAIN_VALIDATION.md",
     "handoff/phases/PHASE4A8_WEBSITE_LIVENESS_CACHE_HYGIENE.md",
     "handoff/phases/PHASE4A7B_CITY_EXHAUSTION_FINAL.md"
   ],
-  "NEXT_ACTION": "STOP; await review and separate explicit authorization for bounded linked-backlog validation before any deployment, scheduler resume, production Inventory, or sending. / 停止；部署、恢复调度、运行生产 Inventory 或发送前，等待评审及剩余 linked-backlog 有界验证的单独明确授权。"
+  "NEXT_ACTION": "STOP; review the exact terminal semantics for the 12 remaining legitimate linked-backlog retries before any deployment, scheduler resume, production Inventory, or sending. / 停止；部署、恢复调度、运行生产 Inventory 或发送前，先评审剩余 12 条合法 linked-backlog 重试的精确终结语义。"
 }

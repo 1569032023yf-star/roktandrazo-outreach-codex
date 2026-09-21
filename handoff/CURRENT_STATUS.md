@@ -1,12 +1,12 @@
 PROJECT = Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化
-CURRENT_PHASE = PHASE 4A.8 / 官网解析活性与 BrowserMaps 缓存卫生
-STATUS = DEVELOPMENT_VALIDATED_WITH_REPLAY_LIMITATION / 开发验证完成，但生产副本排空验证存在限制
+CURRENT_PHASE = PHASE 4A.8A / Linked-backlog drain validation / 已关联积压排空验证
+STATUS = DEVELOPMENT_VALIDATED_RETRY_BACKLOG_REMAINS / 开发验证完成，但合法重试积压仍存在
 READY_FOR_PRODUCTION = false
-CURRENT_BLOCKER = The two Phase 4A.8 defects are fixed, but 12 independent legitimate linked-backlog retries remain; their bounded copy-only drain was interrupted by an isolated development-copy SQLite lock and must be revalidated under separate controlled authorization. / 两项 4A.8 缺陷已修复，但仍有 12 条独立且合法的 linked-backlog 重试；其有界副本排空因隔离开发副本 SQLite 锁中断，须在单独受控授权下复验。
+CURRENT_BLOCKER = Canonical bounded replay processed all 12 legitimate linked-backlog retries but produced no durable terminal outcome; all 12 remain retryable, so Ithaca must remain active and cannot advance. / 既有有界重放已处理全部 12 条合法 linked-backlog 重试，但未产生可持久化终结结果；12 条均保持可重试，Ithaca 必须继续 active，不能推进。
 FULL_SUITE = 362 passed; 0 failed; 0 errors (project unittest) / 362 项通过，失败与错误均为 0（项目 unittest）
 FROZEN_FILES_CHANGED = 0
 PRODUCTION_FILES_CHANGED = 0
 PRODUCTION_DB_WRITES = 0
 REAL_SMTP_CONNECTIONS = 0
-LATEST_REPORTS = handoff/phases/PHASE4A8_WEBSITE_LIVENESS_CACHE_HYGIENE.md; handoff/phases/PHASE4A7B_CITY_EXHAUSTION_FINAL.md
-NEXT_ACTION = STOP. Review the narrow production patch and separately authorize bounded validation of the remaining linked-backlog retries; do not deploy, resume scheduling, run production Inventory, or send. / 停止。评审窄生产补丁，并单独授权剩余 linked-backlog 重试的有界验证；不得部署、恢复调度、运行生产 Inventory 或发送。
+LATEST_REPORTS = handoff/phases/PHASE4A8A_LINKED_BACKLOG_DRAIN_VALIDATION.md; handoff/phases/PHASE4A8_WEBSITE_LIVENESS_CACHE_HYGIENE.md
+NEXT_ACTION = STOP. Review the exact terminal semantics for the 12 remaining legitimate linked-backlog retries; do not deploy, resume scheduling, run production Inventory, or send. / 停止。评审剩余 12 条合法 linked-backlog 重试的精确终结语义；不得部署、恢复调度、运行生产 Inventory 或发送。
