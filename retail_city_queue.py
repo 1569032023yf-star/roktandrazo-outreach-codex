@@ -1,6 +1,7 @@
 """SQLite-backed single-city retail discovery state; no network or project imports."""
 from __future__ import annotations
 
+import json
 import sqlite3
 from datetime import datetime, timezone
 from urllib.parse import urlsplit
@@ -232,6 +233,12 @@ def _linked_backlog_retryable(row: dict) -> bool:
     reviews) are intentionally excluded.  This function performs no network,
     no lead mutation, and no evidence mutation.
     """
+    try:
+        retry = json.loads(str(row.get("raw_payload_json") or "{}"))
+    except (TypeError, ValueError):
+        retry = {}
+    if (retry.get("linked_backlog_retry") or {}).get("automation_terminal_outcome") == "access_unreachable":
+        return False
     if row.get("linked_lead_id") is None or str(row.get("linked_email") or "").strip():
         return False
     if row.get("linked_status") not in {"new", "manual_review_needed"}:

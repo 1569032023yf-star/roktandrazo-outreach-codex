@@ -280,12 +280,32 @@ class BrowserFallbackWebsiteFetcher:
             os.getenv("OFFICIAL_SITE_BROWSER_SITE_TIMEOUT_SECONDS", "45")
         )
         self._site_deadline: float | None = None
+        self._site_static_access_failure = False
+        self._site_browser_attempted = False
+        self._site_qualifying_page = False
+        self.last_site_automation_recovery_exhausted = False
 
     def begin_site(self) -> None:
         self._site_deadline = time.monotonic() + max(0.1, self.site_timeout_seconds)
+        self._site_static_access_failure = False
+        self._site_browser_attempted = False
+        self._site_qualifying_page = False
+        self.last_site_automation_recovery_exhausted = False
 
     def end_site(self) -> None:
+        # This is operational, not factual, terminality: the caller uses it
+        # only after the entire bounded same-party page set has produced no
+        # HTTP-success evidence.  It never asserts that no public email exists.
+        self.last_site_automation_recovery_exhausted = bool(
+            self._site_static_access_failure
+            and self._site_browser_attempted
+            and not self._site_qualifying_page
+        )
         self._site_deadline = None
+
+    def mark_qualifying_official_page(self) -> None:
+        """Record that this bounded recovery obtained usable first-party HTTP evidence."""
+        self._site_qualifying_page = True
 
     def _browser_fetch(self, url: str) -> dict:
         remaining = (self._site_deadline - time.monotonic()) if self._site_deadline else self.site_timeout_seconds
@@ -340,6 +360,8 @@ class BrowserFallbackWebsiteFetcher:
         except BaseException as exc:
             if not _static_failure_allows_browser_fallback(exc):
                 raise
+            self._site_static_access_failure = True
+            self._site_browser_attempted = True
             return self._browser_fetch(url)
         finally:
             if original_static_timeout is not None:
@@ -560,6 +582,9 @@ class DiscoveryService:
 
     def _linked_retry_allowed(self, row: dict, city_row: dict) -> bool:
         """Fail closed on history/identity; a linkage alone is not official evidence."""
+        retry = _raw_payload(row).get('linked_backlog_retry') or {}
+        if retry.get('automation_terminal_outcome') == 'access_unreachable':
+            return False
         lead_row = self.conn.execute('SELECT * FROM leads WHERE id=?', (row.get('linked_lead_id'),)).fetchone()
         if not lead_row or self._row_outside_active_city(row, city_row):
             return False
@@ -632,7 +657,8 @@ class DiscoveryService:
                     and (requested_ids is None or int(r["id"]) in requested_ids)]
         selected = eligible[:limit]
         summary = {'eligible': len(eligible), 'processed': len(selected), 'website_processed': 0,
-                   'postprocess_processed': 0, 'existing_leads_linked': 0, 'terminalized': 0}
+                   'postprocess_processed': 0, 'existing_leads_linked': 0, 'terminalized': 0,
+                   'automation_deferred': 0}
         for row in selected:
             payload = json.loads(row.get('raw_payload_json') or '{}')
             previous = payload.get('linked_backlog_retry', {})
@@ -653,6 +679,9 @@ class DiscoveryService:
                 if terminal:
                     self._terminalize_linked_backlog(row['id'], terminal)
                     summary['terminalized'] += 1
+                elif bool(getattr(fetcher, 'last_site_automation_recovery_exhausted', False)):
+                    self._defer_access_unreachable(row['id'])
+                    summary['automation_deferred'] += 1
             except Exception as exc:
                 self.conn.execute('ROLLBACK TO linked_retry_attempt')
                 summary['errors'] = summary.get('errors', 0) + 1
@@ -707,6 +736,25 @@ class DiscoveryService:
                SET validation_status=?, raw_payload_json=?
                WHERE id=?""",
             (outcome, json.dumps(payload, sort_keys=True), discovery_id),
+        )
+
+    def _defer_access_unreachable(self, discovery_id: int) -> None:
+        """Persist automatic-transport exhaustion without asserting an email fact."""
+        row = self.conn.execute(
+            'SELECT raw_payload_json FROM lead_discovery_results WHERE id=?', (discovery_id,)
+        ).fetchone()
+        payload = _raw_payload({'raw_payload_json': row[0] if row else ''})
+        retry = dict(payload.get('linked_backlog_retry') or {})
+        retry.update({
+            'automation_terminal_outcome': 'access_unreachable',
+            'automation_terminal_at': utc_now(),
+        })
+        payload['linked_backlog_retry'] = retry
+        # Keep the existing review state and all evidence/recipient fields
+        # untouched.  This removes only automatic city-work reselection.
+        self.conn.execute(
+            'UPDATE lead_discovery_results SET raw_payload_json=? WHERE id=?',
+            (json.dumps(payload, sort_keys=True), discovery_id),
         )
 
     def run_web_directory_probe(self, city_row: dict) -> str:
@@ -1737,6 +1785,9 @@ def _verified_official_page(url: str, method: str, website: str, fetcher: Any) -
     same_party = _same_party_domain(final_url, website)
     if not text or not http_success or not tls_success or not same_party:
         return {}
+    mark_qualifying = getattr(fetcher, "mark_qualifying_official_page", None)
+    if callable(mark_qualifying):
+        mark_qualifying()
     return {
         "url": final_url,
         "requested_url": url,
