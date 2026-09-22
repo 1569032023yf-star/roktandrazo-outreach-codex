@@ -3,8 +3,13 @@ from __future__ import annotations
 
 import json
 import hashlib
+import http.client
+import multiprocessing
+import os
 import re
+import socket
 import sqlite3
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -208,6 +213,139 @@ class UrlLibWebsiteFetcher:
             }
 
 
+def _browser_official_page_worker(url: str, timeout_seconds: float, result_pipe) -> None:
+    """Fetch one official page with the installed browser runtime in a child."""
+    browser = None
+    playwright = None
+    try:
+        from playwright.sync_api import sync_playwright
+        playwright = sync_playwright().start()
+        browser = playwright.chromium.launch(headless=True)
+        page = browser.new_page()
+        response = page.goto(url, wait_until="domcontentloaded", timeout=max(100, int(timeout_seconds * 1000)))
+        html = page.content()
+        # `inner_text` is rendered DOM text; it excludes script-only email text.
+        text = page.locator("body").inner_text(timeout=max(100, int(timeout_seconds * 1000)))
+        result_pipe.send(("ok", {
+            "text": text,
+            "html": html,
+            "status": int(response.status) if response else 0,
+            "final_url": page.url,
+            "tls_verified": True,
+            "fetched_at": utc_now(),
+            "fetch_transport": "browser_fallback",
+        }))
+    except BaseException as exc:
+        result_pipe.send(("error", f"{type(exc).__name__}:{exc}"))
+    finally:
+        try:
+            if browser:
+                browser.close()
+        finally:
+            if playwright:
+                playwright.stop()
+            result_pipe.close()
+
+
+def _static_failure_allows_browser_fallback(exc: BaseException) -> bool:
+    """Allow browser rendering only for access-level/static transport failures."""
+    if isinstance(exc, urllib.error.HTTPError):
+        return exc.code in {401, 403}
+    if isinstance(exc, (TimeoutError, socket.timeout, http.client.RemoteDisconnected,
+                        ConnectionResetError, ConnectionAbortedError, ConnectionRefusedError)):
+        return True
+    if isinstance(exc, urllib.error.URLError):
+        reason = str(getattr(exc, "reason", exc)).lower()
+        return any(marker in reason for marker in (
+            "timeout", "timed out", "connection reset", "remote end closed", "connection refused",
+        ))
+    return False
+
+
+class BrowserFallbackWebsiteFetcher:
+    """Static-first official-site fetcher with bounded Playwright fallback.
+
+    It is intentionally not a crawler: the established caller controls the
+    same-party URL set and its twelve-page budget.  The browser child is bound
+    to the existing Windows kill-on-close Job Object helper.
+    """
+
+    def __init__(self, static_fetcher: Any | None = None, page_timeout_seconds: float | None = None,
+                 site_timeout_seconds: float | None = None) -> None:
+        self.static_fetcher = static_fetcher or UrlLibWebsiteFetcher()
+        self.page_timeout_seconds = page_timeout_seconds if page_timeout_seconds is not None else float(
+            os.getenv("OFFICIAL_SITE_BROWSER_PAGE_TIMEOUT_SECONDS", "12")
+        )
+        self.site_timeout_seconds = site_timeout_seconds if site_timeout_seconds is not None else float(
+            os.getenv("OFFICIAL_SITE_BROWSER_SITE_TIMEOUT_SECONDS", "45")
+        )
+        self._site_deadline: float | None = None
+
+    def begin_site(self) -> None:
+        self._site_deadline = time.monotonic() + max(0.1, self.site_timeout_seconds)
+
+    def end_site(self) -> None:
+        self._site_deadline = None
+
+    def _browser_fetch(self, url: str) -> dict:
+        remaining = (self._site_deadline - time.monotonic()) if self._site_deadline else self.site_timeout_seconds
+        if remaining <= 0:
+            raise TimeoutError("official_site_browser_site_timeout")
+        timeout = min(max(0.1, remaining), max(0.1, self.page_timeout_seconds))
+        from discovery.website_resolver import _attach_kill_on_close_job, _close_kill_job
+        parent, child = multiprocessing.Pipe(duplex=False)
+        process = multiprocessing.get_context("spawn").Process(
+            target=_browser_official_page_worker, args=(url, timeout, child), daemon=False,
+        )
+        process.start()
+        child.close()
+        job = _attach_kill_on_close_job(process.pid)
+        try:
+            # Do not rely on one long ``join(timeout)`` here: a Windows
+            # browser-launch wait can fail to return when expected.  Polling
+            # keeps the deadline in this parent process authoritative, with
+            # no background worker or unbounded thread.
+            deadline = time.monotonic() + timeout
+            while process.is_alive() and time.monotonic() < deadline:
+                time.sleep(min(0.05, max(0.001, deadline - time.monotonic())))
+            if process.is_alive():
+                try:
+                    process.kill()
+                except (AttributeError, OSError):
+                    process.terminate()
+                process.join(5)
+                raise TimeoutError(f"official_site_browser_page_timeout:{int(timeout * 1000)}ms")
+            process.join(5)
+            if not parent.poll():
+                raise ConnectionError("official_site_browser_no_result")
+            kind, value = parent.recv()
+            if kind != "ok":
+                raise ConnectionError(f"official_site_browser_error:{value}")
+            return value
+        finally:
+            parent.close()
+            _close_kill_job(job)
+
+    def fetch(self, url: str) -> dict:
+        remaining = (self._site_deadline - time.monotonic()) if self._site_deadline else None
+        if remaining is not None and remaining <= 0:
+            raise TimeoutError("official_site_browser_site_timeout")
+        original_static_timeout = getattr(self.static_fetcher, "timeout_seconds", None)
+        try:
+            # Static urllib participates in the same per-site deadline.  It is
+            # restored immediately so injected fetchers retain their contract.
+            if original_static_timeout is not None and remaining is not None:
+                self.static_fetcher.timeout_seconds = min(float(original_static_timeout), max(0.1, remaining))
+            return self.static_fetcher.fetch(url)
+        except BaseException as exc:
+            if not _static_failure_allows_browser_fallback(exc):
+                raise
+            return self._browser_fetch(url)
+        finally:
+            if original_static_timeout is not None:
+                self.static_fetcher.timeout_seconds = original_static_timeout
+
+
 @dataclass
 class DiscoveryRunSummary:
     status: str
@@ -344,7 +482,7 @@ class DiscoveryService:
     ) -> DiscoveryRunSummary:
         """Process staged Places rows into A0, manual review, or contact-form pools."""
         city_id = int(city_row["id"])
-        fetcher = fetcher or UrlLibWebsiteFetcher()
+        fetcher = fetcher or BrowserFallbackWebsiteFetcher()
         placeholders = ",".join("?" for _ in STAGING_POSTPROCESS_STATUSES)
         rows = self.conn.execute(
             f"""SELECT * FROM lead_discovery_results
@@ -482,14 +620,16 @@ class DiscoveryService:
                 rows.append(row)
         return rows
 
-    def run_linked_backlog(self, city_row, resolver, max_results=20, fetcher=None):
+    def run_linked_backlog(self, city_row, resolver, max_results=20, fetcher=None, staging_ids: list[int] | None = None):
         """Bounded active-city re-entry; retry metadata is separate from provider facts."""
         limit = min(20, max(0, int(max_results)))
         rows = self.conn.execute("""SELECT s.* FROM lead_discovery_results s JOIN leads l ON l.id=s.linked_lead_id
             WHERE s.active_city_id=? AND trim(coalesce(l.email,''))=''
             ORDER BY coalesce(json_extract(CASE WHEN json_valid(s.raw_payload_json) THEN s.raw_payload_json ELSE '{}' END,
                 '$.linked_backlog_retry.last_attempt_at'), ''), s.id""", (city_row['id'],)).fetchall()
-        eligible = [dict(r) for r in rows if self._linked_retry_allowed(dict(r), city_row)]
+        requested_ids = {int(value) for value in staging_ids} if staging_ids is not None else None
+        eligible = [dict(r) for r in rows if self._linked_retry_allowed(dict(r), city_row)
+                    and (requested_ids is None or int(r["id"]) in requested_ids)]
         selected = eligible[:limit]
         summary = {'eligible': len(eligible), 'processed': len(selected), 'website_processed': 0,
                    'postprocess_processed': 0, 'existing_leads_linked': 0, 'terminalized': 0}
@@ -1601,7 +1741,7 @@ def _verified_official_page(url: str, method: str, website: str, fetcher: Any) -
         "url": final_url,
         "requested_url": url,
         "final_url": final_url,
-        "method": method,
+        "method": ("browser_fallback:" if fetched.get("fetch_transport") == "browser_fallback" else "") + method,
         "text": text,
         "html": html,
         "http_status": status,
@@ -1616,28 +1756,36 @@ def _fetch_official_pages(website: str, fetcher: Any) -> list[dict]:
     fixed = _fixed_first_party_urls(website)
     if not fixed:
         return []
-    pages: list[dict] = []
-    seen: set[str] = set()
-    homepage_url, homepage_method = fixed[0]
-    homepage = _verified_official_page(homepage_url, homepage_method, website, fetcher)
-    if homepage:
-        pages.append(homepage)
-        seen.add(homepage["final_url"])
-    queue = _discovered_first_party_links(homepage, website) if homepage else []
-    queue.extend(fixed[1:])
-    attempted = 1
-    for url, method in queue:
-        if attempted >= MAX_FIRST_PARTY_PAGES_PER_SITE:
-            break
-        canonical = _canonical_same_party_url(website, url, website)
-        if not canonical or canonical in seen:
-            continue
-        attempted += 1
-        page = _verified_official_page(canonical, method, website, fetcher)
-        if page:
-            seen.add(page["final_url"])
-            pages.append(page)
-    return pages
+    begin_site = getattr(fetcher, "begin_site", None)
+    end_site = getattr(fetcher, "end_site", None)
+    if callable(begin_site):
+        begin_site()
+    try:
+        pages: list[dict] = []
+        seen: set[str] = set()
+        homepage_url, homepage_method = fixed[0]
+        homepage = _verified_official_page(homepage_url, homepage_method, website, fetcher)
+        if homepage:
+            pages.append(homepage)
+            seen.add(homepage["final_url"])
+        queue = _discovered_first_party_links(homepage, website) if homepage else []
+        queue.extend(fixed[1:])
+        attempted = 1
+        for url, method in queue:
+            if attempted >= MAX_FIRST_PARTY_PAGES_PER_SITE:
+                break
+            canonical = _canonical_same_party_url(website, url, website)
+            if not canonical or canonical in seen:
+                continue
+            attempted += 1
+            page = _verified_official_page(canonical, method, website, fetcher)
+            if page:
+                seen.add(page["final_url"])
+                pages.append(page)
+        return pages
+    finally:
+        if callable(end_site):
+            end_site()
 
 
 def _business_tokens(name: str) -> list[str]:
@@ -1749,7 +1897,9 @@ def _extract_contact_form_evidence(pages: list[dict]) -> dict:
 def _best_identity_page(pages: list[dict]) -> dict:
     for method in ("official_contact_page", "official_about_page", "official_wholesale_page", "official_vendor_page", "official_homepage"):
         for page in pages:
-            if page["method"] == method:
+            # Browser-rendered pages retain their canonical first-party method
+            # with a transport prefix, so identity evidence ranks identically.
+            if str(page["method"]).removeprefix("browser_fallback:") == method:
                 return page
     return pages[0]
 
