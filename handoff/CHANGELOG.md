@@ -1,5 +1,12 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.8G same-party www/apex host-alias probe / 同主体 www/apex 主机别名探测 — 2026-09-22
+
+- 对 `www.` 官网主机，固定第一方队列现在仅加入一个同主体 apex HTTPS 别名，严格保留 scheme、路径与查询；不加入任意 sibling/unrelated domain，预算仍为 12。/ For a `www.` official host, the fixed first-party queue now adds only one same-party apex HTTPS alias while strictly preserving scheme, path and query; no sibling/unrelated domain is added and the budget remains 12.
+- 同主机或 apex HTTPS 成功会跳过 HTTP 降级；如果兼容性探测遇到 HTTP 400 后失败，后续同站点访问失败不再把该记录伪造为 `access_unreachable`，而是保留可重试。/ A qualifying same-host or apex HTTPS page skips HTTP downgrade; if a compatibility probe meets HTTP 400 and fails, later same-site access failures no longer manufacture `access_unreachable`, and the row stays retryable.
+- 新鲜生产 SQLite 只读在线备份副本仅重放 362：HTTPS www 与 apex 均被尝试，但静态 apex 返回 HTTP 400，未找到邮箱、联系表单或证据；linked retry 从 1 保持 1，Ithaca 保持 active。/ A fresh read-only-derived production SQLite copy replayed only 362: both HTTPS www and apex were attempted, but static apex returned HTTP 400 and found no email, contact form or evidence; linked retry remained 1 and Ithaca remained active.
+- 定向 26 项与完整 421 项 unittest 均为 0 失败、0 错误；浏览器残留、生产写入、SMTP、IMAP、调度和冻结文件变更均为 0；未部署。/ Targeted 26 and full 421 unittest cases both had 0 failures and 0 errors; browser remnants, production writes, SMTP, IMAP, scheduler changes and frozen-file changes were all 0; nothing was deployed.
+
 ## Phase 4A.8F official-site HTTPS-upgrade probe / 官网 HTTPS 升级探测 — 2026-09-22
 
 - 对显式 `http://` 官网 URL，标准固定第一方页面集合现先探测相同主机/路径/查询参数的 HTTPS，并仅在 HTTPS 首页不合格时保留原 HTTP 回退；页面预算仍为 12，未改身份、证据、V2、MX、模板或发送语义。/ For an explicit `http://` official URL, the canonical fixed first-party set now probes HTTPS with the same host/path/query first and retains original HTTP only when the HTTPS homepage is not qualifying; the page budget remains 12, with no identity, evidence, V2, MX, template, or sending change.

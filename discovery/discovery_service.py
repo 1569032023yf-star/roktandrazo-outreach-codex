@@ -282,6 +282,7 @@ class BrowserFallbackWebsiteFetcher:
         self._site_deadline: float | None = None
         self._site_static_access_failure = False
         self._site_browser_attempted = False
+        self._site_https_compatibility_probe = False
         self._site_qualifying_page = False
         self.last_site_automation_recovery_exhausted = False
 
@@ -289,6 +290,7 @@ class BrowserFallbackWebsiteFetcher:
         self._site_deadline = time.monotonic() + max(0.1, self.site_timeout_seconds)
         self._site_static_access_failure = False
         self._site_browser_attempted = False
+        self._site_https_compatibility_probe = False
         self._site_qualifying_page = False
         self.last_site_automation_recovery_exhausted = False
 
@@ -299,6 +301,7 @@ class BrowserFallbackWebsiteFetcher:
         self.last_site_automation_recovery_exhausted = bool(
             self._site_static_access_failure
             and self._site_browser_attempted
+            and not self._site_https_compatibility_probe
             and not self._site_qualifying_page
         )
         self._site_deadline = None
@@ -365,6 +368,7 @@ class BrowserFallbackWebsiteFetcher:
             # terminal classification.  Do not mark this branch as recovery
             # exhaustion if the browser also fails.
             if upgraded_https_probe and isinstance(exc, urllib.error.HTTPError) and exc.code == 400:
+                self._site_https_compatibility_probe = True
                 self._site_browser_attempted = True
                 return self._browser_fetch(url)
             if not _static_failure_allows_browser_fallback(exc):
@@ -1765,6 +1769,14 @@ def _fixed_first_party_urls(website: str) -> list[tuple[str, str]]:
             seen.add(canonical)
             urls.append((canonical, method))
 
+    def https_apex_alias() -> str:
+        """Return only the exact www-to-apex alias; never invent a sibling domain."""
+        hostname = str(parsed.hostname or "")
+        if parsed.username or not hostname.lower().startswith("www."):
+            return ""
+        suffix = parsed.netloc[4:]
+        return urllib.parse.urlunsplit(("https", suffix, parsed.path, parsed.query, ""))
+
     # A persisted explicit HTTP official URL is not evidence that HTTP is the
     # preferred live endpoint.  Preserve its exact host/path as an HTTP
     # fallback, but first probe the same-party HTTPS equivalent.  This keeps
@@ -1774,12 +1786,23 @@ def _fixed_first_party_urls(website: str) -> list[tuple[str, str]]:
         http_base = urllib.parse.urlunsplit(("http", parsed.netloc, parsed.path, parsed.query, ""))
         https_root = urllib.parse.urlunsplit(("https", parsed.netloc, "", "", ""))
         add(https_base, "official_https_upgrade_homepage", https_root)
+        apex_alias = https_apex_alias()
+        if apex_alias:
+            add(apex_alias, "official_https_apex_alias", apex_alias)
         add(http_base, "official_http_fallback", http_base)
         path_candidates = candidates[1:]
         root = https_root
     else:
         root = urllib.parse.urlunsplit((parsed.scheme or "https", parsed.netloc, "", "", ""))
-        path_candidates = candidates
+        apex_alias = https_apex_alias()
+        if apex_alias:
+            # Preserve the existing explicit-HTTPS homepage probe; the alias
+            # is only a bounded recovery candidate after that probe fails.
+            add(root, "official_homepage", root)
+            add(apex_alias, "official_https_apex_alias", apex_alias)
+            path_candidates = candidates[1:]
+        else:
+            path_candidates = candidates
 
     for path, method in path_candidates:
         url = root if not path else urllib.parse.urljoin(root + "/", path)
@@ -1809,7 +1832,7 @@ def _discovered_first_party_links(page: dict, website: str) -> list[tuple[str, s
 def _verified_official_page(url: str, method: str, website: str, fetcher: Any) -> dict:
     try:
         upgraded_fetch = getattr(fetcher, "fetch_https_upgrade", None)
-        fetched = upgraded_fetch(url) if method == "official_https_upgrade_homepage" and callable(upgraded_fetch) else fetcher.fetch(url)
+        fetched = upgraded_fetch(url) if method in {"official_https_upgrade_homepage", "official_https_apex_alias"} and callable(upgraded_fetch) else fetcher.fetch(url)
     except Exception:
         return {}
     if not isinstance(fetched, dict):
@@ -1859,6 +1882,7 @@ def _fetch_official_pages(website: str, fetcher: Any) -> list[dict]:
         if homepage:
             pages.append(homepage)
             seen.add(homepage["final_url"])
+        qualifying_https_homepage = bool(homepage)
         queue = _discovered_first_party_links(homepage, website) if homepage else []
         queue.extend(fixed[1:])
         attempted = 1
@@ -1868,7 +1892,9 @@ def _fetch_official_pages(website: str, fetcher: Any) -> list[dict]:
             # The original HTTP URL is a fallback for an unsuccessful HTTPS
             # homepage probe; once HTTPS is verified, avoid an unnecessary
             # downgrade request while retaining the same bounded page budget.
-            if method == "official_http_fallback" and homepage:
+            if method == "official_https_apex_alias" and qualifying_https_homepage:
+                continue
+            if method == "official_http_fallback" and qualifying_https_homepage:
                 continue
             canonical = _canonical_same_party_url(website, url, website)
             if not canonical or canonical in seen:
@@ -1878,6 +1904,8 @@ def _fetch_official_pages(website: str, fetcher: Any) -> list[dict]:
             if page:
                 seen.add(page["final_url"])
                 pages.append(page)
+                if method == "official_https_apex_alias":
+                    qualifying_https_homepage = True
         return pages
     finally:
         if callable(end_site):

@@ -1,12 +1,12 @@
 PROJECT = Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化
-CURRENT_PHASE = PHASE 4A.8F / Official-site HTTPS-upgrade probe / 官网 HTTPS 升级探测
+CURRENT_PHASE = PHASE 4A.8G / Same-party www/apex host-alias probe / 同主体 www/apex 主机别名探测
 STATUS = DEVELOPMENT_VALIDATED_WITH_LIVE_ENVIRONMENT_BLOCKER / 开发验证完成但存在现场环境阻塞
 READY_FOR_PRODUCTION = false / false（不可进入生产评审）
-CURRENT_BLOCKER = discovery_id 362 now probes the same-party HTTPS URL first, but static HTTPS returns HTTP 400 and the bounded browser compatibility probe times out at 12 seconds; no qualifying first-party page/evidence was obtained, so the row correctly remains retryable and Ithaca remains active. / discovery_id 362 现会先探测同主体 HTTPS URL，但静态 HTTPS 返回 HTTP 400，且有界浏览器兼容探测在 12 秒超时；未获得合格第一方页面/证据，故该记录正确保持可重试，Ithaca 保持 active。
-FULL_SUITE = 416 passed; 0 failed; 0 errors (project unittest) / 416 项通过，失败与错误均为 0（项目 unittest）
+CURRENT_BLOCKER = discovery_id 362 now probes same-host HTTPS and the bounded www-to-apex HTTPS alias, but both static HTTPS endpoints return HTTP 400 and no qualifying browser/static page is obtained; the row correctly remains retryable and Ithaca remains active. / discovery_id 362 现会探测同主机 HTTPS 及受限 www-to-apex HTTPS 别名，但两个静态 HTTPS endpoint 均返回 HTTP 400，且未获得合格浏览器/静态页面；该记录正确保持可重试，Ithaca 保持 active。
+FULL_SUITE = 421 passed; 0 failed; 0 errors (project unittest) / 421 项通过，失败与错误均为 0（项目 unittest）
 FROZEN_FILES_CHANGED = 0
 PRODUCTION_FILES_CHANGED = 1 development candidate only: discovery/discovery_service.py / 仅一个开发候选文件：discovery/discovery_service.py
 PRODUCTION_DB_WRITES = 0
 REAL_SMTP_CONNECTIONS = 0
-LATEST_REPORTS = handoff/phases/PHASE4A8F_OFFICIAL_SITE_HTTPS_UPGRADE.md; handoff/phases/PHASE4A8E_CANONICAL_FETCHER_WIRING.md
-NEXT_ACTION = STOP. Do not deploy, resume scheduling, run production Inventory, or send. Any follow-up must separately authorize investigation of the live HTTPS/browser timeout. / 停止。不得部署、恢复调度、运行生产 Inventory 或发送。任何后续行动必须单独授权调查现场 HTTPS/浏览器超时。
+LATEST_REPORTS = handoff/phases/PHASE4A8G_WWW_APEX_HOST_ALIAS.md; handoff/phases/PHASE4A8F_OFFICIAL_SITE_HTTPS_UPGRADE.md
+NEXT_ACTION = STOP. Do not deploy, resume scheduling, run production Inventory, or send. Any follow-up must separately authorize investigation of the live HTTPS/browser reachability block. / 停止。不得部署、恢复调度、运行生产 Inventory 或发送。任何后续行动必须单独授权调查现场 HTTPS/浏览器可达性阻塞。

@@ -10,6 +10,7 @@ from discovery.discovery_service import (
     _extract_email_evidence,
     _fetch_official_pages,
     _fixed_first_party_urls,
+    _canonical_same_party_url,
 )
 
 
@@ -42,14 +43,29 @@ class HttpsUpgradeTests(unittest.TestCase):
         self.assertFalse(any(method == "official_http_fallback" for _url, method in urls))
 
     def test_explicit_http_probes_same_host_path_over_https_then_http(self):
-        urls = _fixed_first_party_urls("http://www.shop.example/catalog/item?ref=official")
+        urls = _fixed_first_party_urls("http://shop.example/catalog/item?ref=official")
         self.assertEqual(urls[:2], [
-            ("https://www.shop.example/catalog/item?ref=official", "official_https_upgrade_homepage"),
-            ("http://www.shop.example/catalog/item?ref=official", "official_http_fallback"),
+            ("https://shop.example/catalog/item?ref=official", "official_https_upgrade_homepage"),
+            ("http://shop.example/catalog/item?ref=official", "official_http_fallback"),
         ])
         self.assertEqual(urlsplit(urls[0][0]).netloc, urlsplit(urls[1][0]).netloc)
         self.assertEqual(urlsplit(urls[0][0]).path, urlsplit(urls[1][0]).path)
         self.assertLessEqual(len(urls), MAX_FIRST_PARTY_PAGES_PER_SITE)
+
+    def test_www_http_adds_only_same_party_apex_alias_between_https_and_http(self):
+        urls = _fixed_first_party_urls("http://www.shop.example/contact?x=1")
+        self.assertEqual(urls[:3], [
+            ("https://www.shop.example/contact?x=1", "official_https_upgrade_homepage"),
+            ("https://shop.example/contact?x=1", "official_https_apex_alias"),
+            ("http://www.shop.example/contact?x=1", "official_http_fallback"),
+        ])
+        self.assertLessEqual(len(urls), MAX_FIRST_PARTY_PAGES_PER_SITE)
+
+    def test_unrelated_host_is_rejected_by_existing_same_party_semantics(self):
+        self.assertEqual(
+            _canonical_same_party_url("https://www.shop.example", "https://unrelated.example/contact", "https://www.shop.example"),
+            "",
+        )
 
     def test_successful_https_visible_email_never_downgrades_to_http(self):
         https = "https://shop.example"
@@ -59,6 +75,27 @@ class HttpsUpgradeTests(unittest.TestCase):
         self.assertEqual(evidence["email"], "info@shop.example")
         self.assertEqual(fetcher.requested[0], https)
         self.assertNotIn(http, fetcher.requested)
+
+    def test_successful_apex_https_avoids_http_downgrade_and_extracts_visible_email(self):
+        www_https = "https://www.shop.example"
+        apex_https = "https://shop.example"
+        http = "http://www.shop.example"
+        fetcher = RecordingFetcher({
+            www_https: page(www_https, "", status=400),
+            apex_https: page(apex_https, "Email sales@shop.example"),
+        })
+        evidence = _extract_email_evidence(_fetch_official_pages(http, fetcher))
+        self.assertEqual(fetcher.requested[:2], [www_https, apex_https])
+        self.assertNotIn(http, fetcher.requested)
+        self.assertEqual(evidence["email"], "sales@shop.example")
+
+    def test_good_https_www_homepage_does_not_probe_apex_alias(self):
+        www_https = "https://www.shop.example"
+        apex_https = "https://shop.example"
+        fetcher = RecordingFetcher({www_https: page(www_https, "Contact info@shop.example")})
+        _fetch_official_pages(www_https, fetcher)
+        self.assertEqual(fetcher.requested[0], www_https)
+        self.assertNotIn(apex_https, fetcher.requested)
 
     def test_https_failure_falls_back_to_original_http_path(self):
         https = "https://shop.example/path"
@@ -96,6 +133,27 @@ class HttpsUpgradeTests(unittest.TestCase):
         pages = _fetch_official_pages("http://shop.example", fetcher)
         self.assertEqual(_extract_email_evidence(pages)["email"], "info@shop.example")
         fetcher._browser_fetch.assert_called_once_with(url)
+        self.assertFalse(fetcher.last_site_automation_recovery_exhausted)
+
+    def test_failed_https_compatibility_probe_keeps_site_retryable_despite_later_access_failure(self):
+        root = "https://www.shop.example"
+        contact = "https://www.shop.example/contact"
+
+        class StaticFailures:
+            timeout_seconds = 12
+
+            def fetch(self, url):
+                code = 400 if url == root else 403
+                raise HTTPError(url, code, "blocked", {}, None)
+
+        fetcher = BrowserFallbackWebsiteFetcher(static_fetcher=StaticFailures())
+        fetcher._browser_fetch = Mock(side_effect=TimeoutError("browser timeout"))
+        fetcher.begin_site()
+        with self.assertRaises(TimeoutError):
+            fetcher.fetch_https_upgrade(root)
+        with self.assertRaises(TimeoutError):
+            fetcher.fetch(contact)
+        fetcher.end_site()
         self.assertFalse(fetcher.last_site_automation_recovery_exhausted)
 
     def test_no_sciencenter_special_case_exists(self):
