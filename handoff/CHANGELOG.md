@@ -1,5 +1,12 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.8F official-site HTTPS-upgrade probe / 官网 HTTPS 升级探测 — 2026-09-22
+
+- 对显式 `http://` 官网 URL，标准固定第一方页面集合现先探测相同主机/路径/查询参数的 HTTPS，并仅在 HTTPS 首页不合格时保留原 HTTP 回退；页面预算仍为 12，未改身份、证据、V2、MX、模板或发送语义。/ For an explicit `http://` official URL, the canonical fixed first-party set now probes HTTPS with the same host/path/query first and retains original HTTP only when the HTTPS homepage is not qualifying; the page budget remains 12, with no identity, evidence, V2, MX, template, or sending change.
+- 针对仅此升级首页，静态 HTTP 400 可触发有界浏览器兼容探测，但不会将 400 变为 `access_unreachable`，浏览器失败也不会制造 recovery-exhausted 终态。/ Only for that upgraded homepage, a static HTTP 400 can trigger a bounded browser compatibility probe; it never turns 400 into `access_unreachable` or manufactures recovery exhaustion if the browser fails.
+- 新鲜生产 SQLite 只读在线备份副本上仅重放 discovery_id 362：HTTPS 升级已尝试，但静态 HTTPS 仍为 400，浏览器在既有 12 秒页级上限超时；未生成邮箱、联系表单或证据，该记录正确保持重试，Ithaca 正确保持 active。/ On a fresh read-only-derived production SQLite copy, replayed only discovery_id 362: HTTPS upgrade was attempted, static HTTPS remained 400, and the browser timed out at the existing 12-second page ceiling; no email, contact form, or evidence was created, the row correctly remains retryable, and Ithaca correctly remains active.
+- 定向 21 项及标准全量 416 项 unittest 均为 0 失败、0 错误；本次浏览器残留为 0。生产数据库/文件、SMTP、IMAP、调度和冻结文件变更均为 0；未部署。/ Targeted 21 and standard full 416 unittest cases both completed with 0 failures and 0 errors; replay-owned browser remnants were 0. Production database/files, SMTP, IMAP, scheduling, and frozen-file changes were all 0; nothing was deployed.
+
 ## Phase 4A.3M development Playwright allowlist and fresh duplicate-backfill rerun / 开发 Playwright 允许名单与新鲜重复回填重跑 — 2026-09-18
 
 - 仅修改开发安全护栏：动态解析当前 Python 安装的 Playwright driver 树，且只在 `ROKT_DEV_CONTROLLED_WEB=1` 时允许其中的 `node.exe`；任意 Node、其他全局程序、SMTP/IMAP 与生产数据库路径仍被拒绝。定向安全测试9项通过。/ Changed only the development safety guard: dynamically resolves the active Python Playwright driver tree and allows only its `node.exe` when `ROKT_DEV_CONTROLLED_WEB=1`; arbitrary Node, other global programs, SMTP/IMAP, and production DB paths remain blocked. Nine targeted safety tests passed.

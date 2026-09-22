@@ -346,7 +346,7 @@ class BrowserFallbackWebsiteFetcher:
             parent.close()
             _close_kill_job(job)
 
-    def fetch(self, url: str) -> dict:
+    def _fetch(self, url: str, *, upgraded_https_probe: bool = False) -> dict:
         remaining = (self._site_deadline - time.monotonic()) if self._site_deadline else None
         if remaining is not None and remaining <= 0:
             raise TimeoutError("official_site_browser_site_timeout")
@@ -358,6 +358,15 @@ class BrowserFallbackWebsiteFetcher:
                 self.static_fetcher.timeout_seconds = min(float(original_static_timeout), max(0.1, remaining))
             return self.static_fetcher.fetch(url)
         except BaseException as exc:
+            # A static HTTP 400 is normally not an access-unreachable signal.
+            # The one exception is an HTTP-origin official URL that was
+            # deliberately upgraded to the same-party HTTPS homepage: browser
+            # rendering is a bounded compatibility probe, not a factual or
+            # terminal classification.  Do not mark this branch as recovery
+            # exhaustion if the browser also fails.
+            if upgraded_https_probe and isinstance(exc, urllib.error.HTTPError) and exc.code == 400:
+                self._site_browser_attempted = True
+                return self._browser_fetch(url)
             if not _static_failure_allows_browser_fallback(exc):
                 raise
             self._site_static_access_failure = True
@@ -366,6 +375,13 @@ class BrowserFallbackWebsiteFetcher:
         finally:
             if original_static_timeout is not None:
                 self.static_fetcher.timeout_seconds = original_static_timeout
+
+    def fetch(self, url: str) -> dict:
+        return self._fetch(url)
+
+    def fetch_https_upgrade(self, url: str) -> dict:
+        """Bounded browser compatibility probe for an HTTP-to-HTTPS homepage."""
+        return self._fetch(url, upgraded_https_probe=True)
 
 
 @dataclass
@@ -1739,17 +1755,36 @@ def _fixed_first_party_urls(website: str) -> list[tuple[str, str]]:
     if not base:
         return []
     parsed = urllib.parse.urlsplit(base)
-    root = urllib.parse.urlunsplit((parsed.scheme or "https", parsed.netloc, "", "", ""))
     candidates = list(WEBSITE_SCAN_PATHS) + list(FIRST_PARTY_PATH_VARIANTS)
     urls: list[tuple[str, str]] = []
     seen: set[str] = set()
-    for path, method in candidates:
-        url = root if not path else urllib.parse.urljoin(root + "/", path)
-        canonical = _canonical_same_party_url(root, url, website)
+
+    def add(url: str, method: str, same_party_base: str) -> None:
+        canonical = _canonical_same_party_url(same_party_base, url, website)
         if canonical and canonical not in seen:
             seen.add(canonical)
             urls.append((canonical, method))
-    return urls
+
+    # A persisted explicit HTTP official URL is not evidence that HTTP is the
+    # preferred live endpoint.  Preserve its exact host/path as an HTTP
+    # fallback, but first probe the same-party HTTPS equivalent.  This keeps
+    # the database fact intact and does not change identity or party checks.
+    if parsed.scheme.lower() == "http":
+        https_base = urllib.parse.urlunsplit(("https", parsed.netloc, parsed.path, parsed.query, ""))
+        http_base = urllib.parse.urlunsplit(("http", parsed.netloc, parsed.path, parsed.query, ""))
+        https_root = urllib.parse.urlunsplit(("https", parsed.netloc, "", "", ""))
+        add(https_base, "official_https_upgrade_homepage", https_root)
+        add(http_base, "official_http_fallback", http_base)
+        path_candidates = candidates[1:]
+        root = https_root
+    else:
+        root = urllib.parse.urlunsplit((parsed.scheme or "https", parsed.netloc, "", "", ""))
+        path_candidates = candidates
+
+    for path, method in path_candidates:
+        url = root if not path else urllib.parse.urljoin(root + "/", path)
+        add(url, method, root)
+    return urls[:MAX_FIRST_PARTY_PAGES_PER_SITE]
 
 
 def _discovered_first_party_links(page: dict, website: str) -> list[tuple[str, str]]:
@@ -1773,7 +1808,8 @@ def _discovered_first_party_links(page: dict, website: str) -> list[tuple[str, s
 
 def _verified_official_page(url: str, method: str, website: str, fetcher: Any) -> dict:
     try:
-        fetched = fetcher.fetch(url)
+        upgraded_fetch = getattr(fetcher, "fetch_https_upgrade", None)
+        fetched = upgraded_fetch(url) if method == "official_https_upgrade_homepage" and callable(upgraded_fetch) else fetcher.fetch(url)
     except Exception:
         return {}
     if not isinstance(fetched, dict):
@@ -1829,6 +1865,11 @@ def _fetch_official_pages(website: str, fetcher: Any) -> list[dict]:
         for url, method in queue:
             if attempted >= MAX_FIRST_PARTY_PAGES_PER_SITE:
                 break
+            # The original HTTP URL is a fallback for an unsuccessful HTTPS
+            # homepage probe; once HTTPS is verified, avoid an unnecessary
+            # downgrade request while retaining the same bounded page budget.
+            if method == "official_http_fallback" and homepage:
+                continue
             canonical = _canonical_same_party_url(website, url, website)
             if not canonical or canonical in seen:
                 continue

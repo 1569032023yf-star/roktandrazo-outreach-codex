@@ -1,11 +1,11 @@
 {
   "PROJECT": "Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化",
-  "CURRENT_PHASE": "PHASE 4A.8E / Canonical fetcher state wiring / 标准 fetcher 状态接线",
-  "STATUS": "DEVELOPMENT_VALIDATED_CANONICAL_WIRING_FIX / 开发验证完成的标准接线修复",
-  "READY_FOR_PRODUCTION": true,
-  "CURRENT_BLOCKER": "discovery_id 362 remains a legitimate automatic retry: static HTTP 400 is not an allowed access/transport fallback condition, so browser recovery was not attempted and access_unreachable cannot be proven. Ithaca must remain active. / discovery_id 362 仍是合法自动重试：静态 HTTP 400 不是允许的访问/传输回退条件，未尝试浏览器恢复，不能证明 access_unreachable。Ithaca 必须保持 active。",
-  "FULL_SUITE": "409 passed; 0 failed; 0 errors (project unittest) / 409 项通过，失败 0，错误 0（项目 unittest）",
-  "TARGETED_TESTS": "47 passed; 0 failed; 0 errors / 47 项通过，失败 0，错误 0",
+  "CURRENT_PHASE": "PHASE 4A.8F / Official-site HTTPS-upgrade probe / 官网 HTTPS 升级探测",
+  "STATUS": "DEVELOPMENT_VALIDATED_WITH_LIVE_ENVIRONMENT_BLOCKER / 开发验证完成但存在现场环境阻塞",
+  "READY_FOR_PRODUCTION": false,
+  "CURRENT_BLOCKER": "discovery_id 362 probes same-party HTTPS first, but static HTTPS returns HTTP 400 and the bounded browser compatibility probe times out at 12 seconds. No qualifying first-party page/evidence was obtained; the row remains correctly retryable and Ithaca remains active. / discovery_id 362 会先探测同主体 HTTPS，但静态 HTTPS 返回 HTTP 400，且有界浏览器兼容探测在 12 秒超时。未获得合格第一方页面/证据；该记录正确保持可重试，Ithaca 保持 active。",
+  "FULL_SUITE": "416 passed; 0 failed; 0 errors (project unittest) / 416 项通过，失败 0，错误 0（项目 unittest）",
+  "TARGETED_TESTS": "21 passed; 0 failed; 0 errors / 21 项通过，失败 0，错误 0",
   "FROZEN_FILES_CHANGED": 0,
   "PRODUCTION_FILES_CHANGED": 1,
   "PRODUCTION_CANDIDATE_FILES": ["discovery/discovery_service.py"],
@@ -18,14 +18,17 @@
   "MX_POLICY_CHANGED": false,
   "SEND_ELIGIBILITY_CHANGED": false,
   "DB_MIGRATION_REQUIRED": false,
-  "CANONICAL_FETCHER_WIRING_FIXED": true,
-  "LINKED_RETRY_BEFORE": 11,
-  "AUTOMATION_DEFERRED": 10,
+  "HTTPS_UPGRADE_FIXED": true,
+  "LINKED_RETRY_BEFORE": 1,
   "LINKED_RETRY_AFTER": 1,
   "REMAINING_DISCOVERY_ID": 362,
-  "REMAINING_REASON": "static HTTP 400 is not eligible for browser fallback / 静态 HTTP 400 不符合浏览器回退条件",
-  "EMAILS_CREATED": 0,
-  "EVIDENCE_CREATED": 0,
+  "HTTPS_UPGRADE_ATTEMPTED": true,
+  "STATIC_HTTPS_RESULT": "HTTP 400",
+  "BROWSER_COMPATIBILITY_RESULT": "official_site_browser_page_timeout:12000ms",
+  "EMAIL_FOUND": false,
+  "CONTACT_FORM_FOUND": false,
+  "EVIDENCE_CREATED": false,
+  "FINAL_VALIDATION_STATUS": "review_recovery",
   "SAFE_GAIN": 0,
   "CITY_COMPLETION_ALL_MET": false,
   "ITHACA_STATUS": "active",
@@ -33,8 +36,8 @@
   "CITY_QUEUE_ADVANCEMENT_VERIFIED": false,
   "REPLAY_OWNED_BROWSER_ORPHANS": 0,
   "LATEST_REPORTS": [
-    "handoff/phases/PHASE4A8E_CANONICAL_FETCHER_WIRING.md",
-    "handoff/phases/PHASE4A8D_ACCESS_UNREACHABLE_CITY_LIVENESS.md"
+    "handoff/phases/PHASE4A8F_OFFICIAL_SITE_HTTPS_UPGRADE.md",
+    "handoff/phases/PHASE4A8E_CANONICAL_FETCHER_WIRING.md"
   ],
-  "NEXT_ACTION": "STOP; production review only. Do not deploy, resume scheduling, run production Inventory, or send without separate authorization. / 停止；仅进行生产评审。未经单独授权，不得部署、恢复调度、运行生产 Inventory 或发送。"
+  "NEXT_ACTION": "STOP. Do not deploy, resume scheduling, run production Inventory, or send. Any follow-up must separately authorize investigation of the live HTTPS/browser timeout. / 停止。不得部署、恢复调度、运行生产 Inventory 或发送。任何后续行动必须单独授权调查现场 HTTPS/浏览器超时。"
 }
