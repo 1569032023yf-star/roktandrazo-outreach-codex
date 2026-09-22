@@ -529,7 +529,7 @@ class DiscoveryService:
     def _linked_backlog_terminal_outcome(self, discovery_id: int) -> str:
         """Return a durable existing-stage outcome, never for retryable failures."""
         row = self.conn.execute(
-            """SELECT s.validation_status, s.rejection_reason, l.review_reason_code
+            """SELECT s.validation_status, s.rejection_reason, s.official_match, l.review_reason_code
                FROM lead_discovery_results s JOIN leads l ON l.id=s.linked_lead_id
                WHERE s.id=?""",
             (discovery_id,),
@@ -539,6 +539,15 @@ class DiscoveryService:
         value = dict(row)
         if str(value.get('rejection_reason') or '').startswith('website_resolution:not_found:'):
             return 'website_not_found'
+        # A linked replay records this only after a successful verified-site
+        # fetch finds neither a visible public email nor a contact form.  Keep
+        # access failures and all other recovery states retryable.
+        if (value.get('validation_status') == 'manual_review_needed'
+                and int(value.get('official_match') or 0) == 1
+                and value.get('rejection_reason') == 'no_public_email_or_form'):
+            return 'no_public_email'
+        if value.get('validation_status') == 'identity_review':
+            return 'identity_review'
         if (value.get('validation_status') == 'manual_review_needed'
                 and value.get('review_reason_code') == 'no_public_email_or_form'):
             return 'no_public_email'
@@ -1050,7 +1059,10 @@ class DiscoveryService:
                 return result[1] if result else None
             previous = self.conn.execute('SELECT official_match FROM lead_discovery_results WHERE id=?', (discovery_id,)).fetchone()
             self._update_result(discovery_id, status, '', self._linked_backlog_active,
-                '' if reason in {'official_site_unavailable', 'no_public_email_or_form'} else reason,
+                # Preserve the proven no-email result for the linked backlog
+                # terminal gate.  `official_site_unavailable` remains blank so
+                # HTTP/TLS/DNS/network recovery work is never terminalized.
+                '' if reason == 'official_site_unavailable' else reason,
                 candidate.get('evidence_url', ''), candidate.get('evidence_snippet', ''),
                 candidate.get('evidence_method', ''), candidate.get('contact_form_url', ''),
                 int(bool(candidate.get('official_match') or (reason == 'official_site_unavailable' and previous and previous[0]))))

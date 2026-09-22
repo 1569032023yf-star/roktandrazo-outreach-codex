@@ -38,6 +38,35 @@ class LinkedBacklogTests(unittest.TestCase):
             raw = json.loads(conn.execute('SELECT raw_payload_json FROM lead_discovery_results').fetchone()[0])
             self.assertEqual(raw['linked_backlog_retry']['attempts'], 2)
 
+    def test_proven_no_public_email_is_terminal_from_current_staging_provenance(self):
+        """A current successful fetch, not stale lead metadata, closes the row."""
+        with DiscoveryDb() as conn:
+            service, city, row, fetch, lid = self.setup_case(conn)
+            conn.execute("UPDATE leads SET review_reason_code='review_recovery', review_reason_detail='review_recovery=official_site_unavailable' WHERE id=?", (lid,))
+            fetcher = MockFetcher({row['website']: '<title>Nashville Board Game Depot</title>'})
+            summary = service.run_linked_backlog(city, Mock(), fetcher=fetcher)
+            stored = conn.execute('SELECT validation_status,rejection_reason,raw_payload_json FROM lead_discovery_results WHERE id=?', (row['id'],)).fetchone()
+            self.assertEqual(summary['terminalized'], 1)
+            self.assertEqual(stored['validation_status'], 'no_public_email')
+            self.assertEqual(stored['rejection_reason'], 'no_public_email_or_form')
+            retry = json.loads(stored['raw_payload_json'])['linked_backlog_retry']
+            self.assertEqual(retry['terminal_outcome'], 'no_public_email')
+            self.assertIn('terminal_at', retry)
+            self.assertEqual(service.run_linked_backlog(city, Mock(), fetcher=fetcher)['processed'], 0)
+
+    def test_identity_review_is_durable_and_not_reselected(self):
+        with DiscoveryDb() as conn:
+            service, city, row, fetch, lid = self.setup_case(conn)
+            conn.execute("UPDATE lead_discovery_results SET validation_status='identity_review', official_match=0, rejection_reason='website_resolution:identity_review:controlled' WHERE id=?", (row['id'],))
+            # Directly exercise the durable evaluator because identity_review is
+            # intentionally excluded from the retry selection query.
+            self.assertEqual(service._linked_backlog_terminal_outcome(row['id']), 'identity_review')
+            service._terminalize_linked_backlog(row['id'], 'identity_review')
+            stored = conn.execute('SELECT validation_status,raw_payload_json FROM lead_discovery_results WHERE id=?', (row['id'],)).fetchone()
+            self.assertEqual(stored['validation_status'], 'identity_review')
+            self.assertEqual(json.loads(stored['raw_payload_json'])['linked_backlog_retry']['terminal_outcome'], 'identity_review')
+            self.assertEqual(service.run_linked_backlog(city, Mock(), fetcher=fetch)['processed'], 0)
+
     def test_blocked_status_matrix(self):
         for status in ('sent', 'suppressed', 'bounced', 'rejected', 'review_rejected', 'unsubscribed'):
             with self.subTest(status=status), DiscoveryDb() as conn:
