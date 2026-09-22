@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 import urllib.error
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from discovery.discovery_service import BrowserFallbackWebsiteFetcher
 from retail_city_queue import (
@@ -71,6 +71,23 @@ class AccessUnreachableRuntimeTests(unittest.TestCase):
             lead = conn.execute("SELECT email,status,email_verified_on_official_site FROM leads WHERE id=?", (lead_id,)).fetchone()
             self.assertEqual(tuple(lead), ("", "manual_review_needed", 0))
             self.assertEqual(service.run_linked_backlog(city, Mock(), fetcher=self._browser_fetcher(row))["processed"], 0)
+
+    def test_canonical_none_fetcher_shares_recovery_state_and_defers(self):
+        """The canonical production call must not lose its locally-made fetcher."""
+        with DiscoveryDb() as conn:
+            service, city, row, lead_id = self._case(conn)
+            shared = self._browser_fetcher(row)
+            with patch("discovery.discovery_service.BrowserFallbackWebsiteFetcher", return_value=shared) as factory:
+                summary = service.run_linked_backlog(city, Mock(), fetcher=None)
+                self.assertEqual(factory.call_count, 1)
+            self.assertEqual(summary["automation_deferred"], 1)
+            retry = json.loads(conn.execute(
+                "SELECT raw_payload_json FROM lead_discovery_results WHERE id=?", (row["id"],)
+            ).fetchone()[0])["linked_backlog_retry"]
+            self.assertEqual(retry["automation_terminal_outcome"], "access_unreachable")
+            self.assertEqual(service.run_linked_backlog(city, Mock(), fetcher=None)["processed"], 0)
+            lead = conn.execute("SELECT email,status,email_verified_on_official_site FROM leads WHERE id=?", (lead_id,)).fetchone()
+            self.assertEqual(tuple(lead), ("", "manual_review_needed", 0))
 
     def test_transient_and_static_only_failures_remain_automatic_retry_work(self):
         with DiscoveryDb() as conn:

@@ -656,6 +656,10 @@ class DiscoveryService:
         eligible = [dict(r) for r in rows if self._linked_retry_allowed(dict(r), city_row)
                     and (requested_ids is None or int(r["id"]) in requested_ids)]
         selected = eligible[:limit]
+        # The canonical caller does not inject a fetcher.  Keep exactly one
+        # recovery-state owner across postprocess and the subsequent deferment
+        # decision; otherwise the locally-created postprocess fetcher is lost.
+        linked_fetcher = fetcher or BrowserFallbackWebsiteFetcher()
         summary = {'eligible': len(eligible), 'processed': len(selected), 'website_processed': 0,
                    'postprocess_processed': 0, 'existing_leads_linked': 0, 'terminalized': 0,
                    'automation_deferred': 0}
@@ -671,7 +675,7 @@ class DiscoveryService:
             self.conn.execute('SAVEPOINT linked_retry_attempt')
             try:
                 web = self.run_website_resolution(city_row, resolver, max_results=1, staging_ids=[row['id']])
-                post = self.run_staging_postprocess(city_row, max_results=1, fetcher=fetcher, staging_ids=[row['id']])
+                post = self.run_staging_postprocess(city_row, max_results=1, fetcher=linked_fetcher, staging_ids=[row['id']])
                 summary['website_processed'] += web.results_seen
                 summary['postprocess_processed'] += post.results_seen
                 summary['existing_leads_linked'] += post.existing_leads_linked
@@ -679,7 +683,7 @@ class DiscoveryService:
                 if terminal:
                     self._terminalize_linked_backlog(row['id'], terminal)
                     summary['terminalized'] += 1
-                elif bool(getattr(fetcher, 'last_site_automation_recovery_exhausted', False)):
+                elif bool(getattr(linked_fetcher, 'last_site_automation_recovery_exhausted', False)):
                     self._defer_access_unreachable(row['id'])
                     summary['automation_deferred'] += 1
             except Exception as exc:
