@@ -25,6 +25,7 @@ class DiscoveryCoexistenceTests(unittest.TestCase):
         conn.commit()
         database = conn.execute('PRAGMA database_list').fetchone()[2]
         service = Mock()
+        service.provider = SimpleNamespace(provider_name='mock')
         calls = []
         for name in ('run_places_batch','run_website_resolution','run_staging_postprocess','run_linked_backlog'):
             value = {} if name=='run_linked_backlog' else SimpleNamespace(results_seen=0,new_unique_places=0)
@@ -32,8 +33,15 @@ class DiscoveryCoexistenceTests(unittest.TestCase):
                 calls.append(_name)
                 return _value
             getattr(service,name).side_effect=execute
+        def fixture_db():
+            # Match the production helper contract: city-completion code reads
+            # named SQLite columns, so the test double must expose Row values.
+            connection = sqlite3.connect(database)
+            connection.row_factory = sqlite3.Row
+            return connection
+
         with ExitStack() as stack:
-            stack.enter_context(patch.object(bd_orchestrator,'get_db',side_effect=lambda:sqlite3.connect(database)))
+            stack.enter_context(patch.object(bd_orchestrator,'get_db',side_effect=fixture_db))
             for name in ('set_execution_mode','update_job_run','release_run_lock'):
                 stack.enter_context(patch.object(bd_orchestrator,name))
             stack.enter_context(patch.object(bd_orchestrator,'acquire_run_lock',return_value=True))

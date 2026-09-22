@@ -31,6 +31,13 @@ class _StaticOnlyFailure:
         raise urllib.error.HTTPError("https://example.test", 403, "forbidden", {}, None)
 
 
+class _Http400Static:
+    timeout_seconds = 1
+
+    def fetch(self, url):
+        raise urllib.error.HTTPError(url, 400, "bad request", {}, None)
+
+
 def _browser_page(url: str, status: int, text: str) -> dict:
     return {
         "status": status,
@@ -97,6 +104,25 @@ class AccessUnreachableRuntimeTests(unittest.TestCase):
             retry = json.loads(conn.execute("SELECT raw_payload_json FROM lead_discovery_results WHERE id=?", (row["id"],)).fetchone()[0])["linked_backlog_retry"]
             self.assertNotIn("automation_terminal_outcome", retry)
             self.assertEqual(service.run_linked_backlog(city, Mock(), fetcher=_StaticOnlyFailure())["processed"], 1)
+
+    def test_http400_plus_bounded_compatibility_browser_failure_defers_without_email_fact(self):
+        with DiscoveryDb() as conn:
+            service, city, row, lead_id = self._case(conn)
+            stored_url = "http://www.shop.example"
+            conn.execute("UPDATE leads SET official_website=? WHERE id=?", (stored_url, lead_id))
+            conn.execute("UPDATE lead_discovery_results SET website=? WHERE id=?", (stored_url, row["id"]))
+            fetcher = BrowserFallbackWebsiteFetcher(static_fetcher=_Http400Static(), page_timeout_seconds=1, site_timeout_seconds=1)
+            fetcher._browser_fetch = Mock(side_effect=TimeoutError("bounded browser timeout"))
+            summary = service.run_linked_backlog(city, Mock(), fetcher=fetcher)
+            self.assertEqual(summary["automation_deferred"], 1)
+            self.assertGreaterEqual(fetcher._browser_fetch.call_count, 1)
+            payload = json.loads(conn.execute(
+                "SELECT raw_payload_json FROM lead_discovery_results WHERE id=?", (row["id"],)
+            ).fetchone()[0])
+            self.assertEqual(payload["linked_backlog_retry"]["automation_terminal_outcome"], "access_unreachable")
+            lead = conn.execute("SELECT email,status,email_verified_on_official_site FROM leads WHERE id=?", (lead_id,)).fetchone()
+            self.assertEqual(tuple(lead), ("", "manual_review_needed", 0))
+            self.assertEqual(service.run_linked_backlog(city, Mock(), fetcher=fetcher)["processed"], 0)
 
     def test_browser_success_uses_normal_evidence_path_and_is_not_deferred(self):
         with DiscoveryDb() as conn:

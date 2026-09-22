@@ -1,5 +1,12 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.8H automation exhaustion finalization / 自动恢复穷尽最终定稿 — 2026-09-23
+
+- 仅修改 `discovery/discovery_service.py` 的通用自动恢复穷尽判定：静态访问失败或 HTTPS 兼容探测已发生、受限浏览器实际运行、且没有合格同主体页面时，记录才退出自动重试；纯静态 HTTP 400 而未尝试浏览器仍保持可重试。/ Changed only the generic automatic-recovery exhaustion predicate in `discovery/discovery_service.py`: a row leaves automatic retry only when a static access failure or HTTPS compatibility probe occurred, the bounded browser actually ran, and no qualifying same-party page resulted; plain static HTTP 400 with no browser attempt remains retryable.
+- 新鲜生产 SQLite 只读在线备份副本上仅运行一次标准 `run_linked_backlog(..., max_results=20, fetcher=None)`。当前快照真实有 11 条可选择 retry（非预期的 1 条）；全部处理后 10 条持久化为自动恢复延后，第二次选择为 0。未直接编辑记录，未创建邮箱、完整证据或 SAFE 增量。/ Ran exactly one canonical `run_linked_backlog(..., max_results=20, fetcher=None)` on a fresh read-only-derived production SQLite copy. The current snapshot truthfully had 11 selectable retries, not the expected one; after all were processed, 10 were durably deferred for automatic recovery and a second selection returned 0. No direct edits, new emails, full evidence, or SAFE growth occurred.
+- 九项城市完成条件均为真；Ithaca 变为 `search_matrix_exhausted`，下一个 NY 城市为 Saratoga Springs。定向 52 项和完整 423 项标准 unittest 均为 0 失败、0 错误；冻结文件、生产写入、SMTP、IMAP、调度与部署变更均为 0。/ All nine city-completion conditions were true; Ithaca became `search_matrix_exhausted` and the next NY city is Saratoga Springs. Targeted 52 and full 423 standard unittest cases both had 0 failures and 0 errors; frozen-file changes, production writes, SMTP, IMAP, scheduling, and deployment changes were all zero.
+- 累计生产评审交付自 `dc493825` 起仅为 `discovery/discovery_service.py`，其中包含 4A.8E–4A.8H 已批准的窄修正；无需数据库迁移。当前可进入生产评审，但未获部署授权。/ The cumulative production-review payload since `dc493825` is only `discovery/discovery_service.py`, containing the approved narrow 4A.8E–4A.8H fixes; no database migration is required. It is ready for production review, not authorized for deployment.
+
 ## Phase 4A.8G same-party www/apex host-alias probe / 同主体 www/apex 主机别名探测 — 2026-09-22
 
 - 对 `www.` 官网主机，固定第一方队列现在仅加入一个同主体 apex HTTPS 别名，严格保留 scheme、路径与查询；不加入任意 sibling/unrelated domain，预算仍为 12。/ For a `www.` official host, the fixed first-party queue now adds only one same-party apex HTTPS alias while strictly preserving scheme, path and query; no sibling/unrelated domain is added and the budget remains 12.

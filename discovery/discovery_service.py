@@ -299,9 +299,8 @@ class BrowserFallbackWebsiteFetcher:
         # only after the entire bounded same-party page set has produced no
         # HTTP-success evidence.  It never asserts that no public email exists.
         self.last_site_automation_recovery_exhausted = bool(
-            self._site_static_access_failure
+            (self._site_static_access_failure or self._site_https_compatibility_probe)
             and self._site_browser_attempted
-            and not self._site_https_compatibility_probe
             and not self._site_qualifying_page
         )
         self._site_deadline = None
@@ -365,8 +364,9 @@ class BrowserFallbackWebsiteFetcher:
             # The one exception is an HTTP-origin official URL that was
             # deliberately upgraded to the same-party HTTPS homepage: browser
             # rendering is a bounded compatibility probe, not a factual or
-            # terminal classification.  Do not mark this branch as recovery
-            # exhaustion if the browser also fails.
+            # terminal classification.  It contributes to operational
+            # exhaustion only after this bounded browser attempt has actually
+            # run and no qualifying same-party page is obtained.
             if upgraded_https_probe and isinstance(exc, urllib.error.HTTPError) and exc.code == 400:
                 self._site_https_compatibility_probe = True
                 self._site_browser_attempted = True

@@ -135,7 +135,7 @@ class HttpsUpgradeTests(unittest.TestCase):
         fetcher._browser_fetch.assert_called_once_with(url)
         self.assertFalse(fetcher.last_site_automation_recovery_exhausted)
 
-    def test_failed_https_compatibility_probe_keeps_site_retryable_despite_later_access_failure(self):
+    def test_failed_https_compatibility_probe_marks_only_automatic_recovery_exhausted(self):
         root = "https://www.shop.example"
         contact = "https://www.shop.example/contact"
 
@@ -154,6 +154,24 @@ class HttpsUpgradeTests(unittest.TestCase):
         with self.assertRaises(TimeoutError):
             fetcher.fetch(contact)
         fetcher.end_site()
+        self.assertTrue(fetcher.last_site_automation_recovery_exhausted)
+
+    def test_plain_http400_without_browser_attempt_stays_retryable(self):
+        url = "https://shop.example"
+
+        class Static400:
+            timeout_seconds = 12
+
+            def fetch(self, _url):
+                raise HTTPError(url, 400, "bad request", {}, None)
+
+        fetcher = BrowserFallbackWebsiteFetcher(static_fetcher=Static400())
+        fetcher._browser_fetch = Mock()
+        fetcher.begin_site()
+        with self.assertRaises(HTTPError):
+            fetcher.fetch(url)
+        fetcher.end_site()
+        fetcher._browser_fetch.assert_not_called()
         self.assertFalse(fetcher.last_site_automation_recovery_exhausted)
 
     def test_no_sciencenter_special_case_exists(self):
