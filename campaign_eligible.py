@@ -63,8 +63,8 @@ DIRECTORY_HINTS = ("yelp", "yellowpages", "bizarchive", "allbiz", "mapquest", "d
                    "chamberofcommerce", "localgamestores", "findglocal", "wanderlog",
                    "n49.com", "go-kentucky", "meetnky", "smallbusinessdb", "keepupcards",
                    "tcgshopfinder", "videogame-stores", "storesinfo", "cmac.ws")
-OFFICIAL_EVIDENCE_TYPES = ("official_page_visible", "official_mailto", "wholesale_vendor_page",
-                           "web_search_official")
+OFFICIAL_EVIDENCE_TYPES = ("official_page_visible", "official_mailto", "first_party_structured_data",
+                           "wholesale_vendor_page", "web_search_official")
 
 
 def _is_official_evidence(lead: Mapping[str, Any], email: str, website: str) -> bool:

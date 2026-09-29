@@ -89,6 +89,11 @@ FIRST_PARTY_LINK_HINTS = (
     "vendor", "vendors", "dealer", "dealers", "distribution", "partnership",
     "partnerships", "support", "customer", "service",
 )
+STRUCTURED_BUSINESS_TYPES = {
+    "organization", "localbusiness", "store", "onlinestore", "corporation",
+    "professionalservice", "medicalbusiness", "legalservice", "financialservice",
+    "foodestablishment", "lodgingbusiness", "automotivebusiness", "sportsactivitylocation",
+}
 CONTACT_FORM_RE = re.compile(r"<form\b[^>]*>.*?</form>", re.IGNORECASE | re.DOTALL)
 NOISE_EMAIL_PREFIXES = ("noreply@", "no-reply@", "example@", "privacy@", "copyright@")
 
@@ -280,6 +285,7 @@ class BrowserFallbackWebsiteFetcher:
             os.getenv("OFFICIAL_SITE_BROWSER_SITE_TIMEOUT_SECONDS", "45")
         )
         self._site_deadline: float | None = None
+        self._site_static_failed = False
         self._site_static_access_failure = False
         self._site_browser_attempted = False
         self._site_https_compatibility_probe = False
@@ -288,6 +294,7 @@ class BrowserFallbackWebsiteFetcher:
 
     def begin_site(self) -> None:
         self._site_deadline = time.monotonic() + max(0.1, self.site_timeout_seconds)
+        self._site_static_failed = False
         self._site_static_access_failure = False
         self._site_browser_attempted = False
         self._site_https_compatibility_probe = False
@@ -360,6 +367,7 @@ class BrowserFallbackWebsiteFetcher:
                 self.static_fetcher.timeout_seconds = min(float(original_static_timeout), max(0.1, remaining))
             return self.static_fetcher.fetch(url)
         except BaseException as exc:
+            self._site_static_failed = True
             # A static HTTP 400 is normally not an access-unreachable signal.
             # The one exception is an HTTP-origin official URL that was
             # deliberately upgraded to the same-party HTTPS homepage: browser
@@ -993,7 +1001,9 @@ class DiscoveryService:
                 return "website_not_found", None
             return "website_lookup_pending", None
         pages = _fetch_official_pages(website, fetcher)
+        telemetry = _enrichment_telemetry(pages, fetcher)
         if not pages:
+            self._persist_enrichment_telemetry(discovery_id, telemetry)
             candidate = self._candidate_from_row(
                 row,
                 email="",
@@ -1011,8 +1021,17 @@ class DiscoveryService:
             return "review_recovery", lead_id
 
         official_match = _official_identity_match(row, pages)
-        email_evidence = _extract_email_evidence(pages)
+        email_evidence = _extract_email_evidence(pages, row.get("business_name") or "")
         contact_form = _extract_contact_form_evidence(pages)
+        telemetry.update({
+            "VISIBLE_EMAIL_FOUND": bool(email_evidence and email_evidence.get("source") == "visible"),
+            "MAILTO_EMAIL_FOUND": bool(email_evidence and email_evidence.get("mailto")),
+            "STRUCTURED_EMAIL_FOUND": bool(email_evidence and email_evidence.get("source") == "structured"),
+            "EMAILS_EXTRACTED": 1 if email_evidence.get("email") else 0,
+            "CONTACT_FORM_ONLY": bool(not email_evidence.get("email") and contact_form.get("url")),
+            "NO_EMAIL_ON_ACCEPTED_PAGE": bool(pages and not email_evidence.get("email") and not contact_form.get("url")),
+        })
+        self._persist_enrichment_telemetry(discovery_id, telemetry)
         if not official_match:
             evidence_url = pages[0]["url"]
             evidence_snippet = _snippet_from_text(pages[0]["text"], row.get("business_name") or row.get("normalized_domain") or "")
@@ -1221,7 +1240,7 @@ class DiscoveryService:
                 valid_time = valid_http = False
             valid = (email and candidate.get("official_match") and candidate.get("email_verified_on_official_site")
                 and ev.get("email") == email and email in str(ev.get("visible_text_excerpt", ""))
-                and ev.get("email_source_type") == "official_page_visible"
+                and ev.get("email_source_type") in {"official_page_visible", "first_party_structured_data"}
                 and ev.get("http_success") is True and ev.get("tls_success") is True
                 and valid_http and valid_time and re.fullmatch(r"[a-fA-F0-9]{64}", str(ev.get("content_hash", "")))
                 and urllib.parse.urlsplit(str(ev.get("final_url", ""))).scheme == "https"
@@ -1520,6 +1539,22 @@ class DiscoveryService:
                 status,
                 discovery_id,
             ),
+        )
+
+    def _persist_enrichment_telemetry(self, discovery_id: int, telemetry: dict) -> None:
+        """Persist bounded website-enrichment telemetry in existing JSON metadata.
+
+        This records operational outcomes, not new recipient or evidence facts,
+        and avoids a schema migration.
+        """
+        row = self.conn.execute(
+            "SELECT raw_payload_json FROM lead_discovery_results WHERE id=?", (discovery_id,)
+        ).fetchone()
+        payload = _raw_payload({"raw_payload_json": row[0] if row else ""})
+        payload["website_enrichment_telemetry"] = dict(telemetry)
+        self.conn.execute(
+            "UPDATE lead_discovery_results SET raw_payload_json=? WHERE id=?",
+            (json.dumps(payload, sort_keys=True, default=str), discovery_id),
         )
 
     def _audit_request(self, city_id: int, query_family: str, page: ProviderPage) -> None:
@@ -1870,6 +1905,7 @@ def _fetch_official_pages(website: str, fetcher: Any) -> list[dict]:
     fixed = _fixed_first_party_urls(website)
     if not fixed:
         return []
+    telemetry = {"PAGES_ATTEMPTED": 0}
     begin_site = getattr(fetcher, "begin_site", None)
     end_site = getattr(fetcher, "end_site", None)
     if callable(begin_site):
@@ -1878,6 +1914,7 @@ def _fetch_official_pages(website: str, fetcher: Any) -> list[dict]:
         pages: list[dict] = []
         seen: set[str] = set()
         homepage_url, homepage_method = fixed[0]
+        telemetry["PAGES_ATTEMPTED"] = 1
         homepage = _verified_official_page(homepage_url, homepage_method, website, fetcher)
         if homepage:
             pages.append(homepage)
@@ -1900,6 +1937,7 @@ def _fetch_official_pages(website: str, fetcher: Any) -> list[dict]:
             if not canonical or canonical in seen:
                 continue
             attempted += 1
+            telemetry["PAGES_ATTEMPTED"] = attempted
             page = _verified_official_page(canonical, method, website, fetcher)
             if page:
                 seen.add(page["final_url"])
@@ -1908,6 +1946,10 @@ def _fetch_official_pages(website: str, fetcher: Any) -> list[dict]:
                     qualifying_https_homepage = True
         return pages
     finally:
+        try:
+            fetcher.last_site_telemetry = telemetry
+        except (AttributeError, TypeError):
+            pass
         if callable(end_site):
             end_site()
 
@@ -1952,8 +1994,126 @@ def _snippet_from_text(text: str, needle: str, max_len: int = 220) -> str:
     return haystack[:max_len]
 
 
-def _extract_email_evidence(pages: list[dict]) -> dict:
-    candidates = []
+def _json_ld_blocks(html: str) -> list[str]:
+    """Return only explicit JSON-LD script payloads, never generic script text."""
+    blocks: list[str] = []
+    for match in re.finditer(r"<script\b(?P<attrs>[^>]*)>(?P<body>.*?)</script\s*>", str(html or ""), re.I | re.S):
+        attrs = str(match.group("attrs") or "")
+        if re.search(r"\btype\s*=\s*['\"]application/ld\+json['\"]", attrs, re.I):
+            blocks.append(str(match.group("body") or "").strip())
+    return blocks
+
+
+def _schema_types(value: object) -> set[str]:
+    raw = value if isinstance(value, list) else [value]
+    return {str(item).rsplit("/", 1)[-1].strip().lower() for item in raw if str(item).strip()}
+
+
+def _is_structured_business_object(value: object) -> bool:
+    types = _schema_types(value)
+    return bool(types & STRUCTURED_BUSINESS_TYPES) or any(
+        item.endswith("business") or item.endswith("store") for item in types
+    )
+
+
+def _business_object_identity_matches(obj: dict, business_name: str) -> bool:
+    """Require a business object's declared name to overlap the staged merchant."""
+    wanted = set(_business_tokens(business_name))
+    if not wanted:
+        return True
+    declared = " ".join(str(obj.get(key) or "") for key in ("name", "legalName", "alternateName"))
+    actual = set(_business_tokens(declared))
+    return bool(wanted & actual)
+
+
+def _structured_email_values(obj: dict) -> list[str]:
+    """Read only explicit schema.org business email fields; never infer addresses."""
+    values: list[str] = []
+    if isinstance(obj.get("email"), str):
+        values.append(obj["email"])
+    points = obj.get("contactPoint")
+    if isinstance(points, dict):
+        points = [points]
+    if isinstance(points, list):
+        for point in points:
+            if isinstance(point, dict) and isinstance(point.get("email"), str):
+                values.append(point["email"])
+    return values
+
+
+def _structured_data_email_candidates(page: dict, business_name: str) -> list[dict]:
+    """Extract explicit email fields from identity-matched JSON-LD business objects.
+
+    `page` is already HTTPS/TLS/HTTP/same-party verified by `_fetch_official_pages`.
+    This function deliberately ignores all other script payloads and all `@` text
+    not held in a permitted business email field.
+    """
+    # JSON-LD is admissible only from an already accepted HTTPS page.  Visible
+    # text handling keeps its existing treatment of legacy HTTP pages.
+    if urllib.parse.urlsplit(str(page.get("final_url") or "")).scheme.lower() != "https":
+        return []
+    out: list[dict] = []
+    for raw_block in _json_ld_blocks(str(page.get("html") or "")):
+        try:
+            payload = json.loads(raw_block)
+        except (TypeError, json.JSONDecodeError):
+            continue
+        queue = list(payload) if isinstance(payload, list) else [payload]
+        while queue:
+            obj = queue.pop(0)
+            if not isinstance(obj, dict):
+                continue
+            graph = obj.get("@graph")
+            if isinstance(graph, list):
+                queue.extend(graph)
+            if not _is_structured_business_object(obj.get("@type")):
+                continue
+            if not _business_object_identity_matches(obj, business_name):
+                continue
+            for raw_email in _structured_email_values(obj):
+                email = _clean_email(raw_email)
+                if not email or email.lower() not in raw_block.lower():
+                    continue
+                excerpt = _structured_evidence_excerpt(raw_block, email, obj)
+                out.append({
+                    "email": email,
+                    "url": page["url"],
+                    "snippet": excerpt,
+                    "method": "first_party_structured_data",
+                    "source": "structured",
+                    "evidence": {
+                        "requested_url": page["requested_url"],
+                        "final_url": page["final_url"],
+                        "http_status": page["http_status"],
+                        "http_success": page["http_success"],
+                        "tls_success": page["tls_success"],
+                        "fetched_at": page["fetched_at"],
+                        "visible_text_excerpt": excerpt,
+                        "structured_data_excerpt": excerpt,
+                        "content_hash": page["content_hash"],
+                        "email": email,
+                        "email_source_type": "first_party_structured_data",
+                    },
+                })
+    return out
+
+
+def _structured_evidence_excerpt(raw_block: str, email: str, obj: dict, max_len: int = 220) -> str:
+    """A bounded, literal JSON-LD excerpt that includes the accepted email."""
+    compact = re.sub(r"\s+", " ", raw_block).strip()
+    idx = compact.lower().find(email.lower())
+    if idx >= 0:
+        start = max(0, idx - 90)
+        end = min(len(compact), idx + len(email) + 100)
+        excerpt = compact[start:end]
+    else:
+        excerpt = json.dumps({"@type": obj.get("@type"), "name": obj.get("name"), "email": email}, ensure_ascii=False)
+    return excerpt[:max_len]
+
+
+def _extract_email_evidence(pages: list[dict], business_name: str = "") -> dict:
+    candidates: list[tuple[int, int, dict]] = []
+    seen: set[str] = set()
     for page in pages:
         visible_candidates: list[tuple[str, str, bool]] = [
             (match.group(1), match.group(1), False) for match in EMAIL_RE.finditer(page["text"])
@@ -1974,7 +2134,8 @@ def _extract_email_evidence(pages: list[dict]) -> dict:
                 continue
             snippet = _snippet_from_text(page["text"], visible_source)
             local = email.split("@", 1)[0].lower()
-            method = page["method"] + ("_explicit_obfuscated_email" if is_obfuscated else "")
+            is_mailto = f"mailto:{email}" in str(page.get("html") or "").lower()
+            method = page["method"] + ("_explicit_obfuscated_email" if is_obfuscated else "") + ("_mailto" if is_mailto else "")
             score = 0
             if any(word in method for word in ("wholesale", "vendor", "partnership")):
                 score += 400
@@ -1984,11 +2145,16 @@ def _extract_email_evidence(pages: list[dict]) -> dict:
                 score += 200
             elif local in {"info", "general"}:
                 score += 100
-            candidates.append((score, {
+            if email in seen:
+                continue
+            seen.add(email)
+            candidates.append((2, score, {
                 "email": email,
                 "url": page["url"],
                 "snippet": snippet or email,
                 "method": method,
+                "source": "visible",
+                "mailto": is_mailto,
                 "evidence": {
                     "requested_url": page["requested_url"],
                     "final_url": page["final_url"],
@@ -2002,7 +2168,38 @@ def _extract_email_evidence(pages: list[dict]) -> dict:
                     "email_source_type": _email_source_type(method, snippet),
                 },
             }))
-    return max(candidates, key=lambda item: item[0])[1] if candidates else {}
+        for structured in _structured_data_email_candidates(page, business_name):
+            if structured["email"] in seen:
+                continue
+            seen.add(structured["email"])
+            local = structured["email"].split("@", 1)[0].lower()
+            score = 200 if any(word in local for word in ("sales", "business", "contact")) else 100
+            candidates.append((1, score, structured))
+    return max(candidates, key=lambda item: (item[0], item[1], item[2]["email"]))[2] if candidates else {}
+
+
+def _enrichment_telemetry(pages: list[dict], fetcher: Any) -> dict:
+    """Create bounded, durable operational telemetry without new schema fields."""
+    fetched = dict(getattr(fetcher, "last_site_telemetry", {}) or {})
+    browser_pages = sum(1 for page in pages if str(page.get("method") or "").startswith("browser_fallback:"))
+    static_pages = max(0, len(pages) - browser_pages)
+    browser_attempted = bool(getattr(fetcher, "_site_browser_attempted", False))
+    return {
+        "STATIC_FETCH_SUCCESS": static_pages > 0,
+        "STATIC_FETCH_FAILED": bool(getattr(fetcher, "_site_static_failed", False)),
+        "BROWSER_FALLBACK_ATTEMPTED": browser_attempted,
+        "BROWSER_FALLBACK_SUCCESS": browser_pages > 0,
+        "BROWSER_FALLBACK_FAILED": browser_attempted and browser_pages == 0,
+        "AUTOMATION_RECOVERY_EXHAUSTED": bool(getattr(fetcher, "last_site_automation_recovery_exhausted", False)),
+        "PAGES_ATTEMPTED": int(fetched.get("PAGES_ATTEMPTED", len(pages))),
+        "QUALIFYING_PAGES": len(pages),
+        "EMAILS_EXTRACTED": 0,
+        "VISIBLE_EMAIL_FOUND": False,
+        "MAILTO_EMAIL_FOUND": False,
+        "STRUCTURED_EMAIL_FOUND": False,
+        "NO_EMAIL_ON_ACCEPTED_PAGE": False,
+        "CONTACT_FORM_ONLY": False,
+    }
 
 
 def _extract_contact_form_evidence(pages: list[dict]) -> dict:
@@ -2030,8 +2227,10 @@ def _best_identity_page(pages: list[dict]) -> dict:
 
 def _email_source_type(evidence_method: str, snippet: str) -> str:
     method = str(evidence_method or "")
+    if "first_party_structured_data" in method:
+        return "first_party_structured_data"
     if "wholesale" in method or "vendor" in method or "partnership" in method:
         return "wholesale_vendor_page"
-    if "mailto:" in str(snippet or "").lower():
+    if "_mailto" in method or "mailto:" in str(snippet or "").lower():
         return "official_mailto"
     return "official_page_visible"
