@@ -1,5 +1,11 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.8M manual review evidence workbench / 人工审核证据工作台 — 2026-09-29
+
+- 在原有本机审核界面加入九段式证据详情、只读资格门禁和按需 Facebook 业务页面渲染；A/B/C 社交证据只供人工判断，不创建收件人或提升 SAFE。旧无证据 A0 捷径收敛到已有人工邮箱验证。/ Added a nine-section evidence detail, read-only gate view and on-demand Facebook business-page rendering to the existing localhost review UI. Social A/B/C evidence is for human judgment only and neither creates recipients nor promotes SAFE. The legacy evidence-free A0 shortcut now uses the existing verified manual-email path.
+- 生产数据库只读在线备份的开发副本完整性为 `ok`。40 条高价值记录有界金丝雀打开 10 个 Facebook 页面，发现 9 个可见公开邮箱；其中 7 个相对 `leads.email` 新出现，仅是潜在审核机会，尚未通过历史、V1/V2/MX 门禁。没有实测 Facebook 找回官网正向案例。/ Integrity of the read-only-derived development DB copy was `ok`. A bounded 40-lead canary opened 10 Facebook pages and found nine visible public emails; seven were new relative to `leads.email` only and are potential review opportunities, not history/V1/V2/MX-cleared. No live positive recovered-website case was observed.
+- 定向 13 项与完整 446 项离线 unittest 均通过，失败和错误为 0；生产文件/数据库写入、Inventory、SMTP、FSP、授权和调度变更均为 0。结果仅供生产评审，未获部署授权。/ Targeted 13 and full 446 offline unittest tests passed with zero failures and errors; production file/database writes, Inventory, SMTP, FSP, authorization and scheduler changes were all zero. This is for production review only, not deployment authorization.
+
 ## Phase 4A.8I bounce candidate header normalization / 退信候选邮件头规范化 — 2026-09-29
 
 - 修复 `_fetch_bounce_candidates()` 的 Header 类型回归：From 与 Subject 在正则匹配和候选元组生成前均转为文本，避免 legacy/8-bit 邮件头对象触发 `TypeError` 并中止整个退信扫描。/ Fixed the Header type regression in `_fetch_bounce_candidates()`: From and Subject are converted to text before regex matching and candidate tuple creation, preventing legacy/8-bit header objects from raising `TypeError` and stopping the entire bounce scan.

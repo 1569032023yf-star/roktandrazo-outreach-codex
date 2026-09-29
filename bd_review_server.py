@@ -14,6 +14,7 @@ import socket
 import sqlite3
 import sys
 import uuid
+import threading
 from datetime import datetime, timedelta
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
@@ -21,6 +22,10 @@ from urllib.parse import urlparse, parse_qs
 from review_workflow import apply_review_action
 from history_crosscheck import cross_check
 from manual_email_workflow import submit_manual_email
+from review_evidence_workbench import (
+    build_review_evidence, recovery_classification, render_facebook_page,
+    verify_recovered_website,
+)
 from bd_ops_api import (
     get_ops_summary, get_today_stats, get_tracking_stats, get_inventory,
     get_search_progress, get_final_plan, get_health, get_data_quality,
@@ -43,6 +48,9 @@ LOG_PATH = PROJECT_DIR / 'output' / 'review_action_log.jsonl'
 STATUS_PATH = PROJECT_DIR / 'output' / 'review_server_status.json'
 
 PRIMARY_STATES = {'TN', 'AR', 'KY'}
+_EVIDENCE_RESULTS = {}
+_EVIDENCE_LOCK = threading.Lock()
+_EVIDENCE_BUSY = False
 
 
 def now_cst():
@@ -247,105 +255,136 @@ def api_manual_email(body):
 
 
 def api_manual_a0(body):
-    """Manual verify and promote to A0 — no evidence/website requirements."""
+    """Legacy endpoint retained, but never bypasses verified manual evidence."""
+    return api_manual_email(body)
+
+
+def api_review_evidence(lead_id):
     try:
-        lead_id = int(body.get('lead_id'))
-        email = str(body.get('email', '')).strip()
-        notes = str(body.get('notes', ''))
-        if not email or '@' not in email:
-            return json.dumps({'ok': False, 'error': 'invalid_email'})
+        lead_id = int(lead_id)
     except (TypeError, ValueError):
         return json.dumps({'ok': False, 'error': 'lead_id_required'})
-
     conn = db()
     try:
-        lead = conn.execute("SELECT * FROM leads WHERE id=?", (lead_id,)).fetchone()
-        if not lead:
+        with _EVIDENCE_LOCK:
+            state = dict(_EVIDENCE_RESULTS.get(lead_id) or {})
+        evidence = build_review_evidence(conn, lead_id, state.get('facebook'))
+        if evidence.get('ok'):
+            evidence['recovered_website'] = state.get('recovered_website') or {}
+            evidence['browser_job_status'] = state.get('job_status') or 'idle'
+        return json.dumps(evidence, default=str)
+    finally:
+        conn.close()
+
+
+def _start_evidence_job(lead_id, task):
+    """One bounded browser job at a time; the review HTTP handler never waits."""
+    global _EVIDENCE_BUSY
+    with _EVIDENCE_LOCK:
+        if _EVIDENCE_BUSY:
+            return json.dumps({'ok': False, 'error': 'evidence_browser_busy'})
+        _EVIDENCE_BUSY = True
+        _EVIDENCE_RESULTS.setdefault(lead_id, {})['job_status'] = 'running'
+
+    def runner():
+        global _EVIDENCE_BUSY
+        try:
+            key, result = task()
+            with _EVIDENCE_LOCK:
+                _EVIDENCE_RESULTS.setdefault(lead_id, {})[key] = result
+                _EVIDENCE_RESULTS[lead_id]['job_status'] = 'complete'
+        except Exception as exc:
+            with _EVIDENCE_LOCK:
+                _EVIDENCE_RESULTS.setdefault(lead_id, {})['job_status'] = 'error:' + type(exc).__name__
+        finally:
+            with _EVIDENCE_LOCK:
+                _EVIDENCE_BUSY = False
+
+    threading.Thread(target=runner, daemon=True, name='review-evidence-browser').start()
+    return json.dumps({'ok': True, 'status': 'running', 'lead_id': lead_id})
+
+
+def api_fetch_facebook_evidence(body):
+    try:
+        lead_id = int(body.get('lead_id'))
+    except (TypeError, ValueError):
+        return json.dumps({'ok': False, 'error': 'lead_id_required'})
+    conn = db()
+    try:
+        row = conn.execute('SELECT * FROM leads WHERE id=?', (lead_id,)).fetchone()
+        if not row:
             return json.dumps({'ok': False, 'error': 'lead_not_found'})
-        lead_dict = dict(lead)
+        lead = dict(row)
+        recovery = recovery_classification(conn, lead)
+        if recovery['value'] == 'NONE':
+            return json.dumps({'ok': False, 'error': 'history_blocked', 'reasons': recovery['reasons']})
+        queued = conn.execute('SELECT facebook_url FROM fb_enrichment_queue WHERE lead_id=?', (lead_id,)).fetchone()
+        fb_url = str((queued[0] if queued else None) or lead.get('facebook_url') or '')
+        if not fb_url:
+            return json.dumps({'ok': False, 'error': 'no_existing_facebook_business_url'})
+    finally:
+        conn.close()
+    return _start_evidence_job(lead_id, lambda: ('facebook', render_facebook_page(lead, fb_url)))
 
-        # Hard block checks only
-        blocks = []
-        email_lower = email.lower()
 
-        # Invalid pattern check
-        import re
-        invalid_pat = re.compile(r'(\.png|\.jpg|\.gif|\.webp|\.jpeg|\.svg|\.css|\.js\b|sentry\.io|noreply|no-reply|donotreply|example\.com|@2x|\d+x\d+|^www\.|^xxx@)')
-        if invalid_pat.search(email_lower):
-            blocks.append('invalid_email_pattern')
+def api_verify_recovered_website(body):
+    try:
+        lead_id = int(body.get('lead_id'))
+    except (TypeError, ValueError):
+        return json.dumps({'ok': False, 'error': 'lead_id_required'})
+    with _EVIDENCE_LOCK:
+        facebook = dict((_EVIDENCE_RESULTS.get(lead_id) or {}).get('facebook') or {})
+    website = facebook.get('public_website') or ''
+    if not website or facebook.get('status') != 'opened' or facebook.get('facebook_provenance_tier', '').startswith('TIER_C'):
+        return json.dumps({'ok': False, 'error': 'no_strong_recovered_website'})
+    conn = db()
+    try:
+        row = conn.execute('SELECT * FROM leads WHERE id=?', (lead_id,)).fetchone()
+        if not row or recovery_classification(conn, dict(row))['value'] == 'NONE':
+            return json.dumps({'ok': False, 'error': 'history_blocked_or_missing'})
+        lead = dict(row)
+    finally:
+        conn.close()
+    return _start_evidence_job(lead_id, lambda: ('recovered_website', verify_recovered_website(lead, website)))
 
-        # Previously sent
-        sent = conn.execute("SELECT 1 FROM send_log WHERE email=? AND status='sent'", (email_lower,)).fetchone()
-        if sent:
-            blocks.append('previously_sent')
 
-        # Organization previously sent
-        org_key = lead_dict.get('organization_key', '') or ''
-        if org_key:
-            org_sent = conn.execute(
-                "SELECT 1 FROM send_log sl JOIN leads l ON sl.lead_id=l.id WHERE l.organization_key=? AND sl.status='sent'",
-                (org_key,)).fetchone()
-            if org_sent:
-                blocks.append('organization_previously_sent')
-
-        # Suppression
-        suppressed = conn.execute("SELECT 1 FROM suppression_list WHERE email=?", (email_lower,)).fetchone()
-        if suppressed:
-            blocks.append('suppressed')
-
-        # Unsubscribe
-        unsub = conn.execute("SELECT 1 FROM suppression_list WHERE email=? AND reason LIKE '%unsubscribe%'", (email_lower,)).fetchone()
-        if unsub:
-            blocks.append('unsubscribed')
-
-        # Hard bounce
-        bounced = conn.execute("SELECT 1 FROM bounce_log WHERE email=? AND bounce_type='hard'", (email_lower,)).fetchone()
-        if bounced:
-            blocks.append('hard_bounced')
-
-        # Negative reply
-        replied = conn.execute("SELECT 1 FROM reply_log WHERE lead_id=?", (lead_id,)).fetchone()
-        if replied:
-            blocks.append('negative_reply')
-
-        if blocks:
-            return json.dumps({'ok': False, 'error': 'hard_blocked', 'blocks': blocks})
-
-        # Generate org_key if missing
-        gen_org = None
-        if not org_key:
-            website = (lead_dict.get('official_website') or '').strip()
-            if website:
-                import re as _re
-                m = _re.search(r'https?://(?:www\.)?([^/]+)', website)
-                gen_org = m.group(1).lower().replace('.', '_').replace('-', '_') if m else None
-            if not gen_org and lead_dict.get('store_name'):
-                gen_org = 'org_' + lead_dict['store_name'].lower().replace(' ', '_').replace("'", '')[:30]
-            if not gen_org:
-                gen_org = f'org_{lead_id}'
-            org_key = org_key or gen_org
-
-        now = datetime.now().isoformat()
-        conn.execute("""
-            UPDATE leads SET email=?, status='new', confidence_score='A', auto_sendable=1,
-            email_source_type='manual_verified', review_status='approved',
-            organization_key=?,
-            notes=COALESCE(notes,'') || ?
-            WHERE id=?
-        """, (email, org_key,
-              f' [manual_a0:{now[:19]}] {notes}' if notes else f' [manual_a0:{now[:19]}]', lead_id))
-
-        # Write review_log
-        conn.execute("""
-            INSERT INTO review_log (lead_id, previous_status, new_status, decision, reason_code, reason_detail, reviewed_at, whether_auto_sendable)
-            VALUES (?, ?, 'new', 'manual_a0', 'manual_verified', ?, ?, 1)
-        """, (lead_id, lead_dict.get('status', 'unknown'),
-              f'email={email} notes={notes}'[:200], now))
-
-        conn.commit()
-        return json.dumps({'ok': True, 'lead_id': lead_id, 'email': email, 'score': 'A',
-                          'status': 'new', 'auto_sendable': 1, 'organization_key': org_key,
-                          'promoted_at': now})
+def api_evidence_decision(body):
+    """Audit a human judgment of Facebook identity; never change lead eligibility."""
+    action = str(body.get('action') or '')
+    if action not in {'accept_facebook_identity', 'reject_facebook_match'}:
+        return json.dumps({'ok': False, 'error': 'invalid_evidence_action'})
+    try:
+        lead_id = int(body.get('lead_id'))
+    except (TypeError, ValueError):
+        return json.dumps({'ok': False, 'error': 'lead_id_required'})
+    reason = str(body.get('reason') or '').strip()[:300]
+    if not reason:
+        return json.dumps({'ok': False, 'error': 'reason_required'})
+    with _EVIDENCE_LOCK:
+        facebook = dict((_EVIDENCE_RESULTS.get(lead_id) or {}).get('facebook') or {})
+    if facebook.get('status') != 'opened':
+        return json.dumps({'ok': False, 'error': 'no_rendered_evidence'})
+    if action == 'accept_facebook_identity' and facebook.get('facebook_provenance_tier', '').startswith('TIER_C'):
+        return json.dumps({'ok': False, 'error': 'weak_identity_cannot_be_accepted'})
+    conn = db()
+    try:
+        with conn:
+            lead = conn.execute('SELECT * FROM leads WHERE id=?', (lead_id,)).fetchone()
+            if not lead:
+                return json.dumps({'ok': False, 'error': 'lead_not_found'})
+            before = dict(lead)
+            if recovery_classification(conn, before)['value'] == 'NONE' and action == 'accept_facebook_identity':
+                return json.dumps({'ok': False, 'error': 'history_blocked'})
+            prior = before.get('review_status') or before.get('status') or 'pending'
+            conn.execute('''INSERT INTO review_log
+                (action_id,lead_id,previous_status,new_status,decision,reviewer,reason_code,reason_detail,
+                 reviewed_at,hygiene_result,request_id,evidence_url,source_channel,
+                 whether_auto_sendable,whether_manual_sendable)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''',
+                (str(uuid.uuid4()), lead_id, prior, prior, action, 'web', before.get('review_reason_code') or '',
+                 reason, datetime.now().isoformat(), json.dumps({'send_eligibility_changed': False}),
+                 str(uuid.uuid4()), facebook.get('facebook_page_url') or '', 'facebook_rendered', 0, 0))
+        return json.dumps({'ok': True, 'send_eligibility_changed': False, 'review_status': prior})
     finally:
         conn.close()
 
@@ -420,8 +459,13 @@ def api_fb_queue(body):
         return json.dumps({'ok': False, 'error': 'Not found'})
 
     lead = dict(lead)
+    recovery = recovery_classification(conn, lead)
+    if recovery['value'] == 'NONE':
+        conn.close()
+        return json.dumps({'ok': False, 'error': 'history_blocked', 'reasons': recovery['reasons']})
     web = lead.get('official_website', '') or ''
     fb_url = lead.get('facebook_url', '') or ''
+    fb_source = 'existing_unverified' if fb_url else ''
 
     # Check if already queued
     existing = c.execute("SELECT fb_check_status FROM fb_enrichment_queue WHERE lead_id=?", (lead_id,)).fetchone()
@@ -456,7 +500,7 @@ def api_fb_queue(body):
          facebook_url, facebook_source, fb_check_status, created_at, updated_at)
         VALUES (?,?,?,?,?,?,?,?,'pending',datetime('now'),datetime('now'))''',
         (lead_id, lead.get('store_name',''), lead.get('city',''), lead.get('state',''),
-         web, lead.get('review_reason_code',''), fb_url, 'manual_recheck' if fb_url else ''))
+         web, lead.get('review_reason_code',''), fb_url, fb_source if fb_url else ''))
 
     conn.commit()
     conn.close()
@@ -545,6 +589,10 @@ a:hover{text-decoration:underline}
 .ev-links{white-space:nowrap}
 .ev-links a{font-size:10px;margin-right:4px;padding:1px 4px;border:1px solid #30363d;border-radius:3px}
 .ev-links a:hover{background:#21262d;text-decoration:none}
+.evidence-box{max-width:900px;width:92vw;max-height:88vh;overflow:auto}
+.evidence-section{border-top:1px solid #30363d;padding:10px 0;font-size:12px;line-height:1.5}
+.evidence-section h4{color:#58a6ff;margin-bottom:5px}
+.gate-grid{display:grid;grid-template-columns:1fr auto;gap:3px 10px}
 </style>
 </head>
 <body>
@@ -584,7 +632,13 @@ a:hover{text-decoration:underline}
   <select id="newEvidenceMethod"><option value="official_mailto">official_mailto</option><option value="official_contact_page">official_contact_page</option><option value="official_about_page">official_about_page</option><option value="official_footer">official_footer</option><option value="official_wholesale_page">official_wholesale_page</option><option value="official_vendor_page">official_vendor_page</option><option value="manual_user_supplied">manual_user_supplied</option><option value="other_official_source">other_official_source</option></select>
   <input id="newContactRole" placeholder="Contact role / 联系人角色" style="width:100%;margin:6px 0;padding:7px">
   <textarea id="newEmailNotes" rows="2" placeholder="Notes / 备注"></textarea>
-  <div class="modal-actions"><button class="btn btn-ap" onclick="submitOfficialEmail()">Verify / 验证邮箱</button><button class="btn btn-ap" style="background:#d29922" onclick="submitManualA0()">Manual A0 / 人工确认A0</button><button class="btn" onclick="closeEmailModal()">Cancel / 取消</button></div>
+  <div class="modal-actions"><button class="btn btn-ap" onclick="submitOfficialEmail()">Verify / 验证邮箱</button><button class="btn" onclick="closeEmailModal()">Cancel / 取消</button></div>
+</div></div>
+
+<div class="modal" id="evidenceModal"><div class="modal-box evidence-box">
+  <h3>审核证据工作台 / Review Evidence Workbench</h3>
+  <div id="evidenceContent">Loading / 加载中…</div>
+  <div class="modal-actions"><button class="btn" onclick="closeEvidence()">Close / 关闭</button></div>
 </div></div>
 
 <!-- Action Modal -->
@@ -715,6 +769,7 @@ async function loadPage(pg){
       <td><span class="ev-links">${evidence}</span></td>
       <td>${since}</td>
       <td style="white-space:nowrap">
+        <button class="btn btn-re" onclick="openEvidence(${l.id})">Evidence / 证据</button>
         ${autoBtn}
         ${manualBtn}
         <button class="btn btn-rj" title="Reject / 拒绝" onclick="openAction(${l.id},'${sn}','reject')">R</button>
@@ -757,7 +812,6 @@ function openEmailModal(id){document.getElementById('emailLeadId').textContent=i
 function closeEmailModal(){document.getElementById('emailModal').classList.remove('show')}
 async function submitOfficialEmail(){let id=parseInt(document.getElementById('emailLeadId').textContent);let body={lead_id:id,official_website:document.getElementById('newOfficialWebsite').value,email:document.getElementById('newEmail').value,evidence_url:document.getElementById('newEvidenceUrl').value,evidence_snippet:document.getElementById('newEvidenceSnippet').value,evidence_method:document.getElementById('newEvidenceMethod').value,contact_role:document.getElementById('newContactRole').value,notes:document.getElementById('newEmailNotes').value};let d=await api('/api/manual-email',body);alert((d.final_status||'failed')+(d.failure_reason?': '+d.failure_reason:''));if(d.ok){closeEmailModal();loadPage(currentPage);loadSummary()};refreshAll()}
 
-async function submitManualA0(){let id=parseInt(document.getElementById('emailLeadId').textContent);let email=document.getElementById('newEmail').value.trim();if(!email){alert('Email required');return}let confirmed=confirm('Promote to A0? 确认升级为A0？\\nEmail: '+email+'\\n\\nHard blocks only checked: previously_sent, suppressed, bounced, replied. 只检查硬阻断。');if(!confirmed)return;let d=await api('/api/manual-a0',{lead_id:id,email:email,notes:document.getElementById('newEmailNotes').value});if(d.ok){alert('✅ Promoted to A0! lead_id='+d.lead_id);closeEmailModal();loadPage(currentPage);loadSummary()}else{alert('❌ Blocked: '+(d.blocks||[]).join(', ')||d.error)};refreshAll()}
 
 async function checkHygiene(id){
   document.getElementById('modalHygiene').innerHTML='<div style="font-size:11px;color:#d29922;margin:4px 0">Hygiene Gate / 安全门禁: suppression / bounce / duplicate / state / Exchange MX will be checked on approve</div>';
@@ -803,6 +857,7 @@ setInterval(refreshAll, 30000);
 
 loadSummary();loadPage(1);
 </script>
+<script src="/review-evidence.js"></script>
 </body>
 </html>"""
 
@@ -960,7 +1015,6 @@ class ReviewHandler(BaseHTTPRequestHandler):
     def _json(self, data, code=200):
         self.send_response(code)
         self.send_header('Content-Type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
         self.wfile.write(data.encode())
 
@@ -979,12 +1033,19 @@ class ReviewHandler(BaseHTTPRequestHandler):
             self._html(DASHBOARD_HTML)
         elif path == '/review':
             self._html(HTML_PAGE.replace('{server_start}', self.server_start))
+        elif path == '/review-evidence.js':
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/javascript; charset=utf-8')
+            self.end_headers()
+            self.wfile.write((PROJECT_DIR / 'review_evidence_ui.js').read_bytes())
         elif path == '/api/summary':
             self._json(api_summary())
         elif path == '/api/leads':
             self._json(api_leads(params))
         elif path == '/api/history':
             self._json(api_history(params.get('lead_id', [''])[0]))
+        elif path == '/api/review-evidence':
+            self._json(api_review_evidence(params.get('lead_id', [''])[0]))
         elif path == '/api/dashboard':
             self._json(json.dumps({'server_running': True, 'started_at': self.server_start}))
         elif path == '/api/ops/summary':
@@ -1044,6 +1105,12 @@ class ReviewHandler(BaseHTTPRequestHandler):
                 self._json(api_manual_a0(body))
             except Exception as e:
                 self._json(json.dumps({'ok': False, 'error': str(e)[:200]}))
+        elif parsed.path == '/api/fetch-facebook-evidence':
+            self._json(api_fetch_facebook_evidence(body))
+        elif parsed.path == '/api/verify-recovered-website':
+            self._json(api_verify_recovered_website(body))
+        elif parsed.path == '/api/evidence-decision':
+            self._json(api_evidence_decision(body))
         elif parsed.path == '/api/fb':
             self._json(api_fb_queue(body))
         elif parsed.path == '/api/fb_batch':
