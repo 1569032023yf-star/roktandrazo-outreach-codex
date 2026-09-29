@@ -572,8 +572,10 @@ def _fetch_bounce_candidates(conn: imaplib.IMAP4, limit: int = 50):
         except Exception:
             continue
         header_msg = email.message_from_bytes(header_bytes)
-        frm = header_msg.get("From") or ""
-        subj = header_msg.get("Subject") or ""
+        # Legacy/8-bit headers can be email.header.Header objects here.
+        # Both regex matching and the stored candidate tuple require text.
+        frm = str(header_msg.get("From") or "")
+        subj = str(header_msg.get("Subject") or "")
         if _FROM_PAT.search(frm) or _SUBJECT_PAT.search(subj):
             candidates.append((uid, frm, subj))
     return candidates

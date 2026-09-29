@@ -1,5 +1,11 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.8I bounce candidate header normalization / 退信候选邮件头规范化 — 2026-09-29
+
+- 修复 `_fetch_bounce_candidates()` 的 Header 类型回归：From 与 Subject 在正则匹配和候选元组生成前均转为文本，避免 legacy/8-bit 邮件头对象触发 `TypeError` 并中止整个退信扫描。/ Fixed the Header type regression in `_fetch_bounce_candidates()`: From and Subject are converted to text before regex matching and candidate tuple creation, preventing legacy/8-bit header objects from raising `TypeError` and stopping the entire bounce scan.
+- 新离线 IMAP 假对象回归测试先复现 Header 直接传入正则的原始 TypeError，再验证 From/Subject Header 都会规范化；退信式邮件头仍被识别，普通消息仍被排除。/ A new offline fake-IMAP regression test first reproduces the original TypeError from passing Header directly to regex, then verifies both From and Subject Headers normalize; bounce-like headers remain recognized and ordinary messages remain excluded.
+- 模块测试 22 通过，完整离线 unittest 424 通过，失败/错误均为 0；编译和 `git diff --check` 通过。未连接 IMAP、未写生产数据库、未触碰 SMTP、发送、调度、分类、抑制、V2/MX、Inventory/discovery 或 schema。/ Module tests passed 22 and the complete offline unittest suite passed 424, both with zero failures and errors; compilation and `git diff --check` passed. No IMAP connection, production database write, SMTP, sending, scheduling, classification, suppression, V2/MX, Inventory/discovery, or schema was touched.
+
 ## Phase 4A.8H automation exhaustion finalization / 自动恢复穷尽最终定稿 — 2026-09-23
 
 - 仅修改 `discovery/discovery_service.py` 的通用自动恢复穷尽判定：静态访问失败或 HTTPS 兼容探测已发生、受限浏览器实际运行、且没有合格同主体页面时，记录才退出自动重试；纯静态 HTTP 400 而未尝试浏览器仍保持可重试。/ Changed only the generic automatic-recovery exhaustion predicate in `discovery/discovery_service.py`: a row leaves automatic retry only when a static access failure or HTTPS compatibility probe occurred, the bounded browser actually ran, and no qualifying same-party page resulted; plain static HTTP 400 with no browser attempt remains retryable.

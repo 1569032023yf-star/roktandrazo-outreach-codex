@@ -13,6 +13,8 @@ import sqlite3
 import sys
 import tempfile
 import unittest
+from email.header import Header
+from unittest.mock import patch
 
 # 保证能 import 项目根目录下的模块
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -216,6 +218,53 @@ class TestClassify(unittest.TestCase):
     def test_unresolved(self):
         self.assertEqual(self._c("smtp; 550 some unknown error", "5.5.0"), "unresolved")
         self.assertEqual(self._c(None, None, "no hints here"), "unresolved")
+
+
+class TestFetchBounceCandidates(unittest.TestCase):
+    """候选 header 过滤必须接受旧式 Header 对象，不连接真实 IMAP。"""
+
+    class _FakeImap:
+        def select(self, _mailbox):
+            return "OK", [b"3"]
+
+        def search(self, *_args):
+            return "OK", [b"1 2 3"]
+
+        def fetch(self, _uid, _query):
+            return "OK", [(b"HEADER", b"From: placeholder@example.test\r\nSubject: placeholder\r\n")]
+
+    def test_header_objects_are_normalized_before_candidate_regex_matching(self):
+        daemon_from = Header("MAILER-DAEMON@example.test", "utf-8")
+        bounce_subject = Header("Delivery Status Notification", "utf-8")
+        non_bounce_from = Header("newsletter@example.test", "utf-8")
+        non_bounce_subject = Header("Monthly update", "utf-8")
+
+        # This is the exact pre-fix failure class: re.Pattern rejects Header.
+        with self.assertRaises(TypeError):
+            bp._FROM_PAT.search(daemon_from)
+
+        messages = [
+            {"From": daemon_from, "Subject": Header("ordinary notice", "utf-8")},
+            {"From": Header("postmaster@example.test", "utf-8"), "Subject": bounce_subject},
+            {"From": non_bounce_from, "Subject": non_bounce_subject},
+        ]
+
+        class _HeaderMessage:
+            def __init__(self, values):
+                self._values = values
+
+            def get(self, name):
+                return self._values.get(name)
+
+        with patch.object(bp.email, "message_from_bytes", side_effect=[_HeaderMessage(values) for values in messages]):
+            candidates = bp._fetch_bounce_candidates(self._FakeImap(), limit=3)
+
+        self.assertEqual(len(candidates), 2)
+        self.assertEqual(candidates[0][0], b"1")
+        self.assertEqual(candidates[0][1], str(daemon_from))
+        self.assertEqual(candidates[1][2], str(bounce_subject))
+        self.assertTrue(all(isinstance(value, str) for item in candidates for value in item[1:]))
+        self.assertNotIn(b"3", [item[0] for item in candidates])
 
 
 class TestRecordBounce(unittest.TestCase):
