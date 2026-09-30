@@ -65,6 +65,14 @@ DIRECTORY_HINTS = ("yelp", "yellowpages", "bizarchive", "allbiz", "mapquest", "d
                    "tcgshopfinder", "videogame-stores", "storesinfo", "cmac.ws")
 OFFICIAL_EVIDENCE_TYPES = ("official_page_visible", "official_mailto", "first_party_structured_data",
                            "wholesale_vendor_page", "web_search_official")
+LEGACY_EVIDENCE_TYPES = ("", "legacy", "unknown", "manual_verified",
+                         "inventory_recovery", "website_extracted")
+
+
+def _source_policy_blocked(lead: Mapping[str, Any]) -> bool:
+    """Known non-approved provenance cannot inherit historical evidence fallbacks."""
+    source = str(lead.get("email_source_type") or "").strip().lower()
+    return source not in OFFICIAL_EVIDENCE_TYPES and source not in LEGACY_EVIDENCE_TYPES
 
 
 def _is_official_evidence(lead: Mapping[str, Any], email: str, website: str) -> bool:
@@ -76,6 +84,8 @@ def _is_official_evidence(lead: Mapping[str, Any], email: str, website: str) -> 
       3. store-domain 邮箱（邮箱域 == 官网域）本身即归属证据
     """
     email_src = str(lead.get("email_source_type") or "").lower()
+    if _source_policy_blocked(lead):
+        return False
     if email_src in OFFICIAL_EVIDENCE_TYPES:
         return True
     evidence_url = str(lead.get("evidence_url") or "")
@@ -136,6 +146,11 @@ def review_campaign_eligible(lead: Mapping[str, Any], ctx: Optional[Mapping[str,
         blockers.append(f"third_party_email:email domain != official site domain, not free mailbox")
 
     # 3.5 公共邮箱官方归属证据（ICP V1）
+    source_blocked = _source_policy_blocked(lead)
+    checks["evidence_source_policy"] = {"pass": not source_blocked,
+                                        "detail": str(lead.get("email_source_type") or "legacy_empty")}
+    if source_blocked:
+        blockers.append("evidence_source_not_approved")
     # 公共邮箱（gmail/yahoo/hotmail/aol/...）本身不是 blocker，
     # 但进入 CAMPAIGN_ELIGIBLE 必须证明"完整邮箱确实属于该商户"。
     # 仅第三方目录证据（Yelp/Yellow Pages/bizarchive/allbiz 等）不构成归属证明。
@@ -221,7 +236,7 @@ def select_candidates_for_plan(conn: sqlite3.Connection, limit: int,
         rows = conn.execute(
             """SELECT * FROM leads
                 WHERE status NOT IN ('sent','bounced','do_not_contact','rejected',
-                                     'failed','delivery_issue','bounce_review','contact_form_pool')
+                                     'failed','delivery_issue','bounce_review')
                   AND email IS NOT NULL AND email != '' AND email LIKE '%@%.%'
                 ORDER BY id"""
         ).fetchall()
@@ -231,7 +246,7 @@ def select_candidates_for_plan(conn: sqlite3.Connection, limit: int,
             f"""SELECT * FROM leads
                 WHERE state IN ({states_sql})
                   AND status NOT IN ('sent','bounced','do_not_contact','rejected',
-                                     'failed','delivery_issue','bounce_review','contact_form_pool')
+                                     'failed','delivery_issue','bounce_review')
                   AND email IS NOT NULL AND email != '' AND email LIKE '%@%.%'
                 ORDER BY id"""
             , states).fetchall()

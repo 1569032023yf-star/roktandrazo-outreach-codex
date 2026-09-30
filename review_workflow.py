@@ -15,7 +15,8 @@ def now_shanghai() -> str:
 
 
 def _is_contact_form(lead: dict) -> bool:
-    return lead.get('status') == 'contact_form_pool' or bool(lead.get('contact_form_url')) and not lead.get('email')
+    return not bool(str(lead.get('email') or '').strip()) and (
+        lead.get('status') == 'contact_form_pool' or bool(lead.get('contact_form_url')))
 
 
 def _audit(conn, lead, previous_status, new_status, action, reviewer, reason, hygiene, source_channel, request_id):

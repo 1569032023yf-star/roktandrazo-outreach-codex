@@ -1,5 +1,13 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.8O contact-form state and evidence-source boundary / 联系表单状态与证据来源边界 — 2026-09-30
+
+- 修复旧 `contact_form_pool` 与表单标记在已有邮箱后仍产生“仅联系表单”阻断；更新 broad-ready、审核工作流/适配器、候选选择与界面派生状态。`contact_form_url` 保留，无数据库迁移。/ Corrected stale form-only status when an email is now present across broad readiness, review workflow/adapter, candidate selection, and UI. The contact URL remains and no migration is needed.
+- V1 对显式未批准来源一律先行阻断，不再让同域邮箱或证据 URL 回退绕过来源边界；空值与已识别历史来源仍可走原严格兼容回退。V2 继承 V1 阻断；未批准 Facebook，也未放宽 MX、历史或第三方域规则。/ V1 now blocks explicit unapproved provenance before same-domain or evidence-URL fallback, while empty and identified legacy sources retain strict compatibility fallback. V2 inherits the blocker; Facebook, MX, history, and cross-domain policies were not relaxed.
+- 同七候选复审：5 条旧联系表单阻断解除、2 条跨域邮箱仍阻断、7 条均受未批准来源阻断；5 条只差来源政策，V1/V2 均为 0 通过。达到单独政策评审阈值，不代表 SAFE。/ Re-audit of the same seven cleared five stale form blockers, retained two cross-domain blockers, and blocked all seven on unapproved provenance. Five warrant a separate source-policy review; none passed V1/V2 or became SAFE.
+- 新鲜生产数据库只读备份副本回放：Broad Ready 64→80，V1 53→27，V1 减少的 26 条全是 `guessed_email`；未见超出明确修复范围的资格漂移。副本无新鲜 MX 缓存，因此 V2 0→0 仅是缓存限定、失败关闭的比较，不是实时 MX 结论。/ A fresh read-only-derived production copy yielded Broad Ready 64→80 and V1 53→27; all 26 V1 losses were explicit guessed-email records. No out-of-scope drift was observed. With no fresh MX cache, V2 0→0 is only a cache-limited fail-closed comparison, not a live-MX claim.
+- 定向 59 项和完整 463 项 unittest 通过，失败/错误均为 0；编译、JavaScript 语法和差异检查通过。未部署生产、未运行 Inventory、未发送。/ Fifty-nine targeted and 463 full unittest tests passed with zero failures/errors; compilation, JavaScript syntax, and diff checks passed. No production deployment, Inventory, or sending occurred.
+
 ## Phase 4A.8N Facebook 发现闭环与七候选资格审计 / Facebook discovery closure and seven-candidate gate audit — 2026-09-30
 
 - 审核台在无预存 Facebook URL 时，现与金丝雀复用同一个“已验证官网首页 → 官网直接关联商家页”函数；已有 URL 路径不变。原 40 条有界样本中，真实审核台后端发现路径重现 9 条，重建 7 个新邮箱候选。/ The review server and canary now share one verified-homepage-to-direct-business-page discovery function when no URL is stored; the existing-URL route is unchanged. The real review backend reproduced nine discovery paths and seven new-email observations within the original bounded 40 leads.

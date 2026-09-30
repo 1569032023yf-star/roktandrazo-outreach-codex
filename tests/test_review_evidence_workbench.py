@@ -217,7 +217,7 @@ class WorkbenchTests(unittest.TestCase):
         self.assertFalse(history["HISTORY_CLEAN"])
         self.assertEqual(history["BUCKET"], "B_HISTORY_BLOCKED")
 
-    def test_current_policy_source_is_not_allowlisted_even_if_domain_fallback_passes(self):
+    def test_current_policy_source_is_not_allowlisted_or_promoted_by_domain_fallback(self):
         self.assertNotIn("official_site_linked_facebook", OFFICIAL_EVIDENCE_TYPES)
         self.conn.execute("UPDATE leads SET status='new',email='hello@northhobbies.com',"
                           "email_source_type='official_site_linked_facebook',"
@@ -227,13 +227,14 @@ class WorkbenchTests(unittest.TestCase):
         self.conn.commit()
         lead = self.lead()
         lead["evidence_checked_at"] = "2026-09-29T00:00:00+00:00"
-        # These are factual current-code results, not an approval to promote a
-        # social address. The independent policy-approval flag remains false.
+        # Phase 4A.8O closes the fallback documented by the former test.
         v1 = review_campaign_eligible(lead, {"conn":self.conn})
         v2 = review_campaign_eligible_v2(lead, {"conn":self.conn,
                                                "mx_lookup":{"northhobbies.com":"ok"}})
-        self.assertTrue(v1["eligible"])
-        self.assertTrue(v2["eligible"])
+        self.assertFalse(v1["eligible"])
+        self.assertFalse(v2["eligible"])
+        self.assertIn("evidence_source_not_approved", v1["blockers"])
+        self.assertIn("evidence_source_not_approved", v2["blockers"])
 
     def test_login_captcha_not_found_are_fail_soft(self):
         lead = self.lead()

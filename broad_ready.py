@@ -194,6 +194,9 @@ def _load_db_signals(conn: sqlite3.Connection, email: str, org_key: str,
 
 
 def _is_contact_form_only(lead: Mapping[str, Any]) -> bool:
+    # Historical contact-form status must not override a currently present email.
+    if str(lead.get("email") or "").strip():
+        return False
     if str(lead.get("status") or "") == "contact_form_pool":
         return True
     if lead.get("contact_form_only"):

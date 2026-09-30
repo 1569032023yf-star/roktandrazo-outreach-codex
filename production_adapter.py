@@ -131,7 +131,7 @@ def build_candidate_from_db_row(
     )
 
     # Contact form only
-    c["contact_form_only"] = (
+    c["contact_form_only"] = not bool(email) and (
         email_source_type == "contact_form_only"
         or status == "contact_form_pool"
     )

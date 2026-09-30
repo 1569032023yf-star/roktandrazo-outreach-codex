@@ -1,0 +1,204 @@
+{
+  "PHASE": "4A.8O / 七候选重新审计 / Seven-candidate re-audit",
+  "SEVEN": {
+    "CLASS_A_CANDIDATES_REAUDITED": 7,
+    "HISTORY_CLEAN": 7,
+    "MX_PASS": 7,
+    "UNIQUE_ORG": 7,
+    "CONTACT_FORM_ONLY_BEFORE": 5,
+    "CONTACT_FORM_ONLY_AFTER": 0,
+    "CONTACT_FORM_STALE_BLOCKS_REMOVED": 5,
+    "THIRD_PARTY_DOMAIN_BLOCKED": 2,
+    "SOURCE_POLICY_BLOCKED": 7,
+    "OTHER_BLOCKED": 0,
+    "CLASS_A_READY_EXCEPT_POLICY": 5,
+    "CURRENT_V1_PASS": 0,
+    "CURRENT_V2_PASS": 0,
+    "CANDIDATES": [
+      {
+        "candidate_ref": "CLASS_A_01",
+        "CONTACT_FORM_ONLY_BEFORE": true,
+        "CONTACT_FORM_ONLY_AFTER": false,
+        "CONTACT_FORM_STALE_FIXED": true,
+        "THIRD_PARTY_DOMAIN_BLOCKED": false,
+        "SOURCE_POLICY_BLOCKED": true,
+        "HISTORY_CLEAN": true,
+        "MX_PASS": true,
+        "UNIQUE_ORG": true,
+        "CURRENT_V1_RESULT": false,
+        "CURRENT_V2_RESULT": false,
+        "CURRENT_V1_BLOCKERS": [
+          "evidence_source_not_approved"
+        ],
+        "CURRENT_V2_BLOCKERS": [
+          "evidence_source_not_approved"
+        ],
+        "CLASS_A_READY_EXCEPT_POLICY": true,
+        "FINAL_BUCKET": "A_POLICY_ONLY_BLOCKED",
+        "SAFE_ELIGIBLE_FROM_SOCIAL": false
+      },
+      {
+        "candidate_ref": "CLASS_A_02",
+        "CONTACT_FORM_ONLY_BEFORE": false,
+        "CONTACT_FORM_ONLY_AFTER": false,
+        "CONTACT_FORM_STALE_FIXED": false,
+        "THIRD_PARTY_DOMAIN_BLOCKED": false,
+        "SOURCE_POLICY_BLOCKED": true,
+        "HISTORY_CLEAN": true,
+        "MX_PASS": true,
+        "UNIQUE_ORG": true,
+        "CURRENT_V1_RESULT": false,
+        "CURRENT_V2_RESULT": false,
+        "CURRENT_V1_BLOCKERS": [
+          "evidence_source_not_approved"
+        ],
+        "CURRENT_V2_BLOCKERS": [
+          "evidence_source_not_approved"
+        ],
+        "CLASS_A_READY_EXCEPT_POLICY": true,
+        "FINAL_BUCKET": "A_POLICY_ONLY_BLOCKED",
+        "SAFE_ELIGIBLE_FROM_SOCIAL": false
+      },
+      {
+        "candidate_ref": "CLASS_A_03",
+        "CONTACT_FORM_ONLY_BEFORE": false,
+        "CONTACT_FORM_ONLY_AFTER": false,
+        "CONTACT_FORM_STALE_FIXED": false,
+        "THIRD_PARTY_DOMAIN_BLOCKED": true,
+        "SOURCE_POLICY_BLOCKED": true,
+        "HISTORY_CLEAN": true,
+        "MX_PASS": true,
+        "UNIQUE_ORG": true,
+        "CURRENT_V1_RESULT": false,
+        "CURRENT_V2_RESULT": false,
+        "CURRENT_V1_BLOCKERS": [
+          "third_party_email:email domain != official site domain, not free mailbox",
+          "evidence_source_not_approved"
+        ],
+        "CURRENT_V2_BLOCKERS": [
+          "third_party_email:email domain != official site domain, not free mailbox",
+          "evidence_source_not_approved"
+        ],
+        "CLASS_A_READY_EXCEPT_POLICY": false,
+        "FINAL_BUCKET": "C_THIRD_PARTY_DOMAIN_BLOCKED",
+        "SAFE_ELIGIBLE_FROM_SOCIAL": false
+      },
+      {
+        "candidate_ref": "CLASS_A_04",
+        "CONTACT_FORM_ONLY_BEFORE": true,
+        "CONTACT_FORM_ONLY_AFTER": false,
+        "CONTACT_FORM_STALE_FIXED": true,
+        "THIRD_PARTY_DOMAIN_BLOCKED": false,
+        "SOURCE_POLICY_BLOCKED": true,
+        "HISTORY_CLEAN": true,
+        "MX_PASS": true,
+        "UNIQUE_ORG": true,
+        "CURRENT_V1_RESULT": false,
+        "CURRENT_V2_RESULT": false,
+        "CURRENT_V1_BLOCKERS": [
+          "evidence_source_not_approved"
+        ],
+        "CURRENT_V2_BLOCKERS": [
+          "evidence_source_not_approved"
+        ],
+        "CLASS_A_READY_EXCEPT_POLICY": true,
+        "FINAL_BUCKET": "A_POLICY_ONLY_BLOCKED",
+        "SAFE_ELIGIBLE_FROM_SOCIAL": false
+      },
+      {
+        "candidate_ref": "CLASS_A_05",
+        "CONTACT_FORM_ONLY_BEFORE": true,
+        "CONTACT_FORM_ONLY_AFTER": false,
+        "CONTACT_FORM_STALE_FIXED": true,
+        "THIRD_PARTY_DOMAIN_BLOCKED": false,
+        "SOURCE_POLICY_BLOCKED": true,
+        "HISTORY_CLEAN": true,
+        "MX_PASS": true,
+        "UNIQUE_ORG": true,
+        "CURRENT_V1_RESULT": false,
+        "CURRENT_V2_RESULT": false,
+        "CURRENT_V1_BLOCKERS": [
+          "evidence_source_not_approved"
+        ],
+        "CURRENT_V2_BLOCKERS": [
+          "evidence_source_not_approved"
+        ],
+        "CLASS_A_READY_EXCEPT_POLICY": true,
+        "FINAL_BUCKET": "A_POLICY_ONLY_BLOCKED",
+        "SAFE_ELIGIBLE_FROM_SOCIAL": false
+      },
+      {
+        "candidate_ref": "CLASS_A_06",
+        "CONTACT_FORM_ONLY_BEFORE": true,
+        "CONTACT_FORM_ONLY_AFTER": false,
+        "CONTACT_FORM_STALE_FIXED": true,
+        "THIRD_PARTY_DOMAIN_BLOCKED": true,
+        "SOURCE_POLICY_BLOCKED": true,
+        "HISTORY_CLEAN": true,
+        "MX_PASS": true,
+        "UNIQUE_ORG": true,
+        "CURRENT_V1_RESULT": false,
+        "CURRENT_V2_RESULT": false,
+        "CURRENT_V1_BLOCKERS": [
+          "third_party_email:email domain != official site domain, not free mailbox",
+          "evidence_source_not_approved"
+        ],
+        "CURRENT_V2_BLOCKERS": [
+          "third_party_email:email domain != official site domain, not free mailbox",
+          "evidence_source_not_approved"
+        ],
+        "CLASS_A_READY_EXCEPT_POLICY": false,
+        "FINAL_BUCKET": "C_THIRD_PARTY_DOMAIN_BLOCKED",
+        "SAFE_ELIGIBLE_FROM_SOCIAL": false
+      },
+      {
+        "candidate_ref": "CLASS_A_07",
+        "CONTACT_FORM_ONLY_BEFORE": true,
+        "CONTACT_FORM_ONLY_AFTER": false,
+        "CONTACT_FORM_STALE_FIXED": true,
+        "THIRD_PARTY_DOMAIN_BLOCKED": false,
+        "SOURCE_POLICY_BLOCKED": true,
+        "HISTORY_CLEAN": true,
+        "MX_PASS": true,
+        "UNIQUE_ORG": true,
+        "CURRENT_V1_RESULT": false,
+        "CURRENT_V2_RESULT": false,
+        "CURRENT_V1_BLOCKERS": [
+          "evidence_source_not_approved"
+        ],
+        "CURRENT_V2_BLOCKERS": [
+          "evidence_source_not_approved"
+        ],
+        "CLASS_A_READY_EXCEPT_POLICY": true,
+        "FINAL_BUCKET": "A_POLICY_ONLY_BLOCKED",
+        "SAFE_ELIGIBLE_FROM_SOCIAL": false
+      }
+    ]
+  },
+  "DRIFT": {
+    "REPLAY_SCOPE": "All leads with an email, excluding terminal statuses; MX from fresh (<24h) cache only, missing cache=dns_error. / 全部有邮箱且非终态线索；MX 仅用 24 小时内缓存，缺失按 dns_error 关闭。",
+    "LEADS_WITH_EMAIL": 618,
+    "FRESH_MX_CACHE_DOMAINS": 0,
+    "BROAD_READY_TOTAL_BEFORE": 64,
+    "BROAD_READY_TOTAL_AFTER": 80,
+    "V1_ELIGIBLE_TOTAL_BEFORE": 53,
+    "V1_ELIGIBLE_TOTAL_AFTER": 27,
+    "V2_SAFE_UNIQUE_ORGS_BEFORE": 0,
+    "V2_SAFE_UNIQUE_ORGS_AFTER": 0,
+    "V2_MX_OK_STRESS_TEST_BEFORE": 27,
+    "V2_MX_OK_STRESS_TEST_AFTER": 27,
+    "V2_MX_OK_STRESS_UNEXPECTED_DRIFT": 0,
+    "V2_MX_OK_STRESS_LABEL": "Synthetic MX=ok for policy drift detection only; not SAFE inventory. / 仅以合成 MX=ok 检测政策漂移，不代表 SAFE 库存。",
+    "V1_DROPS_BY_SOURCE": {
+      "guessed_email": 26
+    },
+    "V1_GAINS_BY_SOURCE": {},
+    "UNEXPECTED_BROAD_READY_DRIFT": 0,
+    "UNEXPECTED_V1_DRIFT": 0,
+    "UNEXPECTED_V2_DRIFT": 0,
+    "EXPECTED_AFFECTED_ROWS": 45,
+    "UNEXPECTED_AFFECTED_ROWS": 0
+  },
+  "PRODUCTION_DB_WRITES": 0,
+  "SMTP_CONNECTIONS": 0
+}

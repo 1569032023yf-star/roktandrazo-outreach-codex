@@ -762,7 +762,7 @@ async function loadPage(pg){
 
     // Determine if Auto should be disabled
     let noEmail=!l.email||l.email.indexOf('@')===-1;
-    let isContactForm=l.review_reason_code==='CONTACT_FORM_ONLY'||l.lead_status==='contact_form_pool';
+    let isContactForm=noEmail&&(l.review_reason_code==='CONTACT_FORM_ONLY'||l.lead_status==='contact_form_pool');
     let disableAuto=noEmail||isContactForm;
     let sn=h(l.store_name);
     let autoBtn=disableAuto

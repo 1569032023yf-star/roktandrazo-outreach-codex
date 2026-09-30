@@ -386,7 +386,7 @@ def select_candidates_for_plan_v2(conn: sqlite3.Connection, limit: int,
         rows = conn.execute(
             """SELECT * FROM leads
                 WHERE status NOT IN ('sent','bounced','do_not_contact','rejected',
-                                     'failed','delivery_issue','bounce_review','contact_form_pool')
+                                     'failed','delivery_issue','bounce_review')
                   AND email IS NOT NULL AND email != '' AND email LIKE '%@%.%'
                 ORDER BY id"""
         ).fetchall()
@@ -396,7 +396,7 @@ def select_candidates_for_plan_v2(conn: sqlite3.Connection, limit: int,
             f"""SELECT * FROM leads
                 WHERE state IN ({states_sql})
                   AND status NOT IN ('sent','bounced','do_not_contact','rejected',
-                                     'failed','delivery_issue','bounce_review','contact_form_pool')
+                                     'failed','delivery_issue','bounce_review')
                   AND email IS NOT NULL AND email != '' AND email LIKE '%@%.%'
                 ORDER BY id""", states).fetchall()
 

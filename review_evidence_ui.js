@@ -109,6 +109,8 @@
     field(box, "其他候选仅供人工查看 / Other Candidates For Review",
       (f.facebook_other_candidates || []).join(", "));
     field(box, "来源等级 / Provenance Tier", f.facebook_provenance_tier);
+    field(box, "邮箱来源 / Email Provenance", "官网直接关联 Facebook；仅人工证据 / Official-site-linked Facebook; manual evidence only");
+    field(box, "正式资格来源 / Formal Eligibility Source", "尚未批准 / Not approved");
     field(box, "主页名称 / Page Name", f.facebook_page_name);
     field(box, "社交邮箱类别 / Email Class", f.social_email_class);
     field(box, "公开邮箱 / Public Email", f.public_email);
@@ -133,8 +135,8 @@
       const verdict = $("div", value.state, grid);
       verdict.className = value.state === "PASS" ? "g" : (value.state === "UNKNOWN" ? "y" : "r");
     });
-    field(box, "V1", (data.v1_state || {}).pool);
-    field(box, "V2", (data.v2_state || {}).pool);
+    field(box, "V1（当前已存邮箱） / V1 (stored email)", (data.v1_state || {}).pool);
+    field(box, "V2（当前已存邮箱） / V2 (stored email)", (data.v2_state || {}).pool);
     field(box, "MX", (data.mx_state || {}).status);
     box = section("8. 审核操作 / Review Actions");
     const blocked = (b.recovery || {}).value === "NONE";

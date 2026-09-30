@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 
 from manual_email_workflow import submit_manual_email
+from broad_ready import _is_contact_form_only
 from migrations.migrate_city_outreach_40 import migrate
 
 
@@ -50,6 +51,9 @@ class ManualEmailWorkflowTests(unittest.TestCase):
     def test_official_evidence_promotes_contact_form(self):
         self.lead(); result = self.submit()
         self.assertTrue(result['promoted']); self.assertEqual(tuple(self.conn.execute('SELECT email, auto_sendable FROM leads').fetchone()), ('buyer@north.com', 1))
+        promoted = dict(self.conn.execute('SELECT * FROM leads WHERE id=1').fetchone())
+        self.assertFalse(_is_contact_form_only(promoted))
+        self.assertEqual(promoted['contact_form_url'], 'https://north.com/contact')
 
     def test_previously_sent_is_not_new_outreach(self):
         self.lead(); self.conn.execute("INSERT INTO send_log (lead_id,email,status) VALUES (9,'buyer@north.com','sent')"); self.conn.commit()
