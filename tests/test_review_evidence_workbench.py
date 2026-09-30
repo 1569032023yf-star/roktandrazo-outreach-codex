@@ -13,7 +13,11 @@ from migrations.migrate_city_outreach_40 import migrate
 from review_evidence_workbench import (
     _fb_url, build_review_evidence, classify_facebook, official_linked_facebook,
     recovery_classification, render_facebook_page, verify_recovered_website,
+    discover_official_facebook_candidates,
 )
+from scripts.phase4a8n_gate_audit import audit_one
+from campaign_eligible import review_campaign_eligible, OFFICIAL_EVIDENCE_TYPES
+from campaign_eligible_v2 import review_campaign_eligible_v2
 
 
 class WorkbenchTests(unittest.TestCase):
@@ -108,6 +112,128 @@ class WorkbenchTests(unittest.TestCase):
         with patch("review_evidence_workbench._fetch_official_pages", return_value=[page]):
             self.assertTrue(official_linked_facebook(lead, "https://www.facebook.com/northhobbies"))
             self.assertFalse(official_linked_facebook(lead, "https://www.facebook.com/unrelated"))
+
+    def test_discovery_is_verified_deduplicated_and_business_only(self):
+        lead = self.lead()
+        page = {"final_url":"https://northhobbies.com", "text":"North Hobbies", "html": (
+            '<a href="https://www.facebook.com/northhobbies">A</a>'
+            '<a href="https://www.facebook.com/northhobbies/?ref=site">A2</a>'
+            '<a href="https://www.facebook.com/people/North/123">person</a>'
+            '<a href="https://www.facebook.com/profile.php?id=1">profile</a>')}
+        with patch("review_evidence_workbench._verified_official_page", return_value=page):
+            found = discover_official_facebook_candidates(lead)
+        self.assertEqual(found["status"], "found")
+        self.assertEqual(len(found["candidates"]), 1)
+        self.assertEqual(found["source_url"], "https://northhobbies.com")
+        with patch("review_evidence_workbench._verified_official_page", return_value={}):
+            self.assertEqual(discover_official_facebook_candidates(lead)["status"], "official_website_unverified")
+        page["html"] = "<p>No social links</p>"
+        with patch("review_evidence_workbench._verified_official_page", return_value=page):
+            self.assertEqual(discover_official_facebook_candidates(lead)["status"],
+                             "official_facebook_link_not_found")
+
+    def test_review_api_uses_shared_discovery_when_no_saved_url(self):
+        previous_db = server.DB_PATH
+        server.DB_PATH = self.path
+        try:
+            discovered = {"status":"found", "selected":"https://www.facebook.com/northhobbies",
+                          "candidates":["https://www.facebook.com/northhobbies"],
+                          "source_url":"https://northhobbies.com"}
+            rendered = {"status":"opened", "public_email":"hello@northhobbies.com",
+                        "facebook_provenance_tier":"TIER_A_OFFICIAL_SITE_LINKED_FACEBOOK",
+                        "safe_eligible_from_social":False}
+            def run_now(lead_id, task):
+                key, result = task()
+                server._EVIDENCE_RESULTS[lead_id] = {key:result, "job_status":"complete"}
+                return json.dumps({"ok":True})
+            with patch.object(server, "_start_evidence_job", side_effect=run_now), \
+                 patch.object(server, "discover_official_facebook_candidates", return_value=discovered) as find, \
+                 patch.object(server, "render_facebook_page", return_value=rendered) as render:
+                self.assertTrue(json.loads(server.api_fetch_facebook_evidence({"lead_id":1}))["ok"])
+            find.assert_called_once()
+            render.assert_called_once()
+            evidence = json.loads(server.api_review_evidence(1))["facebook_evidence"]
+            self.assertEqual(evidence["facebook_candidates_found"], 1)
+            self.assertEqual(evidence["public_email"], "hello@northhobbies.com")
+            self.assertFalse(evidence["safe_eligible_from_social"])
+        finally:
+            server.DB_PATH = previous_db
+            server._EVIDENCE_RESULTS.pop(1, None)
+
+    def test_review_api_existing_url_does_not_rediscover(self):
+        previous_db = server.DB_PATH
+        server.DB_PATH = self.path
+        self.conn.execute("INSERT INTO fb_enrichment_queue (lead_id,facebook_url,fb_check_status) "
+                          "VALUES (1,'https://www.facebook.com/northhobbies','pending')")
+        self.conn.commit()
+        try:
+            with patch.object(server, "_start_evidence_job", side_effect=lambda _id, task: json.dumps(task()[1])) as launch, \
+                 patch.object(server, "discover_official_facebook_candidates") as find, \
+                 patch.object(server, "render_facebook_page", return_value={"status":"opened"}):
+                result = json.loads(server.api_fetch_facebook_evidence({"lead_id":1}))
+            self.assertEqual(result["status"], "opened")
+            self.assertEqual(result["facebook_candidates_found"], 1)
+            launch.assert_called_once()
+            find.assert_not_called()
+        finally:
+            server.DB_PATH = previous_db
+
+    def test_review_api_no_official_facebook_link_is_explicit(self):
+        previous_db = server.DB_PATH
+        server.DB_PATH = self.path
+        try:
+            with patch.object(server, "_start_evidence_job", side_effect=lambda _id, task: json.dumps(task()[1])), \
+                 patch.object(server, "discover_official_facebook_candidates", return_value={
+                     "status":"official_facebook_link_not_found", "selected":"", "candidates":[],
+                     "source_url":"https://northhobbies.com"}), \
+                 patch.object(server, "render_facebook_page") as render:
+                result = json.loads(server.api_fetch_facebook_evidence({"lead_id":1}))
+            self.assertEqual(result["status"], "official_facebook_link_not_found")
+            render.assert_not_called()
+        finally:
+            server.DB_PATH = previous_db
+
+    def test_canary_imports_the_same_discovery_function(self):
+        source = (Path(__file__).resolve().parent.parent / "scripts" / "phase4a8m_canary.py").read_text(encoding="utf-8")
+        self.assertIn("discover_official_facebook_candidates", source)
+        self.assertNotIn("def discover_official_facebook_link(", source)
+
+    def test_candidate_audit_org_history_precedes_email_novelty_and_mx_fails_closed(self):
+        record = {"lead_id":1,"public_email":"hello@northhobbies.com",
+                  "facebook_url":"https://www.facebook.com/northhobbies",
+                  "visible_email_excerpt":"Call hello@northhobbies.com",
+                  "facebook_provenance_tier":"TIER_A_OFFICIAL_SITE_LINKED_FACEBOOK",
+                  "identity_match_signals":{"official_site_direct_link":True,"name":True},
+                  "fetched_at":"2026-09-29T00:00:00+00:00"}
+        unknown = audit_one(self.conn, record, lambda _: ("dns_error", "now"))
+        self.assertTrue(unknown["NEW_EMAIL_STRING"])
+        self.assertFalse(unknown["MX_PASS"])
+        self.assertFalse(unknown["CLASS_A_READY_EXCEPT_POLICY"])
+        self.conn.execute("INSERT INTO send_log (lead_id,email,status) VALUES (1,'old@northhobbies.com','sent')")
+        self.conn.commit()
+        history = audit_one(self.conn, record, lambda _: ("ok", "now"))
+        self.assertTrue(history["NEW_EMAIL_STRING"])
+        self.assertTrue(history["ORGANIZATION_PREVIOUSLY_SENT"])
+        self.assertFalse(history["HISTORY_CLEAN"])
+        self.assertEqual(history["BUCKET"], "B_HISTORY_BLOCKED")
+
+    def test_current_policy_source_is_not_allowlisted_even_if_domain_fallback_passes(self):
+        self.assertNotIn("official_site_linked_facebook", OFFICIAL_EVIDENCE_TYPES)
+        self.conn.execute("UPDATE leads SET status='new',email='hello@northhobbies.com',"
+                          "email_source_type='official_site_linked_facebook',"
+                          "evidence_url='https://www.facebook.com/northhobbies',"
+                          "evidence_snippet='hello@northhobbies.com',"
+                          "timezone_status='RESOLVED',recipient_timezone='America/New_York' WHERE id=1")
+        self.conn.commit()
+        lead = self.lead()
+        lead["evidence_checked_at"] = "2026-09-29T00:00:00+00:00"
+        # These are factual current-code results, not an approval to promote a
+        # social address. The independent policy-approval flag remains false.
+        v1 = review_campaign_eligible(lead, {"conn":self.conn})
+        v2 = review_campaign_eligible_v2(lead, {"conn":self.conn,
+                                               "mx_lookup":{"northhobbies.com":"ok"}})
+        self.assertTrue(v1["eligible"])
+        self.assertTrue(v2["eligible"])
 
     def test_login_captcha_not_found_are_fail_soft(self):
         lead = self.lead()

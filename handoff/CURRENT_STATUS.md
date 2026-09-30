@@ -1,12 +1,12 @@
 PROJECT = Rokt&Razo BD Production Stabilization / Rokt&Razo BD 生产稳定化
-CURRENT_PHASE = PHASE 4A.8M / Manual Review Evidence Workbench / 人工审核证据工作台
+CURRENT_PHASE = PHASE 4A.8N / Facebook discovery closure and seven-candidate gate audit / Facebook 发现闭环及七候选资格审计
 STATUS = DEVELOPMENT_VALIDATED_PENDING_PRODUCTION_REVIEW / 开发验证完成，等待生产评审
 READY_FOR_PRODUCTION = false / 尚未获部署授权
-CURRENT_BLOCKER = No deployment authorization; live Facebook-to-recovered-official-website positive path was not observed in this bounded cohort. / 尚无部署授权；本次有界样本未观察到 Facebook 找回官网的真实正向路径。
-FULL_SUITE = PASS / 446 tests, 0 failures, 0 errors / 446 项测试通过，0 失败，0 错误
+CURRENT_BLOCKER = No deployment authorization; zero candidates are ready except for Facebook source policy, and one hypothetical candidate passes current V1/V2 via the existing same-domain fallback despite the source not being allowlisted. / 尚无部署授权；没有仅受 Facebook 来源政策阻断的候选，且一个假设候选虽来源未入白名单，仍通过现有同域回退获得 V1/V2 通过，需单独评审。
+FULL_SUITE = PASS / 453 tests, 0 failures, 0 errors / 453 项通过，0 失败，0 错误
 FROZEN_FILES_CHANGED = 0
 PRODUCTION_FILES_CHANGED = none / 无
 PRODUCTION_DB_WRITES = 0
 REAL_SMTP_CONNECTIONS = 0
-LATEST_REPORTS = handoff/phases/PHASE4A8M_MANUAL_REVIEW_EVIDENCE_WORKBENCH.md; handoff/phases/PHASE4A8M_CANARY_RESULT.json
-NEXT_ACTION = STOP. Review the development-only evidence workbench and bounded Facebook yield; no production deployment, Inventory, scheduler change or send without explicit authorization. / 停止。评审开发版证据工作台及 Facebook 有界收益；未经明确授权不部署、不运行生产 Inventory、不更改调度、不发送。
+LATEST_REPORTS = handoff/phases/PHASE4A8N_REVIEW_FACEBOOK_CLOSURE_AND_GATE_AUDIT.md; handoff/phases/PHASE4A8N_CLASS_A_GATE_AUDIT.json
+NEXT_ACTION = STOP after commit and push. Review the five-file cumulative code bundle and the V1/V2 source-boundary finding; no production deployment, Inventory, scheduler change or send without explicit authorization. / 提交推送后停止。评审五文件累计代码包及 V1/V2 来源边界发现；未经明确授权不部署、不运行生产 Inventory、不更改调度、不发送。

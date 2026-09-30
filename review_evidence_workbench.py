@@ -11,13 +11,14 @@ import re
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, urlunsplit
 
 from broad_ready import _load_db_signals, is_broad_outreach_ready
 from campaign_eligible_v2 import _read_fresh_cached_mx, review_campaign_eligible_v2
 from discovery.discovery_service import (
     BrowserFallbackWebsiteFetcher, _extract_email_evidence, _fetch_official_pages,
-    _official_identity_match,
+    _official_identity_match, _fixed_first_party_urls, _verified_official_page,
+    UrlLibWebsiteFetcher,
 )
 from facebook_enrichment.b_pool_recovery_runner import (
     extract_fb_links, read_fb_page_with_limiter,
@@ -170,6 +171,37 @@ def _normalized_fb(url: str) -> str:
     return (parsed.hostname or "").lower().removeprefix("www.") + parsed.path.rstrip("/").lower()
 
 
+def discover_official_facebook_candidates(lead: dict, fetcher=None) -> dict:
+    """Discover business-page links on one canonically verified official homepage.
+
+    This is shared by the review action and the bounded canary. No search and no
+    extra crawl beyond the existing first-party page budget.
+    """
+    website = str(lead.get("official_website") or "").strip()
+    if not website:
+        return {"status": "official_website_missing", "candidates": [], "selected": "", "source_url": ""}
+    fixed = _fixed_first_party_urls(website)
+    if not fixed:
+        return {"status": "official_website_unverified", "candidates": [], "selected": "", "source_url": ""}
+    url, method = fixed[0]
+    page = _verified_official_page(url, method, website, fetcher or UrlLibWebsiteFetcher(timeout_seconds=8))
+    if not page or not _official_identity_match({"business_name": lead.get("store_name"),
+                                                  "website": website}, [page]):
+        return {"status": "official_website_unverified", "candidates": [], "selected": "", "source_url": ""}
+    candidates: list[str] = []
+    seen: set[str] = set()
+    for raw in extract_fb_links(page.get("html") or ""):
+        parsed = urlsplit(raw)
+        candidate = urlunsplit(("https", parsed.netloc, parsed.path.rstrip("/"), "", ""))
+        key = _normalized_fb(candidate)
+        if _fb_url(candidate) and key not in seen:
+            seen.add(key)
+            candidates.append(candidate)
+    return {"status": "found" if candidates else "official_facebook_link_not_found",
+            "candidates": candidates, "selected": candidates[0] if candidates else "",
+            "source_url": page.get("final_url") or ""}
+
+
 def official_linked_facebook(lead: dict, fb_url: str, fetcher=None) -> bool:
     """Claim Tier A only after a canonical, identity-matched official page actually links it."""
     website = str(lead.get("official_website") or "")
@@ -225,10 +257,13 @@ def classify_facebook(lead: dict, rendered: dict, official_linked: bool) -> dict
 
 def render_facebook_page(lead: dict, fb_url: str, profile: Path | None = None,
                          official_linked: bool | None = None) -> dict:
-    if os.getenv("ROKT_DEV_CONTROLLED_WEB") != "1":
+    # The explicit web flag is a development harness requirement. The
+    # production review server has no development-copy marker and must not
+    # depend on a development-only environment variable after review.
+    if (ROOT / ".development-copy").exists() and os.getenv("ROKT_DEV_CONTROLLED_WEB") != "1":
         return {"status": "controlled_web_not_enabled"}
     if not _fb_url(fb_url):
-        return {"status": "invalid_facebook_business_url"}
+        return {"status": "facebook_business_url_invalid"}
     profile = (profile or ROOT / "output" / "runtime" / "facebook_business_enrichment").resolve()
     if not profile.is_relative_to(ROOT):
         return {"status": "unsafe_browser_profile_path"}

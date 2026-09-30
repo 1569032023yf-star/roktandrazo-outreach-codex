@@ -103,6 +103,11 @@
     field(box, "结构化邮箱 / Structured Email", (data.structured_data_evidence || {}).present);
     box = section("5. Facebook 证据 / Facebook Evidence");
     field(box, "状态 / Status", f.status); link(box, "公开主页 / Public Page", f.facebook_page_url);
+    field(box, "候选数 / Candidates Found", f.facebook_candidates_found);
+    link(box, "选中候选 / Selected Candidate", f.facebook_candidate_selected);
+    link(box, "官网发现来源 / Discovery Source", f.facebook_discovery_source_url);
+    field(box, "其他候选仅供人工查看 / Other Candidates For Review",
+      (f.facebook_other_candidates || []).join(", "));
     field(box, "来源等级 / Provenance Tier", f.facebook_provenance_tier);
     field(box, "主页名称 / Page Name", f.facebook_page_name);
     field(box, "社交邮箱类别 / Email Class", f.social_email_class);
@@ -113,6 +118,7 @@
     field(box, "身份信号 / Identity Signals",
       Object.entries(f.identity_match_signals || {}).filter(([,v])=>v).map(([k])=>k).join(", "));
     field(box, "抓取时间 / Fetched At", f.fetched_at);
+    field(box, "社交证据可直接成为 SAFE / SAFE From Social", f.safe_eligible_from_social === true ? "异常 / Unexpected" : "否 / No");
     box = section("6. 找回官网 / Recovered Website");
     link(box, "候选网站 / Candidate", f.public_website);
     field(box, "已验证 / Verified", r.verified);

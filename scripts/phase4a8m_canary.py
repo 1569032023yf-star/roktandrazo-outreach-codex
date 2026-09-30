@@ -11,16 +11,12 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import quote
-from urllib.parse import urlsplit, urlunsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from review_evidence_workbench import (
-    ROOT, _fb_url, recovery_classification, render_facebook_page, verify_recovered_website,
+    ROOT, recovery_classification, render_facebook_page, verify_recovered_website,
+    discover_official_facebook_candidates,
 )
-from discovery.discovery_service import (
-    UrlLibWebsiteFetcher, _fixed_first_party_urls, _official_identity_match, _verified_official_page,
-)
-from facebook_enrichment.b_pool_recovery_runner import extract_fb_links
 
 MAX_REAL_MERCHANTS = 40
 OUTPUT = ROOT / "output" / "phase4a8m_manual_review_facebook_canary.json"
@@ -46,25 +42,6 @@ def make_copy(source: Path, destination: Path) -> None:
 
 def _table_exists(conn: sqlite3.Connection, name: str) -> bool:
     return bool(conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (name,)).fetchone())
-
-
-def discover_official_facebook_link(lead: dict) -> str:
-    """One accepted first-party homepage only; no Maps or FB search."""
-    website = str(lead.get("official_website") or "")
-    fixed = _fixed_first_party_urls(website)
-    if not fixed:
-        return ""
-    page = _verified_official_page(fixed[0][0], fixed[0][1], website,
-                                   UrlLibWebsiteFetcher(timeout_seconds=8))
-    if not page or not _official_identity_match({"business_name": lead.get("store_name"),
-                                                  "website": website}, [page]):
-        return ""
-    for raw in extract_fb_links(page.get("html") or ""):
-        parsed = urlsplit(raw)
-        candidate = urlunsplit(("https", parsed.netloc, parsed.path, "", ""))
-        if _fb_url(candidate):
-            return candidate
-    return ""
 
 
 def measure(copy: Path, network: bool, limit: int) -> dict:
@@ -134,7 +111,7 @@ def measure(copy: Path, network: bool, limit: int) -> dict:
                 if not url and lead.get("official_website"):
                     counts["OFFICIAL_SITES_SCANNED_FOR_FB"] += 1
                     try:
-                        url = discover_official_facebook_link(lead)
+                        url = discover_official_facebook_candidates(lead)["selected"]
                         proved_link = True if url else None
                     except Exception:
                         url = ""

@@ -24,7 +24,7 @@ from history_crosscheck import cross_check
 from manual_email_workflow import submit_manual_email
 from review_evidence_workbench import (
     build_review_evidence, recovery_classification, render_facebook_page,
-    verify_recovered_website,
+    verify_recovered_website, discover_official_facebook_candidates,
 )
 from bd_ops_api import (
     get_ops_summary, get_today_stats, get_tracking_stats, get_inventory,
@@ -320,11 +320,26 @@ def api_fetch_facebook_evidence(body):
             return json.dumps({'ok': False, 'error': 'history_blocked', 'reasons': recovery['reasons']})
         queued = conn.execute('SELECT facebook_url FROM fb_enrichment_queue WHERE lead_id=?', (lead_id,)).fetchone()
         fb_url = str((queued[0] if queued else None) or lead.get('facebook_url') or '')
-        if not fb_url:
-            return json.dumps({'ok': False, 'error': 'no_existing_facebook_business_url'})
     finally:
         conn.close()
-    return _start_evidence_job(lead_id, lambda: ('facebook', render_facebook_page(lead, fb_url)))
+
+    def task():
+        discovery = {'status': 'existing_url', 'candidates': [fb_url],
+                     'selected': fb_url, 'source_url': ''} if fb_url else discover_official_facebook_candidates(lead)
+        selected = discovery.get('selected') or ''
+        if not selected:
+            return 'facebook', {'status': discovery['status'], 'facebook_candidates_found': 0,
+                                'facebook_candidate_selected': '',
+                                'facebook_discovery_source_url': discovery.get('source_url') or ''}
+        rendered = render_facebook_page(
+            lead, selected, official_linked=True if discovery.get('status') == 'found' else None)
+        rendered['facebook_candidates_found'] = len(discovery.get('candidates') or [])
+        rendered['facebook_candidate_selected'] = selected
+        rendered['facebook_discovery_source_url'] = discovery.get('source_url') or ''
+        rendered['facebook_other_candidates'] = (discovery.get('candidates') or [])[1:]
+        return 'facebook', rendered
+
+    return _start_evidence_job(lead_id, task)
 
 
 def api_verify_recovered_website(body):

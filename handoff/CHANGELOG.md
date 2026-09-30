@@ -1,5 +1,12 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.8N Facebook 发现闭环与七候选资格审计 / Facebook discovery closure and seven-candidate gate audit — 2026-09-30
+
+- 审核台在无预存 Facebook URL 时，现与金丝雀复用同一个“已验证官网首页 → 官网直接关联商家页”函数；已有 URL 路径不变。原 40 条有界样本中，真实审核台后端发现路径重现 9 条，重建 7 个新邮箱候选。/ The review server and canary now share one verified-homepage-to-direct-business-page discovery function when no URL is stored; the existing-URL route is unchanged. The real review backend reproduced nine discovery paths and seven new-email observations within the original bounded 40 leads.
+- 七候选的历史、MX、组织唯一性分别为 7/7，但严格“只差 Facebook 来源政策”人数为 0；七条均有其他阻断。一个仅在内存审计视图中的候选，通过现行同域回退获得 V1/V2 通过，尽管 Facebook 来源未入白名单；未写线索邮箱或提升 SAFE，需生产政策边界评审。/ History, MX, and unique-organization checks each passed 7/7, but none is blocked solely by Facebook-source policy. One in-memory hypothetical candidate passed current V1/V2 through existing same-domain fallback although the social source is not allowlisted; no lead email was written or SAFE status promoted. The source-policy boundary needs separate review.
+- 累计生产评审包严格限定为五个代码文件：`discovery/discovery_service.py`、`campaign_eligible.py`、`bd_review_server.py`、`review_evidence_workbench.py`、`review_evidence_ui.js`。4A.8K 为必要依赖；本阶段不部署生产、不运行 Inventory、不发送或改动调度。/ The cumulative production-review bundle is exactly those five code files, with 4A.8K a required dependency. No deployment, Inventory, sending, or scheduler change occurred.
+- 定向 20 项与完整 453 项 unittest 均通过，失败和错误为 0；Python 编译、JavaScript 语法和 Git 差异检查均通过。/ Targeted 20 and full 453 unittest cases passed with zero failures and errors; Python compilation, JavaScript syntax, and the Git diff check also passed.
+
 ## Phase 4A.8M manual review evidence workbench / 人工审核证据工作台 — 2026-09-29
 
 - 在原有本机审核界面加入九段式证据详情、只读资格门禁和按需 Facebook 业务页面渲染；A/B/C 社交证据只供人工判断，不创建收件人或提升 SAFE。旧无证据 A0 捷径收敛到已有人工邮箱验证。/ Added a nine-section evidence detail, read-only gate view and on-demand Facebook business-page rendering to the existing localhost review UI. Social A/B/C evidence is for human judgment only and neither creates recipients nor promotes SAFE. The legacy evidence-free A0 shortcut now uses the existing verified manual-email path.
