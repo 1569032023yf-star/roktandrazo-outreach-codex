@@ -1,5 +1,11 @@
 # 交接变更日志 / Handoff Changelog
 
+## Phase 4A.8P official-site-linked Facebook evidence policy review / 官网直链 Facebook 证据政策评审 — 2026-09-30
+
+- 比较 A 同域、B 同域加免费邮箱、C 有独立企业域证明的跨域扩展；离线条件式场景矩阵未发现错误接受，但真实五候选未完成当前官网/Facebook 页面重新核验，不能用历史观察充当可重放正式证据。结论 `KEEP_MANUAL_REVIEW_ONLY`，未实施新来源政策。/ Compared same-domain, free-mail-inclusive, and cross-domain-extension policies. Conditional offline fixtures showed no unsafe acceptance, but the five real historical candidates were not revalidated against current pages and cannot establish a replayable formal evidence contract. Recommendation: keep manual review only; no new source policy was implemented.
+- 新鲜生产数据库只读备份副本完整性 `ok`；618 条有邮箱记录同输入对照 V1 27→27、缓存限定 V2 0→0、`guessed_email` 通过 0；这仅证明本阶段未产生资格漂移，不是未来政策安全证明。/ The fresh read-only-derived production copy passed integrity check. Across 618 email-bearing leads, V1 remained 27→27, cache-limited V2 remained 0→0, and guessed-email acceptance was zero. This proves no drift in this audit-only phase, not safety of a future policy.
+- 新增去敏政策矩阵与离线夹具测试；定向 8 项和完整 471 项 unittest 均通过，失败/错误 0，编译、JavaScript 语法和差异检查通过。生产代码、Inventory、WorkBuddy、SMTP 和部署均未触碰。/ Added a sanitized policy matrix and offline fixtures. Eight targeted and 471 full unittest tests passed with zero failures/errors; compilation, JavaScript syntax, and diff checks passed. Production code, Inventory, WorkBuddy, SMTP, and deployment were untouched.
+
 ## Phase 4A.8O contact-form state and evidence-source boundary / 联系表单状态与证据来源边界 — 2026-09-30
 
 - 修复旧 `contact_form_pool` 与表单标记在已有邮箱后仍产生“仅联系表单”阻断；更新 broad-ready、审核工作流/适配器、候选选择与界面派生状态。`contact_form_url` 保留，无数据库迁移。/ Corrected stale form-only status when an email is now present across broad readiness, review workflow/adapter, candidate selection, and UI. The contact URL remains and no migration is needed.

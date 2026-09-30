@@ -1,0 +1,162 @@
+{
+  "PHASE": "4A.8P / 政策审计 / Policy review",
+  "BASELINE_COMMIT": "04bcde7034939f8d7b47f5061aed4c929c09c6f3",
+  "PRODUCTION_COPY": {
+    "INTEGRITY_CHECK": "ok",
+    "LEADS_WITH_EMAIL": 618,
+    "FRESH_MX_CACHE_DOMAINS": 0,
+    "MX_INPUT_SCOPE": "Fresh cache <24h; missing=dns_error; no DNS / 新鲜缓存小于24小时，缺失按 dns_error；无 DNS 查询",
+    "V1_BEFORE": 27,
+    "V1_AFTER": 27,
+    "V2_BEFORE": 0,
+    "V2_AFTER": 0,
+    "NEWLY_ACCEPTED_BY_SOURCE_TYPE": {},
+    "UNEXPECTED_V1_DRIFT": 0,
+    "UNEXPECTED_V2_DRIFT": 0,
+    "GUESSED_EMAIL_ACCEPTED": 0,
+    "SOURCE_TYPE_COUNTS": {
+      "<empty>": 40,
+      "guessed_email": 157,
+      "inventory_recovery": 2,
+      "manual_lookup": 8,
+      "manual_verified": 2,
+      "official_mailto": 8,
+      "official_page_visible": 343,
+      "unknown": 24,
+      "web_search": 20,
+      "web_search_directory": 5,
+      "web_search_official": 6,
+      "website_extracted": 1,
+      "wholesale_vendor_page": 2
+    },
+    "QUALIFICATION_CODE_CHANGED": false
+  },
+  "SEVEN": {
+    "REAL_CANDIDATES": [
+      {
+        "candidate_ref": "CLASS_A_01",
+        "email_kind": "same_domain",
+        "historical_class_a": true,
+        "theoretical_policy_a": true,
+        "theoretical_policy_b": true,
+        "current_formal_v1": false,
+        "current_formal_v2": false
+      },
+      {
+        "candidate_ref": "CLASS_A_02",
+        "email_kind": "same_domain",
+        "historical_class_a": true,
+        "theoretical_policy_a": true,
+        "theoretical_policy_b": true,
+        "current_formal_v1": false,
+        "current_formal_v2": false
+      },
+      {
+        "candidate_ref": "CLASS_A_03",
+        "email_kind": "cross_domain",
+        "historical_class_a": true,
+        "theoretical_policy_a": false,
+        "theoretical_policy_b": false,
+        "current_formal_v1": false,
+        "current_formal_v2": false
+      },
+      {
+        "candidate_ref": "CLASS_A_04",
+        "email_kind": "same_domain",
+        "historical_class_a": true,
+        "theoretical_policy_a": true,
+        "theoretical_policy_b": true,
+        "current_formal_v1": false,
+        "current_formal_v2": false
+      },
+      {
+        "candidate_ref": "CLASS_A_05",
+        "email_kind": "same_domain",
+        "historical_class_a": true,
+        "theoretical_policy_a": true,
+        "theoretical_policy_b": true,
+        "current_formal_v1": false,
+        "current_formal_v2": false
+      },
+      {
+        "candidate_ref": "CLASS_A_06",
+        "email_kind": "cross_domain",
+        "historical_class_a": true,
+        "theoretical_policy_a": false,
+        "theoretical_policy_b": false,
+        "current_formal_v1": false,
+        "current_formal_v2": false
+      },
+      {
+        "candidate_ref": "CLASS_A_07",
+        "email_kind": "same_domain",
+        "historical_class_a": true,
+        "theoretical_policy_a": true,
+        "theoretical_policy_b": true,
+        "current_formal_v1": false,
+        "current_formal_v2": false
+      }
+    ],
+    "REAL_POLICY_ONLY_SAME_DOMAIN": 5,
+    "REAL_CROSS_DOMAIN_REJECTED": 2,
+    "REAL_FREE_MAIL_CANDIDATES": 0,
+    "FORMAL_V1_PASS": 0,
+    "FORMAL_V2_PASS": 0
+  },
+  "PRODUCTION_DB_WRITES": 0,
+  "SCENARIO_FIXTURE_METRICS": {
+    "SCOPE": "Conditional offline fixtures, not independently adjudicated real-world truth / 条件式离线样本，并非独立裁定的真实世界真值",
+    "POSITIVES": {
+      "historical_same_domain_conditional": 5,
+      "synthetic_free_mail": 1
+    },
+    "NEGATIVES": {
+      "historical_cross_domain": 2,
+      "synthetic_adversarial": 10
+    },
+    "POLICY_A": {
+      "TRUE_POSITIVES": 5,
+      "FALSE_POSITIVES": 0,
+      "TRUE_NEGATIVES": 12,
+      "FALSE_NEGATIVES": 1,
+      "CURRENT_5_RECOVERED_CONDITIONAL": 5,
+      "CURRENT_2_CROSS_DOMAIN_RECOVERED": 0,
+      "UNAPPROVED_SOCIAL_ACCEPTED": 0,
+      "WEAK_IDENTITY_ACCEPTED": 0,
+      "SEARCH_DISCOVERED_FB_ACCEPTED": 0,
+      "PERSONAL_PAGE_ACCEPTED": 0,
+      "CROSS_DOMAIN_UNPROVEN_ACCEPTED": 0
+    },
+    "POLICY_B": {
+      "TRUE_POSITIVES": 6,
+      "FALSE_POSITIVES": 0,
+      "TRUE_NEGATIVES": 12,
+      "FALSE_NEGATIVES": 0,
+      "CURRENT_5_RECOVERED_CONDITIONAL": 5,
+      "CURRENT_2_CROSS_DOMAIN_RECOVERED": 0,
+      "UNAPPROVED_SOCIAL_ACCEPTED": 0,
+      "WEAK_IDENTITY_ACCEPTED": 0,
+      "SEARCH_DISCOVERED_FB_ACCEPTED": 0,
+      "PERSONAL_PAGE_ACCEPTED": 0,
+      "CROSS_DOMAIN_UNPROVEN_ACCEPTED": 0
+    },
+    "POLICY_C": {
+      "TRUE_POSITIVES": 0,
+      "FALSE_POSITIVES": 0,
+      "TRUE_NEGATIVES": 12,
+      "FALSE_NEGATIVES": 6,
+      "CURRENT_5_RECOVERED_CONDITIONAL": 0,
+      "CURRENT_2_CROSS_DOMAIN_RECOVERED": 0,
+      "NOT_SAFE_TO_AUTOMATE": true,
+      "UNAPPROVED_SOCIAL_ACCEPTED": 0,
+      "WEAK_IDENTITY_ACCEPTED": 0,
+      "SEARCH_DISCOVERED_FB_ACCEPTED": 0,
+      "PERSONAL_PAGE_ACCEPTED": 0,
+      "CROSS_DOMAIN_UNPROVEN_ACCEPTED": 0
+    }
+  },
+  "REAL_VALIDATED_POLICY_CANDIDATES": 0,
+  "POLICY_CANDIDATE_PASS": false,
+  "POLICY_RECOMMENDATION": "KEEP_MANUAL_REVIEW_ONLY",
+  "DEVELOPMENT_POLICY_IMPLEMENTED": false
+}
