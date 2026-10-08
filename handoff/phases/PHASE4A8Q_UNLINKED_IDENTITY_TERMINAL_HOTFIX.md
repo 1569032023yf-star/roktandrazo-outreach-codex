@@ -36,7 +36,7 @@ SMTP_CONNECTIONS = 0
 EMAILS_SENT = 0
 
 COMMIT_SHA = d34a337f09eea8d165f0f00c0d4935653b822f47
-PUSH_SUCCESS = PENDING
+PUSH_SUCCESS = true
 ```
 
 以上生产哈希指从指定生产代码提交提取出的 `discovery/discovery_service.py` 文件字节。部署前必须重新计算目标生产文件哈希；若与 `PRODUCTION_BASELINE_HASH` 不同，必须停止并重新核验。 / These production hashes describe the `discovery/discovery_service.py` bytes extracted from the pinned production-code commit. Recompute the target production file hash before any deployment consideration; if it differs from `PRODUCTION_BASELINE_HASH`, stop and re-verify.
