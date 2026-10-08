@@ -15,18 +15,33 @@ class BrandCandidate:
     sales_signal_observed_at: str = ""
     official_website: str = ""
     official_site_verified: bool = False
+    official_site_verification_status: str = "unknown"
+    official_site_final_url: str = ""
+    official_site_checked_at: str = ""
+    owner_verification_evidence: list[dict[str, Any]] = field(default_factory=list)
     brand_identity_status: str = "unknown"
+    identity_class: str = "unknown"
     enrichment_status: str = "pending"
     organization_key: str = ""
+    discovery_source_url: str = ""
+    source_page_fetched_at: str = ""
+    brand_claim: str = ""
+    product_or_listing_evidence: list[dict[str, Any]] = field(default_factory=list)
+    source_acquisition_method: str = ""
+    data_origin: str = "live_public"
+    fixture_status: str = ""
     business_email: str = ""
     email_role: str = ""
     email_evidence_url: str = ""
     email_evidence_excerpt: str = ""
     email_checked_at: str = ""
+    email_evidence_source_type: str = ""
+    email_http_status: int | None = None
+    email_final_url: str = ""
+    email_official_identity_verified: bool = False
     email_hygiene_status: str = "unknown"
     history_status: str = "UNKNOWN"
     mx_status: str = "unknown"
-    identity_class: str = "unknown"
     product_evidence: list[dict[str, Any]] = field(default_factory=list)
     exclusions: list[str] = field(default_factory=list)
 
@@ -45,6 +60,10 @@ class SourceMetric:
     new_owners_with_email: int = 0
     failures: int = 0
     rate_limits: int = 0
+    network_failures: int = 0
+    access_restricted: int = 0
+    parse_empty: int = 0
+    fixture_candidates: int = 0
     runtime_seconds: float = 0.0
 
     def to_dict(self) -> dict[str, Any]:

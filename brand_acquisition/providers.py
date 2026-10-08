@@ -3,14 +3,17 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
+from datetime import datetime, timezone
+import ipaddress
 import json
 import re
+import socket
 import time
-from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from .models import BrandCandidate
 
@@ -27,6 +30,32 @@ class PageResult:
     html: str = ""
     error: str = ""
     elapsed_seconds: float = 0.0
+    final_url: str = ""
+    http_status: int | None = None
+    content_type: str = ""
+    fetched_at: str = ""
+    fetch_method: str = "https"
+    error_type: str = ""
+
+    @property
+    def requested_url(self) -> str:
+        return self.url
+
+    def to_dict(self, *, include_html: bool = False) -> dict[str, Any]:
+        result = {
+            "requested_url": self.url,
+            "final_url": self.final_url or self.url,
+            "http_status": self.http_status,
+            "fetch_status": self.status,
+            "content_type": self.content_type,
+            "fetched_at": self.fetched_at,
+            "elapsed_seconds": round(self.elapsed_seconds, 3),
+            "error_type": self.error_type or self.error,
+            "fetch_method": self.fetch_method,
+        }
+        if include_html:
+            result["html"] = self.html
+        return result
 
 
 @dataclass
@@ -39,32 +68,193 @@ class ProviderRun:
     rate_limits: int = 0
     errors: list[dict[str, str]] = field(default_factory=list)
     elapsed_seconds: float = 0.0
+    url_outcomes: list[dict[str, Any]] = field(default_factory=list)
+
+
+def _timestamp() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def validate_public_url(url: str, *, require_https: bool = False,
+                        resolver=socket.getaddrinfo) -> tuple[bool, str]:
+    """Reject local/private targets and non-web schemes before any request."""
+    try:
+        parsed = urlsplit(str(url or ""))
+        if parsed.scheme not in ({"https"} if require_https else {"http", "https"}):
+            return False, "unsupported_scheme"
+        if not parsed.hostname or parsed.username or parsed.password or parsed.port not in (None, 80, 443):
+            return False, "invalid_authority"
+        host = parsed.hostname.rstrip(".").lower()
+        if host in {"localhost", "localhost.localdomain"} or host.endswith((".localhost", ".local", ".internal")):
+            return False, "private_hostname"
+        try:
+            addresses = [ipaddress.ip_address(host)]
+        except ValueError:
+            records = resolver(host, parsed.port or (443 if parsed.scheme == "https" else 80), type=socket.SOCK_STREAM)
+            addresses = [ipaddress.ip_address(record[4][0].split("%", 1)[0]) for record in records]
+        if not addresses or any(not address.is_global for address in addresses):
+            return False, "non_public_address"
+        return True, ""
+    except (OSError, ValueError, TypeError, UnicodeError):
+        return False, "dns_or_url_error"
+
+
+class _PublicRedirectHandler(HTTPRedirectHandler):
+    def __init__(self, *, require_https: bool = False, allowed_domain: str = ""):
+        super().__init__()
+        self.require_https = require_https
+        self.allowed_domain = allowed_domain.lower().removeprefix("www.")
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        ok, reason = validate_public_url(newurl, require_https=self.require_https)
+        host = (urlsplit(newurl).hostname or "").lower().removeprefix("www.")
+        same_party = not self.allowed_domain or host == self.allowed_domain or host.endswith("." + self.allowed_domain)
+        if not ok or not same_party:
+            raise URLError("unsafe_redirect:" + (reason or "cross_party"))
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
 class PublicPageFetcher:
     """Normal HTTP only. Access challenges and rate limits stop that source run."""
 
-    def fetch(self, url: str, timeout: float = 15) -> PageResult:
+    def fetch(self, url: str, timeout: float = 15, *, require_https: bool = False,
+              allowed_domain: str = "") -> PageResult:
         started = time.monotonic()
+        ok, reason = validate_public_url(url, require_https=require_https)
+        if not ok:
+            return PageResult(url, "network_error", error=reason, elapsed_seconds=time.monotonic()-started,
+                              fetched_at=_timestamp(), fetch_method="https", error_type=reason)
         request = Request(url, headers={"User-Agent": USER_AGENT, "Accept": "text/html,application/xhtml+xml"})
         try:
-            with urlopen(request, timeout=timeout) as response:
+            with build_opener(_PublicRedirectHandler(require_https=require_https, allowed_domain=allowed_domain)).open(request, timeout=timeout) as response:
                 status = int(response.status)
                 body = response.read(MAX_BODY_BYTES + 1)
                 if len(body) > MAX_BODY_BYTES:
-                    return PageResult(url, "page_too_large", error="response_limit", elapsed_seconds=time.monotonic()-started)
+                    return PageResult(url, "permanent_unavailable", error="response_limit", final_url=response.geturl(),
+                                      http_status=status, fetched_at=_timestamp(), elapsed_seconds=time.monotonic()-started,
+                                      error_type="response_limit")
+                content_type = response.headers.get("Content-Type", "")
+                if content_type and "html" not in content_type.lower() and "text/plain" not in content_type.lower():
+                    return PageResult(url, "permanent_unavailable", error="non_html_content", final_url=response.geturl(),
+                                      http_status=status, content_type=content_type, fetched_at=_timestamp(),
+                                      elapsed_seconds=time.monotonic()-started, error_type="non_html_content")
                 html = body.decode(response.headers.get_content_charset() or "utf-8", errors="replace")
                 lowered = html.lower()
                 if _is_challenge(lowered):
-                    return PageResult(url, "access_restricted", error="challenge_or_login", elapsed_seconds=time.monotonic()-started)
+                    return PageResult(url, "access_restricted", error="challenge_or_login", final_url=response.geturl(),
+                                      http_status=status, content_type=content_type, fetched_at=_timestamp(),
+                                      elapsed_seconds=time.monotonic()-started, error_type="challenge_or_login")
                 if status == 429:
-                    return PageResult(url, "rate_limited", error="http_429", elapsed_seconds=time.monotonic()-started)
-                return PageResult(url, "ok" if 200 <= status < 300 else "http_error", html, f"http_{status}" if status >= 300 else "", time.monotonic()-started)
+                    return PageResult(url, "rate_limited", error="http_429", final_url=response.geturl(), http_status=status,
+                                      content_type=content_type, fetched_at=_timestamp(), elapsed_seconds=time.monotonic()-started,
+                                      error_type="http_429")
+                fetch_status = "ok" if 200 <= status < 300 else "permanent_unavailable" if status in {404, 410} else "transient_failure"
+                return PageResult(url, fetch_status, html, f"http_{status}" if status >= 300 else "",
+                                  time.monotonic()-started, response.geturl(), status, content_type, _timestamp(), "https",
+                                  f"http_{status}" if status >= 300 else "")
         except HTTPError as exc:
-            status = "rate_limited" if exc.code == 429 else "access_restricted" if exc.code in (401, 403) else "http_error"
-            return PageResult(url, status, error=f"http_{exc.code}", elapsed_seconds=time.monotonic()-started)
+            status = "rate_limited" if exc.code == 429 else "access_restricted" if exc.code in (401, 403) else "permanent_unavailable" if exc.code in {404, 410} else "transient_failure"
+            return PageResult(url, status, error=f"http_{exc.code}", final_url=exc.geturl(), http_status=exc.code,
+                              content_type=exc.headers.get("Content-Type", "") if exc.headers else "",
+                              fetched_at=_timestamp(), elapsed_seconds=time.monotonic()-started, error_type=f"http_{exc.code}")
         except (URLError, TimeoutError, OSError) as exc:
-            return PageResult(url, "network_error", error=type(exc).__name__, elapsed_seconds=time.monotonic()-started)
+            reason = getattr(exc, "reason", None)
+            error_type = type(reason).__name__ if reason is not None else type(exc).__name__
+            status = "permanent_unavailable" if str(reason or "").startswith("unsafe_redirect:") else "transient_failure"
+            return PageResult(url, status, error=type(exc).__name__, final_url=url, fetched_at=_timestamp(),
+                              elapsed_seconds=time.monotonic()-started, error_type=error_type)
+
+
+class SafeOfficialPageFetcher:
+    """HTTPS-only, same-domain adapter for the existing official-page checker."""
+    def __init__(self):
+        self.fetcher = PublicPageFetcher()
+
+    def fetch_https_upgrade(self, url: str) -> dict:
+        host = (urlsplit(url).hostname or "").lower().removeprefix("www.")
+        result = self.fetcher.fetch(url, require_https=True, allowed_domain=host)
+        return {"text": re.sub(r"<[^>]+>", " ", result.html), "html":result.html,
+                "final_url":result.final_url or url, "status":result.http_status or 0,
+                "tls_verified":urlsplit(result.final_url or url).scheme == "https" and result.status == "ok",
+                "fetched_at":result.fetched_at, "fetch_transport":"https"}
+
+    def fetch(self, url: str) -> dict:
+        return self.fetch_https_upgrade(url)
+
+
+class BrowserRenderedFetcher:
+    """Adapter for an explicitly supplied, authorized public browser renderer."""
+
+    def __init__(self, renderer=None):
+        self.renderer = renderer
+
+    @property
+    def available(self) -> bool:
+        return callable(self.renderer)
+
+    def fetch(self, url: str) -> PageResult:
+        started = time.monotonic()
+        if not self.available:
+            return PageResult(url, "transient_failure", error="browser_renderer_unavailable",
+                              fetched_at=_timestamp(), fetch_method="browser_rendered", error_type="capability_missing")
+        ok, reason = validate_public_url(url)
+        if not ok:
+            return PageResult(url, "permanent_unavailable", error=reason, fetched_at=_timestamp(),
+                              fetch_method="browser_rendered", error_type=reason)
+        try:
+            response = self.renderer(url)
+            final_url = str(response.get("final_url") or url)
+            final_ok, final_reason = validate_public_url(final_url)
+            if not final_ok:
+                return PageResult(url, "permanent_unavailable", error="unsafe_final_url:" + final_reason,
+                                  final_url=final_url, http_status=response.get("http_status"),
+                                  fetched_at=_timestamp(), elapsed_seconds=time.monotonic()-started,
+                                  fetch_method="browser_rendered", error_type=final_reason)
+            status = int(response.get("http_status") or 0)
+            html = str(response.get("html") or "")
+            content_type = str(response.get("content_type") or "text/html")
+            fetch_status = "ok" if 200 <= status < 300 and html else "transient_failure"
+            return PageResult(url, fetch_status, html, str(response.get("error") or ""),
+                              time.monotonic()-started, final_url, status, content_type,
+                              str(response.get("fetched_at") or _timestamp()), "browser_rendered",
+                              str(response.get("error_type") or ""))
+        except Exception as exc:
+            return PageResult(url, "transient_failure", error=type(exc).__name__, final_url=url,
+                              fetched_at=_timestamp(), elapsed_seconds=time.monotonic()-started,
+                              fetch_method="browser_rendered", error_type=type(exc).__name__)
+
+
+class ImportedPageFetcher:
+    """Load timestamped public page captures for discovery-only deterministic replay."""
+
+    def __init__(self, manifest: str | Path):
+        self.path = Path(manifest)
+        payload = json.loads(self.path.read_text(encoding="utf-8"))
+        if payload.get("scope") != "discovery_only" or not isinstance(payload.get("pages"), list):
+            raise ValueError("import manifest must declare scope=discovery_only and pages[]")
+        self.pages = {str(row.get("source_url")): row for row in payload["pages"] if row.get("source_url")}
+
+    def fetch(self, url: str) -> PageResult:
+        row = self.pages.get(url)
+        if not row:
+            return PageResult(url, "permanent_unavailable", error="not_in_import_manifest",
+                              fetched_at=_timestamp(), fetch_method="public_page_import", error_type="missing_import")
+        fetched_at = str(row.get("collected_at") or "")
+        method = str(row.get("acquisition_method") or "")
+        try:
+            collected = datetime.fromisoformat(fetched_at.replace("Z", "+00:00"))
+            if collected.tzinfo is None or collected.utcoffset() is None:
+                raise ValueError("timestamp must include a timezone")
+        except ValueError as exc:
+            raise ValueError("imported page requires an ISO 8601 collected_at timestamp") from exc
+        if not method or not str(row.get("html") or ""):
+            raise ValueError("imported page requires acquisition_method and html")
+        if row.get("evidence_scope", "discovery_only") != "discovery_only":
+            raise ValueError("external imports cannot be used as official-site or email evidence")
+        return PageResult(url, "ok", str(row["html"]), final_url=str(row.get("final_url") or url),
+                          http_status=int(row.get("http_status") or 200),
+                          content_type=str(row.get("content_type") or "text/html"), fetched_at=fetched_at,
+                          fetch_method="public_page_import:" + method)
 
 
 def _is_challenge(text: str) -> bool:
@@ -285,16 +475,53 @@ def run_public_source(source: str, urls: list[str], fetcher=None, max_pages: int
     for url in urls[:max(0, min(3, int(max_pages)))]:
         run.pages_attempted += 1
         result = fetcher.fetch(url)
-        if result.status == "ok":
+        outcome = result.to_dict()
+        if result.status in {"ok", "success"}:
             run.pages_fetched += 1
+            outcome["status"] = "PENDING_PARSE"
             remaining = max(0, MAX_SOURCE_CANDIDATES - len(run.candidates))
-            run.candidates.extend(PARSERS[source](result.html, url)[:min(remaining, max_candidates)])
+            try:
+                parsed = PARSERS[source](result.html, result.final_url or url)
+            except Exception as exc:
+                outcome.update({"status": "TRANSIENT_FAILURE", "error_type": type(exc).__name__})
+                run.failures += 1
+                run.errors.append({"url": url, "status": "parse_error", "error": type(exc).__name__})
+                run.url_outcomes.append(outcome)
+                continue
+            fetched_at = result.fetched_at or _timestamp()
+            origin = "test_fixture" if result.fetch_method == "fixture" else "public_import" if result.fetch_method.startswith("public_page_import:") else "live_public"
+            for candidate in parsed:
+                candidate.discovery_source_url = url
+                candidate.source_page_fetched_at = fetched_at
+                candidate.brand_claim = candidate.brand_name
+                candidate.source_acquisition_method = result.fetch_method
+                candidate.data_origin = origin
+                candidate.fixture_status = "KNOWN_TEST_SEED" if origin == "test_fixture" else ""
+                candidate.product_or_listing_evidence = list(candidate.product_evidence)
+                candidate.public_sales_signals.setdefault("rating", "NOT_AVAILABLE")
+                candidate.public_sales_signals.setdefault("sold", "NOT_AVAILABLE")
+            run.candidates.extend(parsed[:min(remaining, max_candidates)])
+            outcome["status"] = "SUCCESS" if parsed else "PARSE_EMPTY"
+            outcome["candidate_count"] = len(parsed)
+            outcome["data_origin"] = origin
             if len(run.candidates) >= MAX_SOURCE_CANDIDATES:
+                run.url_outcomes.append(outcome)
                 break
         else:
             run.failures += 1
+            outcome["status"] = {
+                "network_error": "TRANSIENT_FAILURE", "timeout": "TRANSIENT_FAILURE",
+                "transient_failure": "TRANSIENT_FAILURE", "rate_limited": "ACCESS_RESTRICTED",
+                "access_restricted": "ACCESS_RESTRICTED", "permanent_unavailable": "PERMANENT_UNAVAILABLE",
+                "http_error": "TRANSIENT_FAILURE", "page_too_large": "PERMANENT_UNAVAILABLE",
+            }.get(result.status, "TRANSIENT_FAILURE")
             run.rate_limits += result.status == "rate_limited"
-            run.errors.append({"url": url, "status": result.status, "error": result.error})
-            if result.status in {"rate_limited", "access_restricted"}:
+            run.errors.append({"url": url, "status": result.status, "error": result.error or result.error_type})
+            if result.status == "rate_limited":
+                outcome["status"] = "TRANSIENT_FAILURE"
+                outcome["rate_limited"] = True
+            if outcome["status"] == "ACCESS_RESTRICTED":
+                run.url_outcomes.append(outcome)
                 break
+        run.url_outcomes.append(outcome)
     return run
