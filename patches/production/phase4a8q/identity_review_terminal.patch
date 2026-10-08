@@ -1,0 +1,16 @@
+--- a/discovery/discovery_service.py
++++ b/discovery/discovery_service.py
+@@ -590,7 +590,12 @@
+                     )
+                 status = "website_resolved"
+             else:
+-                terminal_status = "website_not_found" if status == "not_found" else row["validation_status"]
++                if status == "not_found":
++                    terminal_status = "website_not_found"
++                elif status == "identity_review":
++                    terminal_status = "identity_review"
++                else:
++                    terminal_status = row["validation_status"]
+                 self.conn.execute(
+                     "UPDATE lead_discovery_results SET validation_status=?,rejection_reason=?,last_seen_at=? WHERE id=?",
+                     (terminal_status, f"website_resolution:{status}:{result.error}"[:500], utc_now(), row["id"]),
