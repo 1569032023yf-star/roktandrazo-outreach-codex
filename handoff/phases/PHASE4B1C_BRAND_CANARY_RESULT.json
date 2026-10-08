@@ -11,7 +11,10 @@
     "DNS_AVAILABLE": false,
     "HTTPS_EGRESS_AVAILABLE": false,
     "PROXY_CONFIGURED": true,
-    "PROXY_VARIABLES_PRESENT": ["HTTP_PROXY", "HTTPS_PROXY"],
+    "PROXY_VARIABLES_PRESENT": [
+      "HTTP_PROXY",
+      "HTTPS_PROXY"
+    ],
     "PROXY_CONFIG_SOURCE": "process_environment:HTTPS_PROXY",
     "PROXY_SELECTED_VARIABLE": "HTTPS_PROXY",
     "PROXY_HOST": "127.0.0.1",
@@ -26,9 +29,18 @@
     "AUTHORIZED_PUBLIC_WEB_TOOL_RESULT": "separate search/snapshot capability only; no live fetcher evidence imported",
     "BROWSER_RENDERER_AVAILABLE": false,
     "PROVIDER_DIAGNOSTICS": {
-      "tiktok": {"status": "DNS_ERROR", "error_type": "gaierror"},
-      "amazon": {"status": "DNS_ERROR", "error_type": "gaierror"},
-      "faire": {"status": "DNS_ERROR", "error_type": "gaierror"}
+      "tiktok": {
+        "status": "DNS_ERROR",
+        "error_type": "gaierror"
+      },
+      "amazon": {
+        "status": "DNS_ERROR",
+        "error_type": "gaierror"
+      },
+      "faire": {
+        "status": "DNS_ERROR",
+        "error_type": "gaierror"
+      }
     }
   },
   "providers": {
@@ -36,9 +48,33 @@
     "AMAZON_PROVIDER_WORKING": false,
     "WHOLESALE_PROVIDER_WORKING": false,
     "per_source": [
-      {"source": "tiktok_shop", "pages_attempted": 0, "pages_fetched": 0, "network_errors": 0, "rate_limits": 0, "access_restricted": 0, "brands_discovered": 0},
-      {"source": "amazon", "pages_attempted": 0, "pages_fetched": 0, "network_errors": 0, "rate_limits": 0, "access_restricted": 0, "brands_discovered": 0},
-      {"source": "wholesale", "pages_attempted": 0, "pages_fetched": 0, "network_errors": 0, "rate_limits": 0, "access_restricted": 0, "brands_discovered": 0}
+      {
+        "source": "tiktok_shop",
+        "pages_attempted": 0,
+        "pages_fetched": 0,
+        "network_errors": 0,
+        "rate_limits": 0,
+        "access_restricted": 0,
+        "brands_discovered": 0
+      },
+      {
+        "source": "amazon",
+        "pages_attempted": 0,
+        "pages_fetched": 0,
+        "network_errors": 0,
+        "rate_limits": 0,
+        "access_restricted": 0,
+        "brands_discovered": 0
+      },
+      {
+        "source": "wholesale",
+        "pages_attempted": 0,
+        "pages_fetched": 0,
+        "network_errors": 0,
+        "rate_limits": 0,
+        "access_restricted": 0,
+        "brands_discovered": 0
+      }
     ],
     "LIVE_SOURCE_PAGES_FETCHED": 0,
     "RAW_BRANDS_DISCOVERED": 0,
@@ -54,7 +90,11 @@
     "HISTORY_CLEAN_BRANDS_WITH_EMAIL": 0,
     "production_history_accessed": false
   },
-  "mx": {"MX_OK": 0, "mx_queries_run": 0, "status": "not_run_no_verified_live_candidate"},
+  "mx": {
+    "MX_OK": 0,
+    "mx_queries_run": 0,
+    "status": "not_run_no_verified_live_candidate"
+  },
   "validation": {
     "TARGETED_TESTS": "32 passed",
     "FULL_SUITE": "unittest discover: 410 tests; 12 failures; 170 errors",
@@ -88,6 +128,7 @@
     "FSP_CREATED": 0,
     "SEND_AUTHORIZATION_CREATED": 0
   },
-  "COMMIT_SHA": "pending",
-  "PUSH_SUCCESS": false
+  "COMMIT_SHA": "cc3de43cdf4879b0f863887cc8a72552bb58f796",
+  "PUSH_SUCCESS": false,
+  "push_failure": "Sandbox network disabled; GitHub 443 inaccessible via localhost proxy"
 }
