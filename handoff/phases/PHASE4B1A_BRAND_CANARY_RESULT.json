@@ -1,0 +1,145 @@
+{
+  "schema_version": "1.0",
+  "phase": "4B.1A",
+  "summary_zh": "三个公共来源均因运行环境网络出错而0页成功；无真实候选，无可排名来源；历史副本不可用，状态未知并失败关闭。",
+  "summary_en": "All three public-source lanes had zero successful fetches due to runtime network errors; no real candidates or rankable source; history copy unavailable, so UNKNOWN and fail closed.",
+  "baseline_commit": "0cb41c23c146a7c149d7cce8f2c4ded89d191e3c",
+  "feature_commit": "a36dd1742cb644e04c1235e7120c9f17d285c495",
+  "branch": "codex/phase4b1a-brand-acquisition",
+  "metrics": {
+    "RAW_BRANDS_DISCOVERED": 0,
+    "DEDUPED_UNIQUE_BRANDS": 0,
+    "BRAND_OWNERS_CONFIRMED": 0,
+    "EXISTING_ORGS_EXCLUDED": 0,
+    "HISTORY_BLOCKED_ORGS": 0,
+    "NEW_UNIQUE_BRAND_OWNERS": 0,
+    "OFFICIAL_SITES_FOUND": 0,
+    "OFFICIAL_SITES_VERIFIED": 0,
+    "FIRST_PARTY_EMAILS_FOUND": 0,
+    "B2B_EMAILS_FOUND": 0,
+    "MX_OK": 0,
+    "HISTORY_CLEAN_BRANDS_WITH_EMAIL": 0,
+    "HISTORY_KNOWN_CANDIDATES": 0,
+    "TIKTOK_NEW_BRANDS": 0,
+    "TIKTOK_VERIFIED_EMAIL_BRANDS": 0,
+    "AMAZON_NEW_BRANDS": 0,
+    "AMAZON_VERIFIED_EMAIL_BRANDS": 0,
+    "WHOLESALE_NEW_BRANDS": 0,
+    "WHOLESALE_VERIFIED_EMAIL_BRANDS": 0,
+    "TOTAL_RUNTIME_SECONDS": 0.8,
+    "PER_SOURCE": [
+      {
+        "source": "amazon",
+        "pages_attempted": 1,
+        "pages_fetched": 0,
+        "brands_discovered": 0,
+        "official_sites_verified": 0,
+        "emails_found": 0,
+        "new_owners_with_email": 0,
+        "failures": 1,
+        "rate_limits": 0,
+        "runtime_seconds": 0.062
+      },
+      {
+        "source": "tiktok_shop",
+        "pages_attempted": 1,
+        "pages_fetched": 0,
+        "brands_discovered": 0,
+        "official_sites_verified": 0,
+        "emails_found": 0,
+        "new_owners_with_email": 0,
+        "failures": 1,
+        "rate_limits": 0,
+        "runtime_seconds": 0.065
+      },
+      {
+        "source": "wholesale",
+        "pages_attempted": 2,
+        "pages_fetched": 0,
+        "brands_discovered": 0,
+        "official_sites_verified": 0,
+        "emails_found": 0,
+        "new_owners_with_email": 0,
+        "failures": 2,
+        "rate_limits": 0,
+        "runtime_seconds": 0.078
+      }
+    ],
+    "BEST_PERFORMING_SOURCE": "undetermined"
+  },
+  "source_errors": {
+    "amazon": [
+      {
+        "url": "https://www.amazon.com/gp/bestsellers/office-products/1069296",
+        "status": "network_error",
+        "error": "URLError"
+      }
+    ],
+    "tiktok_shop": [
+      {
+        "url": "https://shop.tiktok.com/us/store/sleazy-greetings/7495078245334616103",
+        "status": "network_error",
+        "error": "URLError"
+      }
+    ],
+    "wholesale": [
+      {
+        "url": "https://external.faire.com/suppliers/Paper%20%26%20Novelty/subcategory/Greeting%20Cards",
+        "status": "network_error",
+        "error": "URLError"
+      },
+      {
+        "url": "https://www.faire.com/suppliers/Paper%20%26%20Novelty/subcategory/Greeting%20Cards/Everyday",
+        "status": "network_error",
+        "error": "URLError"
+      }
+    ]
+  },
+  "external_observations": [
+    {
+      "url": "https://shop.tiktok.com/us/store/sleazy-greetings/7495078245334616103",
+      "counts_in_pipeline": false,
+      "note": "Indexed public snapshot was stale; signal only.",
+      "source": "tiktok_shop",
+      "observed_via": "separate web research"
+    },
+    {
+      "url": "https://external.faire.com/suppliers/Paper%20%26%20Novelty/subcategory/Greeting%20Cards",
+      "counts_in_pipeline": false,
+      "note": "Public directory observations do not confirm brand ownership.",
+      "source": "wholesale",
+      "observed_via": "separate web research"
+    },
+    {
+      "url": "https://www.amazon.com/gp/bestsellers/office-products/1069296",
+      "counts_in_pipeline": false,
+      "note": "Public page returned HTTP 503 in browser research; automated fetch failed at network egress.",
+      "source": "amazon",
+      "observed_via": "separate web research"
+    }
+  ],
+  "history_source_available": false,
+  "history_note": "No development read-only history copy supplied; UNKNOWN is never counted clean.",
+  "data_outputs": [
+    "output/brand_acquisition/phase4b1a/brand_candidates.json",
+    "output/brand_acquisition/phase4b1a/source_amazon.json",
+    "output/brand_acquisition/phase4b1a/source_tiktok_shop.json",
+    "output/brand_acquisition/phase4b1a/source_wholesale.json"
+  ],
+  "safety": {
+    "production_db_writes": 0,
+    "production_deployment": false,
+    "workbuddy_changed": false,
+    "smtp_connections": 0,
+    "emails_sent": 0,
+    "safe40_additions": 0,
+    "send_plans_created": 0
+  },
+  "validation": {
+    "targeted_tests": "13 passed",
+    "full_suite": "501 passed; 135 subtests passed; 3 failed because baseline archive files are absent",
+    "compileall": "PASS; pre-existing SyntaxWarning in facebook_enrichment/fb_batch_runner.py",
+    "git_diff_check": "PASS",
+    "ready_for_production_review": false
+  }
+}
