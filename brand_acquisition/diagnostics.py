@@ -17,17 +17,24 @@ def diagnose_network(*, endpoints: dict[str, str] | None = None, fetcher=None,
     started = time.monotonic()
     proxy_vars = [name for name in ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY") if os.environ.get(name)]
     proxy_host = ""
+    proxy_port = None
+    proxy_scheme = ""
+    proxy_source = "none"
     proxy_reachable = None
-    candidate_proxy = os.environ.get("HTTPS_PROXY") or os.environ.get("HTTP_PROXY")
+    selected_proxy_var = next((name for name in ("HTTPS_PROXY", "HTTP_PROXY", "ALL_PROXY") if os.environ.get(name)), None)
+    candidate_proxy = os.environ.get(selected_proxy_var) if selected_proxy_var else None
     if candidate_proxy:
         parsed = urlsplit(candidate_proxy)
         proxy_host = parsed.hostname or "configured"
+        proxy_port = parsed.port or (443 if parsed.scheme.lower() == "https" else 80)
+        proxy_scheme = parsed.scheme.lower()
+        proxy_source = f"process_environment:{selected_proxy_var}"
         if proxy_probe:
-            try: proxy_reachable = bool(proxy_probe(parsed.hostname, parsed.port or 80))
+            try: proxy_reachable = bool(proxy_probe(parsed.hostname, proxy_port))
             except Exception: proxy_reachable = False
         else:
             try:
-                with socket.create_connection((parsed.hostname, parsed.port or 80), timeout=1):
+                with socket.create_connection((parsed.hostname, proxy_port), timeout=1):
                     proxy_reachable = True
             except OSError:
                 proxy_reachable = False
@@ -76,7 +83,13 @@ def diagnose_network(*, endpoints: dict[str, str] | None = None, fetcher=None,
         "PROXY_CONFIGURED": bool(proxy_vars),
         "PROXY_VARIABLES_PRESENT": proxy_vars,
         "PROXY_HOST": proxy_host,
+        "PROXY_PORT": proxy_port,
+        "PROXY_SCHEME": proxy_scheme,
+        "PROXY_CONFIG_SOURCE": proxy_source,
+        "PROXY_SELECTED_VARIABLE": selected_proxy_var,
         "PROXY_REACHABLE": proxy_reachable,
+        "NETWORK_POLICY_SOURCE_IDENTIFIED": False,
+        "NETWORK_POLICY_SOURCE_NOTE": "Process environment reveals proxy variables only; application injection versus host policy cannot be determined from this runtime.",
         "BROWSER_RENDERER_AVAILABLE": False,
         "PROVIDER_DIAGNOSTICS": results,
         "TOTAL_RUNTIME_SECONDS": round(time.monotonic()-started, 3),

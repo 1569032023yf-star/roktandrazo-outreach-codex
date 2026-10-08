@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0",
+  "phase": "4B.1C",
+  "result": "NETWORK_ENVIRONMENT_BLOCKED",
+  "summary_zh": "运行环境显式禁用网络；本地代理不可达。未请求来源页，未产生实时品牌或邮箱。",
+  "summary_en": "The runtime explicitly disables networking and the configured localhost proxy is unreachable. No source pages were requested; no live brands or emails were produced.",
+  "baseline_commit": "92e9d1c8c998a161486562d8a3182bbb7dea7be6",
+  "branch": "codex/phase4b1c-network-live-validation",
+  "network": {
+    "NETWORK_BLOCKER_ROOT_CAUSE": "CODEX_SANDBOX_NETWORK_DISABLED=1 and configured localhost proxy TCP endpoint unreachable",
+    "DNS_AVAILABLE": false,
+    "HTTPS_EGRESS_AVAILABLE": false,
+    "PROXY_CONFIGURED": true,
+    "PROXY_VARIABLES_PRESENT": ["HTTP_PROXY", "HTTPS_PROXY"],
+    "PROXY_CONFIG_SOURCE": "process_environment:HTTPS_PROXY",
+    "PROXY_SELECTED_VARIABLE": "HTTPS_PROXY",
+    "PROXY_HOST": "127.0.0.1",
+    "PROXY_PORT": 3213,
+    "PROXY_SCHEME": "http",
+    "PROXY_REACHABLE": false,
+    "ENVIRONMENT_POLICY_RESTRICTION": true,
+    "NETWORK_POLICY_SOURCE_IDENTIFIED": false,
+    "NETWORK_ENVIRONMENT_BLOCKER_REQUIRES_OWNER_ACTION": true,
+    "NETWORK_ACCESS_RECOVERED": false,
+    "AUTHORIZED_PUBLIC_WEB_TOOL_AVAILABLE": true,
+    "AUTHORIZED_PUBLIC_WEB_TOOL_RESULT": "separate search/snapshot capability only; no live fetcher evidence imported",
+    "BROWSER_RENDERER_AVAILABLE": false,
+    "PROVIDER_DIAGNOSTICS": {
+      "tiktok": {"status": "DNS_ERROR", "error_type": "gaierror"},
+      "amazon": {"status": "DNS_ERROR", "error_type": "gaierror"},
+      "faire": {"status": "DNS_ERROR", "error_type": "gaierror"}
+    }
+  },
+  "providers": {
+    "TIKTOK_PROVIDER_WORKING": false,
+    "AMAZON_PROVIDER_WORKING": false,
+    "WHOLESALE_PROVIDER_WORKING": false,
+    "per_source": [
+      {"source": "tiktok_shop", "pages_attempted": 0, "pages_fetched": 0, "network_errors": 0, "rate_limits": 0, "access_restricted": 0, "brands_discovered": 0},
+      {"source": "amazon", "pages_attempted": 0, "pages_fetched": 0, "network_errors": 0, "rate_limits": 0, "access_restricted": 0, "brands_discovered": 0},
+      {"source": "wholesale", "pages_attempted": 0, "pages_fetched": 0, "network_errors": 0, "rate_limits": 0, "access_restricted": 0, "brands_discovered": 0}
+    ],
+    "LIVE_SOURCE_PAGES_FETCHED": 0,
+    "RAW_BRANDS_DISCOVERED": 0,
+    "DEDUPED_UNIQUE_BRANDS": 0,
+    "LIVE_BRAND_OWNER_CONFIRMED": 0,
+    "LIVE_OFFICIAL_SITE_VERIFIED": 0,
+    "LIVE_FIRST_PARTY_BUSINESS_EMAIL_FOUND": 0,
+    "B2B_EMAILS_FOUND": 0
+  },
+  "history": {
+    "HISTORY_SOURCE_AVAILABLE": false,
+    "history_state": "UNKNOWN",
+    "HISTORY_CLEAN_BRANDS_WITH_EMAIL": 0,
+    "production_history_accessed": false
+  },
+  "mx": {"MX_OK": 0, "mx_queries_run": 0, "status": "not_run_no_verified_live_candidate"},
+  "validation": {
+    "TARGETED_TESTS": "32 passed",
+    "FULL_SUITE": "unittest discover: 410 tests; 12 failures; 170 errors",
+    "BASELINE_TEST_FAILURES": 3,
+    "NEW_REGRESSION_FAILURES": 179,
+    "full_suite_comparison_note": "179 additional failures/errors occurred in this restricted sandbox run; missing dependencies, permission/path/temp failures and runtime behavior. Cannot classify as code regressions versus environment-only without equivalent baseline environment.",
+    "pytest": "unavailable: pytest module is not installed",
+    "COMPILEALL": "PASS; existing SyntaxWarning in facebook_enrichment/fb_batch_runner.py",
+    "GIT_DIFF_CHECK": "PASS",
+    "LIVE_END_TO_END_VALIDATED": false,
+    "READY_FOR_PRODUCTION_REVIEW": false
+  },
+  "data_outputs": [
+    "output/brand_acquisition/phase4b1c/network_diagnostic.json",
+    "output/brand_acquisition/phase4b1c/canary_manifest.json",
+    "output/brand_acquisition/phase4b1c/brand_candidates.json",
+    "output/brand_acquisition/phase4b1c/brand_candidates.csv",
+    "output/brand_acquisition/phase4b1c/source_checkpoints/",
+    "output/brand_acquisition/phase4b1c/full_suite.log"
+  ],
+  "safety": {
+    "PRODUCTION_DB_WRITES": 0,
+    "PRODUCTION_DEPLOYMENT": false,
+    "WORKBUDDY_CHANGED": false,
+    "CANONICAL_INVENTORY_CHANGED": false,
+    "V1_CHANGED": false,
+    "V2_CHANGED": false,
+    "MX_POLICY_CHANGED": false,
+    "SMTP_CONNECTIONS": 0,
+    "EMAILS_SENT": 0,
+    "FSP_CREATED": 0,
+    "SEND_AUTHORIZATION_CREATED": 0
+  },
+  "COMMIT_SHA": "pending",
+  "PUSH_SUCCESS": false
+}

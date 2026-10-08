@@ -67,6 +67,7 @@ def main(argv=None) -> int:
                     "ACCESS_RESTRICTED":0, "HTTP_429":0, "PARSE_EMPTY":0}}
         for source in SOURCE_PAGES:
             cp_path = OUTPUT / "source_checkpoints" / f"source_{source}.json"
+            cp_path.parent.mkdir(parents=True, exist_ok=True)
             if not cp_path.exists():
                 cp_path.write_text(json.dumps({"source_state":"PENDING", "last_attempt_at":"",
                     "last_success_at":"", "completed_urls":[], "retryable_urls":[],

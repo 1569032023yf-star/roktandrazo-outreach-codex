@@ -324,6 +324,23 @@ class BrandAcquisitionTests(unittest.TestCase):
         self.assertFalse(result["DNS_RESOLUTION_AVAILABLE"])
         self.assertTrue(result["DEVELOPMENT_ENV_NETWORK_BLOCKED"])
 
+    def test_network_diagnostic_reports_sanitized_proxy_source_and_port(self):
+        import os
+        from unittest.mock import patch
+        from brand_acquisition.diagnostics import diagnose_network
+        class NeverFetch:
+            def fetch(self, _): raise AssertionError("DNS-blocked hosts must not be requested")
+        with patch.dict(os.environ, {"HTTPS_PROXY":"http://user:secret@127.0.0.1:3213/private"}, clear=True):
+            result = diagnose_network(endpoints={"tiktok":"https://tt.example/"}, fetcher=NeverFetch(),
+                resolver=lambda *_args, **_kwargs: (_ for _ in ()).throw(OSError("blocked")),
+                proxy_probe=lambda host, port: host == "127.0.0.1" and port == 3213)
+        self.assertEqual(result["PROXY_CONFIG_SOURCE"], "process_environment:HTTPS_PROXY")
+        self.assertEqual(result["PROXY_PORT"], 3213)
+        self.assertTrue(result["PROXY_REACHABLE"])
+        self.assertFalse(result["NETWORK_POLICY_SOURCE_IDENTIFIED"])
+        self.assertNotIn("secret", repr(result))
+        self.assertNotIn("private", repr(result))
+
     def test_history_suppression_and_bounce_fail_closed(self):
         for state in ("suppressed", "unsubscribed", "hard_bounced", "duplicate_organization", "organization_previously_sent"):
             item = BrandCandidate("PaperWorks", brand_identity_status="brand_owner_confirmed", official_website="https://paperworks.example")
