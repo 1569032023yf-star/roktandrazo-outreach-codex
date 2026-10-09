@@ -1,0 +1,94 @@
+{
+  "schema_version": "1.0",
+  "phase": "4B.1C-R1",
+  "result": "NETWORK_ENVIRONMENT_STILL_BLOCKED",
+  "summary_zh": "沙箱仍明确禁止网络；未请求来源页，实时品牌与邮箱数量均为零。",
+  "summary_en": "Sandbox policy still disables networking; no provider pages were requested and live brand/email counts are zero.",
+  "baseline_commit": "e187fb531c482385e5d35f81a3236e672701596d",
+  "branch": "codex/phase4b1c-r1-live-revalidation",
+  "current_time": "2026-10-09T08:53:00+08:00",
+  "network": {
+    "SANDBOX_NETWORK_POLICY": "network disabled",
+    "SANDBOX_NETWORK_DISABLED": true,
+    "ENVIRONMENT_POLICY_BLOCKED": true,
+    "HTTP_PROXY_CONFIGURED": true,
+    "HTTPS_PROXY_CONFIGURED": true,
+    "PROXY_SOURCE": "process environment",
+    "PROXY_HOST": "127.0.0.1",
+    "PROXY_PORT": 3213,
+    "PROXY_TCP_REACHABLE": false,
+    "DNS_RESOLUTION_AVAILABLE": false,
+    "HTTPS_PUBLIC_ACCESS_AVAILABLE": false,
+    "NETWORK_ACCESS_RECOVERED": false,
+    "LIVE_PAGE_REQUESTS_MADE": 0,
+    "credentials_recorded": false
+  },
+  "runtime": {
+    "python": "3.12.9",
+    "python_executable": "C:/Users/15690/AppData/Local/Programs/Python/Python312/python.exe",
+    "unittest_available": true,
+    "pytest_available": false,
+    "missing_dev_dependencies": ["pytest", "tzdata", "playwright", "httpx", "dnspython"],
+    "temp_directory_write": "PASS",
+    "compileall": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "pipeline": {
+    "REAL_PROVIDER_DISCOVERY_CONNECTED": "configured; runtime blocked before source calls",
+    "BRAND_OWNER_CHECK_CONNECTED": "configured; not exercised on live page",
+    "OFFICIAL_SITE_CHECK_CONNECTED": "configured; not exercised on live page",
+    "FIRST_PARTY_EXTRACT_CONNECTED": "configured; not exercised on live page",
+    "HISTORY_CHECK_CONNECTED": "fail-closed UNKNOWN",
+    "MX_CHECK_CONNECTED": "configured; not run without verified live email"
+  },
+  "providers": {
+    "per_source": [
+      {"source":"tiktok_shop","pages_attempted":0,"pages_fetched":0,"network_errors":0,"rate_limits":0,"access_restricted":0,"brands_discovered":0},
+      {"source":"amazon","pages_attempted":0,"pages_fetched":0,"network_errors":0,"rate_limits":0,"access_restricted":0,"brands_discovered":0},
+      {"source":"wholesale","pages_attempted":0,"pages_fetched":0,"network_errors":0,"rate_limits":0,"access_restricted":0,"brands_discovered":0}
+    ],
+    "LIVE_SOURCE_PAGES_FETCHED": 0,
+    "RAW_BRANDS_DISCOVERED": 0,
+    "DEDUPED_UNIQUE_BRANDS": 0,
+    "BRAND_OWNERS_CONFIRMED": 0,
+    "OFFICIAL_SITES_VERIFIED": 0,
+    "FIRST_PARTY_EMAILS_FOUND": 0,
+    "B2B_EMAILS_FOUND": 0,
+    "HISTORY_SOURCE_AVAILABLE": false,
+    "HISTORY_STATUS": "UNKNOWN",
+    "HISTORY_CLEAN_BRANDS_WITH_EMAIL": 0,
+    "MX_OK": 0,
+    "origin_counts": {"live":0,"cached_history":0,"imported_public_pages":0,"test_fixtures":0,"fixed_seeds":0}
+  },
+  "tests": {
+    "TARGETED_TESTS_CURRENT": "32 passed",
+    "TARGETED_TESTS_4B1B": "31 passed",
+    "FULL_SUITE_4B1B": "409 tests; 12 failures; 170 errors",
+    "FULL_SUITE_CURRENT": "410 tests; 12 failures; 170 errors",
+    "FAILURE_SIGNATURES_IDENTICAL": true,
+    "BASELINE_TEST_FAILURES": 3,
+    "ENVIRONMENT_FAILURES": 179,
+    "NEW_CODE_REGRESSION_FAILURES": 0,
+    "comparison_note_zh": "相同执行环境两次运行的182个失败/错误签名相同。",
+    "comparison_note_en": "The 182 failure/error signatures match across both runs in the same environment."
+  },
+  "validation": {
+    "LIVE_END_TO_END_VALIDATED": false,
+    "READY_FOR_PRODUCTION_REVIEW": false
+  },
+  "safety": {
+    "PRODUCTION_DB_WRITES": 0,
+    "PRODUCTION_DEPLOYMENT": false,
+    "WORKBUDDY_CHANGED": false,
+    "INVENTORY_CHANGED": false,
+    "V1_CHANGED": false,
+    "V2_CHANGED": false,
+    "MX_POLICY_CHANGED": false,
+    "SMTP_CONNECTIONS": 0,
+    "EMAILS_SENT": 0,
+    "SEND_PLANS_CREATED": 0,
+    "SEND_AUTHORIZATIONS_CREATED": 0
+  },
+  "commit_sha": "pending",
+  "push_success": false
+}
