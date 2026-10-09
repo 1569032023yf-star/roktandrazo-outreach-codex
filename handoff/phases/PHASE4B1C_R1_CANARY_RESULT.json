@@ -28,7 +28,13 @@
     "python_executable": "C:/Users/15690/AppData/Local/Programs/Python/Python312/python.exe",
     "unittest_available": true,
     "pytest_available": false,
-    "missing_dev_dependencies": ["pytest", "tzdata", "playwright", "httpx", "dnspython"],
+    "missing_dev_dependencies": [
+      "pytest",
+      "tzdata",
+      "playwright",
+      "httpx",
+      "dnspython"
+    ],
     "temp_directory_write": "PASS",
     "compileall": "PASS",
     "git_diff_check": "PASS"
@@ -43,9 +49,33 @@
   },
   "providers": {
     "per_source": [
-      {"source":"tiktok_shop","pages_attempted":0,"pages_fetched":0,"network_errors":0,"rate_limits":0,"access_restricted":0,"brands_discovered":0},
-      {"source":"amazon","pages_attempted":0,"pages_fetched":0,"network_errors":0,"rate_limits":0,"access_restricted":0,"brands_discovered":0},
-      {"source":"wholesale","pages_attempted":0,"pages_fetched":0,"network_errors":0,"rate_limits":0,"access_restricted":0,"brands_discovered":0}
+      {
+        "source": "tiktok_shop",
+        "pages_attempted": 0,
+        "pages_fetched": 0,
+        "network_errors": 0,
+        "rate_limits": 0,
+        "access_restricted": 0,
+        "brands_discovered": 0
+      },
+      {
+        "source": "amazon",
+        "pages_attempted": 0,
+        "pages_fetched": 0,
+        "network_errors": 0,
+        "rate_limits": 0,
+        "access_restricted": 0,
+        "brands_discovered": 0
+      },
+      {
+        "source": "wholesale",
+        "pages_attempted": 0,
+        "pages_fetched": 0,
+        "network_errors": 0,
+        "rate_limits": 0,
+        "access_restricted": 0,
+        "brands_discovered": 0
+      }
     ],
     "LIVE_SOURCE_PAGES_FETCHED": 0,
     "RAW_BRANDS_DISCOVERED": 0,
@@ -58,7 +88,13 @@
     "HISTORY_STATUS": "UNKNOWN",
     "HISTORY_CLEAN_BRANDS_WITH_EMAIL": 0,
     "MX_OK": 0,
-    "origin_counts": {"live":0,"cached_history":0,"imported_public_pages":0,"test_fixtures":0,"fixed_seeds":0}
+    "origin_counts": {
+      "live": 0,
+      "cached_history": 0,
+      "imported_public_pages": 0,
+      "test_fixtures": 0,
+      "fixed_seeds": 0
+    }
   },
   "tests": {
     "TARGETED_TESTS_CURRENT": "32 passed",
@@ -89,6 +125,6 @@
     "SEND_PLANS_CREATED": 0,
     "SEND_AUTHORIZATIONS_CREATED": 0
   },
-  "commit_sha": "pending",
-  "push_success": false
+  "commit_sha": "c20c84e7761d7c4fe7571688fcdfc2ef1f00b842",
+  "push_success": true
 }
