@@ -153,25 +153,71 @@ class AcquisitionPipeline:
         return payload
 
     def _enrich_one(self, candidate: BrandCandidate) -> None:
+        from .official_site_resolver import resolve_official_site_candidates
+        from .pipeline_types import STAGES
+        now = datetime.now(timezone.utc).isoformat()
+        candidate.stage_statuses.setdefault(STAGES[0], {"status": "DISCOVERED", "at": now,
+            "evidence_sources": list(candidate.source_urls or ([candidate.discovery_source_url] if candidate.discovery_source_url else []))})
         candidate.organization_key = organization_key(candidate)
-        if candidate.brand_identity_status == "identity_conflict":
+        if candidate.brand_identity_status == "identity_conflict" or candidate.identity_class == "IDENTITY_CONFLICT":
+            candidate.identity_class = "IDENTITY_CONFLICT"
+            candidate.stage_statuses[STAGES[1]] = {"status": "IDENTITY_CONFLICT", "at": now,
+                "next_action": "manual_identity_resolution"}
             candidate.enrichment_status = "identity_conflict"
             candidate.exclusions.append("identity_conflict_fail_closed")
             return
+        if candidate.data_origin_label in {"AUTHORIZED_PUBLIC_IMPORT", "INDEXED_SEARCH_SNAPSHOT", "TEST_FIXTURE", "KNOWN_TEST_SEED"}:
+            # Imported/snapshot/fixture material can expand the candidate pool,
+            # but cannot trigger official-site/email/MX qualification by itself.
+            candidate.rejected_business_email = candidate.business_email or candidate.rejected_business_email
+            candidate.business_email = ""
+            candidate.official_site_verified = False
+            candidate.email_official_identity_verified = False
+            candidate.history_status = "UNKNOWN"
+            candidate.enrichment_status = "live_revalidation_required"
+            candidate.exclusions.append("untrusted_import_not_eligible_for_contact_qualification")
+            candidate.stage_statuses[STAGES[3]] = {"status": "LIVE_REVALIDATION_REQUIRED",
+                "reason": "imported_or_fixture_evidence_is_discovery_only", "at": now,
+                "next_action": "revalidate_with_authorized_live_first_party_source"}
+            return
         candidate.history_status = str(self.history_check(candidate.to_dict()) or "UNKNOWN")
         if candidate.history_status not in {"UNKNOWN", "new_candidate"}:
+            candidate.stage_statuses[STAGES[5]] = {"status": "HISTORY_BLOCKED", "history_status": candidate.history_status,
+                "at": now, "next_action": "history_review"}
             candidate.exclusions.append("history:" + candidate.history_status)
             candidate.enrichment_status = "history_blocked"
             return
         if candidate.history_status == "UNKNOWN":
             candidate.exclusions.append("history_unknown_fail_closed")
-        # Owner confirmation must be performed by an explicit, evidence-backed callback.
+        resolved = resolve_official_site_candidates(candidate, candidate.product_or_listing_evidence)
+        candidate.official_site_candidates = resolved["candidate_websites"]
+        candidate.official_site_resolution_status = resolved["resolution_status"]
+        candidate.stage_statuses[STAGES[1]] = {"status": "IDENTITY_CANDIDATE", "identity_class": candidate.identity_class,
+            "at": now, "evidence_sources": list(candidate.source_urls)}
+        candidate.stage_statuses[STAGES[2]] = {"status": resolved["resolution_status"],
+            "candidate_count": len(candidate.official_site_candidates), "at": now,
+            "evidence_sources": resolved["candidate_source_urls"]}
+        # Candidate domains are explicit source evidence, not verified sites.
+        # Each still passes through the established owner and first-party checks.
         if candidate.brand_identity_status not in {"brand_owner_confirmed", "official_brand_store"}:
-            if self.brand_owner_check(candidate):
-                candidate.brand_identity_status = "brand_owner_confirmed"
-            else:
+            originals = list(candidate.official_site_candidates)
+            verified_candidate = False
+            for item in originals[:3]:
+                candidate.official_website = item["website"]
+                if self.brand_owner_check(candidate):
+                    candidate.brand_identity_status = "brand_owner_confirmed"
+                    candidate.identity_class = "BRAND_OWNER"
+                    verified_candidate = True
+                    break
+            if not verified_candidate:
+                if not originals and candidate.official_website:
+                    candidate.official_website = ""
+                candidate.identity_class = "IDENTITY_UNVERIFIED"
                 candidate.brand_identity_status = "unknown"
-                candidate.enrichment_status = "identity_pending"
+                candidate.enrichment_status = "identity_pending" if originals else "official_site_unresolved"
+                candidate.stage_statuses[STAGES[3]] = {"status": "IDENTITY_PENDING" if originals else "OFFICIAL_SITE_UNRESOLVED",
+                    "reason": "brand_owner_not_confirmed", "at": datetime.now(timezone.utc).isoformat(),
+                    "next_action": "obtain_independent_owner_or_official_site_evidence"}
                 candidate.exclusions.append("brand_owner_not_confirmed")
                 return
         if candidate.brand_identity_status not in {"brand_owner_confirmed", "official_brand_store"}:
@@ -180,10 +226,17 @@ class AcquisitionPipeline:
         if not candidate.official_website or not self.official_site_check(candidate):
             candidate.official_site_verification_status = "failed_or_unavailable"
             candidate.enrichment_status = "site_unverified"
+            candidate.stage_statuses[STAGES[3]] = {"status": "OFFICIAL_SITE_VERIFICATION_PENDING",
+                "reason": "verification_failed_or_unavailable", "at": datetime.now(timezone.utc).isoformat(),
+                "next_action": "retry_official_site_verification"}
             candidate.exclusions.append("official_site_unverified")
             return
         candidate.official_site_verified = True
         candidate.official_site_verification_status = "verified"
+        candidate.identity_class = "BRAND_OWNER"
+        candidate.stage_statuses[STAGES[3]] = {"status": "OFFICIAL_SITE_VERIFIED", "website": candidate.official_website,
+            "final_url": candidate.official_site_final_url, "at": datetime.now(timezone.utc).isoformat(),
+            "evidence_sources": [candidate.official_site_final_url or candidate.official_website]}
         extracted = self.first_party_extract(candidate) or {}
         candidate.business_email = str(extracted.get("email") or "")
         candidate.email_role = str(extracted.get("role") or "")
@@ -195,12 +248,15 @@ class AcquisitionPipeline:
         candidate.email_final_url = str(extracted.get("final_url") or "")
         candidate.email_official_identity_verified = bool(extracted.get("official_identity_verified", False))
         if candidate.business_email:
-            from email_hygiene import hygiene_check
-            hygiene = hygiene_check(candidate.business_email)
+            from .email_quality import audit_brand_email
+            hygiene = audit_brand_email(candidate.business_email, candidate.official_website, extracted)
+            candidate.email_quality_status = hygiene["status"]
             if not hygiene.get("valid"):
+                candidate.rejected_business_email = candidate.business_email
                 candidate.email_hygiene_status = str(hygiene.get("reason", "failed"))
                 candidate.exclusions.append("email_hygiene:" + str(hygiene.get("reason", "failed")))
                 candidate.mx_status = "not_checked_invalid"
+                candidate.business_email = ""
             elif (not candidate.email_evidence_url or not candidate.email_evidence_excerpt
                   or candidate.business_email.lower() not in candidate.email_evidence_excerpt.lower()
                   or not candidate.email_official_identity_verified
@@ -211,6 +267,12 @@ class AcquisitionPipeline:
                 candidate.business_email = ""
             else:
                 candidate.email_hygiene_status = "ok"
+                candidate.stage_statuses[STAGES[4]] = {"status": "FIRST_PARTY_EMAIL_FOUND", "at": datetime.now(timezone.utc).isoformat(),
+                    "evidence_sources": [candidate.email_evidence_url]}
+        if not candidate.business_email and STAGES[4] not in candidate.stage_statuses:
+            candidate.stage_statuses[STAGES[4]] = {"status": "EMAIL_NOT_FOUND_OR_REJECTED",
+                "reason": candidate.email_hygiene_status, "at": datetime.now(timezone.utc).isoformat(),
+                "next_action": "retry_first_party_contact_paths_or_review_evidence"}
         # Check the actual mailbox after first-party extraction too. The early
         # organization check above avoids costly site work for already-contacted parties.
         if candidate.business_email:
@@ -224,6 +286,10 @@ class AcquisitionPipeline:
                 candidate.exclusions.append("history_unknown_fail_closed")
         if candidate.business_email and candidate.email_hygiene_status == "ok":
             candidate.mx_status = self.mx_check(candidate.business_email)
+        candidate.stage_statuses[STAGES[5]] = {"status": "HISTORY_" + candidate.history_status,
+            "mx_status": candidate.mx_status, "at": datetime.now(timezone.utc).isoformat(),
+            "evidence_sources": [candidate.email_evidence_url] if candidate.email_evidence_url else [],
+            "next_action": "history_review" if candidate.history_status == "UNKNOWN" else "none"}
         candidate.enrichment_status = "complete" if candidate.history_status != "UNKNOWN" else "history_unknown_pending"
 
     def run_sources(self, source_pages: dict[str, list[str]], fetcher_factory=None, *, now=None) -> dict:
@@ -358,6 +424,7 @@ class AcquisitionPipeline:
 
 
 def funnel(candidates: list[BrandCandidate], source_metrics: list[SourceMetric], runtime_seconds: float) -> dict:
+    from .pipeline_types import STAGES
     source_new: dict[str, int] = {}
     source_verified: dict[str, int] = {}
     for c in candidates:
@@ -385,26 +452,58 @@ def funnel(candidates: list[BrandCandidate], source_metrics: list[SourceMetric],
             best_source = max(viable, key=lambda m: (m.emails_found, -m.runtime_seconds)).source
         elif any(m.brands_discovered for m in viable):
             best_source = max(viable, key=lambda m: (m.brands_discovered, -m.runtime_seconds)).source
+    raw_count = sum(m.brands_discovered for m in source_metrics)
+    source_counts = {source: sum(1 for c in candidates if source in c.source_platforms)
+                     for source in ("tiktok_shop", "amazon", "wholesale")}
+    origin_counts = {origin: sum(c.data_origin_label == origin for c in candidates) for origin in (
+        "TEST_FIXTURE", "KNOWN_TEST_SEED", "INDEXED_SEARCH_SNAPSHOT", "AUTHORIZED_PUBLIC_IMPORT", "LIVE_PUBLIC_CAPTURE")}
+    verified_sites = sum(c.official_site_verified for c in candidates)
+    verified_emails = sum(bool(c.business_email and c.official_site_verified and c.email_official_identity_verified
+                               and c.email_evidence_url and c.email_evidence_excerpt) for c in candidates)
+    stage_counts = {stage: {"statuses": {}}
+        for stage in STAGES}
+    for candidate in candidates:
+        for stage, record in candidate.stage_statuses.items():
+            if stage in stage_counts:
+                status = str(record.get("status") or "UNKNOWN")
+                stage_counts[stage]["statuses"][status] = stage_counts[stage]["statuses"].get(status, 0) + 1
     return {
-        "RAW_BRANDS_DISCOVERED": sum(m.brands_discovered for m in source_metrics),
+        "RAW_BRANDS_DISCOVERED": raw_count,
         "DEDUPED_UNIQUE_BRANDS": len(candidates),
+        "DEDUPED_UNIQUE_BRAND_CANDIDATES": len(candidates),
         "BRAND_OWNERS_CONFIRMED": sum(c.brand_identity_status in {"brand_owner_confirmed", "official_brand_store"} for c in candidates),
         "EXISTING_ORGS_EXCLUDED": sum(c.history_status not in {"UNKNOWN", "new_candidate"} for c in candidates),
         "HISTORY_BLOCKED_ORGS": sum(c.history_status in {"suppressed_or_unsubscribed", "bounced", "rejected", "previously_sent"} for c in candidates),
         "NEW_UNIQUE_BRAND_OWNERS": sum(c.history_status == "new_candidate" and c.brand_identity_status in {"brand_owner_confirmed", "official_brand_store"} for c in candidates),
         "OFFICIAL_SITES_FOUND": sum(bool(c.official_website) for c in candidates),
+        "OFFICIAL_SITE_CANDIDATES_FOUND": sum(bool(c.official_site_candidates) for c in candidates),
         "OFFICIAL_SITES_VERIFIED": sum(c.official_site_verified for c in candidates),
         "FIRST_PARTY_EMAILS_FOUND": sum(bool(c.business_email and c.email_evidence_url and c.email_evidence_excerpt
             and c.official_site_verified and c.email_official_identity_verified) for c in candidates),
+        "LIVE_VERIFIED_OFFICIAL_EMAILS": sum(bool(c.business_email and c.official_site_verified
+            and c.email_official_identity_verified and c.email_evidence_url and c.email_evidence_excerpt
+            and c.data_origin_label == "LIVE_PUBLIC_CAPTURE") for c in candidates),
         "B2B_EMAILS_FOUND": sum(bool(c.business_email and c.email_evidence_url and c.email_evidence_excerpt
             and c.official_site_verified and c.email_official_identity_verified
-            and c.email_role in {"wholesale", "sales", "partnerships", "business", "trade", "orders", "info", "hello"}) for c in candidates),
+            and c.email_role in {"WHOLESALE", "SALES", "PARTNERSHIPS", "TRADE", "BUSINESS", "ORDERS", "GENERAL",
+                                 "wholesale", "sales", "partnerships", "business", "trade", "orders", "info", "hello"}) for c in candidates),
         "MX_OK": sum(c.mx_status == "ok" for c in candidates),
         "HISTORY_CLEAN_BRANDS_WITH_EMAIL": sum(bool(c.business_email and c.email_evidence_url and c.email_evidence_excerpt
             and c.official_site_verified and c.email_official_identity_verified
             and c.email_hygiene_status == "ok" and c.mx_status == "ok" and c.history_status == "new_candidate"
             and c.brand_identity_status in {"brand_owner_confirmed", "official_brand_store"}) for c in candidates),
         "HISTORY_KNOWN_CANDIDATES": len(known),
+        "OFFLINE_FIXTURE_BRANDS": origin_counts["TEST_FIXTURE"] + origin_counts["KNOWN_TEST_SEED"],
+        "IMPORTED_PUBLIC_BRAND_CANDIDATES": origin_counts["AUTHORIZED_PUBLIC_IMPORT"],
+        "INDEXED_SEARCH_SNAPSHOT_CANDIDATES": origin_counts["INDEXED_SEARCH_SNAPSHOT"],
+        "LIVE_DISCOVERED_BRANDS": origin_counts["LIVE_PUBLIC_CAPTURE"],
+        "TIKTOK_BRANDS": source_counts["tiktok_shop"],
+        "AMAZON_BRANDS": source_counts["amazon"],
+        "WHOLESALE_BRANDS": source_counts["wholesale"],
+        "BRANDS_PER_SUCCESSFUL_SOURCE_PAGE": round(len(candidates) / sum(m.pages_fetched for m in source_metrics), 3)
+            if sum(m.pages_fetched for m in source_metrics) else 0,
+        "VERIFIED_EMAILS_PER_VERIFIED_SITE": round(verified_emails / verified_sites, 3) if verified_sites else 0,
+        "DUPLICATE_CANDIDATES_AVOIDED": max(0, raw_count - len(candidates)),
         "TIKTOK_NEW_BRANDS": source_new.get("tiktok_shop", 0),
         "TIKTOK_VERIFIED_EMAIL_BRANDS": source_verified.get("tiktok_shop", 0),
         "AMAZON_NEW_BRANDS": source_new.get("amazon", 0),
@@ -420,6 +519,7 @@ def funnel(candidates: list[BrandCandidate], source_metrics: list[SourceMetric],
         "PARSE_EMPTY": sum(m.parse_empty for m in source_metrics),
         "PER_SOURCE": [m.to_dict() for m in source_metrics],
         "BEST_PERFORMING_SOURCE": best_source,
+        "PIPELINE_STAGE_COUNTS": stage_counts,
     }
 
 
@@ -458,7 +558,14 @@ def make_first_party_enricher(fetcher=None):
             return {}
         email = chosen.get("email", "")
         local = email.split("@", 1)[0].lower()
-        role = next((name for name in ("wholesale", "sales", "partnerships", "business", "trade", "orders", "info", "hello") if name in local), "other")
+        role_patterns = (
+            ("WHOLESALE", ("wholesale", "retailers", "distributors")),
+            ("SALES", ("sales",)), ("PARTNERSHIPS", ("partnership", "collab")),
+            ("TRADE", ("trade",)), ("BUSINESS", ("business",)), ("ORDERS", ("orders",)),
+            ("CUSTOMER_SUPPORT", ("support", "service", "help")),
+            ("GENERAL", ("info", "hello", "contact")),
+        )
+        role = next((name for name, terms in role_patterns if any(term in local for term in terms)), "OTHER")
         evidence = chosen.get("evidence", {})
         return {"email": email, "role": role, "url": chosen.get("url", ""),
                 "excerpt": chosen.get("snippet", ""), "checked_at": evidence.get("fetched_at", ""),
@@ -485,7 +592,7 @@ def make_runtime_callbacks(fetcher=None):
             "official_site":candidate.official_website,
             "verified":True,
         })
-        candidate.identity_class = "brand_owner"
+        candidate.identity_class = "BRAND_OWNER"
         return True
 
     def mx(email: str) -> str:

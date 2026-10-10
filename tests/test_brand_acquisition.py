@@ -57,7 +57,7 @@ class BrandAcquisitionTests(unittest.TestCase):
 
     def test_brand_owner_and_reseller_are_not_conflated(self):
         item = parse_tiktok_shop(TIKTOK_PAGE, "https://shop.tiktok.com/us/store/seller-outlet/123")[0]
-        self.assertEqual(item.identity_class, "seller_or_listing")
+        self.assertEqual(item.identity_class, "MARKETPLACE_SELLER")
         self.assertEqual(item.brand_owner_name, "")
         self.assertEqual(item.brand_identity_status, "unknown")
 
@@ -243,7 +243,7 @@ class BrandAcquisitionTests(unittest.TestCase):
             discovery_source_url="https://faire.example/brand/paperworks", brand_claim="PaperWorks",
             product_or_listing_evidence=[{"product_title":"PaperWorks cards"}])
         self.assertTrue(callbacks["brand_owner_check"](candidate))
-        self.assertEqual(candidate.identity_class, "brand_owner")
+        self.assertEqual(candidate.identity_class, "BRAND_OWNER")
         unsubstantiated = BrandCandidate("PaperWorks", official_website="https://paperworks.example")
         self.assertFalse(callbacks["brand_owner_check"](unsubstantiated))
 

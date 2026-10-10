@@ -18,9 +18,11 @@ class BrandCandidate:
     official_site_verification_status: str = "unknown"
     official_site_final_url: str = ""
     official_site_checked_at: str = ""
+    official_site_candidates: list[dict[str, Any]] = field(default_factory=list)
+    official_site_resolution_status: str = "OFFICIAL_SITE_UNRESOLVED"
     owner_verification_evidence: list[dict[str, Any]] = field(default_factory=list)
     brand_identity_status: str = "unknown"
-    identity_class: str = "unknown"
+    identity_class: str = "IDENTITY_UNVERIFIED"
     enrichment_status: str = "pending"
     organization_key: str = ""
     discovery_source_url: str = ""
@@ -28,9 +30,12 @@ class BrandCandidate:
     brand_claim: str = ""
     product_or_listing_evidence: list[dict[str, Any]] = field(default_factory=list)
     source_acquisition_method: str = ""
-    data_origin: str = "live_public"
+    data_origin: str = "unclassified"
+    data_origin_label: str = "UNCLASSIFIED"
+    source_capture_ids: list[str] = field(default_factory=list)
     fixture_status: str = ""
     business_email: str = ""
+    rejected_business_email: str = ""
     email_role: str = ""
     email_evidence_url: str = ""
     email_evidence_excerpt: str = ""
@@ -44,6 +49,8 @@ class BrandCandidate:
     mx_status: str = "unknown"
     product_evidence: list[dict[str, Any]] = field(default_factory=list)
     exclusions: list[str] = field(default_factory=list)
+    stage_statuses: dict[str, dict[str, Any]] = field(default_factory=dict)
+    email_quality_status: str = "unchecked"
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

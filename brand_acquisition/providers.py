@@ -36,6 +36,8 @@ class PageResult:
     fetched_at: str = ""
     fetch_method: str = "https"
     error_type: str = ""
+    capture_id: str = ""
+    data_origin: str = ""
 
     @property
     def requested_url(self) -> str:
@@ -52,6 +54,8 @@ class PageResult:
             "elapsed_seconds": round(self.elapsed_seconds, 3),
             "error_type": self.error_type or self.error,
             "fetch_method": self.fetch_method,
+            "capture_id": self.capture_id,
+            "data_origin": self.data_origin,
         }
         if include_html:
             result["html"] = self.html
@@ -167,12 +171,15 @@ class PublicPageFetcher:
 
 class SafeOfficialPageFetcher:
     """HTTPS-only, same-domain adapter for the existing official-page checker."""
-    def __init__(self):
+    def __init__(self, observer=None):
         self.fetcher = PublicPageFetcher()
+        self.observer = observer
 
     def fetch_https_upgrade(self, url: str) -> dict:
         host = (urlsplit(url).hostname or "").lower().removeprefix("www.")
         result = self.fetcher.fetch(url, require_https=True, allowed_domain=host)
+        if self.observer and result.status == "ok" and result.html:
+            self.observer(url, result)
         return {"text": re.sub(r"<[^>]+>", " ", result.html), "html":result.html,
                 "final_url":result.final_url or url, "status":result.http_status or 0,
                 "tls_verified":urlsplit(result.final_url or url).scheme == "https" and result.status == "ok",
@@ -351,9 +358,19 @@ def _candidate(source: str, name: str, url: str, *, owner: str = "", category: s
         product_categories=[category] if category else [], public_sales_signals=signal or {},
         sales_signal_observed_at=datetime.now(timezone.utc).isoformat(),
         official_website=official_website,
-        identity_class="seller_or_listing" if source != "wholesale" else "directory_listing",
+        identity_class="MARKETPLACE_SELLER" if source in {"tiktok_shop", "amazon"} else "IDENTITY_UNVERIFIED",
         product_evidence=[{"source_url": url, "brand_claim": name.strip()}],
     )
+
+
+def _attach_explicit_site_links(candidates, facts: _PageFacts, page_url: str) -> None:
+    official_terms = ("official website", "official site", "brand website", "brand site", "visit website", "visit site")
+    explicit = [{"url": urljoin(page_url, href), "label": label}
+                for href, label in facts.links if label and any(term in label.casefold() for term in official_terms)]
+    if not explicit:
+        return
+    for candidate in candidates:
+        candidate.product_evidence.append({"source_url": page_url, "links": explicit})
 
 
 def parse_tiktok_shop(html: str, url: str) -> list[BrandCandidate]:
@@ -397,6 +414,7 @@ def parse_tiktok_shop(html: str, url: str) -> list[BrandCandidate]:
                 {"source_url": urljoin(url, href), "product_title": label}
                 for href, label in facts.links if label and re.search(r"card|playing|paper|notebook|journal|game", label, re.I)
             ] or found[name.casefold()].product_evidence
+    _attach_explicit_site_links(found.values(), facts, url)
     return list(found.values())
 
 
@@ -434,6 +452,7 @@ def parse_amazon(html: str, url: str) -> list[BrandCandidate]:
             if seller: signal["marketplace_seller"] = " ".join(seller.group(1).split())
             if rating: signal["ratings"] = rating.group(1).replace(",", "")
             found[name.casefold()] = _candidate("amazon", name, url, category="cards_paper_goods", signal=signal)
+    _attach_explicit_site_links(found.values(), facts, url)
     return list(found.values())
 
 
@@ -459,6 +478,7 @@ def parse_wholesale(html: str, url: str) -> list[BrandCandidate]:
         if clean.casefold() in {x.casefold() for x in ("home", "brands", "view all", "learn more", "next", "previous")}: continue
         found.setdefault(clean.casefold(), _candidate("wholesale", clean, urljoin(url, href),
                                                       category="cards_paper_goods"))
+    _attach_explicit_site_links(found.values(), facts, url)
     return list(found.values())
 
 
@@ -489,13 +509,33 @@ def run_public_source(source: str, urls: list[str], fetcher=None, max_pages: int
                 run.url_outcomes.append(outcome)
                 continue
             fetched_at = result.fetched_at or _timestamp()
-            origin = "test_fixture" if result.fetch_method == "fixture" else "public_import" if result.fetch_method.startswith("public_page_import:") else "live_public"
+            origin_map = {
+                "LIVE_PUBLIC_CAPTURE": "live_public",
+                "AUTHORIZED_PUBLIC_IMPORT": "public_import",
+                "INDEXED_SEARCH_SNAPSHOT": "indexed_search_snapshot",
+                "TEST_FIXTURE": "test_fixture",
+                "KNOWN_TEST_SEED": "known_test_seed",
+            }
+            if result.fetch_method == "fixture":
+                origin = "test_fixture"
+                origin_label = "TEST_FIXTURE"
+            elif result.data_origin in origin_map:
+                origin = origin_map[result.data_origin]
+                origin_label = result.data_origin
+            elif result.fetch_method.startswith("public_page_import:"):
+                origin = "public_import"
+                origin_label = "AUTHORIZED_PUBLIC_IMPORT"
+            else:
+                origin = "live_public"
+                origin_label = "LIVE_PUBLIC_CAPTURE"
             for candidate in parsed:
                 candidate.discovery_source_url = url
                 candidate.source_page_fetched_at = fetched_at
                 candidate.brand_claim = candidate.brand_name
                 candidate.source_acquisition_method = result.fetch_method
                 candidate.data_origin = origin
+                candidate.data_origin_label = origin_label
+                candidate.source_capture_ids = [result.capture_id] if result.capture_id else []
                 candidate.fixture_status = "KNOWN_TEST_SEED" if origin == "test_fixture" else ""
                 candidate.product_or_listing_evidence = list(candidate.product_evidence)
                 candidate.public_sales_signals.setdefault("rating", "NOT_AVAILABLE")

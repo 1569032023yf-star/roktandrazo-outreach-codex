@@ -1,0 +1,22 @@
+"""Shared labels for brand-acquisition identity and provenance stages."""
+
+IDENTITY_CLASSES = frozenset({
+    "BRAND_OWNER", "OFFICIAL_BRAND_STORE", "MARKETPLACE_SELLER", "DISTRIBUTOR",
+    "RETAILER", "IDENTITY_UNVERIFIED", "IDENTITY_CONFLICT",
+})
+
+MARKETPLACE_HOSTS = (
+    "amazon.com", "tiktok.com", "faire.com", "etsy.com", "ebay.com",
+    "walmart.com", "aliexpress.com",
+)
+
+DATA_ORIGINS = frozenset({
+    "LIVE_PUBLIC_CAPTURE", "AUTHORIZED_PUBLIC_IMPORT", "INDEXED_SEARCH_SNAPSHOT",
+    "TEST_FIXTURE", "KNOWN_TEST_SEED",
+})
+
+STAGES = (
+    "STAGE_1_DISCOVERED", "STAGE_2_BRAND_IDENTITY_CANDIDATE",
+    "STAGE_3_OFFICIAL_SITE_CANDIDATE", "STAGE_4_OFFICIAL_SITE_VERIFIED",
+    "STAGE_5_FIRST_PARTY_EMAIL_FOUND", "STAGE_6_HISTORY_AND_MX_VERIFIED",
+)
