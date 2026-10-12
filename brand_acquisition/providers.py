@@ -483,6 +483,8 @@ def parse_wholesale(html: str, url: str) -> list[BrandCandidate]:
 
 
 PARSERS = {"tiktok_shop": parse_tiktok_shop, "amazon": parse_amazon, "wholesale": parse_wholesale}
+from .directory_adapters import DIRECTORY_PARSERS
+PARSERS.update(DIRECTORY_PARSERS)
 
 
 def run_public_source(source: str, urls: list[str], fetcher=None, max_pages: int = 3,
@@ -499,7 +501,7 @@ def run_public_source(source: str, urls: list[str], fetcher=None, max_pages: int
         if result.status in {"ok", "success"}:
             run.pages_fetched += 1
             outcome["status"] = "PENDING_PARSE"
-            remaining = max(0, MAX_SOURCE_CANDIDATES - len(run.candidates))
+            remaining = max(0, min(MAX_SOURCE_CANDIDATES, max_candidates) - len(run.candidates))
             try:
                 parsed = PARSERS[source](result.html, result.final_url or url)
             except Exception as exc:
@@ -536,6 +538,9 @@ def run_public_source(source: str, urls: list[str], fetcher=None, max_pages: int
                 candidate.data_origin = origin
                 candidate.data_origin_label = origin_label
                 candidate.source_capture_ids = [result.capture_id] if result.capture_id else []
+                for evidence in candidate.directory_evidence:
+                    evidence.update({"captured_at": fetched_at, "capture_id": result.capture_id,
+                                     "data_origin": origin_label})
                 candidate.fixture_status = "KNOWN_TEST_SEED" if origin == "test_fixture" else ""
                 candidate.product_or_listing_evidence = list(candidate.product_evidence)
                 candidate.public_sales_signals.setdefault("rating", "NOT_AVAILABLE")
@@ -544,7 +549,7 @@ def run_public_source(source: str, urls: list[str], fetcher=None, max_pages: int
             outcome["status"] = "SUCCESS" if parsed else "PARSE_EMPTY"
             outcome["candidate_count"] = len(parsed)
             outcome["data_origin"] = origin
-            if len(run.candidates) >= MAX_SOURCE_CANDIDATES:
+            if len(run.candidates) >= min(MAX_SOURCE_CANDIDATES, max_candidates):
                 run.url_outcomes.append(outcome)
                 break
         else:

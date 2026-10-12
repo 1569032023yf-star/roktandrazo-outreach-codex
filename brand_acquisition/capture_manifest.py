@@ -20,7 +20,8 @@ from .pipeline_types import DATA_ORIGINS
 
 SCHEMA_VERSION = "1.0"
 MAX_CAPTURE_BYTES = 2_000_000
-SOURCE_PLATFORMS = frozenset({"tiktok_shop", "amazon", "wholesale"})
+from .directory_adapters import DIRECTORY_SOURCES
+SOURCE_PLATFORMS = frozenset({"tiktok_shop", "amazon", "wholesale", *DIRECTORY_SOURCES})
 
 
 @dataclass(frozen=True)

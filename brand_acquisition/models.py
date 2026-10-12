@@ -51,6 +51,18 @@ class BrandCandidate:
     exclusions: list[str] = field(default_factory=list)
     stage_statuses: dict[str, dict[str, Any]] = field(default_factory=dict)
     email_quality_status: str = "unchecked"
+    organization_name: str = ""
+    organization_type: str = "IDENTITY_UNVERIFIED"
+    directory_member_type: str = "UNKNOWN"
+    organization_country: str = ""
+    directory_source_year: int | None = None
+    directory_source_class: str = ""
+    directory_record_id: str = ""
+    directory_evidence: list[dict[str, Any]] = field(default_factory=list)
+    category_filter_status: str = "not_evaluated"
+    category_filter_reason: str = ""
+    buyer_type: str = "unverified"
+    organization_identity_verified: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

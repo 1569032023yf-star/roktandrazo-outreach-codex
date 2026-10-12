@@ -6,6 +6,7 @@ from pathlib import Path
 
 from .capture_manifest import validate_manifest
 from .providers import PageResult, run_public_source
+from .directory_adapters import DIRECTORY_SOURCES
 
 
 class CaptureImportFetcher:
@@ -36,10 +37,12 @@ class CaptureImportFetcher:
 def import_manifest(manifest_path: str | Path) -> tuple[dict, list]:
     manifest = validate_manifest(manifest_path)
     runs = []
-    for platform in ("tiktok_shop", "amazon", "wholesale"):
-        pages = [row for row in manifest["pages"] if row["source_platform"] == platform]
+    for platform in ("tiktok_shop", "amazon", "wholesale", *DIRECTORY_SOURCES):
+        # Official contact captures are evidence, not directory discovery pages.
+        pages = [row for row in manifest["pages"] if row["source_platform"] == platform
+                 and row["page_category"] != "official_site"]
         if pages:
             fetcher = CaptureImportFetcher(pages)
             runs.append(run_public_source(platform, [row["requested_url"] for row in pages],
-                                          fetcher=fetcher, max_pages=3))
+                                          fetcher=fetcher, max_pages=2 if platform in DIRECTORY_SOURCES else 3))
     return manifest, runs
