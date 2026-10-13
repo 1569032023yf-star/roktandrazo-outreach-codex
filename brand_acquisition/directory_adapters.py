@@ -163,6 +163,32 @@ def _ancestors(node):
         parent = parent.parent
 
 
+def _toyfair_country_rows(html):
+    """Captured 2026 text rows: scoped bold name followed by explicit country.
+
+    A row's evidence must not include links or countries from sibling retailers.
+    """
+    tree = _Tree()
+    tree.feed(html)
+    if not any(n.tag in {"h1", "h2", "h3"} and "participating retailers" in n.text().casefold()
+               for n in tree.root.walk()):
+        return
+    for paragraph in tree.root.walk():
+        if paragraph.tag != "p" or not any("inner-tab-data" in _label(p) for p in _ancestors(paragraph)):
+            continue
+        for index, child in enumerate(paragraph.children):
+            if not isinstance(child, _Node) or child.tag != "strong":
+                continue
+            following = paragraph.children[index + 1:index + 2]
+            country = re.fullmatch(r"\s*\(([^()<>]{2,80})\)\s*", following[0]) if following and isinstance(following[0], str) else None
+            if not country:
+                continue
+            name = child.text()
+            evidence_node = _Node("p", children=[name, " (" + country.group(1) + ")"])
+            yield {"name": name, "country": country.group(1).strip(), "category": "", "kind": "",
+                   "node": evidence_node}
+
+
 def classify(source, category, kind):
     evidence = " ".join((category, kind)).casefold().replace("_", " ").replace("-", " ")
     if re.search(r"supplier|printer|printing service|manufacturer|print production", evidence):
@@ -194,7 +220,10 @@ def parse_directory(source, html, url):
     source_year = int(year_match.group(1)) if year_match else spec["year"]
     found = []
     seen = set()
-    for record in _records(html):
+    records = list(_records(html))
+    if source == "toyfair":
+        records.extend(_toyfair_country_rows(html))
+    for record in records:
         name = " ".join(str(record["name"] or "").split())
         if not name or len(name) > 200 or name.casefold() in {"company", "company name", "home", "contact", "login", "sign in", "website"}:
             continue

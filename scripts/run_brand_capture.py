@@ -75,6 +75,14 @@ def main(argv=None, *, directory=False) -> int:
         print(json.dumps({"status": "NETWORK_POLICY_BLOCKED", "requests_made": 0,
                           "reason": "CODEX_SANDBOX_NETWORK_DISABLED"}), file=sys.stderr)
         return 2
+    # The development guard independently defaults to zero external transport.
+    # Report its existing opt-in requirement before DNS/catalog/output work;
+    # never enable it here or override the higher-priority sandbox gate.
+    development_guard_required = os.environ.get("ROKT_DEVELOPMENT_ONLY") == "1" or (ROOT / ".development-copy").is_file()
+    if development_guard_required and os.environ.get("ROKT_DEV_CONTROLLED_WEB") != "1":
+        print(json.dumps({"status": "DEVELOPMENT_TRANSPORT_BLOCKED", "requests_made": 0,
+                          "reason": "controlled public web transport is not enabled"}), file=sys.stderr)
+        return 2
     catalog = load_catalog(args.catalog) if args.catalog or not directory else DIRECTORY_CATALOG["sources"]
     if directory and (not catalog or any(source not in DIRECTORY_SOURCES for source in catalog)):
         raise ValueError("directory canary catalog must contain directory sources only")
