@@ -11,6 +11,7 @@ from unittest.mock import Mock, patch
 
 import bd_orchestrator
 from discovery.discovery_service import DiscoveryService
+from discovery.discovery_service import DiscoveryRunSummary
 from discovery.models import ProviderPage
 from discovery.providers.mock_provider import MockPlacesProvider
 from outreach_control import INVENTORY_TARGET
@@ -28,7 +29,7 @@ class DiscoveryCoexistenceTests(unittest.TestCase):
         service.provider = SimpleNamespace(provider_name='mock')
         calls = []
         for name in ('run_places_batch','run_website_resolution','run_staging_postprocess','run_linked_backlog'):
-            value = {} if name=='run_linked_backlog' else SimpleNamespace(results_seen=0,new_unique_places=0)
+            value = {} if name=='run_linked_backlog' else DiscoveryRunSummary(status='query_completed')
             def execute(*args, _name=name, _value=value, **kwargs):
                 calls.append(_name)
                 return _value
@@ -66,12 +67,12 @@ class DiscoveryCoexistenceTests(unittest.TestCase):
             self.assertTrue(service.run_website_resolution.call_args.kwargs['unlinked_only'])
             self.assertTrue(service.run_staging_postprocess.call_args.kwargs['unlinked_only'])
 
-    def test_safe_target_met_skips_all_replenishment(self):
+    def test_safe_target_met_still_executes_bounded_discovery(self):
         with DiscoveryDb() as conn:
             outcome,calls,finish,constructor,_=self.canonical(conn,INVENTORY_TARGET)
             self.assertTrue(outcome)
-            self.assertEqual(calls,[])
-            constructor.assert_not_called()
+            self.assertEqual(calls,['run_places_batch','run_website_resolution','run_staging_postprocess','run_linked_backlog'])
+            constructor.assert_called_once()
             self.assertEqual(finish.call_args.kwargs['stop_reason'],'target_met')
 
     def test_new_merchant_resolution_and_visible_evidence(self):
@@ -115,5 +116,7 @@ class DiscoveryCoexistenceTests(unittest.TestCase):
             tables=['final_send_plan','send_authorizations','send_authorization_entries','send_log']
             before={t:list(conn.execute(f'SELECT * FROM {t}')) for t in tables}
             self.canonical(conn,1)
+            self.assertEqual(before,{t:list(conn.execute(f'SELECT * FROM {t}')) for t in tables})
+            self.canonical(conn,INVENTORY_TARGET)
             self.assertEqual(before,{t:list(conn.execute(f'SELECT * FROM {t}')) for t in tables})
             conn.close()

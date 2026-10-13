@@ -5,6 +5,7 @@ from types import SimpleNamespace
 from unittest.mock import patch, Mock
 
 import bd_orchestrator
+from discovery.discovery_service import DiscoveryRunSummary
 from outreach_control import INVENTORY_TARGET
 from tests.test_discovery_service import DiscoveryDb, MockFetcher, result
 from tests import test_phase3d_existing_linkage as linkage
@@ -156,12 +157,15 @@ class LinkedBacklogTests(unittest.TestCase):
         with DiscoveryDb() as conn:
             service, city, row, fetch, lid = self.setup_case(conn)
             conn.commit()
+            # Isolate SAFE counting after successful bounded discovery.
             with patch.object(bd_orchestrator,'get_db',return_value=Mock(wraps=conn)) as getdb, \
                  patch.object(bd_orchestrator,'set_execution_mode'), patch.object(bd_orchestrator,'update_job_run'), \
                  patch.object(bd_orchestrator,'acquire_run_lock',return_value=True), patch.object(bd_orchestrator,'release_run_lock'), \
                  patch.object(bd_orchestrator,'_resolve_active_discovery_state',return_value=('TN',None)), \
                  patch.object(bd_orchestrator,'_count_broad_ready_pool',return_value=34), \
                  patch.object(bd_orchestrator,'_count_safe_ready_pool',return_value=0), \
+                 patch('discovery.discovery_service.DiscoveryService.run_places_batch',
+                       return_value=DiscoveryRunSummary(status='query_completed')), \
                  patch('discovery.discovery_service.DiscoveryService.run_linked_backlog',return_value={}), \
                  patch.object(bd_orchestrator,'finish_job_run') as finish:
                 # A real connection is needed by the canonical transaction context.
