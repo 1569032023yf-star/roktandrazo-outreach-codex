@@ -10,6 +10,10 @@ This file only records capabilities verified by files, directories, package conf
 
 ## Task Startup Rule / 任务启动规则
 
+中文：首先读取 [Codex 工程与部署责任制](docs/CODEX_ENGINEERING_AND_DEPLOYMENT_CHARTER.md)，将其纳入必读流程。Codex 负责正常工程发布，发送冻结与开发隔离继续生效。
+
+English: First read the [Codex engineering and deployment charter](docs/CODEX_ENGINEERING_AND_DEPLOYMENT_CHARTER.md) and include it in required startup reading. Codex owns routine releases; sending freeze and development isolation remain effective.
+
 中文：
 每次 Codex task window 开始前，必须先读取 `PROJECT_SKILLS.md`、`CURRENT_STATUS.md`、`GUARDRAILS.md`、`RUNBOOK.md`、`FILE_MANIFEST.md` 和最近相关报告。缺失必读规则文件时，不得直接 live send。
 

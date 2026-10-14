@@ -2,6 +2,10 @@
 
 ## Bilingual Report Requirement / 双语报告要求
 
+中文：首先读取 [Codex 工程与部署责任制](docs/CODEX_ENGINEERING_AND_DEPLOYMENT_CHARTER.md)。正常工程通过门禁后由 Codex 通过正式通道部署，无需逐次批准。开发隔离和商业邮件冻结继续有效；历史“WorkBuddy 必须部署”和发送步骤不构成当前操作授权。
+
+English: First read the [Codex engineering and deployment charter](docs/CODEX_ENGINEERING_AND_DEPLOYMENT_CHARTER.md). Codex deploys gated routine fixes through the authorized channel without repeated approval. Development isolation and commercial email freeze remain effective; historical WorkBuddy-only deployment and sending steps do not authorize current actions.
+
 All project reports, audit reports, handoff reports, fix reports, daily reports, and weekly reviews must be written in Chinese and English.
 
 所有项目报告、审计报告、交接报告、修复报告、日报和周复盘必须使用中英双语。
