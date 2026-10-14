@@ -51,9 +51,9 @@ NEW_FIRST_PARTY_EMAILS = NOT_MEASURED
 SAFE_UNIQUE_ORGS = NOT_MEASURED
 SMTP_ENABLED = 0 (required policy; current runtime unverified / 要求值；当前运行未核实)
 EMAILS_SENT = 0 (by this task / 本任务)
-GIT_COMMIT = 1f9b341 (charter implementation / 责任制实现)
-P2_CHARTER_COMMIT = c905cc6
-PUSH_SUCCESS = see final remote verification / 见最终远端核验
+GIT_COMMIT = ac7270c09d3aa236e7f9083dcf31b91151a8122e (charter and release-package implementation; excludes this report-finalization commit / 责任制及发布包实现；不含本报告收尾提交)
+P2_CHARTER_COMMIT = c905cc6f421cd453ada8153dd9af0836c4c52283
+PUSH_SUCCESS = true (both branches verified with git ls-remote / 两分支已通过 git ls-remote 核实)
 BLOCKERS = authorized release channel and live production gate evidence unavailable / 正式通道及实时生产门禁证据不可用
 NEXT_ACTION = one-time administrator channel configuration, then Codex release and scheduled acceptance / 一次性管理员接入，随后 Codex 发布及计划验收
 ```
