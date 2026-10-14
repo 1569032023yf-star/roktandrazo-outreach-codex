@@ -1,0 +1,43 @@
+--- a/bd_orchestrator.py
++++ b/bd_orchestrator.py
+@@ -426,9 +426,9 @@
+             broad = _count_broad_ready_pool()
+             planned = conn.execute("SELECT COUNT(*) FROM final_send_plan WHERE status='planned'").fetchone()[0]
+             log(f"BROAD_READY={broad}; READ_ONLY_V2_SAFE_UNIQUE_ORGS={safe}; MATERIALIZED_FSP_PLANNED={planned}")
+-            if safe >= target:
+-                finish_job_run(run_id, 'completed', actual=safe, gap=0, stop_reason='target_met')
+-                return True
++            # Inventory sufficiency is an outcome, never permission to skip the
++            # bounded discovery path. Keep city/query checkpoints authoritative.
++            log(f"INVENTORY_TARGET_MET={str(safe >= target).lower()}; DISCOVERY_PATH_EXECUTED=false")
+             with conn:
+                 seed_default_queue(conn)
+                 service = DiscoveryService(conn)
+@@ -438,9 +438,18 @@
+             resolver = ProviderWebsiteResolver(service.provider)
+             # Keep the deployed safe new-merchant lanes. Existing linked rows use
+             # the guarded backlog lane, never the normal lane as a safety bypass.
++            discovery_pages = min(3, max(1, int(os.getenv('WORKBUDDY_DISCOVERY_MAX_PAGES', '3'))))
+             with conn:
+-                discovered = service.run_places_batch(city, max_pages=max(1, int(os.getenv('WORKBUDDY_DISCOVERY_MAX_PAGES', '1'))))
++                log("DISCOVERY_PATH_EXECUTED=true")
++                discovered = service.run_places_batch(city, max_pages=discovery_pages)
+             log(f"NEW_DISCOVERY_PATH_EXECUTED=true; DISCOVERY_RESULTS_SEEN={discovered.results_seen}; NEW_UNIQUE_PLACES={discovered.new_unique_places}")
++            # Providers also report failures without raising. A met SAFE target
++            # must not turn those failures into a successful Inventory run.
++            if discovered.status not in {'running', 'paused_by_runtime_limit', 'query_completed',
++                                         'places_matrix_completed_web_pending'} or discovered.provider_errors:
++                finish_job_run(run_id, 'stopped', actual=safe, gap=max(0, target - safe),
++                               stop_reason=f'discovery_provider_error:{discovered.status}', error=discovered.error)
++                return False
+             with conn:
+                 websites = service.run_website_resolution(city, resolver,
+                     max_results=max(1, int(os.getenv('WORKBUDDY_WEBSITE_RESOLUTION_MAX', '20'))), unlinked_only=True)
+@@ -462,6 +471,7 @@
+             safe = _count_safe_ready_pool(conn)
+             broad = _count_broad_ready_pool()
+             gap = max(0, target - safe)
++            log(f"INVENTORY_TARGET_MET={str(gap == 0).lower()}; DISCOVERY_PATH_EXECUTED=true")
+             finish_job_run(run_id, 'completed' if gap == 0 else 'partial', actual=safe, gap=gap,
+                            stop_reason='target_met' if gap == 0 else 'safe_inventory_gap')
+             planned = conn.execute("SELECT COUNT(*) FROM final_send_plan WHERE status='planned'").fetchone()[0]
