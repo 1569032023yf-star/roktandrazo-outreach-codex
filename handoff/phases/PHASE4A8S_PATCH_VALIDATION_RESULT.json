@@ -1,0 +1,309 @@
+{
+  "description_zh": "4A.8S 精确生产补丁准备与离线验收；供 WorkBuddy 独立审查，未部署生产",
+  "description_en": "4A.8S exact production patch preparation and offline acceptance; for independent WorkBuddy review, no production deployment",
+  "generated_at_utc": "2026-10-14T07:29:42.577951+00:00",
+  "PHASE": "4A.8S",
+  "BASELINE_COMMIT": "df209f529ac1925da3689ebf0bc38c8b8ada8c0d",
+  "BRANCH": "codex/phase4a8s-production-patch-preparation",
+  "RESULT": "PRODUCTION_PATCH_READY_FOR_WORKBUDDY_REVIEW",
+  "SAFE50_EARLY_EXIT_CONFIRMED": true,
+  "DEVELOPMENT_FIX_VALIDATED": true,
+  "PRODUCTION_BASELINE_AVAILABLE": true,
+  "PRODUCTION_BASELINE_SHA_MATCH": true,
+  "PRODUCTION_PATCH_CREATED": true,
+  "PRODUCTION_PATCH_READY": true,
+  "PRODUCTION_SOURCE_SHA256_BEFORE": "7afc4d7f6ac18e22bba7cc6a9ea2250dc6d6bafe92128c00c08252731bb2e969",
+  "PRODUCTION_SOURCE_SHA256_AFTER": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903",
+  "PRODUCTION_SOURCE_BYTES_BEFORE": 30645,
+  "PRODUCTION_SOURCE_BYTES_AFTER": 31552,
+  "PRODUCTION_LINE_ENDINGS": "LF",
+  "PRODUCTION_LINE_ENDINGS_BEFORE": {
+    "sha256": "7afc4d7f6ac18e22bba7cc6a9ea2250dc6d6bafe92128c00c08252731bb2e969",
+    "bytes": 30645,
+    "line_endings": "LF",
+    "lf": 651,
+    "crlf": 0,
+    "bare_cr": 0,
+    "utf8_bom": false
+  },
+  "PRODUCTION_LINE_ENDINGS_AFTER": {
+    "sha256": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903",
+    "bytes": 31552,
+    "line_endings": "LF",
+    "lf": 661,
+    "crlf": 0,
+    "bare_cr": 0,
+    "utf8_bom": false
+  },
+  "PATCH_SHA256": "3c7ba8d9baf9c6c4e35ecd5cfa5ef91e87b949ef10abad560fe191f768714bda",
+  "PATCH_FILE_COUNT": 1,
+  "PATCH_HUNK_COUNT": 3,
+  "PATCH_APPLY_CHECK": true,
+  "PATCH_ROLLBACK_CHECK": true,
+  "PATCH_CHECK_SCOPE": {
+    "zh": "获准生产内容的开发副本演练，不是部署验收",
+    "en": "Development-copy rehearsal of attested production content, not deployment acceptance"
+  },
+  "SOURCE_ATTESTATION": {
+    "description_zh": "来源为既有带开发标记的副本；可信内容依据是用户指定 WorkBuddy 正式报告中的完整生产指纹",
+    "description_en": "Origin is an existing development-marked copy; content attestation is the complete production fingerprint in the user-specified official WorkBuddy report",
+    "source_copy": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-dev\\bd_orchestrator.py",
+    "development_marker_present": true,
+    "candidates_hashed": 38,
+    "matching_copies": 1,
+    "workbuddy_report_url": "https://github.com/1569032023yf-star/workbuddy-task-window/blob/main/handoff/workbuddy/phases/PHASE4A5U_SAFE50_DISCOVERY_SHORT_CIRCUIT_AUDIT.md",
+    "workbuddy_report_git_blob_sha": "02ed42db19bb3ed1406e473e27c01e2e5eaf45c9",
+    "workbuddy_report_timestamp": "2026-10-13T18:00:20+08:00",
+    "equal_to_development_git_blob_at_commit": "a636a99893e19605a3a4e701dc7bf3b9235b6c40",
+    "pre_fix_diff_empty": true,
+    "post_fix_diff_files": 1,
+    "post_fix_diff_hunks": 3,
+    "after_equals_4a8r_git_blob": true,
+    "stale_workbuddy_snapshot_used": false,
+    "source_copy_still_unchanged": true
+  },
+  "BYTE_REHEARSAL": {
+    "description_zh": "精确生产文件的离线副本应用及字节级回滚演练；未部署",
+    "description_en": "Offline exact-source copy application and byte-exact rollback rehearsal; no deployment",
+    "source_copy": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-4a8s\\output\\sprint4a8s\\exact_before.py",
+    "patch": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-4a8s\\patches\\production\\phase4a8s\\continuous_discovery.patch",
+    "before": {
+      "sha256": "7afc4d7f6ac18e22bba7cc6a9ea2250dc6d6bafe92128c00c08252731bb2e969",
+      "bytes": 30645,
+      "line_endings": "LF",
+      "lf": 651,
+      "crlf": 0,
+      "bare_cr": 0,
+      "utf8_bom": false
+    },
+    "after": {
+      "sha256": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903",
+      "bytes": 31552,
+      "line_endings": "LF",
+      "lf": 661,
+      "crlf": 0,
+      "bare_cr": 0,
+      "utf8_bom": false
+    },
+    "patch_sha256": "3c7ba8d9baf9c6c4e35ecd5cfa5ef91e87b949ef10abad560fe191f768714bda",
+    "patch_file_count": 1,
+    "patch_hunk_count": 3,
+    "PATCH_APPLY_CHECK": true,
+    "PATCH_ROLLBACK_CHECK": true,
+    "BACKUP_SHA_MATCH": true,
+    "ORIGINAL_INPUT_UNCHANGED": true,
+    "production_deployment": false,
+    "production_db_writes": 0,
+    "backup": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-4a8s\\output\\sprint4a8s\\cli-independent-rehearsal\\bd_orchestrator.py.before.bak",
+    "candidate": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-4a8s\\output\\sprint4a8s\\cli-independent-rehearsal\\bd_orchestrator.py",
+    "rollback": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-4a8s\\output\\sprint4a8s\\cli-independent-rehearsal\\bd_orchestrator.py.rollback"
+  },
+  "GIT_WINDOWS_REHEARSAL": {
+    "description_zh": "隔离 Git 演练；core.autocrlf=true，目标文件临时 -text；未修改生产属性",
+    "description_en": "Isolated Git rehearsal; core.autocrlf=true and temporary target -text; no production attribute changes",
+    "core_autocrlf": true,
+    "apply_check": true,
+    "apply_sha_match": true,
+    "reverse_check": true,
+    "reverse_sha_match": true,
+    "patch_checkout_transport_sha_match": true
+  },
+  "BACKUP_SHA_MATCH": true,
+  "ORIGINAL_INPUT_UNCHANGED": true,
+  "SAFE50_DISCOVERY_TEST_PASS": true,
+  "SAFE60_DISCOVERY_TEST_PASS": true,
+  "SAFE_TARGET_CASES": [
+    {
+      "safe": 49,
+      "target": 50,
+      "discovery_calls": 1,
+      "passed": true
+    },
+    {
+      "safe": 50,
+      "target": 50,
+      "discovery_calls": 1,
+      "passed": true
+    },
+    {
+      "safe": 51,
+      "target": 50,
+      "discovery_calls": 1,
+      "passed": true
+    },
+    {
+      "safe": 59,
+      "target": 60,
+      "discovery_calls": 1,
+      "passed": true
+    },
+    {
+      "safe": 60,
+      "target": 60,
+      "discovery_calls": 1,
+      "passed": true
+    }
+  ],
+  "BOUNDED_PROVIDER_PAGES": 3,
+  "ACTUAL_PROVIDER_PAGE_TEST": {
+    "configured_pages": 100,
+    "observed_calls": 3,
+    "saved_cursor": "3",
+    "passed": true
+  },
+  "TARGETED_TESTS": {
+    "testsRun": 127,
+    "passed": 127,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "NEW_PHASE_TESTS": 21,
+  "OLD_BEHAVIOR_RED_REPRODUCTION": {
+    "description_zh": "精确旧源码三个达标/超标发现断言按预期失败；不是新代码回归",
+    "description_en": "Three at/above-target discovery assertions fail as expected on the exact old source; not new-code regressions",
+    "testsRun": 5,
+    "passed": 2,
+    "failures": 3,
+    "errors": 0,
+    "failure_ids": [
+      "tests.test_phase4a8s_production_patch.PatchedSourceBehaviorTests.test_safe50_target50",
+      "tests.test_phase4a8s_production_patch.PatchedSourceBehaviorTests.test_safe51_target50",
+      "tests.test_phase4a8s_production_patch.PatchedSourceBehaviorTests.test_safe60_target60"
+    ]
+  },
+  "BASELINE_FULL_SUITE": {
+    "testsRun": 485,
+    "passed": 481,
+    "failures": 2,
+    "errors": 2,
+    "skipped": 0,
+    "failure_ids": [
+      "tests.test_dashboard_consolidated.TestSourceAudit.test_archived_dashboards_have_disable_marker",
+      "tests.test_inventory_followup.TestInventoryArchival.test_archived_scripts_have_disable_marker"
+    ],
+    "error_ids": [
+      "unittest.loader._FailedTest.test_45min_delivery_guard",
+      "tests.test_single_smtp_authority.TestSingleSmtpAuthority.test_archived_scripts_fail_closed"
+    ]
+  },
+  "FULL_SUITE": {
+    "testsRun": 506,
+    "passed": 502,
+    "failures": 2,
+    "errors": 2,
+    "skipped": 0,
+    "failure_ids": [
+      "tests.test_dashboard_consolidated.TestSourceAudit.test_archived_dashboards_have_disable_marker",
+      "tests.test_inventory_followup.TestInventoryArchival.test_archived_scripts_have_disable_marker"
+    ],
+    "error_ids": [
+      "unittest.loader._FailedTest.test_45min_delivery_guard",
+      "tests.test_single_smtp_authority.TestSingleSmtpAuthority.test_archived_scripts_fail_closed"
+    ]
+  },
+  "FULL_SUITE_PASS": false,
+  "FULL_SUITE_NOTE": {
+    "zh": "已有两项失败和两项错误与本次基线重跑完全一致，未伪报全绿",
+    "en": "Two existing failures and two existing errors exactly match the fresh baseline rerun; not reported as entirely green"
+  },
+  "NEW_CODE_REGRESSIONS": 0,
+  "BASELINE_PASSING_TESTS_LOST": 0,
+  "GATE_SOURCE_AUDIT": {
+    "description_zh": "发送、资格、MX、历史、调度目标与发现服务源码相对基线不变",
+    "description_en": "Sender, eligibility, MX, history, target policy and discovery service source unchanged from baseline",
+    "files": [
+      {
+        "file": "bd_orchestrator.py",
+        "baseline_git_sha256": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903",
+        "unchanged": true
+      },
+      {
+        "file": "discovery/discovery_service.py",
+        "baseline_git_sha256": "d2e45233470140968dbe2d80021f52e374253da72c5e99403d98122e0aee55c1",
+        "unchanged": true
+      },
+      {
+        "file": "campaign_eligible.py",
+        "baseline_git_sha256": "f1f94c174bd1a831691a78fdc2536339f9328fe440d8f5ce8b64fa060ad6a4cb",
+        "unchanged": true
+      },
+      {
+        "file": "campaign_eligible_v2.py",
+        "baseline_git_sha256": "c78708b675e81718003ae2ba6b286bc1d7ee0e1405e350f5e3c620299c73dc9d",
+        "unchanged": true
+      },
+      {
+        "file": "preflight_gate.py",
+        "baseline_git_sha256": "d6cfba238232d9a54860d36ac478fbcf1a9c32677772c75b3a58a205ed22e878",
+        "unchanged": true
+      },
+      {
+        "file": "history_crosscheck.py",
+        "baseline_git_sha256": "0ba0d0cc25fe3baa2404b31b8a01070ab02cb6d8cf8588cf3f68f527efd60631",
+        "unchanged": true
+      },
+      {
+        "file": "outreach_control.py",
+        "baseline_git_sha256": "b23c135917c488e8b2f22dfcb8f03405ba92de74057b394a40f01cc0b144edce",
+        "unchanged": true
+      },
+      {
+        "file": "bd_sender.py",
+        "baseline_git_sha256": "002d68a1e76d5f96af6fdbabdce54da0af3a93077d8a504ddd106a41fd018280",
+        "unchanged": true
+      }
+    ]
+  },
+  "ACCEPTANCE_CHECKS": {
+    "provider_errors_fail_closed": true,
+    "network_failure_cursor_retry": true,
+    "lock_conflict_no_discovery": true,
+    "dry_run_no_provider_no_db_byte_changes": true,
+    "unfinished_city_retained": true,
+    "exhausted_city_advances": true,
+    "identity_review_terminal_no_regression": true,
+    "history_suppression_org_and_mx_gates_unchanged": true,
+    "mismatched_sha_refused": true,
+    "patch_tampering_refused": true,
+    "corrupted_backup_refused": true,
+    "crlf_bom_mixed_source_refused": true,
+    "production_business_modules_not_imported_by_verifier": true,
+    "compile_check": true,
+    "diff_check": true,
+    "self_review_passed": true
+  },
+  "PRODUCTION_DEPLOYMENT": false,
+  "PRODUCTION_DB_WRITES": 0,
+  "PRODUCTION_DIRECTORY_ACCESSES": 0,
+  "PRODUCTION_DB_READS": 0,
+  "MANUAL_PRODUCTION_INVENTORY_RUNS": 0,
+  "WORKBUDDY_AUTOMATIONS_CHANGED": false,
+  "CANONICAL_INVENTORY_CHANGED": false,
+  "V1_CHANGED": false,
+  "V2_CHANGED": false,
+  "MX_POLICY_CHANGED": false,
+  "SMTP_CONNECTIONS": 0,
+  "EMAILS_SENT": 0,
+  "SEND_PLANS_CREATED": 0,
+  "SEND_AUTHORIZATIONS_CREATED": 0,
+  "SIDE_EFFECT_COUNT_SCOPE": {
+    "zh": "真实业务副作用；全套测试中的发送模块仅使用隔离夹具",
+    "en": "Real business side effects; full-suite sending-module tests use isolated fixtures only"
+  },
+  "SAFE40_PRESERVED": true,
+  "LAST_VALID_SAFE50_PRESERVED": true,
+  "WORKBUDDY_INDEPENDENT_REVIEW_COMPLETED": false,
+  "PRODUCTION_EFFECTIVENESS_VERIFIED": false,
+  "COMMIT_SHA": "e8701a740b4fe7c9b1cd42f64d62cab17aaf8c04",
+  "COMMIT_SHA_SCOPE": {
+    "zh": "已验收实现提交；包含本报告的最终分支 HEAD 在最终回复中另行核对和报告",
+    "en": "Validated implementation commit; final branch HEAD containing this report is separately verified and reported in the final response"
+  },
+  "PUSH_SUCCESS": true,
+  "REMOTE_SHA_READBACK": "e8701a740b4fe7c9b1cd42f64d62cab17aaf8c04",
+  "NEXT_STEP": {
+    "zh": "交由 WorkBuddy 独立审查；生产部署另行授权并由 WorkBuddy 执行",
+    "en": "Independent WorkBuddy review; production deployment requires separate authorization and execution by WorkBuddy"
+  }
+}
