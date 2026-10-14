@@ -2,6 +2,10 @@
 
 ## Safe Read-Only Commands / 安全只读命令
 
+中文：以 [Codex 工程与部署责任制](docs/CODEX_ENGINEERING_AND_DEPLOYMENT_CHARTER.md) 为当前授权依据。正常发现和工程自主完成，发布仅通过正式通道并通过全部门禁。后文历史发送步骤暂不执行，SMTP / PreSend / Preflight / Outreach 冻结。通道缺失时按 [一次性接入要求](docs/CONTROLLED_DEPLOYMENT_CHANNEL.md) 处理，不绕过开发隔离。
+
+English: The [Codex engineering and deployment charter](docs/CODEX_ENGINEERING_AND_DEPLOYMENT_CHARTER.md) governs current authority. Complete routine discovery and engineering autonomously; release only through the authorized channel after all gates pass. Historical sending steps below remain inactive; SMTP / PreSend / Preflight / Outreach stay frozen. Follow [one-time connection requirements](docs/CONTROLLED_DEPLOYMENT_CHANNEL.md) if the channel is unavailable; do not bypass development isolation.
+
 中文：
 允许执行只读 schema 检查、pool count、scheduled task 状态检查、process 检查、`py_compile`、报告读取和脱敏候选审计。只读命令不得输出 `.env`、SMTP/IMAP 密码、token、cookie 或 auth json。
 
