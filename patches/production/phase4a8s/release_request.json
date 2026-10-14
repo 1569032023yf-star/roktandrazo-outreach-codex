@@ -1,0 +1,19 @@
+{
+  "description_zh": "4A.8S 冻结发布清单；需要正式执行器实时门禁；本文件不授予执行权限",
+  "description_en": "Pinned 4A.8S release manifest; requires live gates in an authorized executor; grants no execution permissions",
+  "release_id": "phase4a8s-safe50-continuous-discovery",
+  "source_commit": "e1efb22023a37abae3d97bf78cb4ec80bc583bf4",
+  "target_relative_path": "bd_orchestrator.py",
+  "before_sha256": "7afc4d7f6ac18e22bba7cc6a9ea2250dc6d6bafe92128c00c08252731bb2e969",
+  "after_sha256": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903",
+  "patch_sha256": "3c7ba8d9baf9c6c4e35ecd5cfa5ef91e87b949ef10abad560fe191f768714bda",
+  "before_bytes": 30645,
+  "after_bytes": 31552,
+  "file_count": 1,
+  "hunk_count": 3,
+  "inventory_id": "1784775229336",
+  "sending_policy": {"smtp_enabled": 0, "commercial_emails_sent": 0, "presend": "PAUSED", "preflight": "PAUSED", "outreach": "PAUSED"},
+  "required_live_gates": ["runtime_path_verified", "source_sha_matches", "version_compatible", "backup_verified", "targeted_tests_pass", "no_new_critical_regressions", "safe_window_verified", "inventory_exclusion_held", "run_locks_healthy", "rollback_verified", "smtp_disabled", "sending_tasks_paused"],
+  "production_executor_available": false,
+  "production_deployed": false
+}
