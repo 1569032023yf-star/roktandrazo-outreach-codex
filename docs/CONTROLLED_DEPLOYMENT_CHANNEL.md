@@ -2,6 +2,20 @@
 
 ## 当前状态 / Current status
 
+### 2026-10-15 实际连接更新 / Live connection update
+
+已发现并由 Codex 实际连接 `rokt-deploy-channel` v1.0.0：`http://127.0.0.1:8791`。固定入口交接包位于本机 `C:\Users\15690\WorkBuddy\deploy-channel\CODEX_ENTRYPOINT.md`。凭据只从 Windows 凭据管理器目标 `rokt-deploy-channel:bridge-token` 读取并保留内存，禁止输出。现有凭据指纹与本地交接包一致；桥接监听仅回环，进程使用 WorkBuddy 用户身份，API 身份仅允许注册发布的四操作；这不是独立的低权限 Windows 账户。执行器 ACL 对 CodexSandboxUsers 为 ReadAndExecute。
+
+Codex discovered and actually connected to `rokt-deploy-channel` v1.0.0 at `http://127.0.0.1:8791`. Its local entry-point handoff is `C:\Users\15690\WorkBuddy\deploy-channel\CODEX_ENTRYPOINT.md`. Read credentials only from Windows Credential Manager target `rokt-deploy-channel:bridge-token`, retain them in memory, and never print them. Credential fingerprint matches the local handoff; the listener is loopback-only. The bridge runs as the WorkBuddy user, with an API identity limited to four registered-release operations; it is not a separate low-privilege Windows account. Executor ACL grants CodexSandboxUsers ReadAndExecute.
+
+Codex 独立实测：缺少/错误凭据为 401；任意命令/文件端点为 404；路径穿越、未知发布、未确认 apply、未知 status/rollback 为 400；错误 HTTP 方法为 404。10 项全部通过，调用均有审计。2026-10-15 10:39:57 +08 实时 preflight 为 14/14，通过固定 before-SHA、精确补丁和逆向验证；SMTP=0，发送任务暂停。该快照不能替代以后发布的实时检查。状态查询及回滚接口存在，真实业务回滚尚未执行；先前 WorkBuddy 沙箱验收报告只作为补充证据。
+
+Codex independently tested missing/incorrect credentials (401), arbitrary command/file endpoints (404), traversal, unknown release, unconfirmed apply, unknown status/rollback (400), and the wrong HTTP method (404). All ten checks passed and calls were audited. Live preflight at 2026-10-15 10:39:57 +08 passed 14/14, including pinned before-SHA, exact patch, and reverse verification; SMTP=0 and sending tasks paused. This snapshot cannot replace future live checks. Status and rollback interfaces exist; no actual business rollback has been executed. The earlier WorkBuddy sandbox acceptance report is supplementary evidence only.
+
+后续正常发布默认复用该入口；每次仍先认证、核实固定发布、实时 preflight 和备份/互斥/回滚门禁。禁止直接 CLI 调用执行器替代桥接，禁止修改执行策略或开发隔离变量。以下 2026-10-14 无通道记录为历史状态，已由本更新取代。首次发布及生产计划验收见 handoff/phases/PHASE4A8S_CONTROLLED_RELEASE_20261015.md。
+
+Reuse this entry point by default for subsequent routine releases, while authenticating, verifying the registered release, and checking live preflight, backup, exclusion, and rollback gates every time. Do not replace the bridge with direct executor CLI invocation or change execution policy/development isolation variables. The 2026-10-14 unavailable-channel record below is historical and superseded. See handoff/phases/PHASE4A8S_CONTROLLED_RELEASE_20261015.md for first release and scheduled acceptance status.
+
 2026-10-14 当前工具没有 WorkBuddy BD 发布接口。Windows 只读服务查询确认 BDExecutionHost 为 Stopped / Manual，未返回 RoktDeploymentExecutor；不排除其他尚未提供的通道。Get-PSSessionConfiguration -Name RoktDeployment 返回 Access denied，要求管理员会话，故端点是否存在未核实。旧 phase4a_deploy.py 固定旧提交并覆盖六个文件，不符合 P1 单文件范围，不得运行。不得启动旧业务服务或独立 Inventory 循环作为替代通道。
 
 On 2026-10-14, available tools expose no WorkBuddy BD release interface. A read-only service query returned BDExecutionHost as Stopped / Manual and no RoktDeploymentExecutor; this does not rule out an undisclosed channel. Get-PSSessionConfiguration -Name RoktDeployment returned Access denied requiring an administrator session, so endpoint existence remains unverified. The old phase4a_deploy.py pins an older commit and overwrites six files, outside P1's single-file scope; do not execute it. Do not start the old business service or a separate Inventory loop as a substitute.
