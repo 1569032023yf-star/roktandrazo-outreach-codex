@@ -2,6 +2,16 @@
 
 ## 当前状态 / Current status
 
+### 2026-10-16 部署后只读复核 / Post-deployment read-only verification
+
+2026-10-16 17:54:39 +08，经原通道 status/preflight 确认既有操作仍为 applied，生产实时 SHA 为 `e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903`；指定 Inventory ACTIVE，SMTP=0，三发送任务暂停，运行锁 released。起初连接拒绝；核实桥接及执行器 SHA 与已验收版本一致、无桥接进程及监听后，按入口交接包恢复既有隐藏桥接进程，没有改变凭据、权限、策略、配置或业务调度。未调用 apply/rollback。
+
+At 2026-10-16 17:54:39 +08, the original channel's status/preflight confirmed the existing operation remains applied and the live production SHA is `e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903`. The designated Inventory is ACTIVE, SMTP=0, all three sending tasks are paused, and the run lock is released. Connection was initially refused. After verifying unchanged accepted bridge/executor hashes and no bridge process or listener, the existing hidden bridge was restored using the documented entry point, without changing credentials, permissions, policy, configuration, or business scheduling. No apply/rollback was called.
+
+预检仍按 before-SHA 检查待部署补丁，故已部署状态返回 HTTP 409；这不是重复部署或回滚理由。healthz 和实际入口源码均仍只有四操作，不能读取运行日志或执行 MX 探针。指定 Inventory ACTIVE 不等于全局唯一性已证明。生产效果仍待 WorkBuddy 一次只读验收报告；没有可用的 WorkBuddy 消息入口，验收请求已准备但未声称送达。详见 [本次验收记录](../handoff/phases/PHASE4A8S_POST_DEPLOYMENT_VALIDATION_20261016.md)。
+
+Preflight still evaluates a candidate against the before-SHA, so HTTP 409 is expected after deployment and is not grounds for reapplying or rolling back. Both healthz and the actual entry-point source still expose only four operations, without runtime-log or MX-probe access. ACTIVE status for the designated Inventory does not prove global uniqueness. Production effectiveness still requires one read-only WorkBuddy acceptance report. No WorkBuddy messaging entry point is available; a request is prepared without claiming delivery. See the [current acceptance record](../handoff/phases/PHASE4A8S_POST_DEPLOYMENT_VALIDATION_20261016.md).
+
 ### 2026-10-15 实际连接更新 / Live connection update
 
 已发现并由 Codex 实际连接 `rokt-deploy-channel` v1.0.0：`http://127.0.0.1:8791`。固定入口交接包位于本机 `C:\Users\15690\WorkBuddy\deploy-channel\CODEX_ENTRYPOINT.md`。凭据只从 Windows 凭据管理器目标 `rokt-deploy-channel:bridge-token` 读取并保留内存，禁止输出。现有凭据指纹与本地交接包一致；桥接监听仅回环，进程使用 WorkBuddy 用户身份，API 身份仅允许注册发布的四操作；这不是独立的低权限 Windows 账户。执行器 ACL 对 CodexSandboxUsers 为 ReadAndExecute。
