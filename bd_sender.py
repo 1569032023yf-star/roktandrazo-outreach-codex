@@ -640,6 +640,8 @@ def send_one(lead: dict, dry_run: bool = False) -> dict:
             raise ValueError("PHASE5A_RECIPIENT_WINDOW_BLOCKED")
         reserve_smtp(DB_PATH, plan_entry_id, source.get("organization_key"), outreach_batch_date, policy)
         msg = _build_email(actual_to, subject, body_text, body_html if body_html else None)
+        from v6_bestseller_evidence import attach_verified_cid
+        msg = attach_verified_cid(msg, body_html, policy.get('tiktok_ranking_evidence'))
         sender_email = get_sender_info()["email"]
 
         # Build untracked sender copy if this email has a pixel version

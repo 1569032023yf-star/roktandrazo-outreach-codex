@@ -15,8 +15,10 @@
   "product_identity_verified": false,
   "product_identity_reference": null,
   "current_rank_verified": false,
-  "approved_english_copy_received": false,
-  "template_registration": "PENDING_APPROVED_COPY_AND_DATED_EVIDENCE",
+  "approved_english_copy_received": true,
+  "template_registration": "DEVELOPMENT_LOCKED_EXTERNAL_RANKING_BLOCKED",
   "claim_limit_zh": "仅可作为待核实日期的历史类目排名截图；不能证明当前排名或整个 TikTok 平台第一。",
-  "claim_limit_en": "Historical category-ranking screenshot with unverified capture date; not evidence of current rank or first place across TikTok."
+  "claim_limit_en": "Historical category-ranking screenshot with unverified capture date; not evidence of current rank or first place across TikTok.",
+  "platform_verified": false,
+  "platform_reference": null
 }

@@ -67,6 +67,8 @@ def send_internal_tests(*, send=False):
         if current_policy != policy:
             raise ValueError("CONTROLLED_TEST_POLICY_CHANGED")
         msg = _build_email(recipient, item["subject"], item["body_text"], item["body_html"])
+        from v6_bestseller_evidence import attach_verified_cid
+        msg = attach_verified_cid(msg, item['body_html'], policy.get('tiktok_ranking_evidence'))
         server = _create_connection()
         try:
             rejected = server.sendmail(sender, [recipient], msg.as_string())

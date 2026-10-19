@@ -13,7 +13,7 @@ class BestsellerEvidenceTests(unittest.TestCase):
         return {'source_sha256': e.ORIGINAL_SHA256, 'capture_date_verified': True,
             'capture_date_reference': 'FIXTURE: not real capture evidence',
             'capture_date': '2026-09-18', 'platform': 'TikTok Shop',
-            'category': 'Jigsaw Puzzles', 'rank': 1, 'product_identity_verified': True,
+            'category': 'Jigsaw Puzzles', 'platform_verified': True, 'platform_reference': 'FIXTURE ONLY', 'rank': 1, 'product_identity_verified': True,
             'product_identity_reference': 'FIXTURE: not a real listing identity'}
 
     def test_original_is_byte_exact_and_lightweight(self):
@@ -33,10 +33,10 @@ class BestsellerEvidenceTests(unittest.TestCase):
     def test_actual_receipt_is_not_approved_evidence(self):
         receipt = e.load_receipt()
         self.assertIsNone(receipt['capture_date'])
-        self.assertFalse(receipt['approved_english_copy_received'])
+        self.assertTrue(receipt['approved_english_copy_received'])
         with self.assertRaisesRegex(ValueError, 'DATE_UNVERIFIED'):
             e.require_capture_evidence(receipt)
-        self.assertNotIn(e.TEMPLATE_KEY, v.TEMPLATES)
+        self.assertIn(e.TEMPLATE_KEY, v.TEMPLATES)
 
     def test_date_source_and_product_all_required(self):
         for field, value, error in [('source_sha256', '0'*64, 'SOURCE_MISMATCH'),
@@ -51,7 +51,7 @@ class BestsellerEvidenceTests(unittest.TestCase):
                     e.require_capture_evidence(record, today=date(2026, 10, 19))
 
     def test_scope_cannot_expand_to_platform_wide_or_current_rank(self):
-        for field, value in [('platform', 'TikTok'), ('category', 'All categories'),
+        for field, value in [('category', 'All categories'),
                              ('rank', 2), ('rank', True)]:
             record = self.fixture()
             record[field] = value

@@ -1,0 +1,43 @@
+{
+  "description_zh": "独立内部 QA 登记申请；不是可执行授权。",
+  "description_en": "Independent internal-QA registration request; not executable authority.",
+  "release_id": "phase5a1-v6-four-template-internal-qa",
+  "registered": false,
+  "operation_requested": "internal_qa_once",
+  "maximum_messages": 4,
+  "customer_smtp_enabled": false,
+  "customer_fsp_created": false,
+  "files": [
+    {
+      "file": "v6_outreach.py",
+      "action": "create_if_absent",
+      "before_sha256": null,
+      "after_sha256": "4fd6af1369d6132261361c37d1ea61e218818a6d7d26d0d604294d8141c8c023"
+    },
+    {
+      "file": "v6_bestseller_evidence.py",
+      "action": "create_if_absent",
+      "before_sha256": null,
+      "after_sha256": "c0c53767ab0182a091675c673fd49e411e0aec1d96b92462b2e97736dc1253dd"
+    },
+    {
+      "file": "controlled_v6_test.py",
+      "action": "create_if_absent",
+      "before_sha256": null,
+      "after_sha256": "ff185b4d841a07965bef8fe110d6f55762f378ba5b39e3d31ddd7166299cd55e"
+    },
+    {
+      "file": "assets/v6/evidence/tiktok_jigsaw_bestsellers_original.png",
+      "action": "create_if_absent",
+      "before_sha256": null,
+      "after_sha256": "d2c82e81da5ad3071b2644d3edc2727985edb1c54a1c6a632ac43162874ae81b",
+      "artifact": "assets/v6/evidence/tiktok_jigsaw_bestsellers_original.png",
+      "encoding": "binary_original"
+    }
+  ],
+  "existing_dependency": {
+    "bd_sender.py": "002d68a1e76d5f96af6fdbabdce54da0af3a93077d8a504ddd106a41fd018280"
+  },
+  "notes_zh": "原图是独立哈希工件，不在文本补丁中；必须在同一受控发布中登记和备份。内部未核实排名只显示待核实文字，不嵌图。",
+  "notes_en": "Original image is a separately hashed artifact outside the text patch; register/back up in the same controlled release. Unverified internal ranking previews contain pending text and no image."
+}

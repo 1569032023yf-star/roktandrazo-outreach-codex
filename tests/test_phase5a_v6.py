@@ -264,7 +264,7 @@ class InternalTests(unittest.TestCase):
             internal.send_internal_tests(send=True)
 
 
-    def test_mocked_internal_transport_three_only_and_durable_no_retry(self):
+    def test_mocked_internal_transport_four_only_and_durable_no_retry(self):
         from contextlib import ExitStack
         from unittest.mock import Mock
         import bd_sender
@@ -282,15 +282,15 @@ class InternalTests(unittest.TestCase):
                 stack.enter_context(patch('env_loader.get_sender_info',return_value={'email':'sender@example.invalid'}))
                 stack.enter_context(patch.object(bd_sender,'_create_connection',return_value=server))
                 result = internal.send_internal_tests(send=True)
-                self.assertEqual(len(result['results']),3)
-                self.assertEqual(server.sendmail.call_count,3)
+                self.assertEqual(len(result['results']),4)
+                self.assertEqual(server.sendmail.call_count,4)
                 for call in server.sendmail.call_args_list:
                     self.assertEqual(call.args[1], ['qa@example.invalid'])
                     self.assertIn('Message-ID:', call.args[2])
                     self.assertIn('Reply-To:', call.args[2])
                 with self.assertRaises(sqlite3.IntegrityError):
                     internal.send_internal_tests(send=True)
-                self.assertEqual(server.sendmail.call_count,3)
+                self.assertEqual(server.sendmail.call_count,4)
                 self.assertFalse((Path(root)/'bd_leads.db').exists())
 
     def test_internal_ready_rejects_expired_or_sender_mismatch(self):

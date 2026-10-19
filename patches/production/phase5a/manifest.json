@@ -5,7 +5,7 @@
   "registered": false,
   "production_ready": false,
   "baseline_commit": "72bdd70a13dd959264a3137fc546334249b48be1",
-  "patch_sha256": "3862d529c7409268cd8a33b75c9440dadd33718e75a676433eedd4fee5509e44",
+  "patch_sha256": "3ffa6028b41071903407b18c7cf13588182a3a3f82d05ff59540c26df9614c7b",
   "files": [
     {
       "file": "bd_template.py",
@@ -17,7 +17,7 @@
       "file": "bd_sender.py",
       "action": "patch",
       "before_sha256": "002d68a1e76d5f96af6fdbabdce54da0af3a93077d8a504ddd106a41fd018280",
-      "after_sha256": "f1cf62c990a703adfb781d6366e007055255f9969f6acc22fed072a82a168b65"
+      "after_sha256": "9baec82583c5c7d8615b87fbbfb660e433aef05426e4e11ec7455f3e1d9c4f21"
     },
     {
       "file": "preflight_gate.py",
@@ -35,19 +35,33 @@
       "file": "v6_outreach.py",
       "action": "create_if_absent",
       "before_sha256": null,
-      "after_sha256": "20aacf5e84d778940164968db999e0bf0a9b9477d3ab44c4601ea1ff7effaf50"
+      "after_sha256": "4fd6af1369d6132261361c37d1ea61e218818a6d7d26d0d604294d8141c8c023"
+    },
+    {
+      "file": "v6_bestseller_evidence.py",
+      "action": "create_if_absent",
+      "before_sha256": null,
+      "after_sha256": "c0c53767ab0182a091675c673fd49e411e0aec1d96b92462b2e97736dc1253dd"
     },
     {
       "file": "send_resumption.py",
       "action": "create_if_absent",
       "before_sha256": null,
-      "after_sha256": "6c9447eeb2bf4dd40d2d9d7170396a48bbf17f757da3468eb5918f7dd28cd885"
+      "after_sha256": "48123c889e04d57ea650cbfda02c6a863be23c95585514597c3b459963c7c8cf"
     },
     {
       "file": "controlled_v6_test.py",
       "action": "create_if_absent",
       "before_sha256": null,
-      "after_sha256": "f18f9672f92aa951f9fce077ddc2d459d39765f24244f01185842909ed078345"
+      "after_sha256": "ff185b4d841a07965bef8fe110d6f55762f378ba5b39e3d31ddd7166299cd55e"
+    },
+    {
+      "file": "assets/v6/evidence/tiktok_jigsaw_bestsellers_original.png",
+      "action": "create_if_absent",
+      "before_sha256": null,
+      "after_sha256": "d2c82e81da5ad3071b2644d3edc2727985edb1c54a1c6a632ac43162874ae81b",
+      "artifact": "assets/v6/evidence/tiktok_jigsaw_bestsellers_original.png",
+      "encoding": "binary_original"
     }
   ],
   "offline_forward_and_byte_exact_reverse_passed": true,

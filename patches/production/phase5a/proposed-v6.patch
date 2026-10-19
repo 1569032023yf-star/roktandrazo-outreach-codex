@@ -133,7 +133,7 @@
  
          try:
              validate_send_authorization(authorization_id,
-@@ -606,6 +632,13 @@
+@@ -606,7 +632,16 @@
  
      # Build customer MIME (with pixel if tracking) and sender copy (no pixel)
      try:
@@ -145,9 +145,12 @@
 +            raise ValueError("PHASE5A_RECIPIENT_WINDOW_BLOCKED")
 +        reserve_smtp(DB_PATH, plan_entry_id, source.get("organization_key"), outreach_batch_date, policy)
          msg = _build_email(actual_to, subject, body_text, body_html if body_html else None)
++        from v6_bestseller_evidence import attach_verified_cid
++        msg = attach_verified_cid(msg, body_html, policy.get('tiktok_ranking_evidence'))
          sender_email = get_sender_info()["email"]
  
-@@ -615,8 +648,15 @@
+         # Build untracked sender copy if this email has a pixel version
+@@ -615,8 +650,15 @@
  
          server = _create_connection()
          # Send to customer only (tracked MIME)
@@ -165,7 +168,7 @@
          # P5: 记录 SMTP accepted 时刻（UTC ISO）
          smtp_accepted_at = datetime.now(timezone.utc).isoformat()
  
-@@ -654,6 +694,8 @@
+@@ -654,6 +696,8 @@
              authorization_id=authorization_id, smtp_accepted_at=smtp_accepted_at,
          )
          if not commit_ok:
@@ -174,7 +177,7 @@
              return {"success": False, "message": f"DB commit failed: {commit_err}", "status": "failed"}
  
          # ── 提交成功后的 best-effort 副作用（失败不影响客户 SMTP accepted）──
-@@ -673,7 +715,7 @@
+@@ -673,7 +717,7 @@
              _activate_tracking(tracking_hash, tracking_msg_id, lead_id)
  
          # ── Sender copy (untracked, separate MIME) ───────
@@ -183,7 +186,7 @@
              try:
                  sc = _build_email(sender_email, subject, body_text, body_html_no_pixel if body_html_no_pixel else None)
                  sc["X-Roktandrazo-Type"] = "sender_copy"
-@@ -696,7 +738,13 @@
+@@ -696,7 +740,13 @@
              result["sender_copy_error"] = "; ".join(sender_copy_failures)
          return result
  
@@ -197,7 +200,7 @@
          if test_cfg["test_mode"] and test_cfg["test_email"]:
              return {"success": False, "message": f"Test recipient refused: {e}", "status": "test_failed"}
          update_lead_status(lead_id, "failed", error_message=str(e))
-@@ -704,6 +752,8 @@
+@@ -704,6 +754,8 @@
          return {"success": False, "message": f"Recipient refused: {e}", "status": "failed"}
  
      except smtplib.SMTPDataError as e:
@@ -206,7 +209,7 @@
          error_str = str(e)
          if test_cfg["test_mode"] and test_cfg["test_email"]:
              return {"success": False, "message": f"Test SMTP error: {e}", "status": "test_failed"}
-@@ -717,6 +767,8 @@
+@@ -717,6 +769,8 @@
          return {"success": False, "message": f"SMTP error: {e}", "status": "failed"}
  
      except Exception as e:
@@ -288,7 +291,7 @@
      if not entries:
 --- /dev/null
 +++ b/v6_outreach.py
-@@ -0,0 +1,173 @@
+@@ -0,0 +1,208 @@
 +"""Locked V6 content and evidence-based routing; no transport or database access."""
 +from __future__ import annotations
 +
@@ -296,18 +299,29 @@
 +import html
 +import json
 +import re
++import v6_bestseller_evidence as bestseller
 +
++TIKTOK = bestseller.TEMPLATE_KEY
 +RETAIL = "retail_distributor_v6_locked"
 +CUSTOM = "custom_production_v6_locked"
 +REFERRAL = "general_inbox_referral_v6_locked"
 +RENDERER_VERSION = "v6_plain_html_v1"
 +
 +TEMPLATES = {
++    TIKTOK: ("A TikTok Shop bestseller for {store_name}?", """Hi {greeting},
++
++I'm Ian from rokt&razo. Our Travel Series 24 Mini Pack was featured at #1 in the Jigsaw Puzzles Best Sellers category on TikTok Shop, as shown in our dated ranking screenshot.
++
++We're now looking for retail and distribution partners to bring our puzzles and family card games into more physical stores.
++
++Would you be interested in taking a quick look at our wholesale catalog to see if our products could be a good fit for {store_name}?
++
++{signature}"""),
 +    RETAIL: ("Puzzles & card games for {store_name}?", """Hi {greeting},
 +
 +I'm Ian from rokt&razo. We create family card games and jigsaw puzzles, including our 24-in-1 puzzle series.
 +
-+We're expanding our retail partnerships and offer low minimum orders, DDP pricing, and product samples for review.
++We're expanding our retail partnerships with physical stores and distributors.
 +
 +Would you be interested in taking a look at our wholesale catalog to see if anything might be a fit for {store_name}?
 +
@@ -356,11 +370,13 @@
 +
 +def canonical_hash(key):
 +    value = [key, *TEMPLATES[key], SIGNATURE, RENDERER_VERSION]
++    if key == TIKTOK:
++        value += [bestseller.ORIGINAL_SHA256, bestseller.EVIDENCE_RENDER_VERSION]
 +    return hashlib.sha256(json.dumps(value, ensure_ascii=False).encode()).hexdigest()
 +
 +
 +# Fixed separately from runtime calculations. Updating content requires a reviewed lock update.
-+LOCKED_SHA256 = {'retail_distributor_v6_locked': '37fb98788e6d3f89fcd105ec1d009ed68ece086e7d13375660746d8727e635d3', 'custom_production_v6_locked': '7ead050c156c70042e11459f400c1d4b41eccbd2c60198707717f43bac81911c', 'general_inbox_referral_v6_locked': '434956cee706dc9753669b63c7ade881690a6095b727d285f6b605a002b5e0f9'}
++LOCKED_SHA256 = {'retail_tiktok_bestseller_v6_locked': 'a540bc360bf23124e0c840cb77cf323526bdf65c9da4dd9a82f8932e00ed25f6', 'retail_distributor_v6_locked': 'e46d2e46f1569a764f6249fba52500303589e3c55754f449cb183aae1684336f', 'custom_production_v6_locked': '7ead050c156c70042e11459f400c1d4b41eccbd2c60198707717f43bac81911c', 'general_inbox_referral_v6_locked': '434956cee706dc9753669b63c7ade881690a6095b727d285f6b605a002b5e0f9'}
 +
 +
 +def _clean(value):
@@ -392,10 +408,20 @@
 +    if override:
 +        if override not in TEMPLATES or review.get("approved_template_override") != override:
 +            raise ValueError("V6_MANUAL_TEMPLATE_NOT_VERIFIED")
++        if override == TIKTOK:
++            if not bestseller.relevant_review(review):
++                raise ValueError("V6_TIKTOK_RELEVANCE_REQUIRED")
++            bestseller.require_capture_evidence(policy.get('tiktok_ranking_evidence'))
 +        return override
 +    kind = str(review.get("business_type") or "").lower().replace("-", "_").replace(" ", "_")
 +    if review.get("business_type_verified") is True:
 +        if kind in RETAIL_TYPES:
++            if bestseller.relevant_review(review):
++                try:
++                    bestseller.require_capture_evidence(policy.get('tiktok_ranking_evidence'))
++                except ValueError:
++                    return RETAIL
++                return TIKTOK
 +            return RETAIL
 +        if kind in CUSTOM_TYPES:
 +            return CUSTOM
@@ -419,6 +445,8 @@
 +    subject = TEMPLATES[key][0].format(store_name=name)
 +    text = TEMPLATES[key][1].format(greeting=f"{name} team", store_name=name, signature=signature)
 +    body_html = "\n".join("<p>" + html.escape(p).replace("\n", "<br>\n") + "</p>" for p in text.split("\n\n"))
++    if key == TIKTOK:
++        text, body_html = bestseller.append_ranking_evidence(text, body_html, policy.get('tiktok_ranking_evidence'))
 +    digest = hashlib.sha256(json.dumps([key, subject, text, body_html], ensure_ascii=False).encode()).hexdigest()
 +    return {"template_key": key, "template_id": key, "template_status": "ACTIVE_LOCKED",
 +        "template_sha256": LOCKED_SHA256[key], "content_sha256": digest,
@@ -441,7 +469,7 @@
 +    for field in ("template_key", "content_sha256", "renderer_version", "renderer_sha256"):
 +        if record.get(field) and record[field] != expected[field]:
 +            raise ValueError("V6_METADATA_MISMATCH:" + field)
-+    if record.get("pixel_tracking") or record.get("attachments"):
++    if record.get("pixel_tracking") or record.get("attachments") or record.get('inline_images'):
 +        raise ValueError("V6_TRACKING_OR_ATTACHMENTS_FORBIDDEN")
 +    return expected
 +
@@ -458,10 +486,128 @@
 +    signature = SIGNATURE.replace("Business mailing address: {address}\n\n", "")
 +    text = TEMPLATES[key][1].format(greeting="rokt&razo team", store_name="rokt&razo", signature=signature)
 +    text = "INTERNAL TEMPLATE TEST — not customer outreach. Business claims await verification.\n\n" + text
++    if key == TIKTOK:
++        text = "RANKING CLAIM PENDING VERIFICATION: capture date, platform and product identity are not approved.\n\n" + text
 +    subject = "[INTERNAL V6 TEST] " + TEMPLATES[key][0].format(store_name="rokt&razo")
 +    body_html = "\n".join("<p>" + html.escape(p).replace("\n", "<br>\n") + "</p>" for p in text.split("\n\n"))
++    if key == TIKTOK:
++        # Internal QA may preview candidate words, but unverified evidence has no CID.
++        try:
++            bestseller.require_capture_evidence(policy.get('tiktok_ranking_evidence'))
++        except ValueError:
++            pass
++        else:
++            text, body_html = bestseller.append_ranking_evidence(text, body_html, policy['tiktok_ranking_evidence'])
 +    return {"template_id": key, "subject": subject, "body_text": text, "body_html": body_html,
 +            "test_only": True, "attachments": [], "has_pixel": False}
+--- /dev/null
++++ b/v6_bestseller_evidence.py
+@@ -0,0 +1,105 @@
++"""Read-only evidence preparation. Not a registered template or sending entry point."""
++from datetime import date, datetime, timedelta, timezone
++import hashlib
++import json
++from pathlib import Path
++import struct
++
++ROOT = Path(__file__).resolve().parent
++ASSET = ROOT / 'assets/v6/evidence/tiktok_jigsaw_bestsellers_original.png'
++ORIGINAL_SHA256 = 'd2c82e81da5ad3071b2644d3edc2727985edb1c54a1c6a632ac43162874ae81b'
++TEMPLATE_KEY = 'retail_tiktok_bestseller_v6_locked'
++EVIDENCE_RENDER_VERSION = 'historical_category_cid_v1'
++CID = 'v6-ranking-' + ORIGINAL_SHA256 + '@roktandrazo.invalid'
++RELEVANT_TYPES = frozenset({'toy_store', 'game_store', 'board_game_store',
++    'puzzle_store', 'card_game_store', 'distributor', 'wholesaler'})
++
++
++def inspect_original(path=ASSET):
++    """A receipt date or filesystem timestamp does not prove capture date."""
++    raw = Path(path).read_bytes()
++    digest = hashlib.sha256(raw).hexdigest()
++    if digest != ORIGINAL_SHA256:
++        raise ValueError('V6_SCREENSHOT_BYTES_CHANGED')
++    if not raw.startswith(b'\x89PNG\r\n\x1a\n') or raw[12:16] != b'IHDR':
++        raise ValueError('V6_SCREENSHOT_INVALID_PNG')
++    width, height = struct.unpack('>II', raw[16:24])
++    if len(raw) > 200_000 or min(width, height) < 100:
++        raise ValueError('V6_SCREENSHOT_NOT_LIGHTWEIGHT_VISIBLE_EVIDENCE')
++    return {'sha256': digest, 'bytes': len(raw), 'width': width, 'height': height}
++
++
++def require_capture_evidence(record, *, today=None):
++    """Require a reviewed attestation tied to these exact original bytes."""
++    inspect_original()
++    today = today or datetime.now(timezone(timedelta(hours=8))).date()
++    if not isinstance(record, dict) or record.get('source_sha256') != ORIGINAL_SHA256:
++        raise ValueError('V6_CAPTURE_SOURCE_MISMATCH')
++    if record.get('capture_date_verified') is not True or not str(record.get('capture_date_reference') or '').strip():
++        raise ValueError('V6_CAPTURE_DATE_UNVERIFIED')
++    try:
++        captured = date.fromisoformat(record['capture_date'])
++    except (KeyError, TypeError, ValueError):
++        raise ValueError('V6_CAPTURE_DATE_INVALID') from None
++    if captured > today:
++        raise ValueError('V6_CAPTURE_DATE_IN_FUTURE')
++    if (record.get('platform') != 'TikTok Shop' or record.get('platform_verified') is not True
++            or not str(record.get('platform_reference') or '').strip()):
++        raise ValueError('V6_PLATFORM_UNVERIFIED')
++    if (record.get('category') != 'Jigsaw Puzzles'
++            or type(record.get('rank')) is not int or record['rank'] != 1):
++        raise ValueError('V6_RANKING_SCOPE_MISMATCH')
++    if record.get('product_identity_verified') is not True or not str(record.get('product_identity_reference') or '').strip():
++        raise ValueError('V6_PRODUCT_IDENTITY_UNVERIFIED')
++    return captured.isoformat()
++
++
++def relevant_review(review):
++    """Category or an info@ prefix alone is insufficient relevance evidence."""
++    kind = str(review.get('business_type') or '').lower().replace('-', '_').replace(' ', '_')
++    return bool(review.get('identity_verified') is True
++        and review.get('business_type_verified') is True and kind in RELEVANT_TYPES
++        and review.get('product_fit_verified') is True
++        and review.get('tiktok_product_relevance_verified') is True
++        and str(review.get('tiktok_product_relevance_url') or '').startswith('https://')
++        and str(review.get('tiktok_product_relevance_reference') or '').strip())
++
++
++def load_receipt():
++    return json.loads((ROOT / 'assets/v6/evidence/receipt.json').read_text(encoding='utf-8'))
++
++
++def append_ranking_evidence(text, body_html, record):
++    import html
++    captured = require_capture_evidence(record)
++    note = (f'Ranking screenshot captured on {captured}: Travel Series 24 Mini Pack, '
++        '#1 in TikTok Shop Jigsaw Puzzles Best Sellers. Historical category ranking only; '
++        'this is not a claim of current rank or first place across TikTok.')
++    return (text + '\n\n' + note,
++        body_html + '<p>' + html.escape(note) + '</p><img src="cid:' + CID
++        + '" alt="Original historical Jigsaw Puzzles ranking screenshot" width="400">')
++
++
++def attach_verified_cid(message, body_html, record):
++    """Only the pinned original is allowed; callers cannot provide paths or bytes."""
++    if 'cid:' + CID not in (body_html or ''):
++        return message
++    from email.mime.image import MIMEImage
++    from email.mime.multipart import MIMEMultipart
++    require_capture_evidence(record)
++    if body_html.count('cid:' + CID) != 1:
++        raise ValueError('V6_CID_REFERENCE_INVALID')
++    payload = message.get_payload()
++    if message.get_content_type() != 'multipart/alternative' or len(payload) != 2:
++        raise ValueError('V6_MIME_ALTERNATIVE_REQUIRED')
++    related = MIMEMultipart('related')
++    related.attach(payload[1])
++    image = MIMEImage(ASSET.read_bytes(), _subtype='png')
++    # Recheck bytes used for MIME, rather than trusting a prior filesystem read.
++    if hashlib.sha256(image.get_payload(decode=True)).hexdigest() != ORIGINAL_SHA256:
++        raise ValueError('V6_SCREENSHOT_BYTES_CHANGED')
++    image.add_header('Content-ID', '<' + CID + '>')
++    image.add_header('Content-Disposition', 'inline', filename='historical-jigsaw-ranking.png')
++    related.attach(image)
++    message.set_payload([payload[0], related])
++    return message
 --- /dev/null
 +++ b/send_resumption.py
 @@ -0,0 +1,154 @@
@@ -484,7 +630,7 @@
 +CLAIMS = ("products_and_24_in_1", "low_moq_ddp_samples", "ten_years_experience",
 +          "custom_card_puzzle_paper_packaging", "flexible_production_runs")
 +LIVE_EVIDENCE = ("unsubscribe_receiving", "suppression_processing", "spf", "dkim", "dmarc",
-+    "sender_identity", "tls", "v6_three_template_test", "mx_control", "feedback_monitoring",
++    "sender_identity", "tls", "v6_four_template_test", "mx_control", "feedback_monitoring",
 +    "supported_unique_send_chain")
 +
 +
@@ -621,7 +767,7 @@
 +    return remaining
 --- /dev/null
 +++ b/controlled_v6_test.py
-@@ -0,0 +1,94 @@
+@@ -0,0 +1,96 @@
 +"""Internal QA only: separate mailbox allowlist/audit; never creates customer plans.
 +
 +Must be invoked by an authorized production operations entry point. Development
@@ -691,6 +837,8 @@
 +        if current_policy != policy:
 +            raise ValueError("CONTROLLED_TEST_POLICY_CHANGED")
 +        msg = _build_email(recipient, item["subject"], item["body_text"], item["body_html"])
++        from v6_bestseller_evidence import attach_verified_cid
++        msg = attach_verified_cid(msg, item['body_html'], policy.get('tiktok_ranking_evidence'))
 +        server = _create_connection()
 +        try:
 +            rejected = server.sendmail(sender, [recipient], msg.as_string())

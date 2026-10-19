@@ -17,7 +17,8 @@ BEFORE = {
     'preflight_gate.py': '2cd286f201430fb9a48c68ead512671f398732e50e768c2fd69031f127f52622',
     'final_send_plan.py': '26de2f017390eda767beddfe8fbd6bc438b78ddb430eeebc4b96c72aa41d327f',
 }
-NEW = ('v6_outreach.py', 'send_resumption.py', 'controlled_v6_test.py')
+NEW = ('v6_outreach.py', 'v6_bestseller_evidence.py', 'send_resumption.py', 'controlled_v6_test.py')
+BINARY = ('assets/v6/evidence/tiktok_jigsaw_bestsellers_original.png',)
 
 def sha(data):
     return hashlib.sha256(data).hexdigest()
@@ -42,6 +43,10 @@ def build(snapshot):
         patch.extend(difflib.unified_diff([],after.decode().splitlines(True),fromfile='/dev/null',tofile='b/'+name))
         files.append({'file':name,'action':'create_if_absent','before_sha256':None,'after_sha256':sha(after)})
     payload = ''.join(patch).encode('utf-8')
+    for name in BINARY:
+        data = (ROOT / name).read_bytes()
+        files.append({'file': name, 'action': 'create_if_absent', 'before_sha256': None,
+            'after_sha256': sha(data), 'artifact': name, 'encoding': 'binary_original'})
     patch_path = dest / 'proposed-v6.patch'
     patch_path.write_bytes(payload)
     with tempfile.TemporaryDirectory(prefix='phase5a-rehearsal-') as directory:
@@ -50,11 +55,17 @@ def build(snapshot):
             (temp / name).write_bytes(data)
         for options in (['--check'], []):
             subprocess.run(['git','-c','core.autocrlf=false','apply',*options,str(patch_path)],cwd=temp,check=True,capture_output=True)
+        for name in BINARY:
+            target = temp / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((ROOT / name).read_bytes())
         for item in files:
             if sha((temp/item['file']).read_bytes()) != item['after_sha256']:
                 raise ValueError('AFTER_SHA_MISMATCH:' + item['file'])
         for options in (['--reverse','--check'], ['--reverse']):
             subprocess.run(['git','-c','core.autocrlf=false','apply',*options,str(patch_path)],cwd=temp,check=True,capture_output=True)
+        for name in BINARY:
+            (temp / name).unlink()
         for name, data in originals.items():
             if (temp/name).read_bytes() != data:
                 raise ValueError('ROLLBACK_BYTES_MISMATCH:' + name)
@@ -74,6 +85,17 @@ def build(snapshot):
         'notes_en':'Current channel supports only its registered SAFE50 single-file release. New multi-file registration, exclusion and failure recovery validation are required. Rollback preserves send audits/reservations and never rewinds customer history.',
     }
     (dest/'manifest.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    qa_names = ('v6_outreach.py', 'v6_bestseller_evidence.py', 'controlled_v6_test.py') + BINARY
+    qa = {'description_zh': '独立内部 QA 登记申请；不是可执行授权。',
+        'description_en': 'Independent internal-QA registration request; not executable authority.',
+        'release_id': 'phase5a1-v6-four-template-internal-qa', 'registered': False,
+        'operation_requested': 'internal_qa_once', 'maximum_messages': 4,
+        'customer_smtp_enabled': False, 'customer_fsp_created': False,
+        'files': [item for item in files if item['file'] in qa_names],
+        'existing_dependency': {'bd_sender.py': BEFORE['bd_sender.py']},
+        'notes_zh': '原图是独立哈希工件，不在文本补丁中；必须在同一受控发布中登记和备份。内部未核实排名只显示待核实文字，不嵌图。',
+        'notes_en': 'Original image is a separately hashed artifact outside the text patch; register/back up in the same controlled release. Unverified internal ranking previews contain pending text and no image.'}
+    (dest/'internal-qa-request.json').write_text(json.dumps(qa,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     print(json.dumps({'files':len(files),'offline_rehearsal':True,'registered':False,'deployed':False}))
 
 if __name__ == '__main__':

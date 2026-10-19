@@ -17,7 +17,7 @@ CAPS = {1: 5, 2: 10, 3: 20, 4: 40}
 CLAIMS = ("products_and_24_in_1", "low_moq_ddp_samples", "ten_years_experience",
           "custom_card_puzzle_paper_packaging", "flexible_production_runs")
 LIVE_EVIDENCE = ("unsubscribe_receiving", "suppression_processing", "spf", "dkim", "dmarc",
-    "sender_identity", "tls", "v6_three_template_test", "mx_control", "feedback_monitoring",
+    "sender_identity", "tls", "v6_four_template_test", "mx_control", "feedback_monitoring",
     "supported_unique_send_chain")
 
 
