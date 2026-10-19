@@ -5,6 +5,13 @@
   "registered": false,
   "operation_requested": "internal_qa_once",
   "maximum_messages": 4,
+  "fixed_recipient": "1569032023yf@gmail.com",
+  "registration_state": "REQUEST_ONLY_NOT_EXECUTABLE",
+  "offline_text_forward_reverse_verified": true,
+  "text_patch": {
+    "artifact": "internal-qa.patch",
+    "sha256": "448c52cb2b2c8258960b69e6847afc3f8862707eec5e866dd43838bee77a9ecf"
+  },
   "sending_transport": "existing_tencent_enterprise_smtp",
   "gmail_role": "internal_recipient_only",
   "gmail_oauth_required": false,

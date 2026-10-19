@@ -21,6 +21,7 @@ class Phase4A3ODevDatabaseRoutingTests(unittest.TestCase):
             env=env,
             capture_output=True,
             text=True,
+            encoding="utf-8",
             timeout=10,
             check=True,
         )
