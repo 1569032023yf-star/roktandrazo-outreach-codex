@@ -5,6 +5,10 @@
   "registered": false,
   "operation_requested": "internal_qa_once",
   "maximum_messages": 4,
+  "sending_transport": "existing_tencent_enterprise_smtp",
+  "gmail_role": "internal_recipient_only",
+  "gmail_oauth_required": false,
+  "receiver_validation": "manual_unknown_until_evidence",
   "customer_smtp_enabled": false,
   "customer_fsp_created": false,
   "files": [
@@ -12,7 +16,7 @@
       "file": "v6_outreach.py",
       "action": "create_if_absent",
       "before_sha256": null,
-      "after_sha256": "4fd6af1369d6132261361c37d1ea61e218818a6d7d26d0d604294d8141c8c023"
+      "after_sha256": "bddaefed6080f7e6540aa439dfeecde2b0854b58461690f9be9ea2daab66f7dc"
     },
     {
       "file": "v6_bestseller_evidence.py",

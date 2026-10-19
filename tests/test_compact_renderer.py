@@ -137,7 +137,7 @@ class CompactRendererTests(unittest.TestCase):
 
     def test_apply_email_to_lead_propagates_metadata(self):
         lead = _make_lead("Grand Adventures Comics", "game_store")
-        apply_email_to_lead(lead)
+        apply_email_to_lead(lead, template_key="retail_distributor_v5_locked")
         self.assertEqual(lead["template_key"], RETAIL_KEY)
         self.assertEqual(lead["content_sha256"], RETAIL_SHA)
         self.assertEqual(lead["renderer_version"], RENDERER_VERSION)

@@ -15,6 +15,8 @@ from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import preflight_gate as g
+from test_phase5a_v6 import policy
+import v6_outreach as v
 
 ASIA_SH = timezone(timedelta(hours=8))
 NOW = datetime(2026, 8, 6, 12, 0, 0, tzinfo=ASIA_SH)
@@ -131,6 +133,10 @@ def write_poller(path, heartbeat):
 class PreflightGateTestCase(unittest.TestCase):
 
     def setUp(self):
+        self.p = policy()
+        pp = mock.patch("send_resumption.load_policy", return_value=self.p)
+        pp.start()
+        self.addCleanup(pp.stop)
         self.tmp = tempfile.mkdtemp()
         self.poller = os.path.join(self.tmp, "poller.json")
         write_poller(self.poller, iso(NOW - timedelta(minutes=1)))
@@ -155,6 +161,15 @@ class PreflightGateTestCase(unittest.TestCase):
         add_plan(conn)
         set_mx_cache(conn, "example.com", "ok", NOW - timedelta(hours=1))
         add_auth(conn, entries=[{"lead_id": 1, "email": "a@example.com"}])
+        source = dict(conn.execute('SELECT * FROM leads WHERE id=1').fetchone())
+        self.p['reviewed_leads']['1'] = {'identity_verified':True, 'organization_key':source['organization_key'],
+            'email':source['email'], 'evidence_url':'https://example.invalid/contact',
+            'business_type_verified':True, 'business_type':'toy_store', 'recipient_role':'buyer',
+            'product_fit_verified':True, 'business_contact_basis_verified':True}
+        rendered = v.render(source, self.p)
+        conn.execute('UPDATE final_send_plan SET template_id=?,subject=?,body_text=?,body_html=?',
+            (rendered['template_key'], rendered['subject'], rendered['body_text'], rendered['body_html']))
+        conn.commit()
         return conn
 
     # ── query_mx 网络层 ────────────────────────────────────

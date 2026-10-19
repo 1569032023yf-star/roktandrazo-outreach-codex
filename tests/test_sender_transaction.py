@@ -6,7 +6,7 @@
   A. SMTP accepted → send_log 恰 1 条 / FSP='sent' / auth consumed / lead='sent'
   B. 第二次执行同 entry → skipped，SMTP 调用次数不增加
   C. SMTP rejected → 无该 plan_entry 的 send_log，FSP 不变，auth 不 consumed
-  D. SMTP accepted 后 DB 异常 → 事务 rollback，可重发
+  D. SMTP accepted 后 DB 异常 → rollback + 持久停发，禁止自动重发
   E. final_plan_entry_id 用 lead_id 冒充 → 被拒绝
   F. consume 第二次 → False
   G. sender copy 失败 → 仍 success，但返回 sender_copy_status='failed'
@@ -22,6 +22,8 @@ from unittest import mock
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import bd_sender
+from test_phase5a_v6 import policy
+import v6_outreach as v6
 
 ASIA_SH = timezone(timedelta(hours=8))
 
@@ -42,7 +44,8 @@ CREATE TABLE leads (
     sent_at TIMESTAMP,
     last_checked_at TIMESTAMP,
     error_message TEXT,
-    domain_hash TEXT
+    domain_hash TEXT,
+    organization_key TEXT, recipient_timezone TEXT, timezone_status TEXT
 );
 CREATE TABLE suppression_list (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -147,6 +150,13 @@ class SharedConn:
     def __setattr__(self, name, value):
         setattr(self._inner, name, value)
 
+    def __enter__(self):
+        self._inner.__enter__()
+        return self
+
+    def __exit__(self, *args):
+        return self._inner.__exit__(*args)
+
     def close(self):
         return None
 
@@ -183,6 +193,9 @@ class SenderTransactionTest(unittest.TestCase):
         self._raw.row_factory = sqlite3.Row
         self.conn = SharedConn(self._raw)
         self.conn.executescript(SCHEMA)
+        self.p = policy()
+        self.p["verified_from_email"] = self.SENDER
+        self.BATCH = datetime.now(ASIA_SH).date().isoformat()
         self._seed()
 
         self.server = FakeServer()
@@ -196,6 +209,8 @@ class SenderTransactionTest(unittest.TestCase):
             mock.patch.object(bd_sender, "_create_connection", return_value=self.server),
             mock.patch.object(bd_sender, "_save_to_sent", return_value=(True, "")),
             mock.patch.object(bd_sender, "_activate_tracking", return_value=None),
+            mock.patch('send_resumption.load_policy', return_value=self.p),
+            mock.patch('recipient_scheduler.in_send_window', return_value=True),
         ]
         for p in self._patchers:
             p.start()
@@ -219,7 +234,7 @@ class SenderTransactionTest(unittest.TestCase):
                 subject, body_text, body_html, status)
                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?, 'planned')""",
             (self.FSP_ID, "P1", 1, self.RECIPIENT, "Company", "retail", "tpl",
-             "follow_up", self.BATCH, 1, "Premium puzzles", "We craft premium puzzles.", ""),
+             "new_outreach", self.BATCH, 1, "Premium puzzles", "We craft premium puzzles.", ""),
         )
         now = datetime.now(ASIA_SH)
         c.execute(
@@ -241,6 +256,15 @@ class SenderTransactionTest(unittest.TestCase):
                      ("standing_authorization", "true"),
                      ("risk_gate_status", "clear")):
             c.execute("INSERT INTO system_config (key, value) VALUES (?,?)", (k, v))
+        c.execute("UPDATE leads SET store_type='toy_store', organization_key='org:1', recipient_timezone='America/Chicago', timezone_status='RESOLVED' WHERE id=1")
+        self.p['reviewed_leads']['1'] = {'identity_verified':True, 'organization_key':'org:1',
+            'email':self.RECIPIENT, 'evidence_url':'https://example.invalid/contact',
+            'business_type_verified':True, 'business_type':'toy_store', 'recipient_role':'buyer',
+            'product_fit_verified':True, 'business_contact_basis_verified':True}
+        source = dict(c.execute('SELECT * FROM leads WHERE id=1').fetchone())
+        self.rendered = v6.render(source, self.p)
+        c.execute('UPDATE final_send_plan SET template_id=?,subject=?,body_text=?,body_html=? WHERE id=?',
+            (self.rendered['template_id'], self.rendered['subject'],self.rendered['body_text'],self.rendered['body_html'],self.FSP_ID))
         self.conn.commit()
 
     def _lead(self, **overrides):
@@ -252,7 +276,7 @@ class SenderTransactionTest(unittest.TestCase):
             "email_body_html": "",
             "email_body_html_no_pixel": "",
             "pixel_tracking": False,
-            "message_type": "follow_up",
+            "message_type": "new_outreach",
             "outreach_batch_date": self.BATCH,
             "final_plan_entry_id": self.FSP_ID,
             "authorization_id": self.AUTH_ID,
@@ -261,6 +285,8 @@ class SenderTransactionTest(unittest.TestCase):
             "batch_id": "P1",
             "source_platform": "test",
         }
+        lead.update(email_subject=self.rendered['subject'],email_body=self.rendered['body_text'],
+            email_body_html=self.rendered['body_html'], template_id=self.rendered['template_id'])
         lead.update(overrides)
         return lead
 
@@ -331,9 +357,13 @@ class SenderTransactionTest(unittest.TestCase):
             (self.FSP_ID,)).fetchone()
         self.assertEqual(entry["status"], "pending")
 
-    # ── 场景 D：SMTP accepted 后 DB 异常 → rollback → 可重发 ──
+    # ── 场景 D：SMTP accepted 后 DB 异常 → rollback → 持久停止，禁止重发 ──
     def test_scenario_d_db_failure_rollback_then_retry_succeeds(self):
-        with mock.patch.object(bd_sender.sqlite3, "connect", return_value=FlakyProxy(self.conn)):
+        original_commit = bd_sender._commit_send_success
+        def fail_commit(**kwargs):
+            with mock.patch.object(bd_sender.sqlite3, "connect", return_value=FlakyProxy(self.conn)):
+                return original_commit(**kwargs)
+        with mock.patch.object(bd_sender, '_commit_send_success', side_effect=fail_commit):
             result = bd_sender.send_one(self._lead())
 
         self.assertFalse(result["success"])
@@ -350,12 +380,13 @@ class SenderTransactionTest(unittest.TestCase):
         lead = self.conn.execute("SELECT status FROM leads WHERE id=1").fetchone()
         self.assertEqual(lead["status"], "new")
 
-        # 第二次执行（无 DB 故障）→ 可重发成功
+        # 第二次执行（无 DB 故障）→ 仍因持久停发被阻止
         retry = bd_sender.send_one(self._lead())
-        self.assertTrue(retry["success"])
-        self.assertEqual(retry["status"], "sent")
-        self.assertEqual(self.conn.execute("SELECT COUNT(*) FROM send_log").fetchone()[0], 1)
-        self.assertGreaterEqual(self.server.sendmail_count, 2)  # 第二次确实又走了一次 SMTP
+        self.assertFalse(retry["success"])
+        self.assertEqual(retry["status"], "blocked")
+        self.assertIn("DURABLE_EMERGENCY_HALT", retry["message"])
+        self.assertEqual(self.conn.execute("SELECT COUNT(*) FROM send_log").fetchone()[0], 0)
+        self.assertEqual(self.server.sendmail_count, 1)  # 第二次确实又走了一次 SMTP
 
     # ── 场景 E：final_plan_entry_id 用 lead_id 冒充 → fail ──
     def test_scenario_e_lead_id_impersonation_rejected(self):
@@ -408,7 +439,7 @@ class SenderTransactionTest(unittest.TestCase):
             raise RuntimeError("sender copy smtp down")
         flaky_factory.n = 0
 
-        with mock.patch.object(bd_sender, "_create_connection", side_effect=flaky_factory):
+        with mock.patch.object(bd_sender, "_save_to_sent", return_value=(False, "sender_copy IMAP unavailable")):
             result = bd_sender.send_one(self._lead())
 
         self.assertTrue(result["success"])

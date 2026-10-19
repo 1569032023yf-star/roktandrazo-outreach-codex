@@ -47,6 +47,9 @@ def create_plan(conn: sqlite3.Connection, leads: list[dict], batch_date: str, me
     from v6_outreach import validate_message
     if message_type != "new_outreach":
         raise ValueError("PHASE5A_FOLLOW_UP_DISABLED")
+    # No policy or quota writes for a wholly ineligible input (B2/manual, etc.).
+    if not build_final_plan_entries(leads, batch_date, message_type, eligible_check=eligible_check):
+        return ""
     policy = load_policy()
     # Hold the caller's transaction across quota calculation and plan replacement.
     if not conn.in_transaction:

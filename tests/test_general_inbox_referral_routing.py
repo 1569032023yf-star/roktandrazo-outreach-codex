@@ -5,6 +5,9 @@ import os
 import sqlite3
 import sys
 import unittest
+from unittest.mock import patch
+from test_phase5a_v6 import policy
+import v6_outreach as v
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_ROOT)
@@ -20,16 +23,16 @@ from bd_template import (
 from final_send_plan import create_plan
 
 
-REFERRAL_KEY = "general_inbox_referral_v1_locked"
-RETAIL_KEY = "retail_distributor_v5_locked"
-CUSTOM_KEY = "custom_printing_production_v5_locked"
+REFERRAL_KEY = v.REFERRAL
+RETAIL_KEY = v.RETAIL
+CUSTOM_KEY = v.CUSTOM
 RETAIL_SHA = "ccb51505"
 CUSTOM_SHA = "5893dbc9"
 
 
 def _lead(email: str, store_type: str = "game_store") -> dict:
     return {
-        "id": 41,
+        "id": 41, "organization_key": "org:41",
         "email": email,
         "store_name": "Example Games",
         "store_type": store_type,
@@ -65,34 +68,47 @@ def _fsp_conn() -> sqlite3.Connection:
 
 
 class GeneralInboxReferralRoutingTests(unittest.TestCase):
+    def setUp(self):
+        self.p = policy()
+        self.patcher = patch('send_resumption.load_policy', return_value=self.p)
+        self.patcher.start()
+        self.addCleanup(self.patcher.stop)
+
+    def approved(self, lead):
+        self.p['reviewed_leads']['41'] = {'identity_verified': True, 'organization_key': 'org:41',
+            'email':lead['email'], 'evidence_url':lead['evidence_url'], 'business_type_verified': True,
+            'business_type':lead['store_type'], 'recipient_role':'unknown', 'product_fit_verified':True,
+            'business_contact_basis_verified':True}
+        return lead
+
     def test_exact_generic_local_parts_route_to_referral_template(self):
         for local_part in ("info", "service", "support", "hello", "contact", "office"):
-            lead = _lead(f"{local_part}@example.test")
+            lead = self.approved(_lead(f"{local_part}@example.test", "unknown"))
             self.assertTrue(is_generic_public_inbox(lead["email"]))
             self.assertEqual(route_template_for_lead(lead), REFERRAL_KEY)
             rendered = get_email_for_lead(lead)
             self.assertEqual(rendered["template_key"], REFERRAL_KEY)
-            self.assertEqual(rendered["routing_reason"], "generic_public_inbox")
-            self.assertIn("forward this note", rendered["body_text"])
-            self.assertIn("Purchasing, Product, Sales, or Business Development", rendered["body_text"])
+            self.assertEqual(rendered["routing_reason"], "verified_business_review")
+            self.assertIn("point me to the person", rendered["body_text"])
+            self.assertIn("purchasing or product development", rendered["body_text"])
 
     def test_named_or_non_exact_local_parts_keep_existing_direct_routing(self):
-        named = _lead("maria@example.test", "game_store")
-        custom = _lead("buyer@example.test", "gift_shop")
+        named = self.approved(_lead("maria@example.test", "game_store"))
+        custom = _lead("buyer@example.test", "puzzle_brand")
         for non_generic in ("info+orders@example.test", "information@example.test", "contact.team@example.test"):
             self.assertFalse(is_generic_public_inbox(non_generic))
         self.assertEqual(route_template_for_lead(named), RETAIL_KEY)
-        self.assertEqual(route_template_for_lead(custom), CUSTOM_KEY)
-        self.assertEqual(get_email_for_lead(named)["routing_reason"], "store_type")
-        self.assertEqual(get_email_for_lead(custom)["routing_reason"], "store_type")
+        self.assertEqual(route_template_for_lead(self.approved(custom)), CUSTOM_KEY)
+        self.assertEqual(get_email_for_lead(self.approved(named))["routing_reason"], "verified_business_review")
+        self.assertEqual(get_email_for_lead(self.approved(custom))["routing_reason"], "verified_business_review")
 
     def test_existing_locked_template_hashes_are_unchanged(self):
-        self.assertEqual(_TEMPLATE_SHA256[RETAIL_KEY], RETAIL_SHA)
-        self.assertEqual(_TEMPLATE_SHA256[CUSTOM_KEY], CUSTOM_SHA)
+        self.assertEqual(_TEMPLATE_SHA256["retail_distributor_v5_locked"], RETAIL_SHA)
+        self.assertEqual(_TEMPLATE_SHA256["custom_printing_production_v5_locked"], CUSTOM_SHA)
         self.assertIn(REFERRAL_KEY, _TEMPLATE_SHA256)
 
     def test_existing_recipient_and_referral_metadata_freeze_into_fsp(self):
-        lead = _lead("info@example.test")
+        lead = self.approved(_lead("info@example.test", "unknown"))
         original_email = lead["email"]
         apply_email_to_lead(lead)
         lead["hygiene_passed_at"] = "2026-09-20T00:00:00+08:00"

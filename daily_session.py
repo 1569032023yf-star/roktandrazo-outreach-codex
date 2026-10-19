@@ -90,6 +90,17 @@ def execute_final_send_plan(batch_date: str, dry_run: bool = True,
     batch_message_type = entries[0]["message_type"] if entries else None
     result = {'new_outreach': 0, 'follow_up': 0, 'skipped': 0, 'failed': 0, 'test': 0,
               'planned': len(entries), 'preview': []}
+    # Historical follow-up plans are read-only and cannot create new authorizations.
+    frozen_followups = [e for e in entries if e['message_type'] == 'follow_up']
+    result['skipped'] += len(frozen_followups)
+    result['preview'].extend({'entry_id': e['id'], 'lead_id': e['lead_id'],
+        'message_type': 'follow_up', 'result': 'blocked',
+        'message': 'PHASE5A_FOLLOW_UP_DISABLED'} for e in frozen_followups)
+    entries = [e for e in entries if e['message_type'] != 'follow_up']
+    if not entries:
+        conn.close()
+        return result
+    batch_message_type = entries[0]['message_type']
 
     # ── P1.0: 正式链 Authorization ──
     # 创建时 plan_entry_id 必须等于真实 final_send_plan.id（create_send_authorization

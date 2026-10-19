@@ -5,8 +5,14 @@
   "registered": false,
   "production_ready": false,
   "baseline_commit": "72bdd70a13dd959264a3137fc546334249b48be1",
-  "patch_sha256": "3ffa6028b41071903407b18c7cf13588182a3a3f82d05ff59540c26df9614c7b",
+  "patch_sha256": "a6c87a4c70b1dc76d25d961c28c67320271109347d3e20cb5505140149eef0ac",
   "files": [
+    {
+      "file": "daily_session.py",
+      "action": "patch",
+      "before_sha256": "f4559a34e87c9fcab0c83fa92b6e4fba4c0f5e284b77bb03f98ad1318c4088af",
+      "after_sha256": "808f9a151e64601dacaf22f4564d37e33b76ebae76c29d397ad929267198fe81"
+    },
     {
       "file": "bd_template.py",
       "action": "patch",
@@ -17,7 +23,7 @@
       "file": "bd_sender.py",
       "action": "patch",
       "before_sha256": "002d68a1e76d5f96af6fdbabdce54da0af3a93077d8a504ddd106a41fd018280",
-      "after_sha256": "9baec82583c5c7d8615b87fbbfb660e433aef05426e4e11ec7455f3e1d9c4f21"
+      "after_sha256": "f9d795be2c63c2fae52c49e6112ab87be840f233e754c259b52cab00e395db32"
     },
     {
       "file": "preflight_gate.py",
@@ -29,13 +35,13 @@
       "file": "final_send_plan.py",
       "action": "patch",
       "before_sha256": "26de2f017390eda767beddfe8fbd6bc438b78ddb430eeebc4b96c72aa41d327f",
-      "after_sha256": "240899025a67f451a6cb9265ddc061d07f3cbfaab3e09d0ed222db032ef7b455"
+      "after_sha256": "4fcc903d6b7a14412abb5d9dbd8e48599082f984e97c43b33ed1c344090aef5e"
     },
     {
       "file": "v6_outreach.py",
       "action": "create_if_absent",
       "before_sha256": null,
-      "after_sha256": "4fd6af1369d6132261361c37d1ea61e218818a6d7d26d0d604294d8141c8c023"
+      "after_sha256": "bddaefed6080f7e6540aa439dfeecde2b0854b58461690f9be9ea2daab66f7dc"
     },
     {
       "file": "v6_bestseller_evidence.py",
@@ -68,7 +74,6 @@
   "runtime_rollback_verified": false,
   "excluded": [
     "bd_orchestrator.py",
-    "daily_session.py",
     "production databases",
     ".env",
     "credentials",

@@ -192,7 +192,14 @@ def render_internal_test(key, recipient, policy):
     signature = SIGNATURE.replace("Business mailing address: {address}\n\n", "")
     text = TEMPLATES[key][1].format(greeting="rokt&razo team", store_name="rokt&razo", signature=signature)
     text = "INTERNAL TEMPLATE TEST — not customer outreach. Business claims await verification.\n\n" + text
+    ranking_verified = False
     if key == TIKTOK:
+        try:
+            bestseller.require_capture_evidence(policy.get("tiktok_ranking_evidence"))
+            ranking_verified = True
+        except ValueError:
+            pass
+    if key == TIKTOK and not ranking_verified:
         text = "RANKING CLAIM PENDING VERIFICATION: capture date, platform and product identity are not approved.\n\n" + text
     subject = "[INTERNAL V6 TEST] " + TEMPLATES[key][0].format(store_name="rokt&razo")
     body_html = "\n".join("<p>" + html.escape(p).replace("\n", "<br>\n") + "</p>" for p in text.split("\n\n"))

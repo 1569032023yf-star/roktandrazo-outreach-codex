@@ -635,6 +635,9 @@ def send_one(lead: dict, dry_run: bool = False) -> dict:
         from send_resumption import reserve_smtp, load_policy, require_ready
         policy = load_policy()  # Recheck expiry/stop immediately before SMTP reservation.
         require_ready(policy, actual_from=get_sender_info()["email"])
+        # A policy/evidence update cannot change the frozen date or routing mid-send.
+        validate_message(real_plan, source, policy)
+        validate_message(lead, source, policy)
         from recipient_scheduler import in_send_window
         if source.get("timezone_status") != "RESOLVED" or not in_send_window(source.get("recipient_timezone") or ""):
             raise ValueError("PHASE5A_RECIPIENT_WINDOW_BLOCKED")

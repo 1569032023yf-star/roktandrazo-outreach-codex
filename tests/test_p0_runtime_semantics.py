@@ -13,6 +13,8 @@ import bd_orchestrator
 import bd_sender
 from daily_session import execute_final_send_plan
 from final_send_plan import create_plan
+from test_phase5a_v6 import policy
+import v6_outreach as v
 from lead_hygiene_gate import evaluate_a0
 from tests.schema_fixture import create_test_database
 
@@ -76,9 +78,26 @@ class P0RuntimeSemanticsTests(unittest.TestCase):
 
     def _plan(self, message_type: str, batch_date: str = '2026-07-24'):
         lead = dict(self.lead)
-        lead.update(email_subject='Hello', email_body='Body', email_body_html='', template_id='test-template')
-        with self.conn:
-            create_plan(self.conn, [lead], batch_date, message_type)
+        p = policy()
+        p['reviewed_leads'][str(lead['id'])] = {'identity_verified':True,
+            'organization_key':lead['organization_key'], 'email':lead['email'],
+            'evidence_url':lead['evidence_url'], 'business_type_verified':True,
+            'business_type':'toy_store', 'recipient_role':'buyer',
+            'product_fit_verified':True, 'business_contact_basis_verified':True}
+        rendered = v.render(lead, p)
+        lead.update(email_subject=rendered['subject'], email_body=rendered['body_text'],
+            email_body_html=rendered['body_html'], template_id=rendered['template_id'])
+        if message_type == 'follow_up':
+            # Only a historical frozen fixture; new follow-up creation stays forbidden.
+            with self.assertRaisesRegex(ValueError, 'FOLLOW_UP_DISABLED'):
+                create_plan(self.conn, [lead], batch_date, message_type)
+            self.conn.execute("INSERT INTO final_send_plan (plan_id,lead_id,recipient_email,company_name,template_id,message_type,outreach_batch_date,planned_sequence,subject,body_text,body_html,evidence_url,hygiene_passed_at,status) VALUES ('HISTORICAL',1,?,?,?,?,?,1,?,?,?,?,?,'planned')",
+                (lead['email'], lead['store_name'], rendered['template_id'], message_type, batch_date,
+                rendered['subject'], rendered['body_text'], rendered['body_html'], lead['evidence_url'], datetime.now(timezone.utc).isoformat()))
+            self.conn.commit()
+        else:
+            with patch('send_resumption.load_policy', return_value=p), self.conn:
+                create_plan(self.conn, [lead], batch_date, message_type)
 
     def test_dry_run_final_plan_is_zero_write_and_followup_is_previewed(self):
         self.conn.execute("""INSERT INTO send_log (lead_id,email,subject,status,message_type,outreach_batch_date)
@@ -92,7 +111,7 @@ class P0RuntimeSemanticsTests(unittest.TestCase):
         self.assertEqual(result['follow_up'], 0)
         self.assertEqual(len(result['preview']), 1)
         self.assertEqual(result['preview'][0]['message_type'], 'follow_up')
-        self.assertEqual(result['preview'][0]['result'], 'dry_run')
+        self.assertEqual(result['preview'][0]['result'], 'blocked')
 
     def test_dry_inventory_and_pre_send_do_not_change_any_table(self):
         before = snapshot_database(self.path)
@@ -137,18 +156,21 @@ class P0RuntimeSemanticsTests(unittest.TestCase):
             return {'success': True, 'status': 'sent', 'message': 'mock sent'}
 
         with patch('recipient_scheduler.in_send_window', return_value=True), \
-             patch('bd_sender.send_one', side_effect=_fake_send_one), \
+             patch('bd_sender.send_one', side_effect=_fake_send_one) as send_mock, \
              patch('bd_sender.create_send_authorization',
-                   return_value={'authorization_id': 'auth_test', 'status': 'approved'}), \
+                   return_value={'authorization_id': 'auth_test', 'status': 'approved'}) as auth_mock, \
              patch('daily_session.time.sleep', return_value=None):
             result = execute_final_send_plan('2026-07-24', dry_run=False)
-        self.assertEqual(result['follow_up'], 1)
+        send_mock.assert_not_called()
+        auth_mock.assert_not_called()
+        self.assertEqual(result['follow_up'], 0)
+        self.assertEqual(result['skipped'], 1)
         lead = self.conn.execute('SELECT followup_count,last_followup_at,status FROM leads WHERE id=1').fetchone()
-        self.assertEqual(lead['followup_count'], 1)
-        self.assertTrue(lead['last_followup_at'])
+        self.assertEqual(lead['followup_count'], 0)
+        self.assertFalse(lead['last_followup_at'])
         self.assertEqual(lead['status'], 'new')
-        self.assertEqual(self.conn.execute("SELECT message_type FROM send_log ORDER BY id DESC LIMIT 1").fetchone()[0], 'follow_up')
-        self.assertEqual(self.conn.execute('SELECT status FROM final_send_plan').fetchone()[0], 'sent')
+        self.assertEqual(self.conn.execute("SELECT message_type FROM send_log ORDER BY id DESC LIMIT 1").fetchone()[0], 'new_outreach')
+        self.assertEqual(self.conn.execute('SELECT status FROM final_send_plan').fetchone()[0], 'planned')
 
     def test_deferred_follow_up_is_preview_blocked_then_live_skipped(self):
         self.conn.execute("""INSERT INTO send_log (lead_id,email,subject,status,message_type,outreach_batch_date)
@@ -165,7 +187,7 @@ class P0RuntimeSemanticsTests(unittest.TestCase):
                    return_value={'authorization_id': 'auth_test', 'status': 'approved'}):
             live = execute_final_send_plan('2026-07-24', dry_run=False)
         self.assertEqual(live['skipped'], 1)
-        self.assertEqual(self.conn.execute('SELECT status FROM final_send_plan').fetchone()[0], 'skipped')
+        self.assertEqual(self.conn.execute('SELECT status FROM final_send_plan').fetchone()[0], 'planned')
 
     def test_new_outreach_rechecks_live_lead_and_does_not_replace_skipped_entry(self):
         self._plan('new_outreach')
@@ -201,10 +223,11 @@ class P0RuntimeSemanticsTests(unittest.TestCase):
              patch.object(bd_sender, '_create_connection', return_value=FakeServer()), \
              patch.object(bd_sender, '_save_to_sent', return_value=None):
             result = bd_sender.send_one(lead, dry_run=False)
-        self.assertEqual(result['status'], 'test')
+        self.assertEqual(result['status'], 'blocked')
+        self.assertIn('CONTROLLED_INTERNAL_TEST_ENTRYPOINT', result['message'])
         self.assertEqual(self.conn.execute('SELECT status FROM leads WHERE id=1').fetchone()[0], 'new')
         row = self.conn.execute("SELECT lead_id,email,message_type,plan_entry_id FROM send_log").fetchone()
-        self.assertEqual(tuple(row), (None, 'test@local.example', 'test', None))
+        self.assertIsNone(row)
 
 
 if __name__ == '__main__':

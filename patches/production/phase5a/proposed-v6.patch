@@ -1,3 +1,23 @@
+--- a/daily_session.py
++++ b/daily_session.py
+@@ -90,6 +90,17 @@
+     batch_message_type = entries[0]["message_type"] if entries else None
+     result = {'new_outreach': 0, 'follow_up': 0, 'skipped': 0, 'failed': 0, 'test': 0,
+               'planned': len(entries), 'preview': []}
++    # Historical follow-up plans are read-only and cannot create new authorizations.
++    frozen_followups = [e for e in entries if e['message_type'] == 'follow_up']
++    result['skipped'] += len(frozen_followups)
++    result['preview'].extend({'entry_id': e['id'], 'lead_id': e['lead_id'],
++        'message_type': 'follow_up', 'result': 'blocked',
++        'message': 'PHASE5A_FOLLOW_UP_DISABLED'} for e in frozen_followups)
++    entries = [e for e in entries if e['message_type'] != 'follow_up']
++    if not entries:
++        conn.close()
++        return result
++    batch_message_type = entries[0]['message_type']
+ 
+     # ── P1.0: 正式链 Authorization ──
+     # 创建时 plan_entry_id 必须等于真实 final_send_plan.id（create_send_authorization
 --- a/bd_template.py
 +++ b/bd_template.py
 @@ -210,6 +210,9 @@
@@ -133,13 +153,16 @@
  
          try:
              validate_send_authorization(authorization_id,
-@@ -606,7 +632,16 @@
+@@ -606,7 +632,19 @@
  
      # Build customer MIME (with pixel if tracking) and sender copy (no pixel)
      try:
 +        from send_resumption import reserve_smtp, load_policy, require_ready
 +        policy = load_policy()  # Recheck expiry/stop immediately before SMTP reservation.
 +        require_ready(policy, actual_from=get_sender_info()["email"])
++        # A policy/evidence update cannot change the frozen date or routing mid-send.
++        validate_message(real_plan, source, policy)
++        validate_message(lead, source, policy)
 +        from recipient_scheduler import in_send_window
 +        if source.get("timezone_status") != "RESOLVED" or not in_send_window(source.get("recipient_timezone") or ""):
 +            raise ValueError("PHASE5A_RECIPIENT_WINDOW_BLOCKED")
@@ -150,7 +173,7 @@
          sender_email = get_sender_info()["email"]
  
          # Build untracked sender copy if this email has a pixel version
-@@ -615,8 +650,15 @@
+@@ -615,8 +653,15 @@
  
          server = _create_connection()
          # Send to customer only (tracked MIME)
@@ -168,7 +191,7 @@
          # P5: 记录 SMTP accepted 时刻（UTC ISO）
          smtp_accepted_at = datetime.now(timezone.utc).isoformat()
  
-@@ -654,6 +696,8 @@
+@@ -654,6 +699,8 @@
              authorization_id=authorization_id, smtp_accepted_at=smtp_accepted_at,
          )
          if not commit_ok:
@@ -177,7 +200,7 @@
              return {"success": False, "message": f"DB commit failed: {commit_err}", "status": "failed"}
  
          # ── 提交成功后的 best-effort 副作用（失败不影响客户 SMTP accepted）──
-@@ -673,7 +717,7 @@
+@@ -673,7 +720,7 @@
              _activate_tracking(tracking_hash, tracking_msg_id, lead_id)
  
          # ── Sender copy (untracked, separate MIME) ───────
@@ -186,7 +209,7 @@
              try:
                  sc = _build_email(sender_email, subject, body_text, body_html_no_pixel if body_html_no_pixel else None)
                  sc["X-Roktandrazo-Type"] = "sender_copy"
-@@ -696,7 +740,13 @@
+@@ -696,7 +743,13 @@
              result["sender_copy_error"] = "; ".join(sender_copy_failures)
          return result
  
@@ -200,7 +223,7 @@
          if test_cfg["test_mode"] and test_cfg["test_email"]:
              return {"success": False, "message": f"Test recipient refused: {e}", "status": "test_failed"}
          update_lead_status(lead_id, "failed", error_message=str(e))
-@@ -704,6 +754,8 @@
+@@ -704,6 +757,8 @@
          return {"success": False, "message": f"Recipient refused: {e}", "status": "failed"}
  
      except smtplib.SMTPDataError as e:
@@ -209,7 +232,7 @@
          error_str = str(e)
          if test_cfg["test_mode"] and test_cfg["test_email"]:
              return {"success": False, "message": f"Test SMTP error: {e}", "status": "test_failed"}
-@@ -717,6 +769,8 @@
+@@ -717,6 +772,8 @@
          return {"success": False, "message": f"SMTP error: {e}", "status": "failed"}
  
      except Exception as e:
@@ -258,7 +281,7 @@
      if failures:
 --- a/final_send_plan.py
 +++ b/final_send_plan.py
-@@ -43,6 +43,30 @@
+@@ -43,6 +43,33 @@
  
  def create_plan(conn: sqlite3.Connection, leads: list[dict], batch_date: str, message_type: str,
                  eligible_check: callable | None = None) -> str:
@@ -266,6 +289,9 @@
 +    from v6_outreach import validate_message
 +    if message_type != "new_outreach":
 +        raise ValueError("PHASE5A_FOLLOW_UP_DISABLED")
++    # No policy or quota writes for a wholly ineligible input (B2/manual, etc.).
++    if not build_final_plan_entries(leads, batch_date, message_type, eligible_check=eligible_check):
++        return ""
 +    policy = load_policy()
 +    # Hold the caller's transaction across quota calculation and plan replacement.
 +    if not conn.in_transaction:
@@ -291,7 +317,7 @@
      if not entries:
 --- /dev/null
 +++ b/v6_outreach.py
-@@ -0,0 +1,208 @@
+@@ -0,0 +1,215 @@
 +"""Locked V6 content and evidence-based routing; no transport or database access."""
 +from __future__ import annotations
 +
@@ -486,7 +512,14 @@
 +    signature = SIGNATURE.replace("Business mailing address: {address}\n\n", "")
 +    text = TEMPLATES[key][1].format(greeting="rokt&razo team", store_name="rokt&razo", signature=signature)
 +    text = "INTERNAL TEMPLATE TEST — not customer outreach. Business claims await verification.\n\n" + text
++    ranking_verified = False
 +    if key == TIKTOK:
++        try:
++            bestseller.require_capture_evidence(policy.get("tiktok_ranking_evidence"))
++            ranking_verified = True
++        except ValueError:
++            pass
++    if key == TIKTOK and not ranking_verified:
 +        text = "RANKING CLAIM PENDING VERIFICATION: capture date, platform and product identity are not approved.\n\n" + text
 +    subject = "[INTERNAL V6 TEST] " + TEMPLATES[key][0].format(store_name="rokt&razo")
 +    body_html = "\n".join("<p>" + html.escape(p).replace("\n", "<br>\n") + "</p>" for p in text.split("\n\n"))

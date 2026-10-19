@@ -12,6 +12,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 BEFORE = {
+    'daily_session.py': 'f4559a34e87c9fcab0c83fa92b6e4fba4c0f5e284b77bb03f98ad1318c4088af',
     'bd_template.py': '00ab0d45e376da0590ea540881c37ea5fce7bce3b7a94e766002e72e8f7e9c49',
     'bd_sender.py': '002d68a1e76d5f96af6fdbabdce54da0af3a93077d8a504ddd106a41fd018280',
     'preflight_gate.py': '2cd286f201430fb9a48c68ead512671f398732e50e768c2fd69031f127f52622',
@@ -80,7 +81,7 @@ def build(snapshot):
         'patch_sha256':sha(payload),'files':files,
         'offline_forward_and_byte_exact_reverse_passed':True,
         'runtime_rollback_verified':False,
-        'excluded':['bd_orchestrator.py','daily_session.py','production databases','.env','credentials','automations','phase4b1g'],
+        'excluded':['bd_orchestrator.py','production databases','.env','credentials','automations','phase4b1g'],
         'notes_zh':'当前通道仅接受已注册 SAFE50 单文件发布。本提案需新的多文件发布登记、互斥及失败恢复验证。回滚保留发送审计和预算预留，不恢复历史客户状态。',
         'notes_en':'Current channel supports only its registered SAFE50 single-file release. New multi-file registration, exclusion and failure recovery validation are required. Rollback preserves send audits/reservations and never rewinds customer history.',
     }
@@ -90,6 +91,9 @@ def build(snapshot):
         'description_en': 'Independent internal-QA registration request; not executable authority.',
         'release_id': 'phase5a1-v6-four-template-internal-qa', 'registered': False,
         'operation_requested': 'internal_qa_once', 'maximum_messages': 4,
+        'sending_transport': 'existing_tencent_enterprise_smtp',
+        'gmail_role': 'internal_recipient_only', 'gmail_oauth_required': False,
+        'receiver_validation': 'manual_unknown_until_evidence',
         'customer_smtp_enabled': False, 'customer_fsp_created': False,
         'files': [item for item in files if item['file'] in qa_names],
         'existing_dependency': {'bd_sender.py': BEFORE['bd_sender.py']},
