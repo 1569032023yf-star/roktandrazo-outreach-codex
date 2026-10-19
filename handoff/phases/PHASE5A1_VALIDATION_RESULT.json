@@ -1,0 +1,34 @@
+{
+  "description_zh": "里程碑 A 已完成；生产 QA 未登记，禁止客户发送。",
+  "description_en": "Milestone A complete; production QA unregistered and customer sending disabled.",
+  "PHASE": "5A.1",
+  "MILESTONE_A": "COMPLETED",
+  "MILESTONE_B": "IN_PROGRESS",
+  "MILESTONE_C": "BLOCKED",
+  "FOUR_V6_TEMPLATES_REGISTERED": true,
+  "REGISTRATION_SCOPE": "DEVELOPMENT_ONLY",
+  "TIKTOK_PRIMARY_ROUTING_IMPLEMENTED": true,
+  "TIKTOK_RANKING_EVIDENCE_VERIFIED": false,
+  "TARGETED_TESTS": {
+    "run": 51,
+    "passed": 51
+  },
+  "FULL_SUITE_NEW_REGRESSIONS": "PENDING_COMPARABLE_RUNS",
+  "INTERNAL_QA_DEPLOYED": false,
+  "INTERNAL_EMAILS_ACTUALLY_SENT": 0,
+  "GMAIL_RECEIPT_VERIFIED": "UNKNOWN",
+  "SPF_DKIM_DMARC_VERIFIED": "UNKNOWN",
+  "CUSTOMER_EMAILS_SENT": 0,
+  "PRODUCTION_CUSTOMER_SEND_ENABLED": false,
+  "BLOCKERS_ZH": [
+    "里程碑 C：缺少受限内部 QA 发布和测试入口；Gmail 未安装/连接",
+    "排名对外使用：缺截图日期、平台和商品身份核实"
+  ],
+  "BLOCKERS_EN": [
+    "Milestone C: no restricted internal-QA release/test operation; Gmail uninstalled/unconnected",
+    "External ranking use: capture date, platform and product identity unverified"
+  ],
+  "COMMIT_SHA": "2f54116bf525598f69ce0de0ae9736ccdb749af9",
+  "PUSH_SUCCESS": true,
+  "COMMIT_SCOPE": "Milestone A code; report follows in a separate commit"
+}
