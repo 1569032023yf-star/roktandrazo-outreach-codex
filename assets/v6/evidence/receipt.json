@@ -1,0 +1,22 @@
+{
+  "description_zh": "用户提供的原始截图收据；不是已通过发送门禁的排名证据。",
+  "description_en": "Receipt for the user-provided original screenshot; not approved ranking evidence for sending.",
+  "source": "user-provided original image",
+  "source_sha256": "d2c82e81da5ad3071b2644d3edc2727985edb1c54a1c6a632ac43162874ae81b",
+  "received_on": "2026-10-19",
+  "capture_date": null,
+  "capture_date_verified": false,
+  "capture_date_reference": null,
+  "platform_attribution": "TikTok Shop, attributed by user; no platform URL visible in image",
+  "visible_category": "Jigsaw Puzzles",
+  "visible_rank": 1,
+  "visible_product_title": "rokt&razo Travel Series, 24 Mini Pack 1000 Pieces Jigsaw Puzzle, 8 Puzzl...",
+  "product_title_truncated": true,
+  "product_identity_verified": false,
+  "product_identity_reference": null,
+  "current_rank_verified": false,
+  "approved_english_copy_received": false,
+  "template_registration": "PENDING_APPROVED_COPY_AND_DATED_EVIDENCE",
+  "claim_limit_zh": "仅可作为待核实日期的历史类目排名截图；不能证明当前排名或整个 TikTok 平台第一。",
+  "claim_limit_en": "Historical category-ranking screenshot with unverified capture date; not evidence of current rank or first place across TikTok."
+}
