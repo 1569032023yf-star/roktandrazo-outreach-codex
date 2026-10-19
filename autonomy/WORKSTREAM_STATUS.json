@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-10-19T16:51:05.212828+00:00",
+  "summary_zh": "真实并行工程执行中，自主运行尚未验收",
+  "summary_en": "Real parallel engineering is running; sustained autonomy is not yet accepted",
+  "production_inventory_id": "1784775229336",
+  "automation_id": "rokt-razo",
+  "workstreams": {
+    "A": {
+      "goal_zh": "Cooperstown安全收尾并推进Lake Placid",
+      "goal_en": "Safely finish Cooperstown and advance to Lake Placid",
+      "baseline": "93a8d0a",
+      "worktree": "../roktandrazo-outreach-autonomy-city",
+      "branch": "codex/autonomy-city-recovery",
+      "status_zh": "独立开发测试中：累计网络重试及人工复核终态",
+      "status_en": "Independent implementation/testing: bounded cumulative retries and manual-review terminal handoff",
+      "expected_business_effect_zh": "解除城市阻塞而不降低SAFE标准",
+      "expected_business_effect_en": "Remove city blockage without weakening SAFE rules",
+      "review": "PENDING",
+      "deployment": "NOT_DEPLOYED",
+      "next_automatic_action_zh": "测试后独立审核并准备固定范围发布",
+      "next_automatic_action_en": "Independently review tested diff and prepare a fixed-scope release"
+    },
+    "B": {
+      "goal_zh": "转换现有44候选的企业官网与第一方商务邮箱",
+      "goal_en": "Convert existing 44 candidates into verified sites and first-party business emails",
+      "baseline": "93a8d0a",
+      "worktree": "../roktandrazo-outreach-autonomy-brand",
+      "branch": "codex/autonomy-brand",
+      "status_zh": "真实核验与断点恢复修复中；历史仍UNKNOWN",
+      "status_en": "Live verification and resume-path repair in progress; history remains UNKNOWN",
+      "expected_business_effect_zh": "提高现有候选有效转化",
+      "expected_business_effect_en": "Improve valid conversion of existing candidates",
+      "review": "PENDING",
+      "deployment": "NOT_DEPLOYED",
+      "next_automatic_action_zh": "完成剩余预算内核验并审核来源证据",
+      "next_automatic_action_en": "Finish verification within remaining budgets and audit source evidence"
+    },
+    "C": {
+      "goal_zh": "完成四套V6完整回归及受控内部QA准备",
+      "goal_en": "Complete full regression and controlled internal QA readiness for four V6 templates",
+      "baseline": "0ce0b10",
+      "worktree": "../roktandrazo-outreach-autonomy-v6",
+      "branch": "codex/autonomy-v6",
+      "status_zh": "完整回归修复中；内部QA登记缺失",
+      "status_en": "Full regression repairs in progress; internal QA operation unregistered",
+      "expected_business_effect_zh": "具备可信、受门禁的内部验收与客户发信准备",
+      "expected_business_effect_en": "Enable trustworthy gated internal acceptance and outreach readiness",
+      "review": "PENDING",
+      "deployment": "NOT_DEPLOYED",
+      "next_automatic_action_zh": "审核回归差异和新QA登记包",
+      "next_automatic_action_en": "Review regression changes and the new QA registration package"
+    },
+    "D": {
+      "goal_zh": "持久化队列、独立审查、串行发布与业务日报",
+      "goal_en": "Persistent queue, independent review, serialized releases and daily business reporting",
+      "baseline": "0ce0b10",
+      "worktree": ".",
+      "branch": "codex/autonomous-bd-supervisor",
+      "status_zh": "心跳已创建，CLI真实启动成功；8项离线测试通过，独立审核中",
+      "status_en": "Heartbeat created; actual CLI launch succeeded; eight offline tests passed; independent review running",
+      "expected_business_effect_zh": "减少用户日常调度并保留可审计门禁",
+      "expected_business_effect_en": "Reduce manual scheduling while preserving auditable gates",
+      "review": "RUNNING",
+      "deployment": "NO_NEW_PRODUCTION_RELEASE",
+      "next_automatic_action_zh": "修复独立审核发现并核对两次真实心跳证据",
+      "next_automatic_action_en": "Repair independent review findings and verify two real heartbeat receipts"
+    }
+  },
+  "production_metrics_source": "UNKNOWN",
+  "prior_metrics_are_not_current_growth": true
+}
