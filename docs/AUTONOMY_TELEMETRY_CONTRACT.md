@@ -1,8 +1,8 @@
 # 脱敏聚合遥测合同 / Sanitized Aggregate Telemetry Contract
 
-日期 / Date: 2026-10-20。状态：开发实现，待父代理独立审核；未接通真实遥测，未部署，未标记业务验收完成。
+日期 / Date: 2026-10-20。状态：开发实现及独立审核完成；独立34项内存断言通过。未接通真实遥测，未部署，未标记业务验收完成。
 
-Status: development implementation awaiting independent parent review. No real telemetry feed connected, no deployment, no business acceptance claimed.
+Status: implementation and independent review complete, with 34 independent in-memory assertions passed. No real telemetry feed connected, no deployment, no business acceptance claimed.
 
 ## 范围与信任边界 / Scope and trust boundary
 

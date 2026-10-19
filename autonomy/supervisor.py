@@ -92,6 +92,16 @@ def reconcile(runtime, state):
 
 def task_prompt(task):
     # Queue data never becomes executable commands or arbitrary agent instructions.
+    if task['id'] == 'B-brand-dependency-audit' and task['role'] == 'reviewer':
+        return ('你是独立Reviewer，执行品牌依赖迁移前的只读差异审核。先读AGENTS.md和总控文档。'
+                '仅比较当前工作树与固定Git提交5e9b89de99a596b509426a596ef02fcc7521facc中的'
+                'brand_acquisition、对应tests及入口scripts的导入依赖；用Git读取和AST分析，'
+                '不导入或运行采集/生产模块，不联网、不读候选原始数据/生产DB/凭据，不修改文件。'
+                '识别缺失模块、同名文件差异、资格/历史/MX依赖和最小可复现离线测试集。'
+                '指出哪些文件可作为新增文件迁移，哪些现有文件必须精确合并，禁止整文件覆盖较新5A代码。'
+                '最终仅JSON字段summary_zh、summary_en、findings数组；每项severity/file/detail_zh/detail_en。'
+                '摘要列出已核查范围、未验证限制和下一项最小代码修改。不把目录存在当作身份或发信资格。'
+                '预算10分钟，读不到固定提交则报告阻塞，不猜测替代提交。')
     if task['id'] == 'D-sanitized-telemetry-adapter' and task['role'] == 'developer':
         return ('你是独立Developer，执行用户已授权的一项有界工程任务。先读AGENTS.md和总控文档。'
                 '只允许新建或编辑autonomy/telemetry.py、autonomy/test_telemetry.py、'
@@ -250,8 +260,8 @@ def dashboard(root=ROOT):
     for key, stream in state.get('workstreams', {}).items():
         report.append(f"- {key}: {stream.get('status_zh', unknown)} / {stream.get('status_en', unknown)}")
     report.extend(['', '本日实际生产部署 / Actual production deployments today: UNKNOWN',
-                   '', '总控独立审核已通过；后续新改动仍需独立审核。待完成：两次真实自动触发、生产遥测和新发布登记。',
-                   'Supervisor independent review passed; future changes still require independent review. Pending: two genuine automated triggers, production telemetry and new release registration.',
+                   '', '已完成审核与周期证据见验收JSON；后续新改动仍需独立审核。待完成：真实生产遥测、新发布登记及持续并行。',
+                   'Completed reviews and cycle evidence are in the validation JSON; future changes still require independent review. Pending: real production telemetry, new release registration and sustained parallel operation.',
                    '', '下一步：继续队列工程、审核各线提交，并通过受控入口查询发布状态。',
                    'Next: continue queued engineering, review stream commits, query releases through the controlled channel.',
                    '', '风险与未执行：未证明持续自主开发；本报告不授权生产DB或SMTP。',
