@@ -1,0 +1,66 @@
+{
+  "description_zh": "仅供审查的 V6 发布提案；未注册、未部署，不可复用 SAFE50 release。",
+  "description_en": "Review-only V6 proposal; unregistered and undeployed. Never reuse the SAFE50 release.",
+  "release_id": "phase5a-v6-controlled-send-resumption",
+  "registered": false,
+  "production_ready": false,
+  "baseline_commit": "72bdd70a13dd959264a3137fc546334249b48be1",
+  "patch_sha256": "3862d529c7409268cd8a33b75c9440dadd33718e75a676433eedd4fee5509e44",
+  "files": [
+    {
+      "file": "bd_template.py",
+      "action": "patch",
+      "before_sha256": "00ab0d45e376da0590ea540881c37ea5fce7bce3b7a94e766002e72e8f7e9c49",
+      "after_sha256": "c81587153e48cc642c967cf53f1364bc29a56c047f4f9df3bfcc29a4e68b09ec"
+    },
+    {
+      "file": "bd_sender.py",
+      "action": "patch",
+      "before_sha256": "002d68a1e76d5f96af6fdbabdce54da0af3a93077d8a504ddd106a41fd018280",
+      "after_sha256": "f1cf62c990a703adfb781d6366e007055255f9969f6acc22fed072a82a168b65"
+    },
+    {
+      "file": "preflight_gate.py",
+      "action": "patch",
+      "before_sha256": "2cd286f201430fb9a48c68ead512671f398732e50e768c2fd69031f127f52622",
+      "after_sha256": "1d27bb637e2e420d193be1c91e474376ddb8857ab10d8e9f102e365b464c0187"
+    },
+    {
+      "file": "final_send_plan.py",
+      "action": "patch",
+      "before_sha256": "26de2f017390eda767beddfe8fbd6bc438b78ddb430eeebc4b96c72aa41d327f",
+      "after_sha256": "240899025a67f451a6cb9265ddc061d07f3cbfaab3e09d0ed222db032ef7b455"
+    },
+    {
+      "file": "v6_outreach.py",
+      "action": "create_if_absent",
+      "before_sha256": null,
+      "after_sha256": "20aacf5e84d778940164968db999e0bf0a9b9477d3ab44c4601ea1ff7effaf50"
+    },
+    {
+      "file": "send_resumption.py",
+      "action": "create_if_absent",
+      "before_sha256": null,
+      "after_sha256": "6c9447eeb2bf4dd40d2d9d7170396a48bbf17f757da3468eb5918f7dd28cd885"
+    },
+    {
+      "file": "controlled_v6_test.py",
+      "action": "create_if_absent",
+      "before_sha256": null,
+      "after_sha256": "f18f9672f92aa951f9fce077ddc2d459d39765f24244f01185842909ed078345"
+    }
+  ],
+  "offline_forward_and_byte_exact_reverse_passed": true,
+  "runtime_rollback_verified": false,
+  "excluded": [
+    "bd_orchestrator.py",
+    "daily_session.py",
+    "production databases",
+    ".env",
+    "credentials",
+    "automations",
+    "phase4b1g"
+  ],
+  "notes_zh": "当前通道仅接受已注册 SAFE50 单文件发布。本提案需新的多文件发布登记、互斥及失败恢复验证。回滚保留发送审计和预算预留，不恢复历史客户状态。",
+  "notes_en": "Current channel supports only its registered SAFE50 single-file release. New multi-file registration, exclusion and failure recovery validation are required. Rollback preserves send audits/reservations and never rewinds customer history."
+}

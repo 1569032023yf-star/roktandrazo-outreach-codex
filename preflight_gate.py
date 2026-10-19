@@ -456,7 +456,19 @@ def check_template(conn, plan_rows):
         return {"name": "template", "status": "fail", "detail": f"bd_template import failed: {e}"}
 
     failures = []
+    from send_resumption import load_policy, require_ready, remaining_plan_capacity
+    from v6_outreach import validate_message
+    try:
+        policy = load_policy()
+        require_ready(policy)
+        if plan_rows and len(plan_rows) > remaining_plan_capacity(conn, plan_rows[0]["outreach_batch_date"], policy):
+            raise ValueError("SEND_RESUMPTION_BLOCKED:PLAN_EXCEEDS_REMAINING_CAP")
+    except (ValueError, TypeError, KeyError) as exc:
+        return {"name": "template", "status": "fail", "detail": str(exc)}
     for r in plan_rows:
+        if r["message_type"] != "new_outreach":
+            failures.append("follow_up_disabled")
+            continue
         tid = r["template_id"]
         if tid not in _TEMPLATE_REGISTRY:
             failures.append(f"unknown_template:{tid} (lead_id={r['lead_id']})")
@@ -472,9 +484,12 @@ def check_template(conn, plan_rows):
 
         lead = conn.execute("SELECT * FROM leads WHERE id=?", (r["lead_id"],)).fetchone()
         if lead:
-            routed = route_template_for_lead(dict(lead))
-            if routed != tid:
-                failures.append(f"template_mismatch:plan={tid} routed={routed} (lead_id={r['lead_id']})")
+            try:
+                validate_message(dict(r), dict(lead), policy)
+            except (ValueError, TypeError, KeyError) as exc:
+                failures.append(f"v6_template_invalid:{exc}")
+        else:
+            failures.append("v6_source_lead_missing")
 
     name = "template"
     if failures:

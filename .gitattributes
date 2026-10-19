@@ -2,3 +2,4 @@
 PHASE3_RELEASE_PACKAGE/** -text
 # Byte-exact production patch transport / 生产补丁按精确字节传输
 patches/production/phase4a8s/continuous_discovery.patch -text
+patches/production/phase5a/proposed-v6.patch -text

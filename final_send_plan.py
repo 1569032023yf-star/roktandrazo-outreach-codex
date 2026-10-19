@@ -43,6 +43,30 @@ def _render_meta_values(entry: dict, lead_by_id: dict) -> dict:
 
 def create_plan(conn: sqlite3.Connection, leads: list[dict], batch_date: str, message_type: str,
                 eligible_check: callable | None = None) -> str:
+    from send_resumption import load_policy, remaining_plan_capacity
+    from v6_outreach import validate_message
+    if message_type != "new_outreach":
+        raise ValueError("PHASE5A_FOLLOW_UP_DISABLED")
+    policy = load_policy()
+    # Hold the caller's transaction across quota calculation and plan replacement.
+    if not conn.in_transaction:
+        conn.execute("BEGIN IMMEDIATE")
+    capacity = remaining_plan_capacity(conn, batch_date, policy)
+    if capacity <= 0:
+        return ""
+    unique, seen = [], set()
+    for lead in leads:
+        org = lead.get("organization_key")
+        if not org or org in seen:
+            continue
+        if eligible_check is not None and not eligible_check(lead):
+            continue
+        validate_message(lead, lead, policy)
+        seen.add(org)
+        unique.append(lead)
+        if len(unique) >= capacity:
+            break
+    leads = unique if capacity else []
     entries = build_final_plan_entries(leads, batch_date, message_type, eligible_check=eligible_check)
     plan_id = f"{batch_date}:{message_type}:{uuid.uuid4().hex[:10]}"
     if not entries:

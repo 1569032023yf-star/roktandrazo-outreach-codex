@@ -12,6 +12,7 @@ import json
 import os
 import smtplib
 import sqlite3
+from contextlib import closing
 import ssl
 import time
 from datetime import datetime, timezone, timedelta
@@ -391,7 +392,7 @@ def _resolve_real_plan_entry(plan_entry_id, lead_id: int = None, db_path: str = 
     conn.row_factory = sqlite3.Row
     try:
         row = conn.execute(
-            "SELECT id, lead_id, recipient_email, outreach_batch_date, status "
+            "SELECT * "
             "FROM final_send_plan WHERE id=?",
             (plan_entry_id,)
         ).fetchone()
@@ -505,6 +506,8 @@ def send_one(lead: dict, dry_run: bool = False) -> dict:
     # P5: 禁止接受 lead_id / 旧 plan_entry_id 字段冒充 final_send_plan.id
     message_type = lead.get("message_type")
     outreach_batch_date = lead.get("outreach_batch_date")
+    if message_type == "follow_up":
+        return {"success": False, "message": "PHASE5A_FOLLOW_UP_DISABLED", "status": "blocked"}
 
     # Validation
     if not email:
@@ -540,6 +543,9 @@ def send_one(lead: dict, dry_run: bool = False) -> dict:
 
     # Test mode: redirect to test email, add [TEST] tag
     test_cfg = get_test_config()
+    # The old test-mode shortcut must not bypass template/ownership safeguards.
+    if test_cfg["test_mode"]:
+        return {"success": False, "message": "PHASE5A_USE_CONTROLLED_INTERNAL_TEST_ENTRYPOINT", "status": "blocked"}
     actual_to = email
     if test_cfg["test_mode"] and test_cfg["test_email"]:
         actual_to = test_cfg["test_email"]
@@ -566,6 +572,26 @@ def send_one(lead: dict, dry_run: bool = False) -> dict:
             return {"success": False, "message": "Missing real final_send_plan.id", "status": "failed"}
         if real_plan["status"] == "sent":
             return {"success": False, "message": "ALREADY_SENT_SKIP", "status": "skipped"}
+
+        try:
+            from send_resumption import load_policy, require_ready
+            from v6_outreach import validate_message
+            policy = load_policy()
+            require_ready(policy, actual_from=get_sender_info()["email"])
+            if (real_plan["recipient_email"].casefold() != email.casefold()
+                    or real_plan["outreach_batch_date"] != outreach_batch_date
+                    or real_plan["message_type"] != message_type or real_plan["status"] != "planned"):
+                raise ValueError("V6_FROZEN_RECIPIENT_OR_BATCH_MISMATCH")
+            with closing(sqlite3.connect(DB_PATH)) as v6_conn:
+                v6_conn.row_factory = sqlite3.Row
+                source = v6_conn.execute("SELECT * FROM leads WHERE id=?", (lead_id,)).fetchone()
+            if source is None:
+                raise ValueError("V6_SOURCE_LEAD_MISSING")
+            source = dict(source)
+            validate_message(real_plan, source, policy)
+            validate_message(lead, source, policy)
+        except (ValueError, KeyError, TypeError, sqlite3.Error) as exc:
+            return {"success": False, "message": str(exc), "status": "blocked"}
 
         try:
             validate_send_authorization(authorization_id,
@@ -606,6 +632,13 @@ def send_one(lead: dict, dry_run: bool = False) -> dict:
 
     # Build customer MIME (with pixel if tracking) and sender copy (no pixel)
     try:
+        from send_resumption import reserve_smtp, load_policy, require_ready
+        policy = load_policy()  # Recheck expiry/stop immediately before SMTP reservation.
+        require_ready(policy, actual_from=get_sender_info()["email"])
+        from recipient_scheduler import in_send_window
+        if source.get("timezone_status") != "RESOLVED" or not in_send_window(source.get("recipient_timezone") or ""):
+            raise ValueError("PHASE5A_RECIPIENT_WINDOW_BLOCKED")
+        reserve_smtp(DB_PATH, plan_entry_id, source.get("organization_key"), outreach_batch_date, policy)
         msg = _build_email(actual_to, subject, body_text, body_html if body_html else None)
         sender_email = get_sender_info()["email"]
 
@@ -615,8 +648,15 @@ def send_one(lead: dict, dry_run: bool = False) -> dict:
 
         server = _create_connection()
         # Send to customer only (tracked MIME)
-        server.sendmail(sender_email, [actual_to], msg.as_string())
-        server.quit()
+        try:
+            rejected = server.sendmail(sender_email, [actual_to], msg.as_string())
+            if rejected:
+                raise RuntimeError("PHASE5A_SMTP_RECIPIENT_REJECTED")
+        finally:
+            try:
+                server.quit()
+            except Exception:
+                pass  # QUIT failure must not erase a successful SMTP acceptance.
         # P5: 记录 SMTP accepted 时刻（UTC ISO）
         smtp_accepted_at = datetime.now(timezone.utc).isoformat()
 
@@ -654,6 +694,8 @@ def send_one(lead: dict, dry_run: bool = False) -> dict:
             authorization_id=authorization_id, smtp_accepted_at=smtp_accepted_at,
         )
         if not commit_ok:
+            from send_resumption import halt_new_outreach
+            halt_new_outreach(DB_PATH, "SMTP_ACCEPTED_DATABASE_COMMIT_FAILED")
             return {"success": False, "message": f"DB commit failed: {commit_err}", "status": "failed"}
 
         # ── 提交成功后的 best-effort 副作用（失败不影响客户 SMTP accepted）──
@@ -673,7 +715,7 @@ def send_one(lead: dict, dry_run: bool = False) -> dict:
             _activate_tracking(tracking_hash, tracking_msg_id, lead_id)
 
         # ── Sender copy (untracked, separate MIME) ───────
-        if sender_email != actual_to:
+        if sender_email != actual_to and message_type != "new_outreach":
             try:
                 sc = _build_email(sender_email, subject, body_text, body_html_no_pixel if body_html_no_pixel else None)
                 sc["X-Roktandrazo-Type"] = "sender_copy"
@@ -696,7 +738,13 @@ def send_one(lead: dict, dry_run: bool = False) -> dict:
             result["sender_copy_error"] = "; ".join(sender_copy_failures)
         return result
 
+    except ValueError as e:
+        # Policy/quota refusal is not a delivery failure; preserve customer state.
+        return {"success": False, "message": str(e), "status": "blocked"}
+
     except smtplib.SMTPRecipientsRefused as e:
+        from send_resumption import halt_new_outreach
+        halt_new_outreach(DB_PATH, "SMTP_RECIPIENT_REFUSED")
         if test_cfg["test_mode"] and test_cfg["test_email"]:
             return {"success": False, "message": f"Test recipient refused: {e}", "status": "test_failed"}
         update_lead_status(lead_id, "failed", error_message=str(e))
@@ -704,6 +752,8 @@ def send_one(lead: dict, dry_run: bool = False) -> dict:
         return {"success": False, "message": f"Recipient refused: {e}", "status": "failed"}
 
     except smtplib.SMTPDataError as e:
+        from send_resumption import halt_new_outreach
+        halt_new_outreach(DB_PATH, "SMTP_DATA_ERROR")
         error_str = str(e)
         if test_cfg["test_mode"] and test_cfg["test_email"]:
             return {"success": False, "message": f"Test SMTP error: {e}", "status": "test_failed"}
@@ -717,6 +767,8 @@ def send_one(lead: dict, dry_run: bool = False) -> dict:
         return {"success": False, "message": f"SMTP error: {e}", "status": "failed"}
 
     except Exception as e:
+        from send_resumption import halt_new_outreach
+        halt_new_outreach(DB_PATH, "SMTP_OR_RUNTIME_ERROR")
         if test_cfg["test_mode"] and test_cfg["test_email"]:
             return {"success": False, "message": f"Test send error: {e}", "status": "test_failed"}
         update_lead_status(lead_id, "failed", error_message=str(e))

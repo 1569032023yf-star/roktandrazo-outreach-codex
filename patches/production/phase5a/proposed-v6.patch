@@ -1,0 +1,718 @@
+--- a/bd_template.py
++++ b/bd_template.py
+@@ -210,6 +210,9 @@
+ def _compute_template_hashes():
+     """Compute SHA-256 of canonical body texts for send-time validation."""
+     for key, tpl in _TEMPLATE_REGISTRY.items():
++        if key.endswith("_v6_locked"):
++            _TEMPLATE_SHA256[key] = _v6.LOCKED_SHA256[key]
++            continue
+         if tpl["body_text"] is None:
+             _TEMPLATE_SHA256[key] = "DISABLED"
+             continue
+@@ -217,6 +220,13 @@
+         _TEMPLATE_SHA256[key] = _hashlib.sha256(content.encode("utf-8")).hexdigest()[:8]
+ 
+ _compute_template_hashes()
++
++# Phase 5A: V5 remains available for historical preview, never for new sending.
++import v6_outreach as _v6
++for _key, (_subject, _body) in _v6.TEMPLATES.items():
++    _TEMPLATE_REGISTRY[_key] = {"status": "ACTIVE_LOCKED", "body_text": _body,
++        "body_html": None, "signature_text": _v6.SIGNATURE, "signature_html": None}
++    _TEMPLATE_SHA256[_key] = _v6.LOCKED_SHA256[_key]
+ 
+ # ── Store Type → Template Routing ────────────────────────
+ 
+@@ -266,7 +276,7 @@
+     return bool(domain.strip()) and local_part in _GENERIC_PUBLIC_INBOX_LOCAL_PARTS
+ 
+ 
+-def route_template_for_lead(lead: dict) -> str:
++def route_legacy_template_for_lead(lead: dict) -> str:
+     """Determine which template to use based on store_type.
+     
+     Manual override (lead['template_override']) takes absolute precedence.
+@@ -299,6 +309,12 @@
+     
+     # Default: retail distributor
+     return "retail_distributor_v5_locked"
++
++
++def route_template_for_lead(lead: dict) -> str:
++    """Verified business type precedes inbox role; unknown identity fails closed."""
++    from send_resumption import load_policy
++    return _v6.route(lead, load_policy())
+ 
+ 
+ def get_template_status(template_key: str) -> str:
+@@ -512,6 +528,11 @@
+     If template_key is provided and valid, uses that. Otherwise routes via route_template_for_lead().
+     If tracking dict is provided (from prepare_tracking_for_lead), use its pixel_html.
+     """
++    # V6 never uses tracking, legacy signature, or automatic unknown-type guesses.
++    if template_key is None or template_key in _v6.TEMPLATES:
++        from send_resumption import load_policy
++        return _v6.render(lead, load_policy(), template_key)
++    # Explicit legacy keys remain historical preview only; sender/preflight reject them.
+     # Route template
+     if not template_key or template_key not in _TEMPLATE_REGISTRY:
+         template_key = route_template_for_lead(lead)
+@@ -654,7 +675,8 @@
+ 
+ 
+ def apply_email_to_lead(lead: dict, template_key: str = None, tracking: dict = None) -> dict:
+-    email_data = get_email_for_lead(lead, tracking=tracking)
++    email_data = get_email_for_lead(lead, template_key=template_key, tracking=tracking)
++    lead["template_id"] = email_data["template_key"]
+     lead["email_template"] = email_data["template_key"]
+     lead["email_subject"] = email_data["subject"]
+     lead["email_body"] = email_data["body_text"]
+--- a/bd_sender.py
++++ b/bd_sender.py
+@@ -12,6 +12,7 @@
+ import os
+ import smtplib
+ import sqlite3
++from contextlib import closing
+ import ssl
+ import time
+ from datetime import datetime, timezone, timedelta
+@@ -391,7 +392,7 @@
+     conn.row_factory = sqlite3.Row
+     try:
+         row = conn.execute(
+-            "SELECT id, lead_id, recipient_email, outreach_batch_date, status "
++            "SELECT * "
+             "FROM final_send_plan WHERE id=?",
+             (plan_entry_id,)
+         ).fetchone()
+@@ -505,6 +506,8 @@
+     # P5: 禁止接受 lead_id / 旧 plan_entry_id 字段冒充 final_send_plan.id
+     message_type = lead.get("message_type")
+     outreach_batch_date = lead.get("outreach_batch_date")
++    if message_type == "follow_up":
++        return {"success": False, "message": "PHASE5A_FOLLOW_UP_DISABLED", "status": "blocked"}
+ 
+     # Validation
+     if not email:
+@@ -540,6 +543,9 @@
+ 
+     # Test mode: redirect to test email, add [TEST] tag
+     test_cfg = get_test_config()
++    # The old test-mode shortcut must not bypass template/ownership safeguards.
++    if test_cfg["test_mode"]:
++        return {"success": False, "message": "PHASE5A_USE_CONTROLLED_INTERNAL_TEST_ENTRYPOINT", "status": "blocked"}
+     actual_to = email
+     if test_cfg["test_mode"] and test_cfg["test_email"]:
+         actual_to = test_cfg["test_email"]
+@@ -566,6 +572,26 @@
+             return {"success": False, "message": "Missing real final_send_plan.id", "status": "failed"}
+         if real_plan["status"] == "sent":
+             return {"success": False, "message": "ALREADY_SENT_SKIP", "status": "skipped"}
++
++        try:
++            from send_resumption import load_policy, require_ready
++            from v6_outreach import validate_message
++            policy = load_policy()
++            require_ready(policy, actual_from=get_sender_info()["email"])
++            if (real_plan["recipient_email"].casefold() != email.casefold()
++                    or real_plan["outreach_batch_date"] != outreach_batch_date
++                    or real_plan["message_type"] != message_type or real_plan["status"] != "planned"):
++                raise ValueError("V6_FROZEN_RECIPIENT_OR_BATCH_MISMATCH")
++            with closing(sqlite3.connect(DB_PATH)) as v6_conn:
++                v6_conn.row_factory = sqlite3.Row
++                source = v6_conn.execute("SELECT * FROM leads WHERE id=?", (lead_id,)).fetchone()
++            if source is None:
++                raise ValueError("V6_SOURCE_LEAD_MISSING")
++            source = dict(source)
++            validate_message(real_plan, source, policy)
++            validate_message(lead, source, policy)
++        except (ValueError, KeyError, TypeError, sqlite3.Error) as exc:
++            return {"success": False, "message": str(exc), "status": "blocked"}
+ 
+         try:
+             validate_send_authorization(authorization_id,
+@@ -606,6 +632,13 @@
+ 
+     # Build customer MIME (with pixel if tracking) and sender copy (no pixel)
+     try:
++        from send_resumption import reserve_smtp, load_policy, require_ready
++        policy = load_policy()  # Recheck expiry/stop immediately before SMTP reservation.
++        require_ready(policy, actual_from=get_sender_info()["email"])
++        from recipient_scheduler import in_send_window
++        if source.get("timezone_status") != "RESOLVED" or not in_send_window(source.get("recipient_timezone") or ""):
++            raise ValueError("PHASE5A_RECIPIENT_WINDOW_BLOCKED")
++        reserve_smtp(DB_PATH, plan_entry_id, source.get("organization_key"), outreach_batch_date, policy)
+         msg = _build_email(actual_to, subject, body_text, body_html if body_html else None)
+         sender_email = get_sender_info()["email"]
+ 
+@@ -615,8 +648,15 @@
+ 
+         server = _create_connection()
+         # Send to customer only (tracked MIME)
+-        server.sendmail(sender_email, [actual_to], msg.as_string())
+-        server.quit()
++        try:
++            rejected = server.sendmail(sender_email, [actual_to], msg.as_string())
++            if rejected:
++                raise RuntimeError("PHASE5A_SMTP_RECIPIENT_REJECTED")
++        finally:
++            try:
++                server.quit()
++            except Exception:
++                pass  # QUIT failure must not erase a successful SMTP acceptance.
+         # P5: 记录 SMTP accepted 时刻（UTC ISO）
+         smtp_accepted_at = datetime.now(timezone.utc).isoformat()
+ 
+@@ -654,6 +694,8 @@
+             authorization_id=authorization_id, smtp_accepted_at=smtp_accepted_at,
+         )
+         if not commit_ok:
++            from send_resumption import halt_new_outreach
++            halt_new_outreach(DB_PATH, "SMTP_ACCEPTED_DATABASE_COMMIT_FAILED")
+             return {"success": False, "message": f"DB commit failed: {commit_err}", "status": "failed"}
+ 
+         # ── 提交成功后的 best-effort 副作用（失败不影响客户 SMTP accepted）──
+@@ -673,7 +715,7 @@
+             _activate_tracking(tracking_hash, tracking_msg_id, lead_id)
+ 
+         # ── Sender copy (untracked, separate MIME) ───────
+-        if sender_email != actual_to:
++        if sender_email != actual_to and message_type != "new_outreach":
+             try:
+                 sc = _build_email(sender_email, subject, body_text, body_html_no_pixel if body_html_no_pixel else None)
+                 sc["X-Roktandrazo-Type"] = "sender_copy"
+@@ -696,7 +738,13 @@
+             result["sender_copy_error"] = "; ".join(sender_copy_failures)
+         return result
+ 
++    except ValueError as e:
++        # Policy/quota refusal is not a delivery failure; preserve customer state.
++        return {"success": False, "message": str(e), "status": "blocked"}
++
+     except smtplib.SMTPRecipientsRefused as e:
++        from send_resumption import halt_new_outreach
++        halt_new_outreach(DB_PATH, "SMTP_RECIPIENT_REFUSED")
+         if test_cfg["test_mode"] and test_cfg["test_email"]:
+             return {"success": False, "message": f"Test recipient refused: {e}", "status": "test_failed"}
+         update_lead_status(lead_id, "failed", error_message=str(e))
+@@ -704,6 +752,8 @@
+         return {"success": False, "message": f"Recipient refused: {e}", "status": "failed"}
+ 
+     except smtplib.SMTPDataError as e:
++        from send_resumption import halt_new_outreach
++        halt_new_outreach(DB_PATH, "SMTP_DATA_ERROR")
+         error_str = str(e)
+         if test_cfg["test_mode"] and test_cfg["test_email"]:
+             return {"success": False, "message": f"Test SMTP error: {e}", "status": "test_failed"}
+@@ -717,6 +767,8 @@
+         return {"success": False, "message": f"SMTP error: {e}", "status": "failed"}
+ 
+     except Exception as e:
++        from send_resumption import halt_new_outreach
++        halt_new_outreach(DB_PATH, "SMTP_OR_RUNTIME_ERROR")
+         if test_cfg["test_mode"] and test_cfg["test_email"]:
+             return {"success": False, "message": f"Test send error: {e}", "status": "test_failed"}
+         update_lead_status(lead_id, "failed", error_message=str(e))
+--- a/preflight_gate.py
++++ b/preflight_gate.py
+@@ -456,7 +456,19 @@
+         return {"name": "template", "status": "fail", "detail": f"bd_template import failed: {e}"}
+ 
+     failures = []
++    from send_resumption import load_policy, require_ready, remaining_plan_capacity
++    from v6_outreach import validate_message
++    try:
++        policy = load_policy()
++        require_ready(policy)
++        if plan_rows and len(plan_rows) > remaining_plan_capacity(conn, plan_rows[0]["outreach_batch_date"], policy):
++            raise ValueError("SEND_RESUMPTION_BLOCKED:PLAN_EXCEEDS_REMAINING_CAP")
++    except (ValueError, TypeError, KeyError) as exc:
++        return {"name": "template", "status": "fail", "detail": str(exc)}
+     for r in plan_rows:
++        if r["message_type"] != "new_outreach":
++            failures.append("follow_up_disabled")
++            continue
+         tid = r["template_id"]
+         if tid not in _TEMPLATE_REGISTRY:
+             failures.append(f"unknown_template:{tid} (lead_id={r['lead_id']})")
+@@ -472,9 +484,12 @@
+ 
+         lead = conn.execute("SELECT * FROM leads WHERE id=?", (r["lead_id"],)).fetchone()
+         if lead:
+-            routed = route_template_for_lead(dict(lead))
+-            if routed != tid:
+-                failures.append(f"template_mismatch:plan={tid} routed={routed} (lead_id={r['lead_id']})")
++            try:
++                validate_message(dict(r), dict(lead), policy)
++            except (ValueError, TypeError, KeyError) as exc:
++                failures.append(f"v6_template_invalid:{exc}")
++        else:
++            failures.append("v6_source_lead_missing")
+ 
+     name = "template"
+     if failures:
+--- a/final_send_plan.py
++++ b/final_send_plan.py
+@@ -43,6 +43,30 @@
+ 
+ def create_plan(conn: sqlite3.Connection, leads: list[dict], batch_date: str, message_type: str,
+                 eligible_check: callable | None = None) -> str:
++    from send_resumption import load_policy, remaining_plan_capacity
++    from v6_outreach import validate_message
++    if message_type != "new_outreach":
++        raise ValueError("PHASE5A_FOLLOW_UP_DISABLED")
++    policy = load_policy()
++    # Hold the caller's transaction across quota calculation and plan replacement.
++    if not conn.in_transaction:
++        conn.execute("BEGIN IMMEDIATE")
++    capacity = remaining_plan_capacity(conn, batch_date, policy)
++    if capacity <= 0:
++        return ""
++    unique, seen = [], set()
++    for lead in leads:
++        org = lead.get("organization_key")
++        if not org or org in seen:
++            continue
++        if eligible_check is not None and not eligible_check(lead):
++            continue
++        validate_message(lead, lead, policy)
++        seen.add(org)
++        unique.append(lead)
++        if len(unique) >= capacity:
++            break
++    leads = unique if capacity else []
+     entries = build_final_plan_entries(leads, batch_date, message_type, eligible_check=eligible_check)
+     plan_id = f"{batch_date}:{message_type}:{uuid.uuid4().hex[:10]}"
+     if not entries:
+--- /dev/null
++++ b/v6_outreach.py
+@@ -0,0 +1,173 @@
++"""Locked V6 content and evidence-based routing; no transport or database access."""
++from __future__ import annotations
++
++import hashlib
++import html
++import json
++import re
++
++RETAIL = "retail_distributor_v6_locked"
++CUSTOM = "custom_production_v6_locked"
++REFERRAL = "general_inbox_referral_v6_locked"
++RENDERER_VERSION = "v6_plain_html_v1"
++
++TEMPLATES = {
++    RETAIL: ("Puzzles & card games for {store_name}?", """Hi {greeting},
++
++I'm Ian from rokt&razo. We create family card games and jigsaw puzzles, including our 24-in-1 puzzle series.
++
++We're expanding our retail partnerships and offer low minimum orders, DDP pricing, and product samples for review.
++
++Would you be interested in taking a look at our wholesale catalog to see if anything might be a fit for {store_name}?
++
++{signature}"""),
++    CUSTOM: ("Custom product production for {store_name}", """Hi {greeting},
++
++I'm Ian from rokt&razo. With over 10 years of experience, we help brands develop and manufacture custom card games, puzzles, printed paper products, and packaging.
++
++We support flexible production runs, from small test orders to larger-scale manufacturing.
++
++Are you currently developing new products or exploring additional production partners? I'd be happy to share a brief overview of our capabilities.
++
++{signature}"""),
++    REFERRAL: ("Right contact at {store_name}?", """Hi {greeting},
++
++I'm Ian from rokt&razo. We offer wholesale puzzles and family card games, as well as custom product development and production services.
++
++Could you please point me to the person responsible for purchasing or product development at {store_name}?
++
++I'd be happy to share a short introduction with the right person.
++
++Thank you for your help!
++
++{signature}"""),
++}
++SIGNATURE = """Best regards,
++
++Ian
++Business Development Specialist
++rokt&razo
++
++This is a commercial introduction from rokt&razo.
++
++Business mailing address: {address}
++
++If you prefer not to receive further business emails from us, reply "unsubscribe" and we'll stop."""
++
++RETAIL_TYPES = frozenset({"toy_store", "game_store", "board_game_store", "puzzle_store",
++    "bookstore", "independent_bookstore", "gift_shop", "museum_store", "museum_gift_shop",
++    "souvenir_store", "card_game_store", "hobby_store", "comic_store", "childrens_store",
++    "educational_store", "distributor", "wholesaler"})
++CUSTOM_TYPES = frozenset({"brand_owner", "card_game_brand", "puzzle_brand", "game_brand",
++    "greeting_card_brand", "paper_goods_brand", "publisher", "design_brand",
++    "private_label", "custom_merchandise", "oem"})
++
++
++def canonical_hash(key):
++    value = [key, *TEMPLATES[key], SIGNATURE, RENDERER_VERSION]
++    return hashlib.sha256(json.dumps(value, ensure_ascii=False).encode()).hexdigest()
++
++
++# Fixed separately from runtime calculations. Updating content requires a reviewed lock update.
++LOCKED_SHA256 = {'retail_distributor_v6_locked': '37fb98788e6d3f89fcd105ec1d009ed68ece086e7d13375660746d8727e635d3', 'custom_production_v6_locked': '7ead050c156c70042e11459f400c1d4b41eccbd2c60198707717f43bac81911c', 'general_inbox_referral_v6_locked': '434956cee706dc9753669b63c7ade881690a6095b727d285f6b605a002b5e0f9'}
++
++
++def _clean(value):
++    value = str(value or "").strip()
++    if not value or any(c in value for c in "\r\n{}<>\x00") or re.search(r"https?://|www\.", value, re.I):
++        raise ValueError("V6_UNSAFE_OR_MISSING_FIELD")
++    return value
++
++
++def reviewed_lead(lead, policy):
++    """Operational review is separate from and never replaces V2/history eligibility."""
++    review = (policy.get("reviewed_leads") or {}).get(str(lead.get("id")))
++    if not isinstance(review, dict) or review.get("identity_verified") is not True:
++        raise ValueError("V6_IDENTITY_REVIEW_REQUIRED")
++    if not str(review.get("evidence_url") or "").startswith("https://"):
++        raise ValueError("V6_BUSINESS_EVIDENCE_REQUIRED")
++    if not review.get("organization_key") or review.get("organization_key") != lead.get("organization_key"):
++        raise ValueError("V6_ORGANIZATION_REVIEW_MISMATCH")
++    if str(review.get("email") or "").casefold() != str(lead.get("email") or "").casefold():
++        raise ValueError("V6_RECIPIENT_REVIEW_MISMATCH")
++    if review.get("product_fit_verified") is not True or review.get("business_contact_basis_verified") is not True:
++        raise ValueError("V6_PRODUCT_FIT_OR_CONTACT_BASIS_UNVERIFIED")
++    return review
++
++
++def route(lead, policy):
++    review = reviewed_lead(lead, policy)
++    override = str(lead.get("template_override") or review.get("template_override") or "")
++    if override:
++        if override not in TEMPLATES or review.get("approved_template_override") != override:
++            raise ValueError("V6_MANUAL_TEMPLATE_NOT_VERIFIED")
++        return override
++    kind = str(review.get("business_type") or "").lower().replace("-", "_").replace(" ", "_")
++    if review.get("business_type_verified") is True:
++        if kind in RETAIL_TYPES:
++            return RETAIL
++        if kind in CUSTOM_TYPES:
++            return CUSTOM
++    role = str(review.get("recipient_role") or "").lower()
++    if role in {"unknown", "general", "support", "service"}:
++        return REFERRAL
++    raise ValueError("V6_BUSINESS_TYPE_REVIEW_REQUIRED")
++
++
++def render(lead, policy, template_key=None):
++    from send_resumption import require_content_evidence
++    require_content_evidence(policy)
++    key = route(lead, policy)
++    if template_key is not None and template_key != key:
++        raise ValueError("V6_TEMPLATE_ROUTE_MISMATCH")
++    if canonical_hash(key) != LOCKED_SHA256.get(key):
++        raise ValueError("V6_TEMPLATE_INTEGRITY_FAILED")
++    name = _clean(lead.get("store_name"))
++    address = _clean(policy.get("verified_postal_address"))
++    signature = SIGNATURE.format(address=address)
++    subject = TEMPLATES[key][0].format(store_name=name)
++    text = TEMPLATES[key][1].format(greeting=f"{name} team", store_name=name, signature=signature)
++    body_html = "\n".join("<p>" + html.escape(p).replace("\n", "<br>\n") + "</p>" for p in text.split("\n\n"))
++    digest = hashlib.sha256(json.dumps([key, subject, text, body_html], ensure_ascii=False).encode()).hexdigest()
++    return {"template_key": key, "template_id": key, "template_status": "ACTIVE_LOCKED",
++        "template_sha256": LOCKED_SHA256[key], "content_sha256": digest,
++        "renderer_version": RENDERER_VERSION,
++        "renderer_sha256": hashlib.sha256(RENDERER_VERSION.encode()).hexdigest(),
++        "subject": subject, "body_text": text, "body_html": body_html,
++        "body_html_no_pixel": body_html, "has_pixel": False, "routing_reason": "verified_business_review"}
++
++
++def validate_message(record, lead, policy):
++    """Exact re-render, not a phrase/length check. Old V5 FSPs cannot pass."""
++    key = record.get("template_id") or record.get("template_key")
++    if key not in TEMPLATES:
++        raise ValueError("V6_ONLY_NEW_OUTREACH")
++    expected = render(lead, policy, key)
++    for field, frozen in (("subject", "email_subject"), ("body_text", "email_body"), ("body_html", "email_body_html")):
++        actual = record[field] if field in record else record.get(frozen)
++        if actual != expected[field]:
++            raise ValueError("V6_FROZEN_CONTENT_MISMATCH:" + field)
++    for field in ("template_key", "content_sha256", "renderer_version", "renderer_sha256"):
++        if record.get(field) and record[field] != expected[field]:
++            raise ValueError("V6_METADATA_MISMATCH:" + field)
++    if record.get("pixel_tracking") or record.get("attachments"):
++        raise ValueError("V6_TRACKING_OR_ATTACHMENTS_FORBIDDEN")
++    return expected
++
++
++def render_internal_test(key, recipient, policy):
++    """User-controlled mailbox only; no postal-address exception for customers."""
++    if key not in TEMPLATES or canonical_hash(key) != LOCKED_SHA256.get(key):
++        raise ValueError("V6_TEMPLATE_INTEGRITY_FAILED")
++    approved = {str(x).casefold() for x in policy.get("controlled_test_recipients", [])}
++    if not recipient or recipient.casefold() not in approved or not policy.get("test_ownership_reference"):
++        raise ValueError("V6_TEST_RECIPIENT_NOT_CONTROLLED")
++    if policy.get("internal_test_only") is not True:
++        raise ValueError("V6_INTERNAL_TEST_SCOPE_REQUIRED")
++    signature = SIGNATURE.replace("Business mailing address: {address}\n\n", "")
++    text = TEMPLATES[key][1].format(greeting="rokt&razo team", store_name="rokt&razo", signature=signature)
++    text = "INTERNAL TEMPLATE TEST — not customer outreach. Business claims await verification.\n\n" + text
++    subject = "[INTERNAL V6 TEST] " + TEMPLATES[key][0].format(store_name="rokt&razo")
++    body_html = "\n".join("<p>" + html.escape(p).replace("\n", "<br>\n") + "</p>" for p in text.split("\n\n"))
++    return {"template_id": key, "subject": subject, "body_text": text, "body_html": body_html,
++            "test_only": True, "attachments": [], "has_pixel": False}
+--- /dev/null
++++ b/send_resumption.py
+@@ -0,0 +1,154 @@
++"""Phase 5A fail-closed operational evidence and cross-batch SMTP budgets.
++
++No production transport or authorization creation lives here. Read evidence from
++an operator-installed policy; never infer evidence from a candidate or environment flag.
++"""
++from __future__ import annotations
++
++import json
++from datetime import datetime, timedelta, timezone
++from pathlib import Path
++import sqlite3
++from contextlib import closing
++
++POLICY_PATH = Path(__file__).resolve().parent / "data" / "phase5a_send_policy.json"
++SH = timezone(timedelta(hours=8))
++CAPS = {1: 5, 2: 10, 3: 20, 4: 40}
++CLAIMS = ("products_and_24_in_1", "low_moq_ddp_samples", "ten_years_experience",
++          "custom_card_puzzle_paper_packaging", "flexible_production_runs")
++LIVE_EVIDENCE = ("unsubscribe_receiving", "suppression_processing", "spf", "dkim", "dmarc",
++    "sender_identity", "tls", "v6_three_template_test", "mx_control", "feedback_monitoring",
++    "supported_unique_send_chain")
++
++
++def load_policy():
++    try:
++        policy = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
++        if not isinstance(policy, dict):
++            raise ValueError("policy must be an object")
++        return policy
++    except (OSError, ValueError) as exc:
++        raise ValueError("SEND_RESUMPTION_BLOCKED:POLICY_UNAVAILABLE") from exc
++
++
++def require_content_evidence(policy):
++    if policy.get("authorization_scope") != "phase5a-v6-controlled-resumption":
++        raise ValueError("SEND_RESUMPTION_BLOCKED:WRONG_AUTHORIZATION_SCOPE")
++    if policy.get("postal_address_verified") is not True or not policy.get("postal_address_evidence"):
++        raise ValueError("SEND_RESUMPTION_BLOCKED:POSTAL_ADDRESS_UNVERIFIED")
++    address = str(policy.get("verified_postal_address") or "").strip()
++    if len(address) < 12 or any(x in address.upper() for x in ("VERIFIED_BUSINESS_POSTAL_ADDRESS", "PLACEHOLDER", "EXAMPLE", "TODO", "HTTP")):
++        raise ValueError("SEND_RESUMPTION_BLOCKED:POSTAL_ADDRESS_MISSING")
++    if any((policy.get("verified_claims") or {}).get(k) is not True for k in CLAIMS):
++        raise ValueError("SEND_RESUMPTION_BLOCKED:BUSINESS_CLAIMS_UNVERIFIED")
++
++
++def _time(value):
++    dt = datetime.fromisoformat(str(value))
++    if dt.tzinfo is None:
++        raise ValueError("EVIDENCE_TIMEZONE_REQUIRED")
++    return dt
++
++
++def require_ready(policy, now=None, *, testing=False, actual_from=None, test_recipient=None):
++    require_content_evidence(policy)
++    now = now or datetime.now(SH)
++    if policy.get("follow_up_enabled") is not False:
++        raise ValueError("SEND_RESUMPTION_BLOCKED:FOLLOW_UP_MUST_BE_DISABLED")
++    if policy.get("emergency_stop") is not False:
++        raise ValueError("SEND_RESUMPTION_BLOCKED:EMERGENCY_STOP")
++    if policy.get("risk_signals") != []:
++        raise ValueError("SEND_RESUMPTION_BLOCKED:RISK_SIGNALS_NOT_CLEAR")
++    if actual_from is not None and (not actual_from or actual_from.casefold() != str(policy.get("verified_from_email") or "").casefold()):
++        raise ValueError("SEND_RESUMPTION_BLOCKED:SENDER_IDENTITY_MISMATCH")
++    evidence = policy.get("evidence") or {}
++    required = ("sender_identity", "tls", "unsubscribe_receiving", "suppression_processing") if testing else LIVE_EVIDENCE
++    for key in required:
++        ev = evidence.get(key) or {}
++        if ev.get("passed") is not True or not ev.get("reference"):
++            raise ValueError("SEND_RESUMPTION_BLOCKED:EVIDENCE_MISSING:" + key)
++        age = now - _time(ev.get("checked_at"))
++        if age < timedelta(0) or age > timedelta(hours=24):
++            raise ValueError("SEND_RESUMPTION_BLOCKED:EVIDENCE_STALE:" + key)
++    if testing:
++        owned = {str(x).casefold() for x in policy.get("controlled_test_recipients", [])}
++        if not test_recipient or test_recipient.casefold() not in owned:
++            raise ValueError("SEND_RESUMPTION_BLOCKED:TEST_RECIPIENT_NOT_CONTROLLED")
++        return 0
++    if policy.get("enabled") is not True or policy.get("pilot_completed") is True:
++        raise ValueError("SEND_RESUMPTION_BLOCKED:NOT_ACTIVE")
++    stage = policy.get("stage")
++    if isinstance(stage, bool) or stage not in CAPS:
++        raise ValueError("SEND_RESUMPTION_BLOCKED:INVALID_STAGE")
++    for previous in range(1, stage):
++        review = (policy.get("stage_feedback") or {}).get(str(previous)) or {}
++        if review.get("passed") is not True or not review.get("reference"):
++            raise ValueError("SEND_RESUMPTION_BLOCKED:STAGE_FEEDBACK_REQUIRED")
++        start, checked = _time(review.get("started_at")), _time(review.get("reviewed_at"))
++        if checked > now or start > checked or checked - start < timedelta(hours=24):
++            raise ValueError("SEND_RESUMPTION_BLOCKED:FEEDBACK_CYCLE_TOO_SHORT")
++    if policy.get("daily_cap") != CAPS[stage]:
++        raise ValueError("SEND_RESUMPTION_BLOCKED:CAP_MISMATCH")
++    return CAPS[stage]
++
++
++def used_slots(conn, business_date):
++    """Count sent FSPs plus durable reservations, including ambiguous SMTP outcomes."""
++    ids = {r[0] for r in conn.execute("SELECT id FROM final_send_plan WHERE message_type='new_outreach' AND outreach_batch_date=? AND status='sent'", (business_date,))}
++    if conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='phase5a_send_reservations'").fetchone():
++        ids.update(r[0] for r in conn.execute("SELECT plan_entry_id FROM phase5a_send_reservations WHERE business_date=?", (business_date,)))
++    return len(ids)
++
++
++def halt_new_outreach(db_path, reason):
++    """Durable stop; clearing it requires a reviewed operations action, never retry."""
++    with closing(sqlite3.connect(db_path, timeout=10)) as conn, conn:
++        conn.execute("CREATE TABLE IF NOT EXISTS phase5a_send_halts (reason TEXT, created_at TEXT)")
++        conn.execute("INSERT INTO phase5a_send_halts VALUES (?,?)", (reason, datetime.now(SH).isoformat()))
++
++
++def check_halt(conn):
++    if conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='phase5a_send_halts'").fetchone():
++        if conn.execute("SELECT 1 FROM phase5a_send_halts LIMIT 1").fetchone():
++            raise ValueError("SEND_RESUMPTION_BLOCKED:DURABLE_EMERGENCY_HALT")
++
++
++def reserve_smtp(db_path, entry_id, org_key, business_date, policy, now=None):
++    """Reserve BEFORE connecting. A crash/ambiguous response cannot free a quota slot.
++
++    Serializes competing workers across all batches. This append-only safety
++    ledger does not create/alter send_authorizations or bypass existing history gates.
++    """
++    now = now or datetime.now(SH)
++    cap = require_ready(policy, now)
++    if not isinstance(entry_id, int) or isinstance(entry_id, bool) or not org_key:
++        raise ValueError("SEND_RESUMPTION_BLOCKED:RESERVATION_IDENTITY_REQUIRED")
++    if business_date != now.astimezone(SH).date().isoformat() or now.astimezone(SH).weekday() >= 5:
++        raise ValueError("SEND_RESUMPTION_BLOCKED:BUSINESS_DATE_OR_WEEKEND")
++    with closing(sqlite3.connect(db_path, timeout=10)) as conn, conn:
++        conn.execute("BEGIN IMMEDIATE")
++        check_halt(conn)
++        conn.execute("""CREATE TABLE IF NOT EXISTS phase5a_send_reservations (
++            plan_entry_id INTEGER PRIMARY KEY, business_date TEXT NOT NULL,
++            organization_key TEXT NOT NULL UNIQUE, reserved_at TEXT NOT NULL)""")
++        row = conn.execute("SELECT p.status, p.message_type, p.outreach_batch_date, l.organization_key "
++            "FROM final_send_plan p JOIN leads l ON l.id=p.lead_id WHERE p.id=?", (entry_id,)).fetchone()
++        if not row or tuple(row) != ("planned", "new_outreach", business_date, org_key):
++            raise ValueError("SEND_RESUMPTION_BLOCKED:PLAN_CHANGED")
++        if policy["stage"] == 1 and conn.execute("SELECT COUNT(*) FROM phase5a_send_reservations").fetchone()[0] >= 5:
++            raise ValueError("SEND_RESUMPTION_BLOCKED:PILOT_FEEDBACK_REQUIRED")
++        if used_slots(conn, business_date) >= cap:
++            raise ValueError("SEND_RESUMPTION_BLOCKED:DAILY_CAP")
++        try:
++            conn.execute("INSERT INTO phase5a_send_reservations VALUES (?,?,?,?)", (entry_id, business_date, org_key, now.isoformat()))
++        except sqlite3.IntegrityError as exc:
++            raise ValueError("SEND_RESUMPTION_BLOCKED:ORG_OR_PLAN_ALREADY_RESERVED") from exc
++
++
++def remaining_plan_capacity(conn, business_date, policy):
++    cap = require_ready(policy)
++    check_halt(conn)
++    remaining = max(0, cap - used_slots(conn, business_date))
++    if policy["stage"] == 1 and conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='phase5a_send_reservations'").fetchone():
++        remaining = min(remaining, max(0, 5 - conn.execute("SELECT COUNT(*) FROM phase5a_send_reservations").fetchone()[0]))
++    return remaining
+--- /dev/null
++++ b/controlled_v6_test.py
+@@ -0,0 +1,94 @@
++"""Internal QA only: separate mailbox allowlist/audit; never creates customer plans.
++
++Must be invoked by an authorized production operations entry point. Development
++copies cannot send. Delivery/authentication must be checked at the receiving mailbox.
++"""
++from __future__ import annotations
++
++import hashlib
++import json
++from pathlib import Path
++import sqlite3
++from contextlib import closing
++from datetime import datetime, timedelta, timezone
++
++import v6_outreach
++
++ROOT = Path(__file__).resolve().parent
++POLICY_PATH = ROOT / "data" / "phase5a_internal_test_policy.json"
++AUDIT_PATH = ROOT / "data" / "phase5a_internal_test_audit.sqlite3"
++
++
++def load_test_policy():
++    return json.loads(POLICY_PATH.read_text(encoding="utf-8"))
++
++
++def require_test_ready(policy, recipient, actual_sender, now=None):
++    now = now or datetime.now(timezone.utc)
++    if policy.get("internal_test_only") is not True or policy.get("allow_internal_without_postal_address") is not True:
++        raise ValueError("CONTROLLED_INTERNAL_TEST_SCOPE_REQUIRED")
++    if policy.get("controlled_test_recipients") != [recipient] or not policy.get("test_ownership_reference"):
++        raise ValueError("CONTROLLED_TEST_SINGLE_RECIPIENT_REQUIRED")
++    if not actual_sender or policy.get("verified_from_email") != actual_sender:
++        raise ValueError("CONTROLLED_TEST_SENDER_IDENTITY_REQUIRED")
++    approved = datetime.fromisoformat(policy["authorized_at"])
++    if approved.tzinfo is None or not timedelta(0) <= now - approved <= timedelta(hours=24):
++        raise ValueError("CONTROLLED_TEST_AUTHORIZATION_EXPIRED")
++    if not policy.get("test_run_id"):
++        raise ValueError("CONTROLLED_TEST_RUN_ID_REQUIRED")
++
++
++def send_internal_tests(*, send=False):
++    """Default is preview. SMTP Accepted is not inbox/delivery/authentication success."""
++    policy = load_test_policy()
++    recipients = policy.get("controlled_test_recipients") or []
++    if len(recipients) != 1:
++        raise ValueError("CONTROLLED_TEST_SINGLE_RECIPIENT_REQUIRED")
++    recipient = recipients[0]
++    messages = [v6_outreach.render_internal_test(key, recipient, policy) for key in v6_outreach.TEMPLATES]
++    if not send:
++        return {"status": "PREVIEW_ONLY", "messages": messages, "smtp_attempts": 0}
++    if (ROOT / ".development-copy").exists():
++        raise ValueError("DEVELOPMENT_INTERNAL_SMTP_BLOCKED_USE_AUTHORIZED_OPERATIONS_ENTRYPOINT")
++    from bd_sender import _build_email, _create_connection
++    from env_loader import get_sender_info
++    sender = get_sender_info()["email"]
++    require_test_ready(policy, recipient, sender)
++    results = []
++    for item in messages:
++        # Durable reservation survives ambiguous SMTP outcomes; no automatic retries.
++        with closing(sqlite3.connect(AUDIT_PATH)) as conn, conn:
++            conn.execute("CREATE TABLE IF NOT EXISTS internal_tests (test_run_id TEXT, template_id TEXT, "
++                "content_sha256 TEXT, reserved_at TEXT, smtp_accepted_at TEXT, message_id TEXT, PRIMARY KEY(test_run_id,template_id))")
++            conn.execute("INSERT INTO internal_tests VALUES (?,?,?,?,NULL,NULL)", (policy["test_run_id"], item["template_id"],
++                hashlib.sha256(json.dumps([item['subject'],item['body_text'],item['body_html']]).encode()).hexdigest(), datetime.now(timezone.utc).isoformat()))
++        current_policy = load_test_policy()
++        require_test_ready(current_policy, recipient, sender)
++        if current_policy != policy:
++            raise ValueError("CONTROLLED_TEST_POLICY_CHANGED")
++        msg = _build_email(recipient, item["subject"], item["body_text"], item["body_html"])
++        server = _create_connection()
++        try:
++            rejected = server.sendmail(sender, [recipient], msg.as_string())
++            if rejected:
++                raise RuntimeError("CONTROLLED_TEST_SMTP_RECIPIENT_REJECTED")
++        finally:
++            try:
++                server.quit()
++            except Exception:
++                pass
++        accepted_at = datetime.now(timezone.utc).isoformat()
++        with closing(sqlite3.connect(AUDIT_PATH)) as conn, conn:
++            conn.execute("UPDATE internal_tests SET smtp_accepted_at=?,message_id=? WHERE test_run_id=? AND template_id=?",
++                (accepted_at, msg['Message-ID'], policy["test_run_id"], item["template_id"]))
++        results.append({"template_id": item["template_id"], "message_id": msg['Message-ID'],
++            "smtp_accepted_at": accepted_at, "smtp_accepted": True, "mailbox_validation": "UNKNOWN"})
++    return {"status": "SMTP_ACCEPTED_AWAITING_MAILBOX_VALIDATION", "results": results}
++
++
++if __name__ == "__main__":
++    import argparse
++    parser = argparse.ArgumentParser()
++    parser.add_argument("--send", action="store_true")
++    args = parser.parse_args()
++    print(json.dumps(send_internal_tests(send=args.send), ensure_ascii=False, indent=2))

@@ -210,6 +210,9 @@ _TEMPLATE_SHA256 = {}
 def _compute_template_hashes():
     """Compute SHA-256 of canonical body texts for send-time validation."""
     for key, tpl in _TEMPLATE_REGISTRY.items():
+        if key.endswith("_v6_locked"):
+            _TEMPLATE_SHA256[key] = _v6.LOCKED_SHA256[key]
+            continue
         if tpl["body_text"] is None:
             _TEMPLATE_SHA256[key] = "DISABLED"
             continue
@@ -217,6 +220,13 @@ def _compute_template_hashes():
         _TEMPLATE_SHA256[key] = _hashlib.sha256(content.encode("utf-8")).hexdigest()[:8]
 
 _compute_template_hashes()
+
+# Phase 5A: V5 remains available for historical preview, never for new sending.
+import v6_outreach as _v6
+for _key, (_subject, _body) in _v6.TEMPLATES.items():
+    _TEMPLATE_REGISTRY[_key] = {"status": "ACTIVE_LOCKED", "body_text": _body,
+        "body_html": None, "signature_text": _v6.SIGNATURE, "signature_html": None}
+    _TEMPLATE_SHA256[_key] = _v6.LOCKED_SHA256[_key]
 
 # ── Store Type → Template Routing ────────────────────────
 
@@ -266,7 +276,7 @@ def is_generic_public_inbox(email: str) -> bool:
     return bool(domain.strip()) and local_part in _GENERIC_PUBLIC_INBOX_LOCAL_PARTS
 
 
-def route_template_for_lead(lead: dict) -> str:
+def route_legacy_template_for_lead(lead: dict) -> str:
     """Determine which template to use based on store_type.
     
     Manual override (lead['template_override']) takes absolute precedence.
@@ -299,6 +309,12 @@ def route_template_for_lead(lead: dict) -> str:
     
     # Default: retail distributor
     return "retail_distributor_v5_locked"
+
+
+def route_template_for_lead(lead: dict) -> str:
+    """Verified business type precedes inbox role; unknown identity fails closed."""
+    from send_resumption import load_policy
+    return _v6.route(lead, load_policy())
 
 
 def get_template_status(template_key: str) -> str:
@@ -512,6 +528,11 @@ def get_email_for_lead(lead: dict, template_key: str = None, tracking: dict = No
     If template_key is provided and valid, uses that. Otherwise routes via route_template_for_lead().
     If tracking dict is provided (from prepare_tracking_for_lead), use its pixel_html.
     """
+    # V6 never uses tracking, legacy signature, or automatic unknown-type guesses.
+    if template_key is None or template_key in _v6.TEMPLATES:
+        from send_resumption import load_policy
+        return _v6.render(lead, load_policy(), template_key)
+    # Explicit legacy keys remain historical preview only; sender/preflight reject them.
     # Route template
     if not template_key or template_key not in _TEMPLATE_REGISTRY:
         template_key = route_template_for_lead(lead)
@@ -654,7 +675,8 @@ def get_followup_email_for_lead(lead: dict, original_subject: str = "",
 
 
 def apply_email_to_lead(lead: dict, template_key: str = None, tracking: dict = None) -> dict:
-    email_data = get_email_for_lead(lead, tracking=tracking)
+    email_data = get_email_for_lead(lead, template_key=template_key, tracking=tracking)
+    lead["template_id"] = email_data["template_key"]
     lead["email_template"] = email_data["template_key"]
     lead["email_subject"] = email_data["subject"]
     lead["email_body"] = email_data["body_text"]
