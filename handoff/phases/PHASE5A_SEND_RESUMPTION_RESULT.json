@@ -70,20 +70,21 @@
   "PUSH_SUCCESS": true,
   "BLOCKERS_ZH": [
     "正式通道无 V6 发布登记与内部试发入口；不允许绕过",
-    "Gmail 官方连接未确认，无法查收件及原始认证头",
     "完整回归仍失败，新增策略契约测试需迁移和复核",
     "正式客户发送仍缺邮寄地址、业务承诺、退订/MX/收件认证及发送链实证"
   ],
   "BLOCKERS_EN": [
     "No registered V6 release or supported internal-test operation; bypass prohibited",
-    "Gmail connection unconfirmed; mailbox/raw authentication headers unavailable",
     "Full regression still fails; updated policy-contract fixtures require migration and review",
     "External sending lacks postal/claims/unsubscribe/MX/receiver-auth/sending-chain evidence"
   ],
-  "NEXT_ACTION_ZH": "先解决工程回归并通过受限运维入口登记内部 QA；连接受控 Gmail，三版各试发一封并只读验证，外部客户继续零发送。",
-  "NEXT_ACTION_EN": "Resolve engineering regressions and register internal QA through restricted operations; connect the controlled Gmail, send one test per variant and verify read-only. Keep customer sends at zero.",
+  "NEXT_ACTION_ZH": "通过正式 QA 入口用现有腾讯企业邮箱 SMTP 内部试发；收件及认证由用户人工检查。最新四模板状态见 PHASE5A1_VALIDATION_RESULT.json。",
+  "NEXT_ACTION_EN": "Register the supported QA operation; use existing Tencent enterprise SMTP for internal tests. The user checks receipt/authentication manually. See PHASE5A1_VALIDATION_RESULT.json for latest four-template status.",
   "SCOPE_ZH": "发送数量为本次操作实际数量；未知生产反馈和 SAFE 不以零或历史读数代替。",
   "SCOPE_EN": "Send counts describe this task only. Unknown production feedback/SAFE are not replaced by zero or historical values.",
   "COMMIT_SCOPE_ZH": "代码、测试和发布提案提交；报告作为后续单独提交推送。",
-  "COMMIT_SCOPE_EN": "Code/tests/release-proposal commit; reports are pushed in a subsequent separate commit."
+  "COMMIT_SCOPE_EN": "Code/tests/release-proposal commit; reports are pushed in a subsequent separate commit.",
+  "GMAIL_OAUTH_REQUIRED": false,
+  "SENDING_TRANSPORT": "EXISTING_TENCENT_ENTERPRISE_SMTP",
+  "GMAIL_ROLE": "INTERNAL_RECIPIENT_ONLY"
 }

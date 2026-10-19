@@ -16,9 +16,9 @@ English: All 51 targeted tests passed. Four internal text/HTML previews were gen
 
 ## 真实内部测试 / Actual internal QA
 
-中文：里程碑 C 阻塞在正式 QA 发布/测试入口。Gmail 查询确认尚未安装/连接，已提供连接建议；没有收件端观测，不得把 SMTP 接受或预览当送达和认证。最多四封、每模板一封、仅本地白名单邮箱，不建立客户 FSP/授权、不启用全局客户 SMTP、不重试不确定结果。
+中文：里程碑 C 的发信阻塞仅为正式 QA 发布/测试入口尚未登记。2026-10-20 00:38:37 +08 实测通道 health=200，新 QA release preflight=400 UNKNOWN_RELEASE_ID。登记申请见 GitHub issue #1。所有内部及未来客户发信始终使用现有腾讯企业邮箱 SMTP；1569***yf@gmail.com 仅为收件人，不使用 Gmail SMTP/API，也不请求 OAuth。Gmail 连接不是试发前置条件。用户人工检查收件箱、垃圾箱及原始认证头前，收件与 SPF/DKIM/DMARC 为 UNKNOWN。最多四封、每模板一封，不建立客户 FSP/授权、不启用全局客户 SMTP、不重试不确定结果。
 
-English: Milestone C is blocked on the supported QA release/test operation. Gmail discovery confirms it is not installed/connected; a connection suggestion was provided. No receiver observations exist: preview/SMTP acceptance cannot prove delivery/authentication. Limit QA to four messages, one per variant, to the local single-recipient allowlist, without customer FSP/authorization/global SMTP or ambiguous retries.
+English: The only sending blocker for milestone C is the unregistered supported QA release/test operation. Live verification at 2026-10-20 00:38:37 +08 returned health=200 and new QA release preflight=400 UNKNOWN_RELEASE_ID. Registration was requested in GitHub issue #1. All internal and future customer sending always uses existing Tencent enterprise SMTP; the Gmail address is a recipient only. Never use Gmail SMTP/API or request OAuth. Gmail connectivity is not a sending prerequisite. Receipt and SPF/DKIM/DMARC remain UNKNOWN until the user checks Inbox/Spam and original authentication headers. Limit QA to four messages, one per template, without customer FSP/authorization/global SMTP or ambiguous retries.
 
 中文：生产默认使用比例尚未测得；这是条件优先级，不是固定配额。客户邮件本阶段为 0，生产客户发送关闭。机器字段及本次代码提交见同目录 PHASE5A1_VALIDATION_RESULT.json。
 

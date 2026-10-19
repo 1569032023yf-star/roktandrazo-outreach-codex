@@ -21,14 +21,53 @@
   "CUSTOMER_EMAILS_SENT": 0,
   "PRODUCTION_CUSTOMER_SEND_ENABLED": false,
   "BLOCKERS_ZH": [
-    "里程碑 C：缺少受限内部 QA 发布和测试入口；Gmail 未安装/连接",
+    "里程碑 C：受限内部 QA 发布和测试入口尚未登记（UNKNOWN_RELEASE_ID）；Gmail 连接不是前置条件",
     "排名对外使用：缺截图日期、平台和商品身份核实"
   ],
   "BLOCKERS_EN": [
-    "Milestone C: no restricted internal-QA release/test operation; Gmail uninstalled/unconnected",
+    "Milestone C: restricted internal-QA release/test operation unregistered (UNKNOWN_RELEASE_ID); Gmail connection is not a prerequisite",
     "External ranking use: capture date, platform and product identity unverified"
   ],
   "COMMIT_SHA": "2f54116bf525598f69ce0de0ae9736ccdb749af9",
   "PUSH_SUCCESS": true,
-  "COMMIT_SCOPE": "Milestone A code; report follows in a separate commit"
+  "COMMIT_SCOPE": "Milestone A code; report follows in a separate commit",
+  "SENDING_TRANSPORT": "EXISTING_TENCENT_ENTERPRISE_SMTP",
+  "GMAIL_ROLE": "INTERNAL_RECIPIENT_ONLY",
+  "GMAIL_OAUTH_REQUIRED": false,
+  "QA_REGISTRATION_ISSUE": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/1",
+  "QA_PREFLIGHT": {
+    "checked_at": "2026-10-20T00:38:37+08:00",
+    "http_status": 400,
+    "error": "UNKNOWN_RELEASE_ID"
+  },
+  "INTERNAL_SEND_RESULTS": [
+    {
+      "template_id": "retail_tiktok_bestseller_v6_locked",
+      "sent_at": null,
+      "message_id": null,
+      "smtp_accepted": false,
+      "status": "NOT_SENT_QA_OPERATION_UNREGISTERED"
+    },
+    {
+      "template_id": "retail_distributor_v6_locked",
+      "sent_at": null,
+      "message_id": null,
+      "smtp_accepted": false,
+      "status": "NOT_SENT_QA_OPERATION_UNREGISTERED"
+    },
+    {
+      "template_id": "custom_production_v6_locked",
+      "sent_at": null,
+      "message_id": null,
+      "smtp_accepted": false,
+      "status": "NOT_SENT_QA_OPERATION_UNREGISTERED"
+    },
+    {
+      "template_id": "general_inbox_referral_v6_locked",
+      "sent_at": null,
+      "message_id": null,
+      "smtp_accepted": false,
+      "status": "NOT_SENT_QA_OPERATION_UNREGISTERED"
+    }
+  ]
 }
