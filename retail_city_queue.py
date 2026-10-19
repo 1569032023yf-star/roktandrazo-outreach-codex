@@ -184,13 +184,6 @@ def city_completion_checks(conn: sqlite3.Connection, city_id: int, provider: str
             'email_extraction_pending') LIMIT 1""",
         (city_id,),
     ).fetchone() is not None
-    retryable_network = conn.execute(
-        """SELECT 1 FROM lead_discovery_results WHERE active_city_id=?
-           AND (COALESCE(rejection_reason, '') LIKE 'website_resolution:network_retry:%'
-                OR COALESCE(rejection_reason, '') LIKE 'website_resolution:network_error:%')
-           LIMIT 1""",
-        (city_id,),
-    ).fetchone() is not None
     candidate_rows = conn.execute(
         """SELECT d.*, l.email AS linked_email, l.status AS linked_status,
                   l.review_status AS linked_review_status,
@@ -200,6 +193,11 @@ def city_completion_checks(conn: sqlite3.Connection, city_id: int, provider: str
            WHERE d.active_city_id=?""",
         (city_id,),
     ).fetchall()
+    retryable_network = any(
+        str(row["rejection_reason"] or "").startswith((
+            "website_resolution:network_retry:", "website_resolution:network_error:",
+        )) and not automatic_recovery_deferred(dict(row)) for row in candidate_rows
+    )
     retryable_manual = any(_manual_review_retryable(dict(row)) for row in candidate_rows)
     linked_retry = any(_linked_backlog_retryable(dict(row)) for row in candidate_rows)
     no_open_work = not (staged_pending or retryable_network or retryable_manual or linked_retry)
@@ -216,8 +214,34 @@ def city_completion_checks(conn: sqlite3.Connection, city_id: int, provider: str
     }
 
 
+NETWORK_RECOVERY_ATTEMPT_LIMIT = 3
+
+
+def automatic_recovery_deferred(row: dict) -> bool:
+    """Recognize durable operational review handoff; never assert an email fact."""
+    try:
+        payload = json.loads(str(row.get("raw_payload_json") or "{}"))
+        if not isinstance(payload, dict):
+            return False
+        for key in ("website_resolution_retry", "linked_backlog_retry"):
+            retry = payload.get(key)
+            if not isinstance(retry, dict):
+                continue
+            count_key = "unavailable_attempts" if key == "linked_backlog_retry" else "attempts"
+            if (retry.get("automation_terminal_outcome") == "network_retry_exhausted"
+                    and int(retry.get(count_key, 0)) >= NETWORK_RECOVERY_ATTEMPT_LIMIT
+                    and retry.get("automation_terminal_at")
+                    and row.get("validation_status") in {"manual_review_needed", "review_recovery"}):
+                return True
+    except (TypeError, ValueError):
+        return False
+    return False
+
+
 def _manual_review_retryable(row: dict) -> bool:
     """Keep only records reachable by an existing automatic retry lane open."""
+    if automatic_recovery_deferred(row):
+        return False
     if row.get("validation_status") != "manual_review_needed":
         return False
     # The normal resolver owns unlinked, website-less manual-review rows.
@@ -233,6 +257,8 @@ def _linked_backlog_retryable(row: dict) -> bool:
     reviews) are intentionally excluded.  This function performs no network,
     no lead mutation, and no evidence mutation.
     """
+    if automatic_recovery_deferred(row):
+        return False
     try:
         retry = json.loads(str(row.get("raw_payload_json") or "{}"))
     except (TypeError, ValueError):

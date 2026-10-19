@@ -32,7 +32,7 @@ from discovery.providers.base import SearchProvider, load_provider
 from history_crosscheck import cross_check, normalize_email, host
 from lead_hygiene_gate import evaluate_a0
 from outreach_control import RETAIL_QUERY_FAMILIES
-from retail_city_queue import search_queries
+from retail_city_queue import search_queries, automatic_recovery_deferred, NETWORK_RECOVERY_ATTEMPT_LIMIT
 from broad_outreach_gate import _gen_organization_key
 from timezone_resolver import resolve_timezone
 
@@ -571,9 +571,10 @@ class DiscoveryService:
                WHERE active_city_id=? AND COALESCE(website,'')=''
                  AND validation_status IN ('website_lookup_pending','manual_review_needed')
                  AND (?=0 OR linked_lead_id IS NULL)
-               ORDER BY discovered_at,id LIMIT ?""",
-            (int(city_row["id"]), int(unlinked_only), max(1, int(max_results))),
+               ORDER BY discovered_at,id""",
+            (int(city_row["id"]), int(unlinked_only)),
         ).fetchall()
+        rows = [row for row in rows if not automatic_recovery_deferred(dict(row))][:max(1, int(max_results))]
         if staging_ids is not None:
             rows = self._linked_retry_rows(city_row, staging_ids, require_website=False)
         summary = DiscoveryRunSummary(
@@ -583,38 +584,63 @@ class DiscoveryService:
         for raw_row in rows:
             row = dict(raw_row)
             result = resolver.resolve(row)
-            status = result.status
-            if status == "resolved":
-                self.conn.execute(
-                    """UPDATE lead_discovery_results
-                       SET website=?,normalized_domain=?,validation_status='email_extraction_pending',
-                           rejection_reason='',last_seen_at=? WHERE id=?""",
-                    (result.website, normalized_domain(result.website), utc_now(), row["id"]),
-                )
-                if row.get("linked_lead_id"):
+            # Preserve the caller's transaction ownership even when its
+            # connection context has not yet issued its first write.
+            if not self.conn.in_transaction:
+                self.conn.execute('BEGIN')
+            self.conn.execute('SAVEPOINT website_resolution_attempt')
+            try:
+                status = result.status
+                if status == "resolved":
                     self.conn.execute(
-                        "UPDATE leads SET official_website=?,last_checked_at=? WHERE id=? AND COALESCE(official_website,'')=''",
-                        (result.website, utc_now(), row["linked_lead_id"]),
+                        """UPDATE lead_discovery_results
+                           SET website=?,normalized_domain=?,validation_status='email_extraction_pending',
+                               rejection_reason='',last_seen_at=? WHERE id=?""",
+                        (result.website, normalized_domain(result.website), utc_now(), row["id"]),
                     )
-                status = "website_resolved"
-            else:
-                if status == "not_found":
-                    terminal_status = "website_not_found"
-                elif status == "identity_review":
-                    terminal_status = "identity_review"
+                    if row.get("linked_lead_id"):
+                        self.conn.execute(
+                            "UPDATE leads SET official_website=?,last_checked_at=? WHERE id=? AND COALESCE(official_website,'')=''",
+                            (result.website, utc_now(), row["linked_lead_id"]),
+                        )
+                    status = "website_resolved"
                 else:
-                    terminal_status = row["validation_status"]
-                self.conn.execute(
-                    "UPDATE lead_discovery_results SET validation_status=?,rejection_reason=?,last_seen_at=? WHERE id=?",
-                    (terminal_status, f"website_resolution:{status}:{result.error}"[:500], utc_now(), row["id"]),
-                )
-            summary.validation_statuses[status] = summary.validation_statuses.get(status, 0) + 1
+                    if status == "not_found":
+                        terminal_status = "website_not_found"
+                    elif status == "identity_review":
+                        terminal_status = "identity_review"
+                    else:
+                        terminal_status = row["validation_status"]
+                    if status in {"network_retry", "network_error"}:
+                        payload = _raw_payload(row)
+                        previous = payload.get("website_resolution_retry") or {}
+                        retry = {**previous, "attempts": int(previous.get("attempts", 0)) + 1,
+                                 "last_attempt_at": utc_now(), "last_outcome": status}
+                        if retry["attempts"] >= NETWORK_RECOVERY_ATTEMPT_LIMIT:
+                            retry.update(automation_terminal_outcome="network_retry_exhausted",
+                                         automation_terminal_at=utc_now())
+                            terminal_status = "manual_review_needed"
+                        payload["website_resolution_retry"] = retry
+                        self.conn.execute("UPDATE lead_discovery_results SET raw_payload_json=? WHERE id=?",
+                                          (json.dumps(payload, sort_keys=True), row["id"]))
+                    self.conn.execute(
+                        "UPDATE lead_discovery_results SET validation_status=?,rejection_reason=?,last_seen_at=? WHERE id=?",
+                        (terminal_status, f"website_resolution:{status}:{result.error}"[:500], utc_now(), row["id"]),
+                    )
+                summary.validation_statuses[status] = summary.validation_statuses.get(status, 0) + 1
+            except Exception:
+                self.conn.execute('ROLLBACK TO website_resolution_attempt')
+                raise
+            finally:
+                self.conn.execute('RELEASE website_resolution_attempt')
         if not rows:
             summary.status = "website_resolution_empty"
         return summary
 
     def _linked_retry_allowed(self, row: dict, city_row: dict) -> bool:
         """Fail closed on history/identity; a linkage alone is not official evidence."""
+        if automatic_recovery_deferred(row):
+            return False
         retry = _raw_payload(row).get('linked_backlog_retry') or {}
         if retry.get('automation_terminal_outcome') == 'access_unreachable':
             return False
@@ -716,9 +742,29 @@ class DiscoveryService:
                 if terminal:
                     self._terminalize_linked_backlog(row['id'], terminal)
                     summary['terminalized'] += 1
-                elif bool(getattr(linked_fetcher, 'last_site_automation_recovery_exhausted', False)):
+                elif post.results_seen and bool(getattr(linked_fetcher, 'last_site_automation_recovery_exhausted', False)):
                     self._defer_access_unreachable(row['id'])
                     summary['automation_deferred'] += 1
+                else:
+                    current = dict(self.conn.execute('SELECT * FROM lead_discovery_results WHERE id=?', (row['id'],)).fetchone())
+                    # A completed unavailable-site scan can be handed to human
+                    # review after three separate runs. Exceptions and pending
+                    # validation/history/evidence work never consume this gate.
+                    retry = _raw_payload(current).get('linked_backlog_retry') or {}
+                    telemetry = getattr(linked_fetcher, 'last_site_telemetry', {}) or {}
+                    if (post.results_seen and current.get('validation_status') == 'review_recovery'
+                            and telemetry.get('UNAVAILABLE_REQUESTS', 0) > 0
+                            and not telemetry.get('UNEXPECTED_FETCH_ERRORS', 0)
+                            and self._linked_backlog_site_unavailable(current)):
+                        retry['unavailable_attempts'] = int(retry.get('unavailable_attempts', 0)) + 1
+                        if retry['unavailable_attempts'] >= NETWORK_RECOVERY_ATTEMPT_LIMIT:
+                            retry.update(automation_terminal_outcome='network_retry_exhausted',
+                                         automation_terminal_at=utc_now())
+                            summary['automation_deferred'] += 1
+                        payload = _raw_payload(current)
+                        payload['linked_backlog_retry'] = retry
+                        self.conn.execute('UPDATE lead_discovery_results SET raw_payload_json=? WHERE id=?',
+                                          (json.dumps(payload, sort_keys=True), row['id']))
             except Exception as exc:
                 self.conn.execute('ROLLBACK TO linked_retry_attempt')
                 summary['errors'] = summary.get('errors', 0) + 1
@@ -731,6 +777,12 @@ class DiscoveryService:
                 self.conn.execute('UPDATE lead_discovery_results SET linked_lead_id=? WHERE id=? AND linked_lead_id IS NULL',
                                   (row['linked_lead_id'], row['id']))
         return summary
+
+    def _linked_backlog_site_unavailable(self, row: dict) -> bool:
+        lead = self.conn.execute('SELECT review_reason_code,review_reason_detail FROM leads WHERE id=?',
+                                 (row.get('linked_lead_id'),)).fetchone()
+        return bool(lead and lead['review_reason_code'] == 'review_recovery'
+                    and lead['review_reason_detail'] == 'review_recovery=official_site_unavailable')
 
     def _linked_backlog_terminal_outcome(self, discovery_id: int) -> str:
         """Return a durable existing-stage outcome, never for retryable failures."""
@@ -1869,11 +1921,15 @@ def _discovered_first_party_links(page: dict, website: str) -> list[tuple[str, s
     return [(url, method) for _rank, url, method in candidates]
 
 
-def _verified_official_page(url: str, method: str, website: str, fetcher: Any) -> dict:
+def _verified_official_page(url: str, method: str, website: str, fetcher: Any, telemetry: dict | None = None) -> dict:
     try:
         upgraded_fetch = getattr(fetcher, "fetch_https_upgrade", None)
         fetched = upgraded_fetch(url) if method in {"official_https_upgrade_homepage", "official_https_apex_alias"} and callable(upgraded_fetch) else fetcher.fetch(url)
-    except Exception:
+    except Exception as exc:
+        if telemetry is not None:
+            key = 'UNAVAILABLE_REQUESTS' if isinstance(exc, (TimeoutError, ConnectionError, urllib.error.URLError,
+                                                            http.client.HTTPException)) else 'UNEXPECTED_FETCH_ERRORS'
+            telemetry[key] = telemetry.get(key, 0) + 1
         return {}
     if not isinstance(fetched, dict):
         # A plain string cannot prove HTTP or TLS success and therefore cannot
@@ -1884,6 +1940,8 @@ def _verified_official_page(url: str, method: str, website: str, fetcher: Any) -
     final_url = str(fetched.get("final_url") or url)
     status = int(fetched.get("status") or 0)
     http_success = 200 <= status < 400
+    if telemetry is not None and 400 <= status < 600:
+        telemetry['UNAVAILABLE_REQUESTS'] = telemetry.get('UNAVAILABLE_REQUESTS', 0) + 1
     tls_success = bool(fetched.get("tls_verified", False))
     same_party = _same_party_domain(final_url, website)
     if not text or not http_success or not tls_success or not same_party:
@@ -1920,7 +1978,7 @@ def _fetch_official_pages(website: str, fetcher: Any) -> list[dict]:
         seen: set[str] = set()
         homepage_url, homepage_method = fixed[0]
         telemetry["PAGES_ATTEMPTED"] = 1
-        homepage = _verified_official_page(homepage_url, homepage_method, website, fetcher)
+        homepage = _verified_official_page(homepage_url, homepage_method, website, fetcher, telemetry)
         if homepage:
             pages.append(homepage)
             seen.add(homepage["final_url"])
@@ -1943,7 +2001,7 @@ def _fetch_official_pages(website: str, fetcher: Any) -> list[dict]:
                 continue
             attempted += 1
             telemetry["PAGES_ATTEMPTED"] = attempted
-            page = _verified_official_page(canonical, method, website, fetcher)
+            page = _verified_official_page(canonical, method, website, fetcher, telemetry)
             if page:
                 seen.add(page["final_url"])
                 pages.append(page)
