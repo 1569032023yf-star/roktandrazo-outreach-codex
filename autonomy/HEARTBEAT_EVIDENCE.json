@@ -1,0 +1,29 @@
+{
+  "summary_zh": "两次真实触发通知已观察到，但不是两个完成周期；上次因额度限制无成功任务回执，本轮记录实际任务",
+  "summary_en": "Two genuine trigger messages observed, not two completed cycles; prior usage-limit interruption has no successful task receipt, current task is recorded",
+  "automation_id": "rokt-razo",
+  "triggers": [
+    {
+      "trigger_at": "2026-10-19T18:46:31.877Z",
+      "status": "NO_SUCCESSFUL_EXECUTION_RECEIPT_USAGE_LIMIT_INTERRUPTION",
+      "cycle_id": null
+    },
+    {
+      "trigger_at": "2026-10-19T20:44:00.324Z",
+      "cycle_id": "44ce6faa-0213-4b62-8bde-30e7507eac45",
+      "execution_started_at": "2026-10-19T20:44:54.933036+00:00",
+      "status": "COMPLETED_ENGINEERING_TASK",
+      "execution_finished_at": "2026-10-19T20:48:12.719037+00:00",
+      "task_id": "D-sanitized-telemetry-adapter",
+      "output_sha256": "ee3aff1d437f555afcdb9737516e352ec01ab90095d09b5d5a6511e75418dd31",
+      "developer_tests_passed": 18,
+      "parent_tests_passed": 18,
+      "review_state": "NEEDS_INDEPENDENT_REVIEW"
+    }
+  ],
+  "two_unattended_cycles_verified": false,
+  "scope": "TRUSTED_CHAT_HEARTBEAT_METADATA_PLUS_LOCAL_TASK_RECEIPTS_NOT_PRODUCTION_ACCEPTANCE",
+  "successful_unattended_cycles_confirmed": 1,
+  "next_task": "D-telemetry-independent-review",
+  "updated_at": "2026-10-19T20:48:58.048736+00:00"
+}

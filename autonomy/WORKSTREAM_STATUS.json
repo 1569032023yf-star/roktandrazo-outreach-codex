@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-19T16:51:05.212828+00:00",
-  "summary_zh": "真实并行工程执行中，自主运行尚未验收",
-  "summary_en": "Real parallel engineering is running; sustained autonomy is not yet accepted",
+  "updated_at": "2026-10-19T20:48:58.048736+00:00",
+  "summary_zh": "本轮真实心跳完成遥测合同开发；成功无人值守周期1个，生产接入及持续并行验收未完成",
+  "summary_en": "Genuine heartbeat completed telemetry-contract development; one successful unattended cycle, production integration and sustained parallel acceptance remain incomplete",
   "production_inventory_id": "1784775229336",
   "automation_id": "rokt-razo",
   "workstreams": {
@@ -12,14 +12,22 @@
       "baseline": "93a8d0a",
       "worktree": "../roktandrazo-outreach-autonomy-city",
       "branch": "codex/autonomy-city-recovery",
-      "status_zh": "独立开发测试中：累计网络重试及人工复核终态",
-      "status_en": "Independent implementation/testing: bounded cumulative retries and manual-review terminal handoff",
+      "status_zh": "修复及97测试/43子测试通过，已保留5A身份门禁整合；真实城市推进未验证",
+      "status_en": "Repair passed 97 tests/43 subtests and integrated with 5A identity gate preserved; actual city advance unverified",
       "expected_business_effect_zh": "解除城市阻塞而不降低SAFE标准",
       "expected_business_effect_en": "Remove city blockage without weakening SAFE rules",
-      "review": "PENDING",
-      "deployment": "NOT_DEPLOYED",
-      "next_automatic_action_zh": "测试后独立审核并准备固定范围发布",
-      "next_automatic_action_en": "Independently review tested diff and prepare a fixed-scope release"
+      "review": "PASSED_PARENT_REVIEW_FINDINGS_REPAIRED",
+      "deployment": "NOT_DEPLOYED_NEW_RELEASE_UNREGISTERED",
+      "next_automatic_action_zh": "完成整合测试，核验真实生产指纹并申请全新城市修复release登记；不复用SAFE50",
+      "next_automatic_action_en": "Complete integration tests, verify live production fingerprints and arrange a new city-recovery release registration; never reuse SAFE50",
+      "commit": "6ce6e317b82ee1173cd0703ab876df23a3f33d27",
+      "integration_commit": "860728f",
+      "tests": {
+        "developer_passed": 97,
+        "developer_subtests": 43,
+        "recovery_tests_passed": 14,
+        "parent_integrated_tests": "14 recovery tests included in 86 passing integrated tests, plus four identity terminal tests"
+      }
     },
     "B": {
       "goal_zh": "转换现有44候选的企业官网与第一方商务邮箱",
@@ -27,14 +35,23 @@
       "baseline": "93a8d0a",
       "worktree": "../roktandrazo-outreach-autonomy-brand",
       "branch": "codex/autonomy-brand",
-      "status_zh": "真实核验与断点恢复修复中；历史仍UNKNOWN",
-      "status_en": "Live verification and resume-path repair in progress; history remains UNKNOWN",
+      "status_zh": "本轮核验完成，新增组织0、第一方邮箱0；独立分支已推送，尚未迁移完整依赖至5A",
+      "status_en": "Current verification complete: zero new organizations/emails; isolated branch pushed, complete dependencies not yet migrated to 5A",
       "expected_business_effect_zh": "提高现有候选有效转化",
       "expected_business_effect_en": "Improve valid conversion of existing candidates",
-      "review": "PENDING",
+      "review": "PASSED_PARENT_DIFF_AND_34_TESTS",
       "deployment": "NOT_DEPLOYED",
-      "next_automatic_action_zh": "完成剩余预算内核验并审核来源证据",
-      "next_automatic_action_en": "Finish verification within remaining budgets and audit source evidence"
+      "next_automatic_action_zh": "先迁移完整品牌依赖并做集成测试；在累计预算内继续获准候选，限制域保持停止",
+      "next_automatic_action_en": "Migrate complete brand dependencies and integration-test first; continue approved candidates within cumulative budgets while stopped hosts remain stopped",
+      "commit": "5e9b89de99a596b509426a596ef02fcc7521facc",
+      "tests": {
+        "developer_passed": 115,
+        "parent_passed": 34
+      },
+      "integration": "NOT_INTEGRATED_5A_DEPENDENCIES_ABSENT",
+      "history": "UNKNOWN",
+      "new_organizations_this_run": 0,
+      "new_first_party_emails_this_run": 0
     },
     "C": {
       "goal_zh": "完成四套V6完整回归及受控内部QA准备",
@@ -42,14 +59,29 @@
       "baseline": "0ce0b10",
       "worktree": "../roktandrazo-outreach-autonomy-v6",
       "branch": "codex/autonomy-v6",
-      "status_zh": "完整回归修复中；内部QA登记缺失",
-      "status_en": "Full regression repairs in progress; internal QA operation unregistered",
+      "status_zh": "四套V6定向58项通过；可比全量563项560通过、3项与基线相同；整合后86项加4身份门禁测试通过；QA未登记未发送",
+      "status_en": "Four V6 variants passed 58 targeted tests; comparable full suite 563/560 passed with three baseline-identical issues; integrated 86 tests plus four identity-gate tests passed; QA unregistered and unsent",
       "expected_business_effect_zh": "具备可信、受门禁的内部验收与客户发信准备",
       "expected_business_effect_en": "Enable trustworthy gated internal acceptance and outreach readiness",
-      "review": "PENDING",
+      "review": "PASSED_PARENT_DIFF_FAILURE_BOUNDARIES_AND_INTEGRATED_TESTS",
       "deployment": "NOT_DEPLOYED",
-      "next_automatic_action_zh": "审核回归差异和新QA登记包",
-      "next_automatic_action_en": "Review regression changes and the new QA registration package"
+      "next_automatic_action_zh": "推动新的受控QA登记；仅正式入口可试发，保留基线归档失败，不放宽断言",
+      "next_automatic_action_en": "Arrange new controlled QA registration; test-send only through supported entrypoint, preserving baseline archive failures and assertions",
+      "commit": "150ba3c8a300a8750c50b262fbc3c6dbc8cc77c5",
+      "integration_commit": "1356dde",
+      "tests": {
+        "targeted_passed": 58,
+        "full_run": 563,
+        "full_passed": 560,
+        "full_failures": 2,
+        "full_errors": 1,
+        "comparable_baseline_run": 556,
+        "baseline_failures": 2,
+        "baseline_errors": 1,
+        "new_failure_ids": [],
+        "integrated_test_group_passed": 86,
+        "identity_gate_passed": 4
+      }
     },
     "D": {
       "goal_zh": "持久化队列、独立审查、串行发布与业务日报",
@@ -57,16 +89,29 @@
       "baseline": "0ce0b10",
       "worktree": ".",
       "branch": "codex/autonomous-bd-supervisor",
-      "status_zh": "心跳已创建，CLI真实启动成功；8项离线测试通过，独立审核中",
-      "status_en": "Heartbeat created; actual CLI launch succeeded; eight offline tests passed; independent review running",
+      "status_zh": "本轮遥测合同开发完成、18项测试及父复跑通过；独立Reviewer已排队，真实feed未接通",
+      "status_en": "Telemetry contract development completed; 18 tests and parent rerun passed; independent reviewer queued, no real feed connected",
       "expected_business_effect_zh": "减少用户日常调度并保留可审计门禁",
       "expected_business_effect_en": "Reduce manual scheduling while preserving auditable gates",
-      "review": "RUNNING",
+      "review": "PASSED_INDEPENDENT_AGENT_14_TESTS_AND_FAILURE_PATHS",
       "deployment": "NO_NEW_PRODUCTION_RELEASE",
-      "next_automatic_action_zh": "修复独立审核发现并核对两次真实心跳证据",
-      "next_automatic_action_en": "Repair independent review findings and verify two real heartbeat receipts"
+      "next_automatic_action_zh": "下次真实心跳执行D-telemetry-independent-review；审核后选择品牌依赖迁移等合法工程，重复阻塞自动复盘",
+      "next_automatic_action_en": "Run D-telemetry-independent-review at the next genuine heartbeat; then select authorized work such as brand dependency migration and reassess repeated blockers",
+      "commit": "aadf4b24df9e99e255d4e39ba354bac3874fdf9d",
+      "tests": {
+        "developer_passed": 14,
+        "independent_passed": 14
+      },
+      "heartbeat_trigger_receipts_observed": 2,
+      "patch_transport_fix_commit": "59b673c",
+      "successful_unattended_cycles": 1,
+      "telemetry_developer_tests": 18,
+      "telemetry_parent_tests": 18,
+      "telemetry_review": "QUEUED",
+      "production_telemetry": "NOT_CONNECTED"
     }
   },
   "production_metrics_source": "UNKNOWN",
-  "prior_metrics_are_not_current_growth": true
+  "prior_metrics_are_not_current_growth": true,
+  "parallel_execution_scope": "THREE_PRIOR_REAL_AGENTS_DEMONSTRATED_CAPABILITY_CURRENT_HEARTBEAT_ONE_BOUNDED_TASK"
 }

@@ -49,12 +49,28 @@ Developer/Tester work in separate worktrees. The parent independently reviews fi
 
 The daily report distinguishes 24-hour and seven-day organizations, official sites, first-party emails, history/MX qualification, SAFE, sends, replies, bounces and unsubscribes. Missing authorized production data stays UNKNOWN. Historical 44 candidates, two sites, one email or SAFE56 are not today's additions. Record current brand validation separately from production totals.
 
-两个连续2小时真实自动周期尚未发生，不能通过两次手动调用、压缩模拟或审核探针替代。验证JSON保持 `TWO_UNATTENDED_CYCLES_VERIFIED=false` 和 `AUTONOMOUS_OPERATIONS_ACTIVE=false`，直到所有用户条件逐一满足。代码中的保守判定不会自动把自报标签升级为真实调度证明。
+已收到02:46与04:44两次真实心跳通知，前者因额度限制没有成功任务回执，本轮开始实际执行队列。两个连续2小时成功自动周期仍未证明，不能用触发通知、手动调用、压缩模拟或审核探针替代。验证JSON保持 `TWO_UNATTENDED_CYCLES_VERIFIED=false` 和 `AUTONOMOUS_OPERATIONS_ACTIVE=false`，直到所有用户条件逐一满足。代码中的保守判定不会自动把自报标签升级为真实调度证明。
 
-Two consecutive real two-hour automated cycles have not occurred. Two manual calls, compressed simulation or review probes cannot replace them. Keep `TWO_UNATTENDED_CYCLES_VERIFIED=false` and `AUTONOMOUS_OPERATIONS_ACTIVE=false` until every user acceptance condition is satisfied. Conservative code never promotes self-reported source labels into authenticated scheduling evidence.
+Genuine heartbeat messages arrived at 02:46 and 04:44 local time. The former has no successful task receipt following a usage-limit interruption, while the current cycle started queued work. Two consecutive successful two-hour automated cycles remain unproven; trigger messages, manual calls, compressed simulation or review probes cannot replace them. Keep `TWO_UNATTENDED_CYCLES_VERIFIED=false` and `AUTONOMOUS_OPERATIONS_ACTIVE=false` until every user acceptance condition is satisfied. Conservative code never promotes self-reported source labels into authenticated scheduling evidence.
 
 ## 未执行、风险与下一步 / Non-executed work, risks and next steps
 
 未执行新生产部署、客户发信、生产数据库读写、权限变更；生产业务指标未知。下一步独立审核各工作线，修复审核发现，核查受控发布登记入口，等待真实心跳周期并保存证据。若启动入口失效或同阻塞两轮，继续其他合法任务，并仅对新权限/凭据/重大业务决定升级用户。报告自检：双语、含结果/未执行/风险/下一步，无凭据，无未完成冒充完成。
 
 No new production release, customer email, production database read/write or permission change has been executed. Production metrics are unknown. Next independently review each stream, repair findings, verify the controlled registration interface, and collect genuine heartbeat evidence. If launch fails or a blocker repeats twice, continue other authorized work and escalate only new permissions, credentials or major business decisions. Report self-check: bilingual, results/non-executed work/risks/next steps included, no credentials and no incomplete work labeled complete.
+
+## 本轮整合边界 / Current integration boundary
+
+城市候选来源提交 `6ce6e317` 基于93a8d0a，整合提交860728f保留5A的identity_review终态。附带patch/manifest记录的是独立候选源码，不是整合后文件的生产哈希；正式发布前必须按真实生产基线重新生成并登记，不能直接套用旧清单。品牌提交5e9b89d仅在完整依赖的独立分支验证，5A缺该依赖栈，禁止把单提交通过说成整合成功。
+
+City source candidate 6ce6e317 is based on 93a8d0a. Integration 860728f preserves 5A's identity_review terminal state. Its patch/manifest describe isolated candidate sources, not production hashes for integrated files. Regenerate and register against the actual production baseline before release rather than applying the old manifest. Brand commit 5e9b89d was verified only on its complete dependency branch; 5A lacks that stack, so a passing isolated commit is not successful integration.
+
+
+字节传输复查：59b673c把城市候选及内部QA补丁登记为Git -text；两清单SHA与磁盘一致，并在core.autocrlf=true的新检出中保持逐字节一致。完整V6分支150ba3c与根整合1356dde的回归记录见handoff/phases/AUTONOMY_V6_VALIDATION_20261020.json，完整套件未全绿。上一轮因额度限制中断的收尾由本轮心跳恢复，不把中断补记为成功。
+
+Byte-transport verification: commit 59b673c marks city and internal-QA candidate patches as Git -text. Both manifest SHAs match disk and remain byte-identical in fresh core.autocrlf=true checkouts. V6 branch 150ba3c and root integration 1356dde use the regression evidence in handoff/phases/AUTONOMY_V6_VALIDATION_20261020.json; the complete suite is not green. This heartbeat recovered closeout interrupted by usage limits, without retroactively marking that interruption successful.
+
+
+04:48本轮结果：限定遥测合同开发真实完成，18项离线合成测试及父独立复跑均通过；任务保持needs_review，独立Reviewer已排入下次心跳。确认成功无人值守周期为1，非2；本轮仅一项队列工程，当前没有两条无人值守工作线并发，PARALLEL_WORKSTREAMS_ACTIVE=false，三条独立工作线的历史能力演练另列。内部QA正式预检在04:47复查仍为400 UNKNOWN_RELEASE_ID。整体AUTONOMOUS_OPERATIONS_ACTIVE=false，下一步独立审核遥测合同，缺真实feed继续UNKNOWN。
+
+04:48 outcome: bounded telemetry-contract development actually completed; 18 synthetic offline tests and the parent's independent rerun passed. The task remains needs_review with the independent Reviewer queued for the next heartbeat. Confirmed successful unattended cycles equal one, not two. Only one queued engineering task ran this heartbeat; two unattended workstreams are not currently concurrent, so PARALLEL_WORKSTREAMS_ACTIVE=false, with prior three-agent capability recorded separately. Supported QA preflight rechecked at 04:47 still returned 400 UNKNOWN_RELEASE_ID. Overall AUTONOMOUS_OPERATIONS_ACTIVE=false. Next independently review the contract; without a real feed, metrics stay UNKNOWN.

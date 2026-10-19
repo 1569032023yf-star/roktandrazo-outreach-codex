@@ -227,10 +227,14 @@ def dashboard(root=ROOT):
         'OFFICIAL_SITES_24H', 'OFFICIAL_SITES_7D', 'HISTORY_MX_VERIFIED_24H',
         'HISTORY_MX_VERIFIED_7D', 'ACTIVE_CITY')}
     state = read(root / 'autonomy' / 'WORKSTREAM_STATUS.json', {})
+    control = state.get('workstreams', {}).get('D', {})
+    next_zh = control.get('next_automatic_action_zh', unknown)
+    next_en = control.get('next_automatic_action_en', unknown)
     report = ['# ROKT&RAZO 业务日报 / Business Daily Report', '',
               '日期 / Date: ' + datetime.now(LOCAL_TZ).date().isoformat(), '',
               '生产指标未接入获准脱敏数据源，UNKNOWN不能当成零或历史累计。',
               'Production telemetry has no authorized sanitized feed; UNKNOWN is neither zero nor a historical total.', '',
+              f"成功无人值守周期 / Successful unattended cycles: {control.get('successful_unattended_cycles', unknown)}；整体自主运行尚未验收 / Overall autonomy not accepted.", '',
               '| 今日业务问题 / Daily business question | 结果 / Result |', '|---|---|',
               '| 新增真实组织 / New real organizations | UNKNOWN；B本轮0 / B current run: 0 |',
               '| 新增第一方邮箱 / New first-party emails | UNKNOWN；B本轮0 / B current run: 0 |',
@@ -239,15 +243,15 @@ def dashboard(root=ROOT):
               '| V6和发信缺口 / V6 and sending gaps | 新QA登记、收件认证、客户地址及全资格门禁 / New QA registration, receipt/authentication, customer address and full eligibility gates |',
               '| 本轮生产部署 / Production releases this run | 0；当日其他发布UNKNOWN / 0; other releases today UNKNOWN |',
               '| 阻塞 / Blockers | 新发布入口、历史副本、遥测待接通 / New release entrypoint, history copy and telemetry unavailable |',
-              '| 下一步 / Next | 自动执行已登记工程任务，独立审核及受控发布准备 / Automatically execute registered engineering, independent review and controlled release preparation |', '',
+              f'| 下一步 / Next | {next_zh} / {next_en} |', '',
               '| 指标 / Metric | 当前 / Current |', '|---|---|']
     report.extend(f'| {key} | {value} |' for key, value in metrics.items())
     report.extend(['', '## 工作线 / Workstreams', ''])
     for key, stream in state.get('workstreams', {}).items():
         report.append(f"- {key}: {stream.get('status_zh', unknown)} / {stream.get('status_en', unknown)}")
     report.extend(['', '本日实际生产部署 / Actual production deployments today: UNKNOWN',
-                   '', '待完成：两次真实自动触发、独立审核、生产遥测和新发布登记。',
-                   'Pending: two genuine automated triggers, independent review, production telemetry and new release registration.',
+                   '', '总控独立审核已通过；后续新改动仍需独立审核。待完成：两次真实自动触发、生产遥测和新发布登记。',
+                   'Supervisor independent review passed; future changes still require independent review. Pending: two genuine automated triggers, production telemetry and new release registration.',
                    '', '下一步：继续队列工程、审核各线提交，并通过受控入口查询发布状态。',
                    'Next: continue queued engineering, review stream commits, query releases through the controlled channel.',
                    '', '风险与未执行：未证明持续自主开发；本报告不授权生产DB或SMTP。',
