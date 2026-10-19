@@ -1,0 +1,52 @@
+{
+  "release_id": "UNREGISTERED_CITY_RECOVERY_20261020",
+  "baseline_commit": "93a8d0a25dabf509fa82cac924dd85741f17b860",
+  "status": "DEVELOPMENT_CANDIDATE_NOT_AUTHORIZED_FOR_PRODUCTION",
+  "description_zh": "城市超时有界恢复候选；不复用旧 SAFE50 release_id。",
+  "description_en": "Bounded city timeout recovery candidate; do not reuse the previous SAFE50 release ID.",
+  "scope": [
+    {
+      "path": "discovery/discovery_service.py",
+      "baseline_git_blob_sha256": "865ea0bcf420ae77b2fbf371ae11967606ca659b19efe419a62df8150baec3ce",
+      "post_development_file_sha256": "44cda030ef02574925a3083275807ec52fffc49929bf2eb5fb89302aa269409d",
+      "production_pre_sha256": "UNKNOWN_REQUIRES_CONTROLLED_CHANNEL",
+      "description_zh": "仅精确合并经审查的差异；禁止整树覆盖。",
+      "description_en": "Apply only reviewed exact differences; never overwrite the complete worktree."
+    },
+    {
+      "path": "retail_city_queue.py",
+      "baseline_git_blob_sha256": "03b4c6302dba271b5b0bed34567db5048086d4b1d0e9b2aee9a878023f349432",
+      "post_development_file_sha256": "b72391307a2f154a7d9527eac2291b35ae8ebae20de6357592a83489640f8879",
+      "production_pre_sha256": "UNKNOWN_REQUIRES_CONTROLLED_CHANNEL",
+      "description_zh": "仅精确合并经审查的差异；禁止整树覆盖。",
+      "description_en": "Apply only reviewed exact differences; never overwrite the complete worktree."
+    }
+  ],
+  "patch_sha256": "e5467ea047166fb3b99d18784104fb49420df29b995e1652ad07312bf07ded65",
+  "database_migration": false,
+  "send_authorization": false,
+  "production_data_accessed": false,
+  "required_gates": [
+    "independent_review",
+    "new_release_registration",
+    "live_production_sha_compatibility",
+    "inventory_mutex",
+    "backup_integrity",
+    "atomic_replacement",
+    "post_replacement_sha",
+    "rollback_verification",
+    "normal_scheduled_inventory_validation"
+  ],
+  "integration_requirements": [
+    "preserve_newer_5A_identity_review_terminal_branch",
+    "apply_exact_hunks_to_actual_reviewed_target",
+    "never_replace_newer_source_with_baseline_file"
+  ],
+  "validation": {
+    "targeted_tests_passed": 97,
+    "subtests_passed": 43,
+    "new_recovery_tests_passed": 14,
+    "full_repository_suite_run": false,
+    "production_validation": "NOT_VERIFIED"
+  }
+}
