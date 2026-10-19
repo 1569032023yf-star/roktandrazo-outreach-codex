@@ -13,6 +13,10 @@ def _load_env():
     """Load .env file from project root"""
     env_path = os.path.join(os.path.dirname(__file__), ".env")
     if not os.path.exists(env_path):
+        # Fresh isolated worktrees need no secrets; install() has already
+        # blocked transports and selected the development database.
+        if os.path.isfile(os.path.join(os.path.dirname(__file__), ".development-copy")):
+            return
         raise FileNotFoundError(f".env file not found at {env_path}")
     
     with open(env_path, 'r', encoding='utf-8') as f:

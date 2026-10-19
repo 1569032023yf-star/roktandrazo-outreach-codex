@@ -1,0 +1,42 @@
+{
+  "summary_zh": "可比全量563项560通过、2失败1错误；与556项基线失败集合一致，新增回归0；不是全绿或真实试发",
+  "summary_en": "Comparable full suite: 563 tests, 560 passed, two failures and one error; failure set equals the 556-test baseline, zero added regressions; neither green nor live SMTP acceptance",
+  "generated_at": "2026-10-19T20:44:27.474045+00:00",
+  "baseline_commit": "0ce0b10",
+  "current": {
+    "run": 563,
+    "failures": [
+      "test_dashboard_consolidated.TestSourceAudit.test_archived_dashboards_have_disable_marker",
+      "test_inventory_followup.TestInventoryArchival.test_archived_scripts_have_disable_marker"
+    ],
+    "errors": [
+      "test_single_smtp_authority.TestSingleSmtpAuthority.test_archived_scripts_fail_closed"
+    ],
+    "skipped": [],
+    "python": "3.13.0 (tags/v3.13.0:60403a5, Oct  7 2024, 09:38:07) [MSC v.1941 64 bit (AMD64)]",
+    "startup": "tools/run_comparable_suite.py; sys.path.insert(0,cwd)",
+    "development_copy": true
+  },
+  "baseline": {
+    "run": 556,
+    "failures": [
+      "test_dashboard_consolidated.TestSourceAudit.test_archived_dashboards_have_disable_marker",
+      "test_inventory_followup.TestInventoryArchival.test_archived_scripts_have_disable_marker"
+    ],
+    "errors": [
+      "test_single_smtp_authority.TestSingleSmtpAuthority.test_archived_scripts_fail_closed"
+    ],
+    "skipped": [],
+    "python": "3.13.0 (tags/v3.13.0:60403a5, Oct  7 2024, 09:38:07) [MSC v.1941 64 bit (AMD64)]",
+    "startup": "tools/run_comparable_suite.py; sys.path.insert(0,cwd)",
+    "development_copy": true
+  },
+  "added_failure_ids": [],
+  "removed_failure_ids": [],
+  "targeted_tests_passed": 58,
+  "production_deployments": 0,
+  "internal_messages_sent": 0,
+  "customer_messages_sent": 0,
+  "qa_registration": "REQUEST_ONLY_NOT_EXECUTABLE",
+  "scope": "OFFLINE_DEVELOPMENT_NOT_PRODUCTION_ACCEPTANCE"
+}

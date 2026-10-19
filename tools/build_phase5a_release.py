@@ -87,10 +87,32 @@ def build(snapshot):
     }
     (dest/'manifest.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     qa_names = ('v6_outreach.py', 'v6_bestseller_evidence.py', 'controlled_v6_test.py') + BINARY
+    qa_patch = ''.join(line for name in qa_names if name not in BINARY
+        for line in difflib.unified_diff([], (ROOT/name).read_text(encoding='utf-8').splitlines(True),
+            fromfile='/dev/null', tofile='b/'+name)).encode('utf-8')
+    (dest/'internal-qa.patch').write_bytes(qa_patch)
+    with tempfile.TemporaryDirectory(prefix='phase5a-qa-rehearsal-') as directory:
+        temp = Path(directory)
+        qa_path = (dest/'internal-qa.patch').resolve()
+        for options in (['--check'], [], ['--reverse','--check'], ['--reverse']):
+            subprocess.run(['git','-c','core.autocrlf=false','apply',*options,str(qa_path)],
+                cwd=temp,check=True,capture_output=True)
+            if not options:
+                for name in qa_names:
+                    if name in BINARY:
+                        continue
+                    if sha((temp/name).read_bytes()) != sha((ROOT/name).read_text(encoding='utf-8').encode('utf-8')):
+                        raise ValueError('QA_AFTER_SHA_MISMATCH:' + name)
+        if any((temp/name).exists() for name in qa_names):
+            raise ValueError('QA_ROLLBACK_NEW_FILE_REMAINS')
     qa = {'description_zh': '独立内部 QA 登记申请；不是可执行授权。',
         'description_en': 'Independent internal-QA registration request; not executable authority.',
         'release_id': 'phase5a1-v6-four-template-internal-qa', 'registered': False,
         'operation_requested': 'internal_qa_once', 'maximum_messages': 4,
+        'fixed_recipient': '1569032023yf@gmail.com',
+        'registration_state': 'REQUEST_ONLY_NOT_EXECUTABLE',
+        'offline_text_forward_reverse_verified': True,
+        'text_patch': {'artifact': 'internal-qa.patch', 'sha256': sha(qa_patch)},
         'sending_transport': 'existing_tencent_enterprise_smtp',
         'gmail_role': 'internal_recipient_only', 'gmail_oauth_required': False,
         'receiver_validation': 'manual_unknown_until_evidence',
