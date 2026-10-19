@@ -3,17 +3,19 @@
   "description_en": "Milestone A complete; production QA unregistered and customer sending disabled.",
   "PHASE": "5A.1",
   "MILESTONE_A": "COMPLETED",
-  "MILESTONE_B": "IN_PROGRESS",
+  "MILESTONE_B": "REGRESSION_TARGET_MET_INDEPENDENT_REVIEW_PENDING",
   "MILESTONE_C": "BLOCKED",
   "FOUR_V6_TEMPLATES_REGISTERED": true,
   "REGISTRATION_SCOPE": "DEVELOPMENT_ONLY",
   "TIKTOK_PRIMARY_ROUTING_IMPLEMENTED": true,
   "TIKTOK_RANKING_EVIDENCE_VERIFIED": false,
   "TARGETED_TESTS": {
-    "run": 51,
-    "passed": 51
+    "run": 119,
+    "passed": 119,
+    "failures": 0,
+    "errors": 0
   },
-  "FULL_SUITE_NEW_REGRESSIONS": "PENDING_COMPARABLE_RUNS",
+  "FULL_SUITE_NEW_REGRESSIONS": 0,
   "INTERNAL_QA_DEPLOYED": false,
   "INTERNAL_EMAILS_ACTUALLY_SENT": 0,
   "GMAIL_RECEIPT_VERIFIED": "UNKNOWN",
@@ -22,15 +24,17 @@
   "PRODUCTION_CUSTOMER_SEND_ENABLED": false,
   "BLOCKERS_ZH": [
     "里程碑 C：受限内部 QA 发布和测试入口尚未登记（UNKNOWN_RELEASE_ID）；Gmail 连接不是前置条件",
-    "排名对外使用：缺截图日期、平台和商品身份核实"
+    "排名对外使用：缺截图日期、平台和商品身份核实",
+    "完整客户发布：独立审查尚无签核，基线仍有 10 failed / 2 errors，合规邮寄地址等门禁未满足"
   ],
   "BLOCKERS_EN": [
     "Milestone C: restricted internal-QA release/test operation unregistered (UNKNOWN_RELEASE_ID); Gmail connection is not a prerequisite",
-    "External ranking use: capture date, platform and product identity unverified"
+    "External ranking use: capture date, platform and product identity unverified",
+    "Complete customer release: independent review not signed off; baseline still has 10 failures/2 errors; postal and other compliance gates remain unmet"
   ],
-  "COMMIT_SHA": "2f54116bf525598f69ce0de0ae9736ccdb749af9",
+  "COMMIT_SHA": "0ce0b101dfad1e2ac3aed9bff6e7ebcc99f23c07",
   "PUSH_SUCCESS": true,
-  "COMMIT_SCOPE": "Milestone A code; report follows in a separate commit",
+  "COMMIT_SCOPE": "Regression code and transport correction; validation report committed separately",
   "SENDING_TRANSPORT": "EXISTING_TENCENT_ENTERPRISE_SMTP",
   "GMAIL_ROLE": "INTERNAL_RECIPIENT_ONLY",
   "GMAIL_OAUTH_REQUIRED": false,
@@ -69,5 +73,160 @@
       "smtp_accepted": false,
       "status": "NOT_SENT_QA_OPERATION_UNREGISTERED"
     }
-  ]
+  ],
+  "NEW_CODE_REGRESSIONS": 0,
+  "FULL_SUITE_PASSED": false,
+  "SELF_REVIEW": "COMPLETED",
+  "INDEPENDENT_REVIEW": "PENDING_NO_SECOND_REVIEWER_SIGNOFF",
+  "SMTP_ENABLED": 0,
+  "SMTP_VERIFICATION": "LIVE_CHANNEL_READ_ONLY_2026-10-20_00:43+08",
+  "PRODUCTION_FOUR_TEMPLATE_USAGE_RATIOS": null,
+  "FOUR_TEMPLATES_DEPLOYED_BY_CODEX": false,
+  "INTERNAL_RECIPIENT_WHITELIST_MATCH": true,
+  "COMPARABLE_BASELINE": {
+    "commit": "72bdd70a13dd959264a3137fc546334249b48be1",
+    "run": 505,
+    "failures": [
+      "test_dashboard_consolidated.TestSourceAudit.test_archived_dashboards_have_disable_marker",
+      "test_inventory_followup.TestInventoryArchival.test_archived_scripts_have_disable_marker",
+      "test_phase2b_safe_replenishment.SafeReplenishmentTests.test_directory_or_social_url_is_not_promoted_to_official_site",
+      "test_phase2b_safe_replenishment.SafeReplenishmentTests.test_discovery_to_official_evidence_to_frozen_v2_dev_fsp",
+      "test_phase2b_safe_replenishment.SafeReplenishmentTests.test_identity_mismatch_and_cross_domain_redirect_fail_closed",
+      "test_phase4a3o_dev_db_routing.Phase4A3ODevDatabaseRoutingTests.test_explicit_development_copy_is_preserved_after_env_loader",
+      "test_phase4a8q_identity_terminal_hotfix.IdentityTerminalHotfixTests.test_identity_review_is_durable_and_not_reselected",
+      "test_phase4a8q_identity_terminal_hotfix.IdentityTerminalHotfixTests.test_linked_merchant_resolution_path_still_updates_website",
+      "test_phase4a8q_identity_terminal_hotfix.IdentityTerminalHotfixTests.test_not_found_and_network_retry_keep_existing_semantics",
+      "test_website_resolver_lifecycle.WebsiteResolverLifecycleTests.test_next_lead_runs_after_timeout"
+    ],
+    "errors": [
+      "test_phase4a2_v2_transport_regression.V2TransportRegressionTests.test_current_safe_replenishment_fixture_has_zero_v2_policy_diff",
+      "test_single_smtp_authority.TestSingleSmtpAuthority.test_archived_scripts_fail_closed"
+    ],
+    "skipped": [],
+    "python": "3.13.0 (tags/v3.13.0:60403a5, Oct  7 2024, 09:38:07) [MSC v.1941 64 bit (AMD64)]",
+    "startup": "tools/run_comparable_suite.py; sys.path.insert(0,cwd)",
+    "development_copy": true
+  },
+  "INITIAL_BRANCH_SUITE": {
+    "run": 546,
+    "failures": [
+      "test_dashboard_consolidated.TestSourceAudit.test_archived_dashboards_have_disable_marker",
+      "test_inventory_followup.TestInventoryArchival.test_archived_scripts_have_disable_marker",
+      "test_p0_runtime_semantics.P0RuntimeSemanticsTests.test_smtp_test_mode_only_writes_test_history",
+      "test_phase2b_safe_replenishment.SafeReplenishmentTests.test_directory_or_social_url_is_not_promoted_to_official_site",
+      "test_phase2b_safe_replenishment.SafeReplenishmentTests.test_discovery_to_official_evidence_to_frozen_v2_dev_fsp",
+      "test_phase2b_safe_replenishment.SafeReplenishmentTests.test_identity_mismatch_and_cross_domain_redirect_fail_closed",
+      "test_phase4a3o_dev_db_routing.Phase4A3ODevDatabaseRoutingTests.test_explicit_development_copy_is_preserved_after_env_loader",
+      "test_phase4a8q_identity_terminal_hotfix.IdentityTerminalHotfixTests.test_identity_review_is_durable_and_not_reselected",
+      "test_phase4a8q_identity_terminal_hotfix.IdentityTerminalHotfixTests.test_linked_merchant_resolution_path_still_updates_website",
+      "test_phase4a8q_identity_terminal_hotfix.IdentityTerminalHotfixTests.test_not_found_and_network_retry_keep_existing_semantics",
+      "test_preflight_gate.PreflightGateTestCase.test_all_clean_passes",
+      "test_preflight_gate.PreflightGateTestCase.test_dns_cached_ok_within_24h_passes",
+      "test_preflight_gate.PreflightGateTestCase.test_dns_stale_cache_is_replaced_by_successful_live_refresh",
+      "test_sender_transaction.SenderTransactionTest.test_scenario_a_atomic_commit_success",
+      "test_sender_transaction.SenderTransactionTest.test_scenario_b_second_run_skips_without_smtp",
+      "test_sender_transaction.SenderTransactionTest.test_scenario_c_smtp_rejected_no_send_log",
+      "test_sender_transaction.SenderTransactionTest.test_scenario_d_db_failure_rollback_then_retry_succeeds",
+      "test_sender_transaction.SenderTransactionTest.test_scenario_e_lead_id_impersonation_rejected",
+      "test_sender_transaction.SenderTransactionTest.test_scenario_e_lead_id_mismatch_rejected",
+      "test_sender_transaction.SenderTransactionTest.test_scenario_e_non_int_or_empty_rejected (bad=None)",
+      "test_sender_transaction.SenderTransactionTest.test_scenario_e_non_int_or_empty_rejected (bad='abc')",
+      "test_sender_transaction.SenderTransactionTest.test_scenario_e_non_int_or_empty_rejected (bad=True)",
+      "test_sender_transaction.SenderTransactionTest.test_scenario_g_sender_copy_failure_reported",
+      "test_v6_bestseller_evidence.BestsellerEvidenceTests.test_actual_receipt_is_not_approved_evidence",
+      "test_website_resolver_lifecycle.WebsiteResolverLifecycleTests.test_next_lead_runs_after_timeout"
+    ],
+    "errors": [
+      "test_compact_renderer.CompactRendererTests.test_apply_email_to_lead_propagates_metadata",
+      "test_general_inbox_referral_routing.GeneralInboxReferralRoutingTests.test_exact_generic_local_parts_route_to_referral_template",
+      "test_general_inbox_referral_routing.GeneralInboxReferralRoutingTests.test_existing_recipient_and_referral_metadata_freeze_into_fsp",
+      "test_general_inbox_referral_routing.GeneralInboxReferralRoutingTests.test_named_or_non_exact_local_parts_keep_existing_direct_routing",
+      "test_p0_runtime_semantics.P0RuntimeSemanticsTests.test_deferred_follow_up_is_preview_blocked_then_live_skipped",
+      "test_p0_runtime_semantics.P0RuntimeSemanticsTests.test_dry_run_final_plan_is_zero_write_and_followup_is_previewed",
+      "test_p0_runtime_semantics.P0RuntimeSemanticsTests.test_follow_up_live_success_updates_count_time_log_and_plan",
+      "test_p0_runtime_semantics.P0RuntimeSemanticsTests.test_new_outreach_rechecks_live_lead_and_does_not_replace_skipped_entry",
+      "test_p0_runtime_semantics.P0RuntimeSemanticsTests.test_outreach_dry_run_is_zero_write_and_ignores_live_window",
+      "test_phase4a2_v2_transport_regression.V2TransportRegressionTests.test_current_safe_replenishment_fixture_has_zero_v2_policy_diff",
+      "test_review_workflow.ReviewWorkflowTests.test_b2_cannot_directly_enter_final_plan",
+      "test_review_workflow.ReviewWorkflowTests.test_manual_never_enters_auto_final_plan",
+      "test_single_smtp_authority.TestSingleSmtpAuthority.test_archived_scripts_fail_closed"
+    ],
+    "skipped": [],
+    "python": "3.13.0 (tags/v3.13.0:60403a5, Oct  7 2024, 09:38:07) [MSC v.1941 64 bit (AMD64)]",
+    "startup": "tools/run_comparable_suite.py; sys.path.insert(0,cwd)",
+    "development_copy": true
+  },
+  "FINAL_BRANCH_SUITE": {
+    "run": 556,
+    "failures": [
+      "test_dashboard_consolidated.TestSourceAudit.test_archived_dashboards_have_disable_marker",
+      "test_inventory_followup.TestInventoryArchival.test_archived_scripts_have_disable_marker",
+      "test_phase2b_safe_replenishment.SafeReplenishmentTests.test_directory_or_social_url_is_not_promoted_to_official_site",
+      "test_phase2b_safe_replenishment.SafeReplenishmentTests.test_discovery_to_official_evidence_to_frozen_v2_dev_fsp",
+      "test_phase2b_safe_replenishment.SafeReplenishmentTests.test_identity_mismatch_and_cross_domain_redirect_fail_closed",
+      "test_phase4a3o_dev_db_routing.Phase4A3ODevDatabaseRoutingTests.test_explicit_development_copy_is_preserved_after_env_loader",
+      "test_phase4a8q_identity_terminal_hotfix.IdentityTerminalHotfixTests.test_identity_review_is_durable_and_not_reselected",
+      "test_phase4a8q_identity_terminal_hotfix.IdentityTerminalHotfixTests.test_linked_merchant_resolution_path_still_updates_website",
+      "test_phase4a8q_identity_terminal_hotfix.IdentityTerminalHotfixTests.test_not_found_and_network_retry_keep_existing_semantics",
+      "test_website_resolver_lifecycle.WebsiteResolverLifecycleTests.test_next_lead_runs_after_timeout"
+    ],
+    "errors": [
+      "test_phase4a2_v2_transport_regression.V2TransportRegressionTests.test_current_safe_replenishment_fixture_has_zero_v2_policy_diff",
+      "test_single_smtp_authority.TestSingleSmtpAuthority.test_archived_scripts_fail_closed"
+    ],
+    "skipped": [],
+    "python": "3.13.0 (tags/v3.13.0:60403a5, Oct  7 2024, 09:38:07) [MSC v.1941 64 bit (AMD64)]",
+    "startup": "tools/run_comparable_suite.py; sys.path.insert(0,cwd)",
+    "development_copy": true
+  },
+  "INITIAL_ADDED_FAILURE_ERROR_IDS": [
+    "test_compact_renderer.CompactRendererTests.test_apply_email_to_lead_propagates_metadata",
+    "test_general_inbox_referral_routing.GeneralInboxReferralRoutingTests.test_exact_generic_local_parts_route_to_referral_template",
+    "test_general_inbox_referral_routing.GeneralInboxReferralRoutingTests.test_existing_recipient_and_referral_metadata_freeze_into_fsp",
+    "test_general_inbox_referral_routing.GeneralInboxReferralRoutingTests.test_named_or_non_exact_local_parts_keep_existing_direct_routing",
+    "test_p0_runtime_semantics.P0RuntimeSemanticsTests.test_deferred_follow_up_is_preview_blocked_then_live_skipped",
+    "test_p0_runtime_semantics.P0RuntimeSemanticsTests.test_dry_run_final_plan_is_zero_write_and_followup_is_previewed",
+    "test_p0_runtime_semantics.P0RuntimeSemanticsTests.test_follow_up_live_success_updates_count_time_log_and_plan",
+    "test_p0_runtime_semantics.P0RuntimeSemanticsTests.test_new_outreach_rechecks_live_lead_and_does_not_replace_skipped_entry",
+    "test_p0_runtime_semantics.P0RuntimeSemanticsTests.test_outreach_dry_run_is_zero_write_and_ignores_live_window",
+    "test_p0_runtime_semantics.P0RuntimeSemanticsTests.test_smtp_test_mode_only_writes_test_history",
+    "test_preflight_gate.PreflightGateTestCase.test_all_clean_passes",
+    "test_preflight_gate.PreflightGateTestCase.test_dns_cached_ok_within_24h_passes",
+    "test_preflight_gate.PreflightGateTestCase.test_dns_stale_cache_is_replaced_by_successful_live_refresh",
+    "test_review_workflow.ReviewWorkflowTests.test_b2_cannot_directly_enter_final_plan",
+    "test_review_workflow.ReviewWorkflowTests.test_manual_never_enters_auto_final_plan",
+    "test_sender_transaction.SenderTransactionTest.test_scenario_a_atomic_commit_success",
+    "test_sender_transaction.SenderTransactionTest.test_scenario_b_second_run_skips_without_smtp",
+    "test_sender_transaction.SenderTransactionTest.test_scenario_c_smtp_rejected_no_send_log",
+    "test_sender_transaction.SenderTransactionTest.test_scenario_d_db_failure_rollback_then_retry_succeeds",
+    "test_sender_transaction.SenderTransactionTest.test_scenario_e_lead_id_impersonation_rejected",
+    "test_sender_transaction.SenderTransactionTest.test_scenario_e_lead_id_mismatch_rejected",
+    "test_sender_transaction.SenderTransactionTest.test_scenario_e_non_int_or_empty_rejected (bad='abc')",
+    "test_sender_transaction.SenderTransactionTest.test_scenario_e_non_int_or_empty_rejected (bad=None)",
+    "test_sender_transaction.SenderTransactionTest.test_scenario_e_non_int_or_empty_rejected (bad=True)",
+    "test_sender_transaction.SenderTransactionTest.test_scenario_g_sender_copy_failure_reported",
+    "test_v6_bestseller_evidence.BestsellerEvidenceTests.test_actual_receipt_is_not_approved_evidence"
+  ],
+  "FINAL_ADDED_FAILURE_ERROR_IDS": [],
+  "REGRESSION_CLASSIFICATION": {
+    "legacy_fixture_contract_migration": [
+      "test_compact_renderer",
+      "test_general_inbox_referral_routing",
+      "test_preflight_gate",
+      "test_sender_transaction",
+      "test_v6_bestseller_evidence"
+    ],
+    "policy_contract_and_historical_followup_guard": [
+      "test_p0_runtime_semantics"
+    ],
+    "actual_empty_ineligible_input_compatibility_fix": [
+      "test_review_workflow"
+    ]
+  },
+  "BLOCKERS": {
+    "internal_sending": "REGISTERED_RESTRICTED_QA_RELEASE_AND_TEST_OPERATION_MISSING",
+    "gmail_connection": "NOT_REQUIRED",
+    "independent_review": "PENDING",
+    "ranking_external_use": "EVIDENCE_UNVERIFIED"
+  }
 }
