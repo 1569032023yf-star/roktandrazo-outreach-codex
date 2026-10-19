@@ -1,0 +1,80 @@
+{
+  "workstream": "B",
+  "generated_at": "2026-10-19T16:50:19.128631+00:00",
+  "baseline_commit": "93a8d0a25dabf509fa82cac924dd85741f17b860",
+  "branch": "codex/autonomy-brand",
+  "status": "EVIDENCE_PENDING_ENGINEERING_READY_FOR_INDEPENDENT_REVIEW",
+  "summary_zh": "原44候选续核：本轮新增确认组织0、第一方邮箱0，累计官网2、邮箱1；历史缺失保持UNKNOWN。",
+  "summary_en": "Continued the existing 44 candidates: zero newly verified organizations or first-party emails; cumulative two sites and one email. History remains UNKNOWN without an approved copy.",
+  "metrics": {
+    "INPUT_LIVE_DIRECTORY_CANDIDATES": 44,
+    "ICP_RELEVANT_CANDIDATES": 2,
+    "PUBLIC_SEARCHES_PERFORMED": 59,
+    "OFFICIAL_SITE_CANDIDATES_FOUND": 43,
+    "CANDIDATES_WITH_SITE_CLUES": 35,
+    "OFFICIAL_SITES_VERIFIED": 2,
+    "UNIQUE_ORGANIZATIONS_VERIFIED": 2,
+    "FIRST_PARTY_EMAILS_FOUND": 1,
+    "B2B_ROLE_EMAILS_FOUND": 1,
+    "MX_OK": 1,
+    "HISTORY_SOURCE_AVAILABLE": false,
+    "HISTORY_CLEAN_UNIQUE_ORGS_WITH_EMAIL": 0,
+    "DUPLICATES_CONFIRMED": 0,
+    "IDENTITY_CONFLICTS": 0,
+    "ENGINEERING_FIXTURE_SITE_VALIDATIONS": 0,
+    "ENGINEERING_FIXTURE_EMAIL_VALIDATIONS": 0,
+    "TOYFAIR_VERIFIED_SITES": 1,
+    "TOYFAIR_FIRST_PARTY_EMAILS": 0,
+    "NYNOW_VERIFIED_SITES": 1,
+    "NYNOW_FIRST_PARTY_EMAILS": 1
+  },
+  "new_verified_organizations_24h": 0,
+  "new_first_party_emails_24h": 0,
+  "history_qualified_new_this_run": 0,
+  "safe_total_latest": "UNKNOWN",
+  "safe_net_growth_7d": "UNKNOWN",
+  "additional_public_searches": 1,
+  "additional_page_fetch_calls": 4,
+  "additional_page_fetch_outcomes": {
+    "network_error": 3,
+    "access_restricted": 1
+  },
+  "original_stopped_hosts": 31,
+  "current_stopped_hosts": 32,
+  "conversion_statuses": {
+    "restricted": 30,
+    "reviewed": 2,
+    "search_input_pending": 9,
+    "network_or_identity_pending": 3
+  },
+  "cumulative_max_candidate_page_fetches": 10,
+  "input_sha256": "cee7e9ae895fbd9b7671b05fe2a8432a9be247763b21f3f2ce48fa534cd653bd",
+  "checkpoint_sha256": "3220fb427a6d696cf93774fd7f3797037a3cdf74715339ddaa774c32a1b61c39",
+  "tests": {
+    "targeted_run": 115,
+    "passed": 115,
+    "failures": 0,
+    "errors": 0,
+    "full_suite_this_run": "NOT_RUN"
+  },
+  "independent_review": "PENDING_PARENT_REVIEW",
+  "production_deployed": false,
+  "production_db_accessed": false,
+  "smtp_connections": 0,
+  "emails_sent": 0,
+  "next_action_zh": "独立复核并合并最小恢复补丁；保留停止域名，按既有预算对DNS待核候选延后重试；有新第一方证据或获准历史副本时续核。",
+  "next_action_en": "Independently review and merge the minimal resume patch; retain stopped hosts and defer bounded DNS retries. Continue when new first-party evidence or an approved history copy becomes available.",
+  "blockers_zh": [
+    "32个域名停止访问",
+    "9条候选搜索预算已耗尽且无线索",
+    "3条网络或身份待核",
+    "缺少获准开发历史副本"
+  ],
+  "blockers_en": [
+    "32 stopped hosts",
+    "Nine records have no clues and exhausted search budgets",
+    "Three records await network/identity evidence",
+    "Approved development history copy unavailable"
+  ],
+  "sensitive_information_check": "PASS: counts, public website clues and content hashes only; contacts and HTML remain ignored"
+}

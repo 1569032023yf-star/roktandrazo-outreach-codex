@@ -65,6 +65,30 @@ class ConversionTests(unittest.TestCase):
         self.assertNotIn('email',clues[0])
         self.assertEqual('discovery_only',clues[0]['evidence_scope'])
 
+    def test_contact_interaction_controls_are_not_evidence_fetches(self):
+        for suffix in ('?share=twitter', '?replytocom=229', '?like_comment=229',
+                       '?_wpnonce=abc', '?action=subscribe', '?action=', '?add-to-cart=1'):
+            self.assertEqual('', candidate_url('https://alpha.invalid/contact/' + suffix))
+        self.assertEqual('https://alpha.invalid/contact/?lang=en',
+                         candidate_url('https://alpha.invalid/contact/?lang=en'))
+
+    def test_resume_reuses_cached_homepage_contact_links_without_refetch(self):
+        class InterruptedContact(Fetch):
+            def fetch(self, url, **kwargs):
+                if '/contact/' in url:
+                    self.calls.append(url)
+                    raise OSError('temporary network failure')
+                return super().fetch(url, **kwargs)
+        first = InterruptedContact('<title>Identity pending</title><p>Bookstore NY 10011</p>'
+                                   '<a href="/contact/">Contact</a>')
+        self.engine(first).run()
+        resumed = Fetch('<title>Identity pending</title><p>Bookstore NY 10011</p>')
+        engine = self.engine(resumed)
+        engine.run()
+        self.assertEqual(['https://alpha.invalid/contact/'], resumed.calls)
+        self.assertEqual(3, engine.state['rows']['one']['http_attempts'])
+        self.assertFalse(engine.state['rows']['one']['official_site_verified'])
+
     def test_wrong_identity_rejected(self):
         e = self.engine(Fetch('<title>Beta Toys</title><p>Alpha Books mentioned by a retailer; bookstore NY 10011</p>'))
         e.run()

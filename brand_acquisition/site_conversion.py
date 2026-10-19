@@ -13,7 +13,7 @@ import ipaddress
 import json
 from pathlib import Path
 import re
-from urllib.parse import urljoin, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, urljoin, urlsplit, urlunsplit
 
 from .capture_manifest import validate_manifest, write_capture
 from .email_quality import audit_brand_email
@@ -82,6 +82,12 @@ def candidate_url(url):
         except ValueError:
             pass
         if p.path.casefold().endswith(('.pdf', '.jpg', '.png', '.zip')):
+            return ''
+        # Contact-page URLs can also be comment/share/action controls. Never
+        # spend a read-only evidence budget on those state-changing links.
+        interaction_keys = {'share', 'replytocom', 'like_comment', '_wpnonce',
+                            'action', 'logout', 'add-to-cart', 'remove_item'}
+        if any(k.casefold() in interaction_keys for k, _ in parse_qsl(p.query, keep_blank_values=True)):
             return ''
         return urlunsplit((p.scheme, p.netloc, p.path or '/', p.query, ''))
     except (ValueError, TypeError):
@@ -467,10 +473,18 @@ class SiteConversion:
             if h not in row.get('attempted_hosts',[]) and len(row.get('attempted_hosts',[])) >= self.budget.hosts_per_candidate:
                 continue
             pages = [p for p in row['pages'] if host(p['final_url']) == h]
-            queue = [candidate_url(x['url']) for x in clues if host(x['url']) == h]
+            queue = [url for x in clues if host(x['url']) == h and (url := candidate_url(x['url']))]
+            if not queue:
+                continue
             # Root is derived only from an observed URL, never a guessed domain.
             root = urlunsplit(('https', urlsplit(queue[0]).netloc, '/', '', ''))
             queue = list(dict.fromkeys([root] + queue))
+            # Resume from captured contact links as well as search clues. A
+            # cached homepage is intentionally not fetched twice, but its
+            # unfinished traversal must survive interruption.
+            queue.extend(candidate_url(link) for page in pages for link in page.get('links', [])
+                         if candidate_url(link) and host(link) == h)
+            queue = list(dict.fromkeys(queue))
             while queue and row['http_attempts'] < self.budget.pages_per_candidate:
                 url = candidate_url(queue.pop(0))
                 if any(p['requested_url'] == url for p in pages):
