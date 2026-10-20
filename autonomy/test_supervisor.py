@@ -62,6 +62,7 @@ class SupervisorTests(unittest.TestCase):
         s.init(self.runtime)
         pairs = {'D-sanitized-telemetry-adapter': 'D-telemetry-independent-review',
                  'D-unknown-outcome-quarantine': 'D-unknown-outcome-review',
+                 'D-unknown-outcome-followup': 'D-unknown-outcome-followup-review',
                  'B-brand-package-integration': 'B-brand-integration-review'}
         for developer, reviewer in pairs.items():
             with self.subTest(developer=developer):

@@ -105,9 +105,10 @@ def reconcile(runtime, state):
 
 def task_prompt(task):
     # Queue data never becomes executable commands or arbitrary agent instructions.
-    if task['id'] == 'D-unknown-outcome-quarantine' and task['role'] == 'developer':
+    if task['id'] in {'D-unknown-outcome-quarantine', 'D-unknown-outcome-followup'} and task['role'] == 'developer':
         return ('执行一项有界开发：先读AGENTS.md及docs/AUTONOMY_STORAGE_FAILURE_AUDIT.md。'
-                '仅修改autonomy/supervisor.py、autonomy/test_supervisor.py，新增双语'
+                '如存在docs/AUTONOMY_UNKNOWN_OUTCOME_REVIEW.md，先修其两项：developer completed恢复必须去重排独立审核；exclusive锁删除失败须保留正在传播的主异常及附注，并补组合故障测试。'
+                '仅修改autonomy/supervisor.py、autonomy/test_supervisor.py，新增或更新双语'
                 'docs/AUTONOMY_UNKNOWN_OUTCOME_RECOVERY.md。优先修复审查前两项：'
                 '中断running、代理超时/输出不完整/执行异常及执行后完成提交失败，结果未知必须隔离，'
                 '不得自动重执行；仅经显式只读成果核对才允许恢复，不能按attempts或needs_reassessment放行。'
@@ -118,7 +119,7 @@ def task_prompt(task):
                 '不修改process_job.py，不执行真实代理/联网/采集/生产DB/SMTP，不读取凭据，'
                 '不删除用户文件，不自行提交。10分钟内完成可验证改动或如实报告未完成。'
                 '最终仅JSON summary_zh、summary_en、findings数组。')
-    if task['id'] == 'D-unknown-outcome-review' and task['role'] == 'reviewer':
+    if task['id'] in {'D-unknown-outcome-review', 'D-unknown-outcome-followup-review'} and task['role'] == 'reviewer':
         return ('独立只读审核autonomy/supervisor.py、test_supervisor.py及'
                 'docs/AUTONOMY_UNKNOWN_OUTCOME_RECOVERY.md，对照存储失败专项审核报告。'
                 '重点验证未知结果隔离、禁止自动重执行、queue权威与receipt恢复、主异常保留、'
@@ -283,6 +284,7 @@ def cycle(runtime=RUNTIME, root=ROOT, source='manual', runner=run_agent):
             task['status'] = ('needs_review' if task['role'] == 'developer' else 'completed') if outcome['ok'] else 'unknown'
             reviews = {'D-sanitized-telemetry-adapter': ('D', 'D-telemetry-independent-review'),
                        'D-unknown-outcome-quarantine': ('D', 'D-unknown-outcome-review'),
+                       'D-unknown-outcome-followup': ('D', 'D-unknown-outcome-followup-review'),
                        'B-brand-package-integration': ('B', 'B-brand-integration-review')}
             if outcome['ok'] and task['id'] in reviews:
                 workstream, review_id = reviews[task['id']]
