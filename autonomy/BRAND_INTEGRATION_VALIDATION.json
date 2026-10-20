@@ -1,0 +1,181 @@
+{
+  "summary_zh": "25文件来源逐字节核验，177离线测试通过，独立审核待完成",
+  "summary_en": "25 files byte-verified against source, 177 offline tests passed; independent review pending",
+  "source": {
+    "source_commit": "5e9b89de99a596b509426a596ef02fcc7521facc",
+    "files": [
+      {
+        "path": "brand_acquisition/__init__.py",
+        "sha256": "08f4825dc51f43620c0de2b07eb7680a5423b83577c2cf32066e0ec666bdf52c"
+      },
+      {
+        "path": "brand_acquisition/capture_import.py",
+        "sha256": "a188fa0295392b58d375909e3fb9a78a2ddf10fe544f56044e2cdde81e37bf7f"
+      },
+      {
+        "path": "brand_acquisition/capture_manifest.py",
+        "sha256": "ea53d86d6c0cbfb8e9e1ab82a64750134a9e6771f9cb2ff7d4235383e494ff8f"
+      },
+      {
+        "path": "brand_acquisition/diagnostics.py",
+        "sha256": "2b36c78e46fd863ea8bc65259e12049174445302d81a0a470e164e74b868d127"
+      },
+      {
+        "path": "brand_acquisition/directory_adapters.py",
+        "sha256": "be6afc5e809cf7ccd6ca03c849d3ee2f4bf6a67b9655c79049bb3b29e344f51c"
+      },
+      {
+        "path": "brand_acquisition/directory_pipeline.py",
+        "sha256": "59c3d1ff205d0976b2b4807ccde8bc0152fbb85a5f61aa3b3a88c18c52d32bb1"
+      },
+      {
+        "path": "brand_acquisition/email_quality.py",
+        "sha256": "8541fb0c1cbd3dba6731b80e0305944bc334485fd05effe347355640845f05bc"
+      },
+      {
+        "path": "brand_acquisition/history.py",
+        "sha256": "2c15f3214f638f7d38b5380ce7bc3ed8926dd2f51ec34b6082b7bdbfba910a8c"
+      },
+      {
+        "path": "brand_acquisition/models.py",
+        "sha256": "d5ddd1b9f675fa818b63847a9ed54ac52d97e648d07af9bc003fbb803515e59c"
+      },
+      {
+        "path": "brand_acquisition/official_site_resolver.py",
+        "sha256": "16a6acc61b2ea9c58dc8a80f180a100d575147c71b7b1095ae0b9c2a850107a6"
+      },
+      {
+        "path": "brand_acquisition/pipeline.py",
+        "sha256": "b48a9743e89490b9517c9f8d31c2b2e64893043a60e8435d6494df1a926f766d"
+      },
+      {
+        "path": "brand_acquisition/pipeline_types.py",
+        "sha256": "2ff4eece219353f6cabfb36e1a0f0320d238a5bdc738644ffead9a8cfe1f9cc3"
+      },
+      {
+        "path": "brand_acquisition/providers.py",
+        "sha256": "65493b76b0f2c5094a1ab1b2fad129d80dfd14fc75ca3c27db8be05c7dcfb9cd"
+      },
+      {
+        "path": "brand_acquisition/site_conversion.py",
+        "sha256": "8212fbe53598da716b2cf44b6d1497452b0acb6b4a2ac1e3db7b00f158a63e38"
+      },
+      {
+        "path": "brand_acquisition/source_catalog.py",
+        "sha256": "88cc8e1d05f339891776daeb6fbbd38bab946faf16951a4745e72a63d1d071b9"
+      },
+      {
+        "path": "scripts/run_brand_acquisition_canary.py",
+        "sha256": "147e5ea50800d6fca14061bf7916dd83f37077c077ac6f53faa3affb348a38d0"
+      },
+      {
+        "path": "scripts/run_brand_capture.py",
+        "sha256": "159b8a3f542e7ecfe6b8fb1b3a8b6442403e4bb0718118db4ee5f88e6c3b0488"
+      },
+      {
+        "path": "scripts/run_industry_directory_canary.py",
+        "sha256": "408835aa6cfde567f222cf1a5918747dd9f970068c9c03d3dab63fc4ba4cb499"
+      },
+      {
+        "path": "scripts/run_official_site_conversion.py",
+        "sha256": "33da9c3eff15b5a99e8083a495d4e5df30649df44e68ea40e51f023ef3bb260d"
+      },
+      {
+        "path": "tests/test_brand_acquisition.py",
+        "sha256": "b733eefbbfe81655a0cf0e2e9fd84c22e2ebb74e6a77243ae873a2cb379acda4"
+      },
+      {
+        "path": "tests/test_brand_acquisition_offline.py",
+        "sha256": "36d4eae8f0ef6142bef1b22b748f7b0813b563f65f1d62f909903f2137d3839d"
+      },
+      {
+        "path": "tests/test_directory_live_layouts.py",
+        "sha256": "d1bb96bc80a2bb0b7cf0bfe468247eea6dc13e2a64e225d91550cab2130a81cd"
+      },
+      {
+        "path": "tests/test_directory_live_preflight.py",
+        "sha256": "6679da35a3fa6eede391ba120485f28b3013f105e4019e0a984ad143c9e2debf"
+      },
+      {
+        "path": "tests/test_industry_directory_acquisition.py",
+        "sha256": "a093c0e3e4728301bbd18335a021b3a7732c81ce308927b20af40feee5266184"
+      },
+      {
+        "path": "tests/test_phase4b1g_site_conversion.py",
+        "sha256": "0766d107b56893bf271542619c6c606e07f4327e2dc06cbc04017c17e3a58249"
+      }
+    ]
+  },
+  "tests": {
+    "modules": [
+      "tests.test_brand_acquisition",
+      "tests.test_brand_acquisition_offline",
+      "tests.test_directory_live_layouts",
+      "tests.test_directory_live_preflight",
+      "tests.test_industry_directory_acquisition",
+      "tests.test_phase4b1g_site_conversion",
+      "tests.test_phase5a_v6",
+      "tests.test_phase5a1_four_templates",
+      "tests.test_regression_harness_safety",
+      "tests.test_city_network_recovery"
+    ],
+    "run": 177,
+    "failures": [],
+    "errors": [],
+    "successful": true,
+    "network_disabled": true,
+    "initial_attempt": {
+      "modules": [
+        "tests.test_brand_acquisition",
+        "tests.test_brand_acquisition_offline",
+        "tests.test_directory_live_layouts",
+        "tests.test_directory_live_preflight",
+        "tests.test_industry_directory_acquisition",
+        "tests.test_phase4b1g_site_conversion",
+        "tests.test_phase5a_v6",
+        "tests.test_phase5a1_four_templates",
+        "tests.test_regression_harness_safety",
+        "tests.test_city_network_recovery"
+      ],
+      "run": 168,
+      "failures": [],
+      "errors": [
+        "test_phase5a1_four_templates (unittest.loader._FailedTest.test_phase5a1_four_templates)"
+      ],
+      "successful": false,
+      "network_disabled": true
+    },
+    "initial_error_resolution": "Added existing tests directory to sys.path; no source changes"
+  },
+  "trigger": "manual_user_continuation",
+  "review": {
+    "ok": true,
+    "reason": "INDEPENDENT_STATIC_REVIEW_NO_BLOCKING_MIGRATION_FINDINGS",
+    "summary_zh": "独立审核确认25/25文件与固定来源逐字节一致，25 AST解析成功，现有共享/城市/V6及既有测试无差异；未重跑177测试",
+    "summary_en": "Independent review confirmed 25/25 byte-exact files, 25 valid ASTs and unchanged shared/city/V6 code and existing tests; did not rerun the 177 tests",
+    "scope": "STATIC_MIGRATION_REVIEW_NOT_PRODUCTION_ACCEPTANCE",
+    "observations": [
+      {
+        "severity": "info",
+        "file": "brand_acquisition/history.py:16",
+        "zh": "历史无副本或异常返回UNKNOWN；mode=ro/query_only保留，未升级SAFE",
+        "en": "Missing history or errors return UNKNOWN; mode=ro/query_only retained, no SAFE promotion"
+      },
+      {
+        "severity": "medium",
+        "file": "brand_acquisition/pipeline.py:643; brand_acquisition/site_conversion.py:559",
+        "zh": "既有使用限制：默认MX可能执行DNS，Exchange路由ok不能绕过危险域排除及发送门禁；离线必须mock",
+        "en": "Pre-existing operational limitation: default MX may use DNS; Exchange routing ok cannot override risky-provider exclusions or sending gates; offline runs require mocks"
+      },
+      {
+        "severity": "info",
+        "file": "brand_acquisition/site_conversion.py:352",
+        "zh": "断点指纹、停止域、累计请求及搜索预算保持；目录所有权/采购意图false、fixture发现用途不变",
+        "en": "Checkpoint fingerprints, stopped hosts and cumulative request/search budgets retained; directory ownership/buyer intent remain false, fixtures stay discovery-only"
+      }
+    ]
+  },
+  "production_metrics": "UNKNOWN",
+  "review_record_id": "b35ce83a-9109-4243-b208-ce24ce56c42e",
+  "supervisor_tests_passed": 14
+}

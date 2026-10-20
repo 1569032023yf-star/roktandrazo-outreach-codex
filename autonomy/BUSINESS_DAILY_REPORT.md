@@ -16,7 +16,7 @@ Production telemetry has no authorized sanitized feed; UNKNOWN is neither zero n
 | V6和发信缺口 / V6 and sending gaps | 新QA登记、收件认证、客户地址及全资格门禁 / New QA registration, receipt/authentication, customer address and full eligibility gates |
 | 本轮生产部署 / Production releases this run | 0；当日其他发布UNKNOWN / 0; other releases today UNKNOWN |
 | 阻塞 / Blockers | 新发布入口、历史副本、遥测待接通 / New release entrypoint, history copy and telemetry unavailable |
-| 下一步 / Next | 下次真实心跳新增固定来源25文件，禁网测试后进入needs_review，再排独立审核；保留较新5A/城市/V6代码 / Next genuine heartbeat adds 25 pinned-source files, runs offline tests and enters needs_review before independent review; preserve newer 5A/city/V6 code |
+| 下一步 / Next | 下次真实心跳执行D-storage-failure-audit，审核磁盘满及完成记录失败的最小修复；继续保留发布和客户外发门禁 / Next genuine heartbeat runs D-storage-failure-audit for minimal fixes to disk-full and completion-persistence failures; retain release and customer-send gates |
 
 | 指标 / Metric | 当前 / Current |
 |---|---|
@@ -43,9 +43,9 @@ Production telemetry has no authorized sanitized feed; UNKNOWN is neither zero n
 ## 工作线 / Workstreams
 
 - A: 修复及97测试/43子测试通过，已保留5A身份门禁整合；真实城市推进未验证 / Repair passed 97 tests/43 subtests and integrated with 5A identity gate preserved; actual city advance unverified
-- B: 只读依赖审核完成：25文件可新增，115个测试方法未运行；本轮未采集，尚未整合 / Read-only dependency audit completed: 25 additive files, 115 test methods not executed; no discovery this cycle, not integrated
+- B: 品牌25文件已整合，177离线测试及独立静态审核通过；磁盘故障已恢复，生产验收仍未完成 / 25 brand files integrated, 177 offline tests and independent static review passed; disk failure recovered, production acceptance remains incomplete
 - C: 四套V6定向58项通过；可比全量563项560通过、3项与基线相同；整合后86项加4身份门禁测试通过；QA未登记未发送 / Four V6 variants passed 58 targeted tests; comparable full suite 563/560 passed with three baseline-identical issues; integrated 86 tests plus four identity-gate tests passed; QA unregistered and unsent
-- D: 三轮真实自动任务完成；品牌依赖审核完成，下一开发任务与后续独立审核已登记；真实feed未接通 / Three genuine automatic tasks completed; brand dependency audit complete, next developer and subsequent review registered; no real feed connected
+- D: 磁盘满失败记录已恢复，手动迁移及独立审核完成；自动成功周期仍3 / Disk-full failure reconciled; manual integration and independent review completed; unattended successes remain three
 
 本日实际生产部署 / Actual production deployments today: UNKNOWN
 

@@ -1,6 +1,6 @@
 {
-  "summary_zh": "四个真实触发中三轮任务完成；品牌依赖静态审核完成，整体自主运营未验收",
-  "summary_en": "Three tasks completed across four genuine triggers; brand dependency static audit completed, overall autonomy not accepted",
+  "summary_zh": "五个真实触发中三轮成功、一轮额度中断、一轮磁盘满失败；本次手动续接不计自动周期",
+  "summary_en": "Five genuine triggers include three successes, one usage-limit interruption and one disk-full failure; manual continuation is excluded",
   "automation_id": "rokt-razo",
   "triggers": [
     {
@@ -44,13 +44,28 @@
       "audited_additive_files": 25,
       "test_methods_counted": 115,
       "brand_tests_executed": false
+    },
+    {
+      "trigger_at": "2026-10-20T02:55:11.748Z",
+      "cycle_id": "b144cb9a-7f97-45a5-bce8-fd2d03f40bc6",
+      "status": "FAILED_ENOSPC",
+      "scheduler": "codex_heartbeat",
+      "execution_started_at": "2026-10-20T02:56:44.172227+00:00",
+      "execution_finished_at": "2026-10-20T03:00:34.076952+00:00",
+      "agent_outcome": "UNKNOWN"
     }
   ],
   "two_unattended_cycles_verified": true,
   "scope": "TRUSTED_CHAT_HEARTBEAT_METADATA_PLUS_LOCAL_TASK_RECEIPTS_NOT_PRODUCTION_ACCEPTANCE",
   "successful_unattended_cycles_confirmed": 3,
-  "next_task": "B-brand-package-integration",
-  "updated_at": "2026-10-20T00:59:38.057775+00:00",
+  "next_task": "D-storage-failure-audit",
+  "updated_at": "2026-10-20T03:36:50.787599+00:00",
   "verification_method": "CONTROLLER_MATCHED_TRUSTED_HEARTBEAT_MESSAGES_TO_DISTINCT_COMPLETED_LOCAL_RECEIPTS_NOT_SELF_REPORTED_SOURCE_ALONE",
-  "consecutive_trigger_interval_seconds": 7472.05
+  "consecutive_trigger_interval_seconds": 7472.05,
+  "manual_recovery": {
+    "recorded_at": "2026-10-20T03:36:50.787599+00:00",
+    "failed_cli_cycle": "bfc6ed84-4539-494a-8b82-663cd7be44c3",
+    "independent_review_id": "b35ce83a-9109-4243-b208-ce24ce56c42e",
+    "counted_as_unattended": false
+  }
 }

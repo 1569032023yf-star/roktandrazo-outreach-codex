@@ -92,6 +92,14 @@ def reconcile(runtime, state):
 
 def task_prompt(task):
     # Queue data never becomes executable commands or arbitrary agent instructions.
+    if task['id'] == 'D-storage-failure-audit' and task['role'] == 'reviewer':
+        return ('独立只读审核autonomy/supervisor.py和process_job.py的磁盘满失败路径。'
+                '先读AGENTS.md及docs/AUTONOMY_BRAND_INTEGRATION.md。已发生ENOSPC导致完成记录未落盘，'
+                '后续手动恢复后CLI又超时；分别分析，不推测相同原因。核查启动前空间检查、'
+                '原子写失败、租约恢复、未知结果不重执行有副作用操作、临时输出上限及进程清理。'
+                '只读源码与脱敏周期记录，不读凭据、原始候选或生产DB，不联网、不修改文件。'
+                '列最小可测试修复方案和限制，不创建调度器、不擅自清理用户文件。'
+                '最终仅JSON summary_zh、summary_en、findings数组，每项severity/file/detail_zh/detail_en。')
     if task['id'] == 'B-brand-package-integration' and task['role'] == 'developer':
         return ('你是独立Developer，执行已授权的有界品牌代码迁移。先读AGENTS.md、总控文档及'
                 'docs/AUTONOMY_BRAND_DEPENDENCY_AUDIT.md。来源严格固定Git提交'

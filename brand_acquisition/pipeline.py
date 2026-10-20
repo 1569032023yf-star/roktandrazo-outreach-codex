@@ -1,0 +1,652 @@
+from __future__ import annotations
+
+from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
+from datetime import datetime, timezone
+import json
+import re
+from pathlib import Path
+from time import monotonic
+from typing import Callable, Iterable
+from urllib.parse import urlsplit
+
+from .models import BrandCandidate, SourceMetric
+
+
+@dataclass(frozen=True)
+class PipelineConfig:
+    http_workers: int = 4
+    browser_workers: int = 1
+    max_candidates: int = 90
+    provider_max_pages: int = 3
+    source_max_candidates: int = 30
+
+    def __post_init__(self):
+        if not 1 <= self.http_workers <= 4 or self.browser_workers != 1:
+            raise ValueError("concurrency is bounded at HTTP_WORKERS<=4 and BROWSER_WORKERS=1")
+        if not 1 <= self.max_candidates <= 90 or not 1 <= self.provider_max_pages <= 3:
+            raise ValueError("candidate/page caps exceed conservative canary bounds")
+        if not 1 <= self.source_max_candidates <= 30:
+            raise ValueError("source candidate cap must be between 1 and 30")
+
+
+def _norm(value: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", str(value or "").casefold())
+
+
+def _domain(url: str) -> str:
+    return (urlsplit(url if "://" in url else "https://" + url).hostname or "").lower().removeprefix("www.")
+
+
+def _marketplace_url(url: str) -> bool:
+    host = _domain(url)
+    marketplaces = ("amazon.com", "tiktok.com", "faire.com", "etsy.com", "ebay.com", "walmart.com", "aliexpress.com")
+    return any(host == domain or host.endswith("." + domain) for domain in marketplaces)
+
+
+def organization_key(candidate: BrandCandidate) -> str:
+    domain = _domain(candidate.official_website) if candidate.official_site_verified else ""
+    owner = _norm(candidate.brand_owner_name) if any(e.get("type") == "verified_parent_company" for e in candidate.owner_verification_evidence) else ""
+    brand = _norm(candidate.brand_name)
+    source = candidate.discovery_source_url or (candidate.source_urls[0] if candidate.source_urls else "")
+    channel = ",".join(sorted(candidate.source_platforms))
+    record = ":" + candidate.directory_record_id if candidate.directory_record_id else ""
+    return "domain:" + domain if domain else "owner:" + owner if owner else f"observation:{channel}:{source}:{brand}{record}"
+
+
+def deduplicate(candidates: Iterable[BrandCandidate]) -> list[BrandCandidate]:
+    """Merge only on an identical verified domain or exact source observation."""
+    merged: dict[str, BrandCandidate] = {}
+    seen_domains: dict[str, str] = {}
+    verified_name_domains: dict[str, set[str]] = {}
+    for candidate in candidates:
+        key = organization_key(candidate)
+        domain = _domain(candidate.official_website) if candidate.official_site_verified else ""
+        existing_key = seen_domains.get(domain) if domain else None
+        existing_key = existing_key or key
+        if existing_key not in merged:
+            merged[existing_key] = candidate
+        else:
+            prior = merged[existing_key]
+            prior.source_platforms = list(dict.fromkeys(prior.source_platforms + candidate.source_platforms))
+            prior.source_urls = list(dict.fromkeys(prior.source_urls + candidate.source_urls))
+            prior.product_categories = list(dict.fromkeys(prior.product_categories + candidate.product_categories))
+            prior.product_evidence.extend(x for x in candidate.product_evidence if x not in prior.product_evidence)
+            prior.directory_evidence.extend(x for x in candidate.directory_evidence if x not in prior.directory_evidence)
+            prior.product_or_listing_evidence.extend(x for x in candidate.product_or_listing_evidence if x not in prior.product_or_listing_evidence)
+            prior.source_capture_ids = list(dict.fromkeys(prior.source_capture_ids + candidate.source_capture_ids))
+            prior.public_sales_signals.update(candidate.public_sales_signals)
+            if not prior.official_website and candidate.official_website:
+                prior.official_website = candidate.official_website
+            if not prior.brand_owner_name:
+                prior.brand_owner_name = candidate.brand_owner_name
+            existing_domain = _domain(prior.official_website) if prior.official_site_verified else ""
+            if domain and existing_domain and domain != existing_domain:
+                prior.brand_identity_status = candidate.brand_identity_status = "identity_conflict"
+                prior.exclusions.append("identity_conflict:verified_domain_mismatch")
+                candidate.exclusions.append("identity_conflict:verified_domain_mismatch")
+        if domain:
+            seen_domains[domain] = existing_key
+            verified_name_domains.setdefault(_norm(candidate.brand_name), set()).add(domain)
+    for key, candidate in merged.items():
+        candidate.organization_key = key
+        domains = verified_name_domains.get(_norm(candidate.brand_name), set())
+        if len(domains) > 1:
+            candidate.brand_identity_status = "identity_conflict"
+            candidate.identity_class = "IDENTITY_CONFLICT"
+            if "identity_conflict:similar_name_distinct_verified_domains" not in candidate.exclusions:
+                candidate.exclusions.append("identity_conflict:similar_name_distinct_verified_domains")
+    return list(merged.values())
+
+
+class AcquisitionPipeline:
+    """Discovery/enrichment orchestrator. Persistence is JSON only, never a lead DB."""
+
+    def __init__(self, output_dir: str | Path, config: PipelineConfig | None = None,
+                 history_check: Callable[[dict], str] | None = None,
+                 brand_owner_check: Callable[[BrandCandidate], bool] | None = None,
+                 official_site_check: Callable[[BrandCandidate], bool] | None = None,
+                 first_party_extract: Callable[[BrandCandidate], dict] | None = None,
+                 mx_check: Callable[[str], str] | None = None,
+                 organization_identity_check: Callable[[BrandCandidate], bool] | None = None):
+        self.output_dir = Path(output_dir)
+        self.config = config or PipelineConfig()
+        self.history_check = history_check or (lambda _candidate: "UNKNOWN")
+        self.brand_owner_check = brand_owner_check or (lambda _candidate: False)
+        self.official_site_check = official_site_check or (lambda _candidate: False)
+        self.first_party_extract = first_party_extract or (lambda _candidate: {})
+        self.mx_check = mx_check or (lambda _email: "unknown")
+        self.organization_identity_check = organization_identity_check
+
+    def enrich(self, candidates: Iterable[BrandCandidate], source_metrics: list[SourceMetric] | None = None) -> dict:
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        started = monotonic()
+        unique = deduplicate(candidates)
+        unique = unique[:self.config.max_candidates]
+        # Merge completed enrichment from a prior run; only completed or history-blocked
+        # records skip repeat website fetches. Unknown/pending records can resume later.
+        checkpoint = self.output_dir / "checkpoint.json"
+        prior_candidates: dict[str, BrandCandidate] = {}
+        if checkpoint.exists():
+            try:
+                prior = json.loads(checkpoint.read_text(encoding="utf-8"))
+                prior_candidates = {organization_key(BrandCandidate(**item)): BrandCandidate(**item)
+                    for item in prior.get("candidates", [])}
+                # A directory observation gains a domain key after verification.
+                # Also index its original source record so a completed canary can
+                # resume without fetching that organization's site again.
+                for item in prior.get("candidates", []):
+                    saved = BrandCandidate(**item)
+                    if saved.directory_record_id:
+                        observation = BrandCandidate(**item)
+                        observation.official_site_verified = False
+                        observation.owner_verification_evidence = []
+                        prior_candidates[organization_key(observation)] = saved
+            except (OSError, ValueError, TypeError, KeyError) as exc:
+                raise ValueError(f"candidate checkpoint is corrupt and was preserved: {type(exc).__name__}") from exc
+        for index, item in enumerate(unique):
+            previous = prior_candidates.get(organization_key(item))
+            if previous and previous.data_origin_label == item.data_origin_label:
+                previous.source_platforms = list(dict.fromkeys(previous.source_platforms + item.source_platforms))
+                previous.source_urls = list(dict.fromkeys(previous.source_urls + item.source_urls))
+                previous.product_categories = list(dict.fromkeys(previous.product_categories + item.product_categories))
+                previous.product_evidence.extend(x for x in item.product_evidence if x not in previous.product_evidence)
+                previous.directory_evidence.extend(x for x in item.directory_evidence if x not in previous.directory_evidence)
+                previous.source_capture_ids = list(dict.fromkeys(previous.source_capture_ids + item.source_capture_ids))
+                previous.public_sales_signals.update(item.public_sales_signals)
+                if not previous.official_website:
+                    previous.official_website = item.official_website
+                unique[index] = previous
+        pending = [item for item in unique if item.enrichment_status not in {"complete", "history_blocked"}]
+        # Site calls can use the existing bounded browser fallback; keep this lane at 1.
+        with ThreadPoolExecutor(max_workers=self.config.browser_workers) as pool:
+            list(pool.map(self._enrich_one, pending))
+        checkpoint.write_text(json.dumps({"candidates": [item.to_dict() for item in unique]}, indent=2), encoding="utf-8")
+        payload = {
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "history_source_available": bool(getattr(self.history_check, "database", None)
+                and getattr(self.history_check, "development_copy", False)
+                and Path(self.history_check.database).is_file()),
+            "history_note": "UNKNOWN unless an explicit development read-only history checker is supplied",
+            "candidates": [item.to_dict() for item in unique],
+            "metrics": funnel(unique, source_metrics or [], monotonic() - started),
+        }
+        (self.output_dir / "brand_candidates.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        return payload
+
+    def _enrich_one(self, candidate: BrandCandidate) -> None:
+        from .official_site_resolver import resolve_official_site_candidates
+        from .pipeline_types import STAGES
+        now = datetime.now(timezone.utc).isoformat()
+        candidate.stage_statuses.setdefault(STAGES[0], {"status": "DISCOVERED", "at": now,
+            "evidence_sources": list(candidate.source_urls or ([candidate.discovery_source_url] if candidate.discovery_source_url else []))})
+        candidate.organization_key = organization_key(candidate)
+        if candidate.brand_identity_status == "identity_conflict" or candidate.identity_class == "IDENTITY_CONFLICT":
+            candidate.identity_class = "IDENTITY_CONFLICT"
+            candidate.stage_statuses[STAGES[1]] = {"status": "IDENTITY_CONFLICT", "at": now,
+                "next_action": "manual_identity_resolution"}
+            candidate.enrichment_status = "identity_conflict"
+            candidate.exclusions.append("identity_conflict_fail_closed")
+            return
+        if candidate.data_origin_label in {"AUTHORIZED_PUBLIC_IMPORT", "INDEXED_SEARCH_SNAPSHOT", "TEST_FIXTURE", "KNOWN_TEST_SEED"}:
+            # Imported/snapshot/fixture material can expand the candidate pool,
+            # but cannot trigger official-site/email/MX qualification by itself.
+            candidate.rejected_business_email = candidate.business_email or candidate.rejected_business_email
+            candidate.business_email = ""
+            candidate.official_site_verified = False
+            candidate.email_official_identity_verified = False
+            candidate.history_status = "UNKNOWN"
+            candidate.enrichment_status = "live_revalidation_required"
+            candidate.exclusions.append("untrusted_import_not_eligible_for_contact_qualification")
+            candidate.stage_statuses[STAGES[3]] = {"status": "LIVE_REVALIDATION_REQUIRED",
+                "reason": "imported_or_fixture_evidence_is_discovery_only", "at": now,
+                "next_action": "revalidate_with_authorized_live_first_party_source"}
+            return
+        candidate.history_status = str(self.history_check(candidate.to_dict()) or "UNKNOWN")
+        if candidate.history_status not in {"UNKNOWN", "new_candidate"}:
+            candidate.stage_statuses[STAGES[5]] = {"status": "HISTORY_BLOCKED", "history_status": candidate.history_status,
+                "at": now, "next_action": "history_review"}
+            candidate.exclusions.append("history:" + candidate.history_status)
+            candidate.enrichment_status = "history_blocked"
+            return
+        if candidate.history_status == "UNKNOWN":
+            candidate.exclusions.append("history_unknown_fail_closed")
+        resolved = resolve_official_site_candidates(candidate, candidate.product_or_listing_evidence)
+        candidate.official_site_candidates = resolved["candidate_websites"]
+        candidate.official_site_resolution_status = resolved["resolution_status"]
+        candidate.stage_statuses[STAGES[1]] = {"status": "IDENTITY_CANDIDATE", "identity_class": candidate.identity_class,
+            "at": now, "evidence_sources": list(candidate.source_urls)}
+        candidate.stage_statuses[STAGES[2]] = {"status": resolved["resolution_status"],
+            "candidate_count": len(candidate.official_site_candidates), "at": now,
+            "evidence_sources": resolved["candidate_source_urls"]}
+        # Candidate domains are explicit source evidence, not verified sites.
+        # Each still passes through the established owner and first-party checks.
+        directory_mode = bool(candidate.organization_name)
+        accepted_identities = {"organization_confirmed"} if directory_mode else {"brand_owner_confirmed", "official_brand_store"}
+        identity_check = self.organization_identity_check if directory_mode else self.brand_owner_check
+        if directory_mode and candidate.category_filter_status == "excluded":
+            candidate.enrichment_status = "directory_category_excluded"
+            return
+        if candidate.brand_identity_status not in accepted_identities:
+            originals = list(candidate.official_site_candidates)
+            verified_candidate = False
+            for item in originals[:3]:
+                candidate.official_website = item["website"]
+                if identity_check and identity_check(candidate):
+                    candidate.brand_identity_status = "organization_confirmed" if directory_mode else "brand_owner_confirmed"
+                    if not directory_mode:
+                        candidate.identity_class = "BRAND_OWNER"
+                    candidate.organization_identity_verified = directory_mode
+                    verified_candidate = True
+                    break
+            if not verified_candidate:
+                if not originals and candidate.official_website:
+                    candidate.official_website = ""
+                candidate.identity_class = "IDENTITY_UNVERIFIED"
+                candidate.brand_identity_status = "unknown"
+                candidate.enrichment_status = "identity_pending" if originals else "official_site_unresolved"
+                candidate.stage_statuses[STAGES[3]] = {"status": "IDENTITY_PENDING" if originals else "OFFICIAL_SITE_UNRESOLVED",
+                    "reason": "brand_owner_not_confirmed", "at": datetime.now(timezone.utc).isoformat(),
+                    "next_action": "obtain_independent_owner_or_official_site_evidence"}
+                candidate.exclusions.append("brand_owner_not_confirmed")
+                return
+        if candidate.brand_identity_status not in accepted_identities:
+            candidate.exclusions.append("brand_owner_not_confirmed")
+            return
+        if not candidate.official_website or not self.official_site_check(candidate):
+            candidate.official_site_verification_status = "failed_or_unavailable"
+            candidate.enrichment_status = "site_unverified"
+            candidate.stage_statuses[STAGES[3]] = {"status": "OFFICIAL_SITE_VERIFICATION_PENDING",
+                "reason": "verification_failed_or_unavailable", "at": datetime.now(timezone.utc).isoformat(),
+                "next_action": "retry_official_site_verification"}
+            candidate.exclusions.append("official_site_unverified")
+            return
+        candidate.official_site_verified = True
+        candidate.official_site_verification_status = "verified"
+        if not directory_mode:
+            candidate.identity_class = "BRAND_OWNER"
+        candidate.stage_statuses[STAGES[3]] = {"status": "OFFICIAL_SITE_VERIFIED", "website": candidate.official_website,
+            "final_url": candidate.official_site_final_url, "at": datetime.now(timezone.utc).isoformat(),
+            "evidence_sources": [candidate.official_site_final_url or candidate.official_website]}
+        extracted = self.first_party_extract(candidate) or {}
+        candidate.business_email = str(extracted.get("email") or "")
+        candidate.email_role = str(extracted.get("role") or "")
+        candidate.email_evidence_url = str(extracted.get("url") or "")
+        candidate.email_evidence_excerpt = str(extracted.get("excerpt") or "")
+        candidate.email_checked_at = str(extracted.get("checked_at") or "")
+        candidate.email_evidence_source_type = str(extracted.get("source_type") or "")
+        candidate.email_http_status = extracted.get("http_status")
+        candidate.email_final_url = str(extracted.get("final_url") or "")
+        candidate.email_official_identity_verified = bool(extracted.get("official_identity_verified", False))
+        if candidate.business_email:
+            from .email_quality import audit_brand_email
+            hygiene = audit_brand_email(candidate.business_email, candidate.official_website, extracted)
+            candidate.email_quality_status = hygiene["status"]
+            if not hygiene.get("valid"):
+                candidate.rejected_business_email = candidate.business_email
+                candidate.email_hygiene_status = str(hygiene.get("reason", "failed"))
+                candidate.exclusions.append("email_hygiene:" + str(hygiene.get("reason", "failed")))
+                candidate.mx_status = "not_checked_invalid"
+                candidate.business_email = ""
+            elif (not candidate.email_evidence_url or not candidate.email_evidence_excerpt
+                  or candidate.business_email.lower() not in candidate.email_evidence_excerpt.lower()
+                  or not candidate.email_official_identity_verified
+                  or (directory_mode and not candidate.email_checked_at)
+                  or not candidate.email_final_url or not candidate.email_http_status):
+                candidate.exclusions.append("first_party_evidence_incomplete")
+                candidate.email_hygiene_status = "evidence_incomplete"
+                candidate.mx_status = "not_checked_evidence_incomplete"
+                candidate.business_email = ""
+            else:
+                candidate.email_hygiene_status = "ok"
+                candidate.stage_statuses[STAGES[4]] = {"status": "FIRST_PARTY_EMAIL_FOUND", "at": datetime.now(timezone.utc).isoformat(),
+                    "evidence_sources": [candidate.email_evidence_url]}
+        if not candidate.business_email and STAGES[4] not in candidate.stage_statuses:
+            candidate.stage_statuses[STAGES[4]] = {"status": "EMAIL_NOT_FOUND_OR_REJECTED",
+                "reason": candidate.email_hygiene_status, "at": datetime.now(timezone.utc).isoformat(),
+                "next_action": "retry_first_party_contact_paths_or_review_evidence"}
+        # Check the actual mailbox after first-party extraction too. The early
+        # organization check above avoids costly site work for already-contacted parties.
+        if candidate.business_email:
+            post_email_history = str(self.history_check(candidate.to_dict()) or "UNKNOWN")
+            candidate.history_status = post_email_history
+            if post_email_history not in {"UNKNOWN", "new_candidate"}:
+                candidate.enrichment_status = "history_blocked"
+                candidate.exclusions.append("history:" + post_email_history)
+                return
+            if post_email_history == "UNKNOWN" and "history_unknown_fail_closed" not in candidate.exclusions:
+                candidate.exclusions.append("history_unknown_fail_closed")
+        if candidate.business_email and candidate.email_hygiene_status == "ok":
+            candidate.mx_status = self.mx_check(candidate.business_email)
+        candidate.stage_statuses[STAGES[5]] = {"status": "HISTORY_" + candidate.history_status,
+            "mx_status": candidate.mx_status, "at": datetime.now(timezone.utc).isoformat(),
+            "evidence_sources": [candidate.email_evidence_url] if candidate.email_evidence_url else [],
+            "next_action": "history_review" if candidate.history_status == "UNKNOWN" else "none"}
+        candidate.enrichment_status = ("complete" if candidate.business_email and candidate.mx_status == "ok"
+            and candidate.history_status == "new_candidate" else "history_unknown_pending"
+            if candidate.history_status == "UNKNOWN" else "qualification_pending") if directory_mode else (
+            "complete" if candidate.history_status != "UNKNOWN" else "history_unknown_pending")
+
+    def run_sources(self, source_pages: dict[str, list[str]], fetcher_factory=None, *, now=None) -> dict:
+        """Run providers independently with one durable checkpoint per source."""
+        pipeline_started = monotonic()
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        from .providers import ProviderRun, run_public_source
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+
+        def run_one(source: str, urls: list[str]):
+            source_started = monotonic()
+            cp_path = self.output_dir / "source_checkpoints" / f"source_{source}.json"
+            cp = {"url_states": {}, "attempt_counts": {}, "attempt_history": [], "candidates": []}
+            checkpoint_error = ""
+            if cp_path.exists():
+                try:
+                    cp = json.loads(cp_path.read_text(encoding="utf-8"))
+                    if not isinstance(cp, dict):
+                        raise ValueError("checkpoint root must be object")
+                except (OSError, ValueError, TypeError) as exc:
+                    checkpoint_error = type(exc).__name__
+                    cp = {"url_states": {}, "attempt_counts": {}, "attempt_history": [], "candidates": []}
+            if checkpoint_error:
+                # Preserve corrupt bytes for inspection; never silently reset to success.
+                return ProviderRun(source, errors=[{"status":"checkpoint_corrupt", "error":checkpoint_error}])
+            url_states = dict(cp.get("url_states", {}))
+            done = set(cp.get("completed_urls", []))
+            candidates = [BrandCandidate(**item) for item in cp.get("candidates", [])]
+            errors = list(cp.get("errors", []))
+            attempted = int(cp.get("pages_attempted", 0))
+            fetched = int(cp.get("pages_fetched", 0))
+            failures = int(cp.get("failures", 0))
+            rate_limits = int(cp.get("rate_limits", 0))
+            restricted = set(cp.get("access_restricted_urls", []))
+            retryable = set(cp.get("retryable_urls", []))
+            attempts = dict(cp.get("attempt_counts", {}))
+            history = list(cp.get("attempt_history", []))
+            outcomes = []
+            paused_for_rate_limit = False
+            timestamp = now or datetime.now(timezone.utc)
+            if isinstance(timestamp, datetime) and timestamp.tzinfo is None:
+                timestamp = timestamp.replace(tzinfo=timezone.utc)
+            current_time = timestamp.isoformat() if isinstance(timestamp, datetime) else str(timestamp)
+            for url in urls[:self.config.provider_max_pages]:
+                if url in done or url in restricted or len(candidates) >= self.config.source_max_candidates:
+                    continue
+                state = url_states.get(url, {})
+                if state.get("status") == "PARSE_EMPTY":
+                    continue
+                count = int(attempts.get(url, 0))
+                if count >= 3:
+                    continue
+                last = state.get("last_attempt_at", "")
+                if last and url in retryable:
+                    try:
+                        previous_time = datetime.fromisoformat(last.replace("Z", "+00:00"))
+                        now_time = datetime.fromisoformat(current_time.replace("Z", "+00:00"))
+                        delay = min(3600, 60 * (2 ** max(0, count - 1)))
+                        if (now_time - previous_time).total_seconds() < delay:
+                            continue
+                    except (ValueError, TypeError):
+                        continue
+                fetcher = fetcher_factory(source) if fetcher_factory else None
+                part = run_public_source(source, [url], fetcher=fetcher, max_pages=1,
+                    max_candidates=self.config.source_max_candidates - len(candidates))
+                attempted += part.pages_attempted
+                fetched += part.pages_fetched
+                failures += part.failures
+                rate_limits += part.rate_limits
+                candidates.extend(part.candidates[:max(0, self.config.source_max_candidates - len(candidates))])
+                errors.extend(part.errors)
+                attempts[url] = count + 1
+                outcome = part.url_outcomes[0] if part.url_outcomes else {"status":"TRANSIENT_FAILURE"}
+                outcomes.append(outcome)
+                status = outcome.get("status", "TRANSIENT_FAILURE")
+                url_states[url] = {**outcome, "last_attempt_at": current_time}
+                history.append({"url":url, "attempt":attempts[url], "at":current_time, "status":status,
+                                "error_type":outcome.get("error_type", "")})
+                if status == "SUCCESS":
+                    done.add(url); retryable.discard(url); restricted.discard(url)
+                    url_states[url]["last_success_at"] = current_time
+                elif status == "PARSE_EMPTY":
+                    done.add(url); retryable.discard(url)
+                elif status == "ACCESS_RESTRICTED":
+                    restricted.add(url); retryable.discard(url)
+                elif status in {"PERMANENT_UNAVAILABLE"}:
+                    done.add(url); retryable.discard(url)
+                else:
+                    retryable.add(url)
+                    if outcome.get("rate_limited"):
+                        paused_for_rate_limit = True
+                cp_path.parent.mkdir(parents=True, exist_ok=True)
+                payload = {"source_state":status, "last_attempt_at":current_time,
+                    "last_success_at":max((v.get("last_success_at", "") for v in url_states.values()), default=""),
+                    "completed_urls": sorted(done), "retryable_urls": sorted(retryable),
+                    "access_restricted_urls":sorted(restricted), "attempt_counts":attempts,
+                    "url_states":url_states, "attempt_history":history,
+                    "candidates": [c.to_dict() for c in candidates], "errors": errors,
+                    "pages_attempted": attempted, "pages_fetched": fetched,
+                    "failures": failures, "rate_limits": rate_limits}
+                temp_path = cp_path.with_suffix(".json.tmp")
+                temp_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+                temp_path.replace(cp_path)
+                if paused_for_rate_limit:
+                    break
+            run = ProviderRun(source, candidates, attempted, fetched, failures, rate_limits, errors,
+                              url_outcomes=outcomes)
+            run.elapsed_seconds = monotonic() - source_started
+            return run
+
+        sources = list(source_pages.items())
+        runs = []
+        with ThreadPoolExecutor(max_workers=min(self.config.http_workers, max(1, len(sources)))) as executor:
+            futures = {executor.submit(run_one, source, urls): source for source, urls in sources}
+            for future in as_completed(futures):
+                runs.append(future.result())
+        from .models import SourceMetric
+        metrics = [SourceMetric(source=run.source, pages_attempted=run.pages_attempted,
+            pages_fetched=run.pages_fetched,
+            brands_discovered=sum(c.data_origin == "live_public" for c in run.candidates),
+            fixture_candidates=sum(c.data_origin != "live_public" for c in run.candidates), failures=run.failures,
+            rate_limits=run.rate_limits,
+            network_failures=sum(e.get("status") in {"network_error", "transient_failure", "timeout"} for e in run.errors),
+            access_restricted=sum(e.get("status") == "access_restricted" for e in run.errors),
+            parse_empty=sum(o.get("status") == "PARSE_EMPTY" for o in run.url_outcomes),
+            runtime_seconds=round(run.elapsed_seconds, 3)) for run in runs]
+        candidates = [candidate for run in runs for candidate in run.candidates]
+        enriched = self.enrich(candidates, metrics)
+        enriched["metrics"]["TOTAL_RUNTIME_SECONDS"] = round(monotonic() - pipeline_started, 3)
+        enriched["source_errors"] = {run.source: run.errors for run in runs}
+        (self.output_dir / "brand_candidates.json").write_text(json.dumps(enriched, indent=2), encoding="utf-8")
+        return enriched
+
+
+def funnel(candidates: list[BrandCandidate], source_metrics: list[SourceMetric], runtime_seconds: float) -> dict:
+    from .pipeline_types import STAGES
+    source_new: dict[str, int] = {}
+    source_verified: dict[str, int] = {}
+    for c in candidates:
+        if c.history_status == "new_candidate" and c.brand_identity_status in {"brand_owner_confirmed", "official_brand_store"}:
+            for source in c.source_platforms:
+                source_new[source] = source_new.get(source, 0) + 1
+                if (c.business_email and c.email_evidence_url and c.email_evidence_excerpt
+                    and c.official_site_verified and c.email_official_identity_verified
+                    and c.email_hygiene_status == "ok" and c.mx_status == "ok"):
+                    source_verified[source] = source_verified.get(source, 0) + 1
+    known = [c for c in candidates if c.history_status != "UNKNOWN"]
+    for metric in source_metrics:
+        source_items = [c for c in candidates if metric.source in c.source_platforms]
+        metric.official_sites_verified = sum(c.official_site_verified for c in source_items)
+        metric.emails_found = sum(bool(c.business_email and c.email_evidence_url and c.email_evidence_excerpt
+            and c.official_site_verified and c.email_official_identity_verified) for c in source_items)
+        metric.new_owners_with_email = sum(bool(c.business_email and c.email_hygiene_status == "ok" and c.mx_status == "ok" and c.history_status == "new_candidate"
+            and c.brand_identity_status in {"brand_owner_confirmed", "official_brand_store"}) for c in source_items)
+    best_source = "undetermined"
+    viable = [m for m in source_metrics if m.pages_fetched]
+    if viable:
+        if any(m.new_owners_with_email for m in viable):
+            best_source = max(viable, key=lambda m: (m.new_owners_with_email, -m.runtime_seconds)).source
+        elif any(m.emails_found for m in viable):
+            best_source = max(viable, key=lambda m: (m.emails_found, -m.runtime_seconds)).source
+        elif any(m.brands_discovered for m in viable):
+            best_source = max(viable, key=lambda m: (m.brands_discovered, -m.runtime_seconds)).source
+    raw_count = sum(m.brands_discovered for m in source_metrics)
+    source_counts = {source: sum(1 for c in candidates if source in c.source_platforms)
+                     for source in ("tiktok_shop", "amazon", "wholesale")}
+    origin_counts = {origin: sum(c.data_origin_label == origin for c in candidates) for origin in (
+        "TEST_FIXTURE", "KNOWN_TEST_SEED", "INDEXED_SEARCH_SNAPSHOT", "AUTHORIZED_PUBLIC_IMPORT", "LIVE_PUBLIC_CAPTURE")}
+    verified_sites = sum(c.official_site_verified for c in candidates)
+    verified_emails = sum(bool(c.business_email and c.official_site_verified and c.email_official_identity_verified
+                               and c.email_evidence_url and c.email_evidence_excerpt) for c in candidates)
+    stage_counts = {stage: {"statuses": {}}
+        for stage in STAGES}
+    for candidate in candidates:
+        for stage, record in candidate.stage_statuses.items():
+            if stage in stage_counts:
+                status = str(record.get("status") or "UNKNOWN")
+                stage_counts[stage]["statuses"][status] = stage_counts[stage]["statuses"].get(status, 0) + 1
+    return {
+        "RAW_BRANDS_DISCOVERED": raw_count,
+        "DEDUPED_UNIQUE_BRANDS": len(candidates),
+        "DEDUPED_UNIQUE_BRAND_CANDIDATES": len(candidates),
+        "BRAND_OWNERS_CONFIRMED": sum(c.brand_identity_status in {"brand_owner_confirmed", "official_brand_store"} for c in candidates),
+        "EXISTING_ORGS_EXCLUDED": sum(c.history_status not in {"UNKNOWN", "new_candidate"} for c in candidates),
+        "HISTORY_BLOCKED_ORGS": sum(c.history_status in {"suppressed_or_unsubscribed", "bounced", "rejected", "previously_sent"} for c in candidates),
+        "NEW_UNIQUE_BRAND_OWNERS": sum(c.history_status == "new_candidate" and c.brand_identity_status in {"brand_owner_confirmed", "official_brand_store"} for c in candidates),
+        "OFFICIAL_SITES_FOUND": sum(bool(c.official_website) for c in candidates),
+        "OFFICIAL_SITE_CANDIDATES_FOUND": sum(bool(c.official_site_candidates) for c in candidates),
+        "OFFICIAL_SITES_VERIFIED": sum(c.official_site_verified for c in candidates),
+        "FIRST_PARTY_EMAILS_FOUND": sum(bool(c.business_email and c.email_evidence_url and c.email_evidence_excerpt
+            and c.official_site_verified and c.email_official_identity_verified) for c in candidates),
+        "LIVE_VERIFIED_OFFICIAL_EMAILS": sum(bool(c.business_email and c.official_site_verified
+            and c.email_official_identity_verified and c.email_evidence_url and c.email_evidence_excerpt
+            and c.data_origin_label == "LIVE_PUBLIC_CAPTURE") for c in candidates),
+        "B2B_EMAILS_FOUND": sum(bool(c.business_email and c.email_evidence_url and c.email_evidence_excerpt
+            and c.official_site_verified and c.email_official_identity_verified
+            and c.email_role in {"WHOLESALE", "SALES", "PARTNERSHIPS", "TRADE", "BUSINESS", "ORDERS", "GENERAL",
+                                 "wholesale", "sales", "partnerships", "business", "trade", "orders", "info", "hello"}) for c in candidates),
+        "MX_OK": sum(c.mx_status == "ok" for c in candidates),
+        "HISTORY_CLEAN_BRANDS_WITH_EMAIL": sum(bool(c.business_email and c.email_evidence_url and c.email_evidence_excerpt
+            and c.official_site_verified and c.email_official_identity_verified
+            and c.email_hygiene_status == "ok" and c.mx_status == "ok" and c.history_status == "new_candidate"
+            and c.brand_identity_status in {"brand_owner_confirmed", "official_brand_store"}) for c in candidates),
+        "HISTORY_KNOWN_CANDIDATES": len(known),
+        "OFFLINE_FIXTURE_BRANDS": origin_counts["TEST_FIXTURE"] + origin_counts["KNOWN_TEST_SEED"],
+        "IMPORTED_PUBLIC_BRAND_CANDIDATES": origin_counts["AUTHORIZED_PUBLIC_IMPORT"],
+        "INDEXED_SEARCH_SNAPSHOT_CANDIDATES": origin_counts["INDEXED_SEARCH_SNAPSHOT"],
+        "LIVE_DISCOVERED_BRANDS": origin_counts["LIVE_PUBLIC_CAPTURE"],
+        "TIKTOK_BRANDS": source_counts["tiktok_shop"],
+        "AMAZON_BRANDS": source_counts["amazon"],
+        "WHOLESALE_BRANDS": source_counts["wholesale"],
+        "BRANDS_PER_SUCCESSFUL_SOURCE_PAGE": round(len(candidates) / sum(m.pages_fetched for m in source_metrics), 3)
+            if sum(m.pages_fetched for m in source_metrics) else 0,
+        "VERIFIED_EMAILS_PER_VERIFIED_SITE": round(verified_emails / verified_sites, 3) if verified_sites else 0,
+        "DUPLICATE_CANDIDATES_AVOIDED": max(0, raw_count - len(candidates)),
+        "TIKTOK_NEW_BRANDS": source_new.get("tiktok_shop", 0),
+        "TIKTOK_VERIFIED_EMAIL_BRANDS": source_verified.get("tiktok_shop", 0),
+        "AMAZON_NEW_BRANDS": source_new.get("amazon", 0),
+        "AMAZON_VERIFIED_EMAIL_BRANDS": source_verified.get("amazon", 0),
+        "WHOLESALE_NEW_BRANDS": source_new.get("wholesale", 0),
+        "WHOLESALE_VERIFIED_EMAIL_BRANDS": source_verified.get("wholesale", 0),
+        "TOTAL_RUNTIME_SECONDS": round(runtime_seconds, 3),
+        "PROVIDER_PAGES_ATTEMPTED": sum(m.pages_attempted for m in source_metrics),
+        "PROVIDER_PAGES_FETCHED": sum(m.pages_fetched for m in source_metrics),
+        "NETWORK_FAILURES": sum(m.network_failures for m in source_metrics),
+        "HTTP_429": sum(m.rate_limits for m in source_metrics),
+        "ACCESS_RESTRICTED": sum(m.access_restricted for m in source_metrics),
+        "PARSE_EMPTY": sum(m.parse_empty for m in source_metrics),
+        "PER_SOURCE": [m.to_dict() for m in source_metrics],
+        "BEST_PERFORMING_SOURCE": best_source,
+        "PIPELINE_STAGE_COUNTS": stage_counts,
+    }
+
+
+def make_first_party_enricher(fetcher=None, *, strict_name_match=False):
+    """Reuse discovery's established first-party identity and email evidence code."""
+    from discovery.discovery_service import (
+        BrowserFallbackWebsiteFetcher, _extract_email_evidence, _fetch_official_pages,
+        _official_identity_match,
+    )
+    from discovery.normalizer import normalized_domain
+    web_fetcher = fetcher or BrowserFallbackWebsiteFetcher()
+    verified_pages: dict[str, list[dict]] = {}
+
+    def verify(candidate: BrandCandidate) -> bool:
+        if not candidate.official_website or _marketplace_url(candidate.official_website):
+            return False
+        cache_key = candidate.organization_key or organization_key(candidate)
+        if verified_pages.get(cache_key):
+            return True
+        row = {"business_name": candidate.brand_name, "website": candidate.official_website,
+               "normalized_domain": normalized_domain(candidate.official_website)}
+        pages = _fetch_official_pages(candidate.official_website, web_fetcher)
+        if not pages or not _official_identity_match(row, pages):
+            return False
+        if strict_name_match:
+            # Directory registration plus a plausible domain is not independent
+            # identity evidence. Require the organization name on fetched pages.
+            normalize_text = lambda text: " ".join(re.sub(r"[\W_]+", " ", str(text).casefold()).split())
+            expected = normalize_text(candidate.organization_name or candidate.brand_name)
+            visible = normalize_text(" ".join(p.get("text", "") for p in pages))
+            if not expected or " " + expected + " " not in " " + visible + " ":
+                return False
+        verified_pages[cache_key] = pages
+        candidate.official_site_verification_status = "verified"
+        candidate.official_site_final_url = str(pages[0].get("final_url") or pages[0].get("url") or "")
+        candidate.official_site_checked_at = str(pages[0].get("fetched_at") or "")
+        return True
+
+    def extract(candidate: BrandCandidate) -> dict:
+        pages = verified_pages.get(candidate.organization_key or organization_key(candidate), [])
+        evidence = _extract_email_evidence(pages, candidate.brand_name)
+        chosen = evidence
+        if not chosen:
+            return {}
+        email = chosen.get("email", "")
+        local = email.split("@", 1)[0].lower()
+        role_patterns = (
+            ("WHOLESALE", ("wholesale", "retailers", "distributors")),
+            ("SALES", ("sales",)), ("PARTNERSHIPS", ("partnership", "collab")),
+            ("TRADE", ("trade",)), ("BUSINESS", ("business",)), ("ORDERS", ("orders",)),
+            ("CUSTOMER_SUPPORT", ("support", "service", "help")),
+            ("GENERAL", ("info", "hello", "contact")),
+        )
+        role = next((name for name, terms in role_patterns if any(term in local for term in terms)), "OTHER")
+        evidence = chosen.get("evidence", {})
+        return {"email": email, "role": role, "url": chosen.get("url", ""),
+                "excerpt": chosen.get("snippet", ""), "checked_at": evidence.get("fetched_at", ""),
+                "source_type":"first_party_official_page", "http_status":evidence.get("http_status"),
+                "final_url":evidence.get("final_url", chosen.get("url", "")),
+                "official_identity_verified":True}
+    return verify, extract
+
+
+def make_runtime_callbacks(fetcher=None, *, strict_name_match=False):
+    """Assemble existing first-party identity/email checks with safe public fetch."""
+    from .providers import SafeOfficialPageFetcher
+    verify_site, extract_email = make_first_party_enricher(fetcher or SafeOfficialPageFetcher(),
+        strict_name_match=strict_name_match)
+
+    def owner(candidate: BrandCandidate) -> bool:
+        # Marketplace/directory claims only become owner evidence when they are
+        # corroborated by the brand's own verified HTTPS site.
+        has_listing = bool(candidate.brand_claim and (candidate.product_or_listing_evidence or candidate.product_evidence))
+        if not candidate.official_website or not has_listing or not verify_site(candidate):
+            return False
+        candidate.owner_verification_evidence.append({
+            "type":"first_party_site_plus_independent_listing",
+            "source_url":candidate.discovery_source_url,
+            "official_site":candidate.official_website,
+            "verified":True,
+        })
+        candidate.identity_class = "BRAND_OWNER"
+        return True
+
+    def mx(email: str) -> str:
+        from email_hygiene import check_mx_cached
+        domain = email.rsplit("@", 1)[-1].lower()
+        result = check_mx_cached(domain)
+        provider = result.get("provider")
+        return {"google":"ok", "exchange":"ok", "other":"ok", "no_mx":"no_route",
+                "nxdomain":"nxdomain", "dns_timeout":"dns_error", "dns_error":"dns_error"}.get(provider, "unknown")
+
+    return {"brand_owner_check":owner, "official_site_check":verify_site,
+            "first_party_extract":extract_email, "mx_check":mx}

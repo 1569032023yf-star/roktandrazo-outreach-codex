@@ -90,3 +90,14 @@ The genuine 00:52:39.151Z heartbeat matched cycle c35de6c2-5533-452f-9930-9ecead
 下一步：下次真实心跳新增固定来源25文件，禁网测试后进入needs_review，再排独立审核；保留较新5A/城市/V6代码。三轮真实自动任务完成，两连续周期条件保持true；整体自主运行及持续并行仍false。未复查生产通道，最近健康/QA预检证据仍分别为06:49/06:50；不把历史状态称为当前实测。无生产DB、部署、采集或发信，指标UNKNOWN，旧SAFE56不算新增。
 
 Next: Next genuine heartbeat adds 25 pinned-source files, runs offline tests and enters needs_review before independent review; preserve newer 5A/city/V6 code. Three genuine automatic tasks are complete and the consecutive-cycle condition remains true; overall autonomy and sustained parallel operation remain false. Production channel was not rechecked: health/QA evidence remains timestamped 06:49/06:50, not a current measurement. No production DB access, release, discovery or sending occurred; metrics remain UNKNOWN and historical SAFE56 is not new growth.
+
+
+## 2026-10-20 手动恢复及品牌整合 / Manual recovery and brand integration
+
+品牌25文件已整合，177离线测试及独立静态审核通过；磁盘故障已恢复，生产验收仍未完成。首次测试加载错误修正启动路径后177通过，另14总控测试通过。25文件逐字节来源匹配，独立审核25 AST及现有共享代码无修改；审核者未重跑测试。ENOSPC与CLI超时均保留失败。手动续接不计自动成功，仍为3。下次真实心跳执行D-storage-failure-audit，审核磁盘满及完成记录失败的最小修复；继续保留发布和客户外发门禁。
+
+25 brand files integrated, 177 offline tests and independent static review passed; disk failure recovered, production acceptance remains incomplete. After correcting the initial test-loading path, 177 tests passed, plus 14 supervisor tests. All 25 files match pinned source bytes; independent review verified 25 ASTs and unchanged shared code without rerunning tests. ENOSPC and CLI timeout remain failures. Manual continuation does not increase unattended successes, which remain three. Next genuine heartbeat runs D-storage-failure-audit for minimal fixes to disk-full and completion-persistence failures; retain release and customer-send gates.
+
+未实采、未生产部署、未客户/内部发信，真实指标UNKNOWN、历史UNKNOWN不升级SAFE；生产通道最近检查仍为06:49/06:50，不声称本轮复查。
+
+No live discovery, production deployment, customer or internal email occurred. Real metrics remain UNKNOWN and UNKNOWN history is not SAFE. Channel checks remain timestamped 06:49/06:50, not claimed as rechecked now.
