@@ -1,6 +1,6 @@
 {
-  "summary_zh": "五个真实触发中三轮成功、一轮额度中断、一轮磁盘满失败；本次手动续接不计自动周期",
-  "summary_en": "Five genuine triggers include three successes, one usage-limit interruption and one disk-full failure; manual continuation is excluded",
+  "summary_zh": "七次触发中四轮任务成功；本轮存储审核发现5项待修复问题，最新两触发非连续成功",
+  "summary_en": "Four tasks completed across seven triggers; storage audit found five open issues, latest two triggers are not consecutive successes",
   "automation_id": "rokt-razo",
   "triggers": [
     {
@@ -53,13 +53,31 @@
       "execution_started_at": "2026-10-20T02:56:44.172227+00:00",
       "execution_finished_at": "2026-10-20T03:00:34.076952+00:00",
       "agent_outcome": "UNKNOWN"
+    },
+    {
+      "trigger_at": "2026-10-20T04:53:38.608Z",
+      "cycle_id": null,
+      "status": "PRECHECK_ONLY_NO_COMPLETED_TASK_RECEIPT",
+      "scheduler": "codex_heartbeat"
+    },
+    {
+      "trigger_at": "2026-10-20T06:51:15.470Z",
+      "cycle_id": "925bf28f-489f-4af9-817f-e596bbd041cf",
+      "status": "COMPLETED_INDEPENDENT_STORAGE_AUDIT",
+      "scheduler": "codex_heartbeat",
+      "task_id": "D-storage-failure-audit",
+      "execution_started_at": "2026-10-20T06:51:33.107434+00:00",
+      "execution_finished_at": "2026-10-20T06:54:27.190009+00:00",
+      "output_sha256": "c511d3e60637c2470c959acc2b889a0a900001a535a7fa79aef533e39189b65b",
+      "findings_count": 5,
+      "findings_fixed": false
     }
   ],
   "two_unattended_cycles_verified": true,
   "scope": "TRUSTED_CHAT_HEARTBEAT_METADATA_PLUS_LOCAL_TASK_RECEIPTS_NOT_PRODUCTION_ACCEPTANCE",
-  "successful_unattended_cycles_confirmed": 3,
-  "next_task": "D-storage-failure-audit",
-  "updated_at": "2026-10-20T03:36:50.787599+00:00",
+  "successful_unattended_cycles_confirmed": 4,
+  "next_task": "D-unknown-outcome-quarantine",
+  "updated_at": "2026-10-20T06:56:18.171775+00:00",
   "verification_method": "CONTROLLER_MATCHED_TRUSTED_HEARTBEAT_MESSAGES_TO_DISTINCT_COMPLETED_LOCAL_RECEIPTS_NOT_SELF_REPORTED_SOURCE_ALONE",
   "consecutive_trigger_interval_seconds": 7472.05,
   "manual_recovery": {
@@ -67,5 +85,6 @@
     "failed_cli_cycle": "bfc6ed84-4539-494a-8b82-663cd7be44c3",
     "independent_review_id": "b35ce83a-9109-4243-b208-ce24ce56c42e",
     "counted_as_unattended": false
-  }
+  },
+  "latest_two_triggers_both_completed": false
 }

@@ -58,6 +58,7 @@ class SupervisorTests(unittest.TestCase):
     def test_developer_success_requires_independent_review(self):
         s.init(self.runtime)
         pairs = {'D-sanitized-telemetry-adapter': 'D-telemetry-independent-review',
+                 'D-unknown-outcome-quarantine': 'D-unknown-outcome-review',
                  'B-brand-package-integration': 'B-brand-integration-review'}
         for developer, reviewer in pairs.items():
             with self.subTest(developer=developer):
