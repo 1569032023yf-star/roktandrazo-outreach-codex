@@ -57,15 +57,19 @@ class SupervisorTests(unittest.TestCase):
 
     def test_developer_success_requires_independent_review(self):
         s.init(self.runtime)
-        state = s.read(self.runtime / 'queue.json')
-        state['tasks'] = [{'id': 'D-sanitized-telemetry-adapter', 'role': 'developer',
-                           'status': 'queued', 'attempts': 0}]
-        s.atomic_json(self.runtime / 'queue.json', state)
-        s.cycle(self.runtime, runner=lambda *a: {'ok': True})
-        tasks = s.read(self.runtime / 'queue.json')['tasks']
-        self.assertEqual(tasks[0]['status'], 'needs_review')
-        self.assertEqual(tasks[1]['id'], 'D-telemetry-independent-review')
-        self.assertEqual(tasks[1]['status'], 'queued')
+        pairs = {'D-sanitized-telemetry-adapter': 'D-telemetry-independent-review',
+                 'B-brand-package-integration': 'B-brand-integration-review'}
+        for developer, reviewer in pairs.items():
+            with self.subTest(developer=developer):
+                state = s.read(self.runtime / 'queue.json')
+                state['tasks'] = [{'id': developer, 'role': 'developer',
+                                   'status': 'queued', 'attempts': 0}]
+                s.atomic_json(self.runtime / 'queue.json', state)
+                s.cycle(self.runtime, runner=lambda *a: {'ok': True})
+                tasks = s.read(self.runtime / 'queue.json')['tasks']
+                self.assertEqual(tasks[0]['status'], 'needs_review')
+                self.assertEqual(tasks[1]['id'], reviewer)
+                self.assertEqual(tasks[1]['status'], 'queued')
 
     def test_fixed_task_role_cannot_be_escalated(self):
         with self.assertRaises(ValueError):

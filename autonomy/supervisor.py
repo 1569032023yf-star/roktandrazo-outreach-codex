@@ -92,6 +92,30 @@ def reconcile(runtime, state):
 
 def task_prompt(task):
     # Queue data never becomes executable commands or arbitrary agent instructions.
+    if task['id'] == 'B-brand-package-integration' and task['role'] == 'developer':
+        return ('你是独立Developer，执行已授权的有界品牌代码迁移。先读AGENTS.md、总控文档及'
+                'docs/AUTONOMY_BRAND_DEPENDENCY_AUDIT.md。来源严格固定Git提交'
+                '5e9b89de99a596b509426a596ef02fcc7521facc，不联网、不采集、不读候选原始数据或生产DB/凭据。'
+                '只允许新增该提交brand_acquisition目录的15个Python源码文件；新增以下6个原测试：'
+                'tests/test_brand_acquisition.py、test_brand_acquisition_offline.py、test_directory_live_layouts.py、'
+                'test_directory_live_preflight.py、test_industry_directory_acquisition.py、test_phase4b1g_site_conversion.py；新增以下4个原入口：'
+                'scripts/run_brand_acquisition_canary.py、run_brand_capture.py、run_industry_directory_canary.py、run_official_site_conversion.py。'
+                '全部从固定Git对象取原始内容。已存在且内容相同可跳过，若不同必须停止该路径并报告，禁止覆盖。'
+                '不修改任何现有共享源码、城市/V6门禁、配置、队列或验收状态；不迁移runtime/output/真实数据。'
+                '只能运行原六个测试模块及必要既有5A/隔离启动回归的离线合成测试，禁止运行任何采集脚本或实际DNS/HTTP/SMTP；'
+                '设置CODEX_SANDBOX_NETWORK_DISABLED=1并使用开发护栏，任何真实联网需求改报告阻塞。'
+                '逐项核对既有discovery服务API兼容；不靠复制旧共享文件解决差异。'
+                '可另新增docs/AUTONOMY_BRAND_INTEGRATION.md双语报告，列迁移文件、来源哈希、真实测试、'
+                '缺失依赖、未执行与风险；10分钟到时保留工作退出，不自行提交或标记审核通过。'
+                '最终仅JSON summary_zh、summary_en、findings数组。')
+    if task['id'] == 'B-brand-integration-review' and task['role'] == 'reviewer':
+        return ('你是独立Reviewer，只读审查品牌迁移差异和docs/AUTONOMY_BRAND_INTEGRATION.md。'
+                '核对新增brand_acquisition、对应六测试及四scripts是否来自固定提交'
+                '5e9b89de99a596b509426a596ef02fcc7521facc；既有5A/城市/V6源码是否保持，'
+                '历史UNKNOWN、MX、身份、预算及限制域是否未降级，离线测试证据是否真实。'
+                '不修改文件，不运行采集/生产入口，不读候选原始数据、生产DB或凭据，不联网。'
+                '允许纯内存合成验证，不能执行的测试如实列明。最终仅JSON summary_zh、summary_en、'
+                'findings数组，每项severity/file/detail_zh/detail_en，不将迁移视作业务新增或生产发布。')
     if task['id'] == 'B-brand-dependency-audit' and task['role'] == 'reviewer':
         return ('你是独立Reviewer，执行品牌依赖迁移前的只读差异审核。先读AGENTS.md和总控文档。'
                 '仅比较当前工作树与固定Git提交5e9b89de99a596b509426a596ef02fcc7521facc中的'
@@ -204,9 +228,12 @@ def cycle(runtime=RUNTIME, root=ROOT, source='manual', runner=run_agent):
                 # Never serialize exception messages, prompts or environment secrets.
                 outcome = {'ok': False, 'reason': 'RUNNER_EXCEPTION', 'type': type(error).__name__}
             task['status'] = ('needs_review' if task['role'] == 'developer' else 'completed') if outcome['ok'] else ('blocked' if task['attempts'] >= 3 else 'queued')
-            if outcome['ok'] and task['id'] == 'D-sanitized-telemetry-adapter':
-                if not any(t['id'] == 'D-telemetry-independent-review' for t in state['tasks']):
-                    state['tasks'].append({'id': 'D-telemetry-independent-review', 'workstream': 'D',
+            reviews = {'D-sanitized-telemetry-adapter': ('D', 'D-telemetry-independent-review'),
+                       'B-brand-package-integration': ('B', 'B-brand-integration-review')}
+            if outcome['ok'] and task['id'] in reviews:
+                workstream, review_id = reviews[task['id']]
+                if not any(t['id'] == review_id for t in state['tasks']):
+                    state['tasks'].append({'id': review_id, 'workstream': workstream,
                         'status': 'queued', 'attempts': 0, 'role': 'reviewer', 'blocked_cycles': 0})
             task['blocked_cycles'] = 0 if outcome['ok'] else task.get('blocked_cycles', 0) + 1
             task['needs_reassessment'] = task['blocked_cycles'] >= 2
