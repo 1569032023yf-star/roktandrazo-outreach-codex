@@ -5,7 +5,7 @@
 生产指标未接入获准脱敏数据源，UNKNOWN不能当成零或历史累计。
 Production telemetry has no authorized sanitized feed; UNKNOWN is neither zero nor a historical total.
 
-成功无人值守周期 / Successful unattended cycles: 4；整体自主运行尚未验收 / Overall autonomy not accepted.
+成功无人值守周期 / Successful unattended cycles: 5；整体自主运行尚未验收 / Overall autonomy not accepted.
 
 | 今日业务问题 / Daily business question | 结果 / Result |
 |---|---|
@@ -16,7 +16,7 @@ Production telemetry has no authorized sanitized feed; UNKNOWN is neither zero n
 | V6和发信缺口 / V6 and sending gaps | 新QA登记、收件认证、客户地址及全资格门禁 / New QA registration, receipt/authentication, customer address and full eligibility gates |
 | 本轮生产部署 / Production releases this run | 0；当日其他发布UNKNOWN / 0; other releases today UNKNOWN |
 | 阻塞 / Blockers | 新发布入口、历史副本、遥测待接通 / New release entrypoint, history copy and telemetry unavailable |
-| 下一步 / Next | 下次真实心跳修复未知结果隔离和提交失败恢复，完成后进入独立审核；后续处理空间预检、输出限额和异常清理 / Next genuine heartbeat fixes unknown-outcome quarantine and commit-failure recovery, followed by independent review; later address space preflight, output caps and exceptional cleanup |
+| 下一步 / Next | 下次真实心跳独立审核D-unknown-outcome-review；保留其他3份未提交改动，不合并未经审核的启动器 / Next genuine heartbeat independently reviews D-unknown-outcome-review; retain the three pre-existing changes and do not integrate the unreviewed runner |
 
 | 指标 / Metric | 当前 / Current |
 |---|---|
@@ -45,7 +45,7 @@ Production telemetry has no authorized sanitized feed; UNKNOWN is neither zero n
 - A: 修复及97测试/43子测试通过，已保留5A身份门禁整合；真实城市推进未验证 / Repair passed 97 tests/43 subtests and integrated with 5A identity gate preserved; actual city advance unverified
 - B: 品牌25文件已整合，177离线测试及独立静态审核通过；磁盘故障已恢复，生产验收仍未完成 / 25 brand files integrated, 177 offline tests and independent static review passed; disk failure recovered, production acceptance remains incomplete
 - C: 四套V6定向58项通过；可比全量563项560通过、3项与基线相同；整合后86项加4身份门禁测试通过；QA未登记未发送 / Four V6 variants passed 58 targeted tests; comparable full suite 563/560 passed with three baseline-identical issues; integrated 86 tests plus four identity-gate tests passed; QA unregistered and unsent
-- D: 存储恢复独立审核完成，5项发现未修复，已排入首项修复 / Independent storage recovery audit completed with five open findings; first repair queued
+- D: 未知结果隔离开发完成，开发及父复核19项通过；独立审核待完成，整体未验收 / Unknown-outcome quarantine development completed; developer and parent checks passed 19 tests; independent review pending, overall acceptance incomplete
 
 本日实际生产部署 / Actual production deployments today: UNKNOWN
 

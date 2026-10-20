@@ -45,7 +45,14 @@ def atomic_json(path, value):
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(tmp, path)
-    finally:
+    except BaseException as error:
+        try:
+            if os.path.exists(tmp):
+                os.unlink(tmp)
+        except OSError:
+            error.add_note('TEMP_CLEANUP_FAILED')
+        raise
+    else:
         if os.path.exists(tmp):
             os.unlink(tmp)
 
@@ -87,7 +94,13 @@ def reconcile(runtime, state):
     # queue.json is the authoritative write-ahead record; restore missing receipts.
     for record in state['cycles']:
         if record['status'] != 'running':
-            atomic_json(runtime / 'cycles' / (record['cycle_id'] + '.json'), record)
+            path = runtime / 'cycles' / (record['cycle_id'] + '.json')
+            try:
+                existing = read(path)
+            except (ValueError, UnicodeError):
+                existing = None
+            if existing != record:
+                atomic_json(path, record)
 
 
 def task_prompt(task):
@@ -231,16 +244,26 @@ def cycle(runtime=RUNTIME, root=ROOT, source='manual', runner=run_agent):
         reconcile(runtime, state)
         # A prior worker may have died after persisting a running lease.
         for task in state['tasks']:
-            if task['status'] == 'running':
-                task.update(status='blocked' if task['attempts'] >= 3 else 'queued',
+            prior = next((r for r in state['cycles']
+                          if r['cycle_id'] == task.get('lease_cycle_id')), None)
+            legacy_unknown = (task['status'] in {'queued', 'blocked'} and prior
+                              and prior['status'] in {'failed', 'interrupted', 'unknown'}
+                              and task.get('reconciliation', {}).get('lease_cycle_id')
+                              != task.get('lease_cycle_id'))
+            if task['status'] == 'running' or legacy_unknown:
+                task.update(status='unknown', outcome_unknown=True,
                             recovery_reason='PRIOR_CYCLE_INTERRUPTED',
                             blocked_cycles=task.get('blocked_cycles', 0) + 1)
-                task['needs_reassessment'] = task['blocked_cycles'] >= 2 or task['status'] == 'blocked'
+                task['needs_reassessment'] = True
                 for prior in state['cycles']:
                     if prior['cycle_id'] == task.get('lease_cycle_id') and prior['status'] == 'running':
-                        prior.update(status='interrupted', finished_at=now())
+                        prior.update(status='unknown', finished_at=now(),
+                                     outcome={'ok': False, 'reason': 'PRIOR_CYCLE_INTERRUPTED',
+                                              'result': 'UNKNOWN'})
+        atomic_json(runtime / 'queue.json', state)
         reconcile(runtime, state)
-        eligible = [t for t in state['tasks'] if t['status'] == 'queued' and t['attempts'] < 3]
+        eligible = [t for t in state['tasks'] if t['status'] == 'queued'
+                    and not t.get('outcome_unknown') and t['attempts'] < 3]
         record = {'cycle_id': str(uuid.uuid4()), 'source': source, 'started_at': now(),
                   'status': 'idle', 'task_id': None, 'human_trigger_excluded': source == 'manual'}
         state['cycles'].append(record)
@@ -252,10 +275,12 @@ def cycle(runtime=RUNTIME, root=ROOT, source='manual', runner=run_agent):
             atomic_json(runtime / 'queue.json', state)
             try:
                 outcome = runner(task, root)
+                if not isinstance(outcome, dict) or type(outcome.get('ok')) is not bool:
+                    outcome = {'ok': False, 'reason': 'RUNNER_INCOMPLETE'}
             except Exception as error:
                 # Never serialize exception messages, prompts or environment secrets.
                 outcome = {'ok': False, 'reason': 'RUNNER_EXCEPTION', 'type': type(error).__name__}
-            task['status'] = ('needs_review' if task['role'] == 'developer' else 'completed') if outcome['ok'] else ('blocked' if task['attempts'] >= 3 else 'queued')
+            task['status'] = ('needs_review' if task['role'] == 'developer' else 'completed') if outcome['ok'] else 'unknown'
             reviews = {'D-sanitized-telemetry-adapter': ('D', 'D-telemetry-independent-review'),
                        'D-unknown-outcome-quarantine': ('D', 'D-unknown-outcome-review'),
                        'B-brand-package-integration': ('B', 'B-brand-integration-review')}
@@ -265,12 +290,49 @@ def cycle(runtime=RUNTIME, root=ROOT, source='manual', runner=run_agent):
                     state['tasks'].append({'id': review_id, 'workstream': workstream,
                         'status': 'queued', 'attempts': 0, 'role': 'reviewer', 'blocked_cycles': 0})
             task['blocked_cycles'] = 0 if outcome['ok'] else task.get('blocked_cycles', 0) + 1
-            task['needs_reassessment'] = task['blocked_cycles'] >= 2
-            record.update(status='completed' if outcome['ok'] else 'failed', outcome=outcome)
+            task['needs_reassessment'] = not outcome['ok']
+            task['outcome_unknown'] = not outcome['ok']
+            if not outcome['ok']:
+                outcome = dict(outcome, result='UNKNOWN')
+            record.update(status='completed' if outcome['ok'] else 'unknown', outcome=outcome)
         record['finished_at'] = now()
-        atomic_json(runtime / 'queue.json', state)
-        atomic_json(runtime / 'cycles' / (record['cycle_id'] + '.json'), record)
+        try:
+            atomic_json(runtime / 'queue.json', state)
+        except Exception as error:
+            # The durable running lease is quarantined on restart, never retried.
+            error.add_note('QUEUE_COMMIT_FAILED_OUTCOME_UNKNOWN')
+            raise
+        try:
+            atomic_json(runtime / 'cycles' / (record['cycle_id'] + '.json'), record)
+        except Exception as error:
+            error.add_note('QUEUE_COMMITTED_RECEIPT_PENDING')
+            raise
         return record
+
+
+def recover_unknown(runtime, task_id, readonly_check):
+    """Explicit read-only artifact reconciliation; never called by cycle().
+
+    The caller supplies a trusted checker, not a runner or queue-supplied code.
+    Evidence must prove completion or non-execution; uncertainty stays isolated.
+    """
+    with exclusive(runtime):
+        state = read(runtime / 'queue.json')
+        task = next(t for t in state['tasks'] if t['id'] == task_id)
+        if task['status'] != 'unknown' or not task.get('outcome_unknown'):
+            raise ValueError('TASK_NOT_QUARANTINED')
+        result = readonly_check(json.loads(json.dumps(task)))
+        if (not isinstance(result, dict) or result.get('read_only') is not True
+                or result.get('resolution') not in {'completed', 'not_executed'}
+                or not isinstance(result.get('evidence'), str)
+                or not result['evidence'].strip()):
+            raise ValueError('READONLY_RECONCILIATION_REQUIRED')
+        task['reconciliation'] = dict(result, checked_at=now(),
+                                      lease_cycle_id=task.get('lease_cycle_id'))
+        task['status'] = ('needs_review' if task['role'] == 'developer' else 'completed') if result['resolution'] == 'completed' else 'queued'
+        task.update(outcome_unknown=False, needs_reassessment=False)
+        atomic_json(runtime / 'queue.json', state)
+        return task
 
 
 def two_unattended_cycles(records):
