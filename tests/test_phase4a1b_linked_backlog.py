@@ -120,8 +120,11 @@ class LinkedBacklogTests(unittest.TestCase):
             conn.execute("UPDATE lead_discovery_results SET website='',official_match=0")
             resolver = Mock()
             resolver.resolve.return_value = SimpleNamespace(status='network_retry',error='timeout')
-            for _ in range(2):
-                self.assertEqual(service.run_linked_backlog(city,resolver,fetcher=fetch)['website_processed'],1)
+            for hour in (1, 2):
+                with patch('discovery.discovery_service.utc_now', return_value=f'2026-10-20T{hour:02}:00:00+00:00'):
+                    self.assertEqual(service.run_linked_backlog(city,resolver,fetcher=fetch)['website_processed'],1)
+                    # Same scheduled window must not repeat a network request.
+                    self.assertEqual(service.run_linked_backlog(city,resolver,fetcher=fetch)['website_processed'],0)
             self.assertEqual(resolver.resolve.call_count,2)
 
     def test_exception_preserves_fairness_checkpoint(self):

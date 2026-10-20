@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import unittest
+import json
 
 from discovery.discovery_service import DiscoveryService
 from discovery.models import PlaceSearchResult, ProviderPage
@@ -90,7 +91,11 @@ class IdentityTerminalHotfixTests(unittest.TestCase):
             row = conn.execute("SELECT validation_status,rejection_reason FROM lead_discovery_results WHERE id=433").fetchone()
             self.assertEqual(row["validation_status"], "website_lookup_pending")
             self.assertIn("website_resolution:network_retry:", row["rejection_reason"])
-            self.assertEqual(service.run_website_resolution(city, network).results_seen, 1)
+            # Network failures remain pending, with a durable cooldown.
+            self.assertEqual(service.run_website_resolution(city, network).results_seen, 0)
+            retry = json.loads(conn.execute("SELECT raw_payload_json FROM lead_discovery_results WHERE id=433").fetchone()[0])["website_resolution_retry"]
+            self.assertEqual(retry["attempts"], 1)
+            self.assertNotIn("automation_terminal_outcome", retry)
 
     def test_linked_merchant_resolution_path_still_updates_website(self):
         with DiscoveryDb() as conn:

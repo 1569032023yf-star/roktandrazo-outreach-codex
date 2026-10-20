@@ -14,7 +14,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from html.parser import HTMLParser
 from typing import Any
 
@@ -32,7 +32,10 @@ from discovery.providers.base import SearchProvider, load_provider
 from history_crosscheck import cross_check, normalize_email, host
 from lead_hygiene_gate import evaluate_a0
 from outreach_control import RETAIL_QUERY_FAMILIES
-from retail_city_queue import search_queries
+from retail_city_queue import (
+    search_queries, website_resolution_retry_terminal,
+    WEBSITE_RESOLUTION_MAX_FAILURES, WEBSITE_RESOLUTION_RETRY_SECONDS,
+)
 from broad_outreach_gate import _gen_organization_key
 from timezone_resolver import resolve_timezone
 
@@ -571,19 +574,32 @@ class DiscoveryService:
                WHERE active_city_id=? AND COALESCE(website,'')=''
                  AND validation_status IN ('website_lookup_pending','manual_review_needed')
                  AND (?=0 OR linked_lead_id IS NULL)
-               ORDER BY discovered_at,id LIMIT ?""",
-            (int(city_row["id"]), int(unlinked_only), max(1, int(max_results))),
+               ORDER BY discovered_at,id""",
+            (int(city_row["id"]), int(unlinked_only)),
         ).fetchall()
         if staging_ids is not None:
             rows = self._linked_retry_rows(city_row, staging_ids, require_website=False)
+        # Apply the budget after excluding deferred/terminal rows so old rows
+        # cannot starve later candidates behind a SQL LIMIT.
+        rows = [row for row in rows if self._website_resolution_due(dict(row))][:max(1, int(max_results))]
         summary = DiscoveryRunSummary(
             status="website_resolution", city=city_row["city"], state=city_row["state"],
             provider=self.provider.provider_name, results_seen=len(rows),
         )
         for raw_row in rows:
             row = dict(raw_row)
-            result = resolver.resolve(row)
+            if not self._website_resolution_due(row):
+                continue
+            try:
+                result = resolver.resolve(row)
+            except (TimeoutError, ConnectionError, socket.gaierror, urllib.error.URLError) as exc:
+                from discovery.website_resolver import WebsiteResolution
+                result = WebsiteResolution("network_error", error=type(exc).__name__)
             status = result.status
+            if status in {"network_retry", "network_error"}:
+                self._record_website_resolution_failure(row, status, result.error)
+                summary.validation_statuses[status] = summary.validation_statuses.get(status, 0) + 1
+                continue
             if status == "resolved":
                 self.conn.execute(
                     """UPDATE lead_discovery_results
@@ -613,8 +629,64 @@ class DiscoveryService:
             summary.status = "website_resolution_empty"
         return summary
 
+    def _website_resolution_due(self, row: dict) -> bool:
+        if website_resolution_retry_terminal(row):
+            return False
+        try:
+            payload = json.loads(row.get("raw_payload_json") or "{}")
+            if not isinstance(payload, dict):
+                return False
+            retry = payload.get("website_resolution_retry", {})
+        except (ValueError, TypeError):
+            return False
+        if not isinstance(retry, dict):
+            return False  # Corrupt metadata requires review, never a reset.
+        if retry and (not isinstance(retry.get("failures"), list)
+                      or type(retry.get("attempts")) is not int
+                      or retry["attempts"] != len(retry["failures"])
+                      or retry["attempts"] >= WEBSITE_RESOLUTION_MAX_FAILURES):
+            return False
+        stamp = retry.get("next_retry_at")
+        if not stamp:
+            return not retry
+        try:
+            due = datetime.fromisoformat(stamp)
+            return due.tzinfo is not None and datetime.fromisoformat(utc_now()) >= due
+        except (TypeError, ValueError):
+            return False
+
+    def _record_website_resolution_failure(self, row: dict, status: str, error: str) -> None:
+        payload = _raw_payload(row)
+        retry = dict(payload.get("website_resolution_retry") or {})
+        failures = list(retry.get("failures") or [])
+        now = utc_now()
+        failures.append({"at": now, "status": status, "error": str(error or "unspecified_transport_error")})
+        retry.update({
+            "attempts": len(failures), "failures": failures,
+            "first_attempt_at": failures[0]["at"], "last_attempt_at": now,
+            "next_retry_at": (datetime.fromisoformat(now) + timedelta(seconds=WEBSITE_RESOLUTION_RETRY_SECONDS)).isoformat(),
+            "original_validation_status": retry.get("original_validation_status", row.get("validation_status")),
+            "original_rejection_reason": retry.get("original_rejection_reason", row.get("rejection_reason")),
+        })
+        reason = f"website_resolution:{status}:{error}"[:500]
+        validation_status = row["validation_status"]
+        if len(failures) >= WEBSITE_RESOLUTION_MAX_FAILURES:
+            reason = "website_resolution:network_retry:retry_exhausted:" + failures[-1]["error"][:350]
+            validation_status = "manual_review_needed"
+            retry.update({"automation_terminal_outcome": "network_retry_exhausted",
+                          "exhausted_at": now, "terminal_reason": reason})
+        payload["website_resolution_retry"] = retry
+        self.conn.execute(
+            "UPDATE lead_discovery_results SET validation_status=?,rejection_reason=?,raw_payload_json=?,last_seen_at=? WHERE id=?",
+            (validation_status, reason, json.dumps(payload, sort_keys=True), now, row["id"]),
+        )
+
     def _linked_retry_allowed(self, row: dict, city_row: dict) -> bool:
         """Fail closed on history/identity; a linkage alone is not official evidence."""
+        if website_resolution_retry_terminal(row):
+            return False
+        if not str(row.get('website') or '').strip() and not self._website_resolution_due(row):
+            return False
         retry = _raw_payload(row).get('linked_backlog_retry') or {}
         if retry.get('automation_terminal_outcome') == 'access_unreachable':
             return False
@@ -892,6 +964,10 @@ class DiscoveryService:
             merged_payload = dict(result.raw_payload or {})
             if stored_payload.get("official_email_evidence"):
                 merged_payload["official_email_evidence"] = stored_payload["official_email_evidence"]
+            # A repeated provider hit must not erase a durable retry budget.
+            for recovery_key in ("website_resolution_retry", "linked_backlog_retry"):
+                if recovery_key in stored_payload:
+                    merged_payload[recovery_key] = stored_payload[recovery_key]
             existing_website = str(current["website"] or "").strip() if current else ""
             existing_source_url = str(current["source_url"] or "").strip() if current else ""
             incoming_source_url = _browser_maps_place_source(result.source_url) if result.provider == "browser_maps" else ""

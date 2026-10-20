@@ -6,6 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from discovery.discovery_service import DiscoveryService
 from discovery.models import ProviderPage
@@ -41,9 +42,12 @@ class WebsiteLivenessTests(unittest.TestCase):
         with DiscoveryDb() as conn:
             city, service = self._stage_missing_website(conn)
             resolver = SimpleNamespace(resolve=lambda _: SimpleNamespace(status="network_retry", error="timeout"))
-            service.run_website_resolution(city, resolver)
-            self.assertEqual(conn.execute("SELECT validation_status FROM lead_discovery_results").fetchone()[0], "website_lookup_pending")
-            self.assertEqual(service.run_website_resolution(city, resolver).results_seen, 1)
+            with patch('discovery.discovery_service.utc_now', return_value='2026-10-20T01:00:00+00:00'):
+                service.run_website_resolution(city, resolver)
+                self.assertEqual(conn.execute("SELECT validation_status FROM lead_discovery_results").fetchone()[0], "website_lookup_pending")
+                self.assertEqual(service.run_website_resolution(city, resolver).results_seen, 0)
+            with patch('discovery.discovery_service.utc_now', return_value='2026-10-20T02:00:00+00:00'):
+                self.assertEqual(service.run_website_resolution(city, resolver).results_seen, 1)
 
     def test_linked_not_found_uses_existing_terminal_backlog_path(self):
         with DiscoveryDb() as conn:

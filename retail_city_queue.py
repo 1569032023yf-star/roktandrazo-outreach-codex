@@ -8,6 +8,42 @@ from urllib.parse import urlsplit
 
 from outreach_control import DEFAULT_RETAIL_CITIES, RETAIL_QUERY_FAMILIES, RETAIL_SOURCES, all_city_completion_conditions_met
 
+WEBSITE_RESOLUTION_MAX_FAILURES = 3
+WEBSITE_RESOLUTION_RETRY_SECONDS = 1800
+
+
+def website_resolution_retry_terminal(row: dict) -> bool:
+    """Accept only a durable, complete network-failure budget; never a no-site fact."""
+    try:
+        payload = json.loads(row.get("raw_payload_json") or "{}")
+        retry = payload["website_resolution_retry"]
+        events = retry["failures"]
+        if (row.get("validation_status") != "manual_review_needed"
+                or str(row.get("website") or "").strip()
+                or retry["automation_terminal_outcome"] != "network_retry_exhausted"
+                or retry["attempts"] != WEBSITE_RESOLUTION_MAX_FAILURES
+                or len(events) != WEBSITE_RESOLUTION_MAX_FAILURES
+                or row.get("rejection_reason") != retry["terminal_reason"]):
+            return False
+        times = []
+        for event in events:
+            if event["status"] not in {"network_retry", "network_error"} or not event["error"]:
+                return False
+            stamp = datetime.fromisoformat(event["at"])
+            if stamp.tzinfo is None:
+                return False
+            times.append(stamp)
+        return (
+            all((later - earlier).total_seconds() >= WEBSITE_RESOLUTION_RETRY_SECONDS
+                for earlier, later in zip(times, times[1:]))
+            and retry["first_attempt_at"] == events[0]["at"]
+            and retry["last_attempt_at"] == events[-1]["at"]
+            and retry["exhausted_at"] == events[-1]["at"]
+            and retry["terminal_reason"] == "website_resolution:network_retry:retry_exhausted:" + events[-1]["error"][:350]
+        )
+    except (KeyError, TypeError, ValueError, AttributeError, OverflowError):
+        return False
+
 
 def _columns(conn: sqlite3.Connection, table: str) -> set[str]:
     return {row[1] for row in conn.execute(f"PRAGMA table_info({table})")}
@@ -177,20 +213,6 @@ def city_completion_checks(conn: sqlite3.Connection, city_id: int, provider: str
     web_reason_complete = city.get("web_directory_status") in {
         "completed", "not_required", "not_applicable", "web_directory_provider_not_configured",
     }
-    staged_pending = conn.execute(
-        """SELECT 1 FROM lead_discovery_results WHERE active_city_id=?
-           AND validation_status IN
-           ('validation_pending','history_check_pending','website_lookup_pending',
-            'email_extraction_pending') LIMIT 1""",
-        (city_id,),
-    ).fetchone() is not None
-    retryable_network = conn.execute(
-        """SELECT 1 FROM lead_discovery_results WHERE active_city_id=?
-           AND (COALESCE(rejection_reason, '') LIKE 'website_resolution:network_retry:%'
-                OR COALESCE(rejection_reason, '') LIKE 'website_resolution:network_error:%')
-           LIMIT 1""",
-        (city_id,),
-    ).fetchone() is not None
     candidate_rows = conn.execute(
         """SELECT d.*, l.email AS linked_email, l.status AS linked_status,
                   l.review_status AS linked_review_status,
@@ -200,6 +222,15 @@ def city_completion_checks(conn: sqlite3.Connection, city_id: int, provider: str
            WHERE d.active_city_id=?""",
         (city_id,),
     ).fetchall()
+    # Only a validated persisted failure budget
+    # removes a network/manual item from automatic city work.
+    open_rows = [dict(row) for row in candidate_rows if not website_resolution_retry_terminal(dict(row))]
+    staged_pending = any(row.get("validation_status") in {
+        "validation_pending", "history_check_pending", "website_lookup_pending", "email_extraction_pending",
+    } for row in open_rows)
+    retryable_network = any(str(row.get("rejection_reason") or "").startswith((
+        "website_resolution:network_retry:", "website_resolution:network_error:",
+    )) for row in open_rows)
     retryable_manual = any(_manual_review_retryable(dict(row)) for row in candidate_rows)
     linked_retry = any(_linked_backlog_retryable(dict(row)) for row in candidate_rows)
     no_open_work = not (staged_pending or retryable_network or retryable_manual or linked_retry)
@@ -218,7 +249,7 @@ def city_completion_checks(conn: sqlite3.Connection, city_id: int, provider: str
 
 def _manual_review_retryable(row: dict) -> bool:
     """Keep only records reachable by an existing automatic retry lane open."""
-    if row.get("validation_status") != "manual_review_needed":
+    if website_resolution_retry_terminal(row) or row.get("validation_status") != "manual_review_needed":
         return False
     # The normal resolver owns unlinked, website-less manual-review rows.
     if row.get("linked_lead_id") is None:
@@ -233,6 +264,8 @@ def _linked_backlog_retryable(row: dict) -> bool:
     reviews) are intentionally excluded.  This function performs no network,
     no lead mutation, and no evidence mutation.
     """
+    if website_resolution_retry_terminal(row):
+        return False
     try:
         retry = json.loads(str(row.get("raw_payload_json") or "{}"))
     except (TypeError, ValueError):

@@ -1,0 +1,49 @@
+{
+  "description_zh": "开发基线候选包；未经生产源码指纹核实，不可作为已批准发布清单",
+  "description_en": "Development-baseline candidate; not an approved release until production source fingerprints are attested",
+  "release_id": "phase4a8u-city-timeout-terminal-recovery",
+  "status": "CANDIDATE_REQUIRES_PRODUCTION_ATTESTATION_AND_REGISTRATION",
+  "base_commit": "72bdd70a13dd959264a3137fc546334249b48be1",
+  "files": [
+    {
+      "path": "discovery/discovery_service.py",
+      "candidate_base_sha256": "d2e45233470140968dbe2d80021f52e374253da72c5e99403d98122e0aee55c1",
+      "candidate_after_sha256": "fc06e78fbda56c4647158c94561798f7de4df0d4cd3ac5a1d8ef778c1d12d529",
+      "before_bytes": 112440,
+      "after_bytes": 116760,
+      "production_source_sha256": "UNKNOWN"
+    },
+    {
+      "path": "retail_city_queue.py",
+      "candidate_base_sha256": "03b4c6302dba271b5b0bed34567db5048086d4b1d0e9b2aee9a878023f349432",
+      "candidate_after_sha256": "50ef562bcaa189ef3694d57789593e7aa6db0792e11a4d6ed8645e9d355e26d7",
+      "before_bytes": 15314,
+      "after_bytes": 17077,
+      "production_source_sha256": "UNKNOWN"
+    }
+  ],
+  "patch_sha256": "4bccb1d8807cf258e8e157d45fb830ba32dc89303b74f84e6348a3f13a54e096",
+  "patch_bytes": 12943,
+  "candidate_line_endings": "LF",
+  "offline_forward_and_reverse_byte_verification": true,
+  "production_compatibility_verified": false,
+  "production_deployed": false,
+  "inventory_id": "1784775229336",
+  "manual_inventory_trigger_allowed": false,
+  "smtp_enabled": 0,
+  "emails_sent_by_this_task": 0,
+  "required_gates": [
+    "approved_production_source_snapshot_and_sha256",
+    "new_release_registration",
+    "all_file_before_hashes_match",
+    "version_compatibility",
+    "tests_and_review",
+    "inventory_idle_and_official_lock",
+    "safe_schedule_window",
+    "byte_backup_verified",
+    "atomic_replacement_with_all_file_failure_rollback",
+    "after_hashes_verified",
+    "smtp_disabled_and_sending_tasks_paused",
+    "normal_scheduled_runtime_acceptance"
+  ]
+}
