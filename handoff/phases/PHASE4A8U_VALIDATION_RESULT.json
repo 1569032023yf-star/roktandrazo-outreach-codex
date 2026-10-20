@@ -1,0 +1,121 @@
+{
+  "description_zh": "4A.8U 城市超时恢复：工程完成，正式登记与生产验收受阻",
+  "description_en": "4A.8U city timeout recovery: engineering complete; registration and production acceptance blocked",
+  "PHASE": "4A.8U",
+  "RESULT": "ENGINEERING_COMPLETE_DEPLOYMENT_BLOCKED",
+  "FIX_IMPLEMENTED": true,
+  "TARGETED_TESTS": {
+    "run": 13,
+    "passed": 13,
+    "failures": 0,
+    "errors": 0
+  },
+  "NEW_REGRESSIONS": 0,
+  "FULL_SUITE_PASSED": false,
+  "FULL_SUITE_BASELINE": {
+    "description_zh": "同启动方式离线回归结果",
+    "description_en": "Offline regression under identical startup",
+    "run": 505,
+    "failures": [
+      "test_dashboard_consolidated.TestSourceAudit.test_archived_dashboards_have_disable_marker",
+      "test_inventory_followup.TestInventoryArchival.test_archived_scripts_have_disable_marker",
+      "test_phase4a3o_dev_db_routing.Phase4A3ODevDatabaseRoutingTests.test_explicit_development_copy_is_preserved_after_env_loader"
+    ],
+    "errors": [
+      "test_single_smtp_authority.TestSingleSmtpAuthority.test_archived_scripts_fail_closed"
+    ],
+    "skipped": [],
+    "python": "3.13.0 (tags/v3.13.0:60403a5, Oct  7 2024, 09:38:07) [MSC v.1941 64 bit (AMD64)]",
+    "modules": [
+      "FULL_SUITE"
+    ]
+  },
+  "FULL_SUITE_CANDIDATE": {
+    "description_zh": "同启动方式离线回归结果",
+    "description_en": "Offline regression under identical startup",
+    "run": 515,
+    "failures": [
+      "test_dashboard_consolidated.TestSourceAudit.test_archived_dashboards_have_disable_marker",
+      "test_inventory_followup.TestInventoryArchival.test_archived_scripts_have_disable_marker",
+      "test_phase4a3o_dev_db_routing.Phase4A3ODevDatabaseRoutingTests.test_explicit_development_copy_is_preserved_after_env_loader"
+    ],
+    "errors": [
+      "test_single_smtp_authority.TestSingleSmtpAuthority.test_archived_scripts_fail_closed"
+    ],
+    "skipped": [],
+    "python": "3.13.0 (tags/v3.13.0:60403a5, Oct  7 2024, 09:38:07) [MSC v.1941 64 bit (AMD64)]",
+    "modules": [
+      "FULL_SUITE"
+    ]
+  },
+  "NEW_REGRESSION_IDS": [],
+  "PRODUCTION_DEPLOYED": false,
+  "PRODUCTION_EFFECTIVENESS_VERIFIED": false,
+  "COOPERSTOWN_FAMILIES": "UNKNOWN",
+  "CITY_COMPLETION_CHECKS": "UNKNOWN",
+  "COOPERSTOWN_CLOSED": "UNKNOWN",
+  "LAKE_PLACID_ACTIVATED": "UNKNOWN",
+  "PROVIDER_REQUESTS_NEXT_CITY": "UNKNOWN",
+  "NEW_INDEPENDENT_ORGS": "UNKNOWN",
+  "NEW_FIRST_PARTY_EMAILS": "UNKNOWN",
+  "CURRENT_SAFE": "UNKNOWN",
+  "LAST_USER_REPORTED_SAFE": 56,
+  "LAST_USER_REPORTED_FAMILIES": "20/20",
+  "USER_REPORTED_VALUES_ARE_CURRENT_MEASUREMENTS": false,
+  "MX_CONTROL_PROBE_PERFORMED": false,
+  "INVENTORY_ACTIVE": true,
+  "INVENTORY_ID": "1784775229336",
+  "INVENTORY_UNIQUENESS_VERIFIED": "UNKNOWN",
+  "INVENTORY_MANUALLY_TRIGGERED": false,
+  "EMAILS_SENT_BY_THIS_TASK": 0,
+  "SMTP_ENABLED": 0,
+  "SENDING_TASKS_PAUSED": true,
+  "CHANNEL_PREFLIGHT_CAPTURED_AT": "2026-10-20T01:03:09.618940+00:00",
+  "NEW_RELEASE_PREFLIGHT": [
+    400,
+    {
+      "error": "UNKNOWN_RELEASE_ID",
+      "detail": "not in pinned registry"
+    }
+  ],
+  "SAFE_WINDOW_PASSED": false,
+  "OBSERVED_NEXT_INVENTORY_TIMESTAMP": "2026-10-20 01:52:42 +08",
+  "SAFE50_CURRENT_ORCHESTRATOR_SHA256": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903",
+  "PRODUCTION_TARGET_SOURCE_SHA256": "UNKNOWN",
+  "PRODUCTION_BACKUP_CREATED_BY_THIS_TASK": false,
+  "OFFLINE_PATCH_AND_ROLLBACK_VERIFIED": true,
+  "REVIEW": {
+    "status": "AUTHOR_SEPARATE_REVIEW_COMPLETED",
+    "independent_reviewer_approval": false,
+    "zh": "单独复核了重试边界、证据保留、城市门禁、重复命中、异常分类和补丁字节；未冒充独立第三方审查。",
+    "en": "A separate author review covered retry bounds, evidence retention, city gates, duplicate hits, exception classification, and patch bytes; no independent third-party review is claimed."
+  },
+  "OFFLINE_FIXTURE_ONLY": {
+    "COOPERSTOWN_FAMILIES": "20/20",
+    "CITY_COMPLETION_CHECKS": "9/9",
+    "COOPERSTOWN_CLOSED": true,
+    "LAKE_PLACID_ACTIVATED": true,
+    "production_evidence": false
+  },
+  "RELEASE_ID": "phase4a8u-city-timeout-terminal-recovery",
+  "REGISTRATION_REQUEST_URL": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2",
+  "REGISTRATION_COMPLETED": false,
+  "COMMIT_SHA": "6e5a9916fd3cd974479b3e2bc5340f831ea12978",
+  "COMMIT_SHA_MEANING": "Implementation and candidate package commit / 实现与候选包提交",
+  "PUSH_SUCCESS": true,
+  "BLOCKERS": [
+    {
+      "zh": "正式通道返回 UNKNOWN_RELEASE_ID；需登记新的严格两文件发布，并提供批准的生产源码快照与 SHA。",
+      "en": "The formal channel returned UNKNOWN_RELEASE_ID; a new restricted two-file release and approved production snapshots/SHA values are required."
+    },
+    {
+      "zh": "实时安全窗口未通过：Inventory 下次计划时间已过期，必须取得新的有效空闲窗口证据。",
+      "en": "The live safety-window gate failed because the next Inventory timestamp is overdue; fresh valid idle-window evidence is required."
+    },
+    {
+      "zh": "指定的 2026-10-19 生产报告未取得；当前通道无运行日志读取操作，真实生产效果尚不能核验。",
+      "en": "The requested 2026-10-19 production report is unavailable; the channel exposes no runtime-log read operation, so production effectiveness remains unverified."
+    }
+  ],
+  "generated_at": "2026-10-20T01:13:23.054669+00:00"
+}
