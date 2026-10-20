@@ -1,6 +1,6 @@
 {
-  "summary_zh": "独立审核完成，2项中等问题待补修；任务登记回归19项通过，不代表修复验收",
-  "summary_en": "Independent review completed with two medium findings open; 19 task-registration regressions passed, not repair acceptance",
+  "summary_zh": "两项恢复补修完成，父进程使用已提交启动器复跑22项测试通过；开发代理未运行测试，独立审核待完成",
+  "summary_en": "Two recovery follow-up fixes implemented; parent rerun with the committed runner passed 22 tests. Developer could not execute tests; independent review remains pending",
   "automation_id": "rokt-razo",
   "triggers": [
     {
@@ -102,13 +102,25 @@
       "findings_count": 2,
       "findings_fixed": false,
       "independent_tests_executed": false
+    },
+    {
+      "trigger_at": "2026-10-20T15:20:55.089Z",
+      "cycle_id": "10e948fc-af43-462d-a53a-0d3edeeb0949",
+      "scheduler": "codex_heartbeat",
+      "status": "COMPLETED_DEVELOPMENT_PARENT_TESTED_REVIEW_PENDING",
+      "task_id": "D-unknown-outcome-followup",
+      "execution_started_at": "2026-10-20T15:21:58.004329+00:00",
+      "execution_finished_at": "2026-10-20T15:24:21.798422+00:00",
+      "output_sha256": "96787650235c1d70a655cfb1f89bb77390d7b87758e4513fefe452f72b98ccc9",
+      "developer_tests_executed": false,
+      "parent_tests_passed_with_committed_process_runner": 22
     }
   ],
   "two_unattended_cycles_verified": true,
   "scope": "TRUSTED_CHAT_HEARTBEAT_METADATA_PLUS_LOCAL_TASK_RECEIPTS_NOT_PRODUCTION_ACCEPTANCE",
-  "successful_unattended_cycles_confirmed": 6,
-  "next_task": "D-unknown-outcome-followup",
-  "updated_at": "2026-10-20T13:38:17.151819+00:00",
+  "successful_unattended_cycles_confirmed": 7,
+  "next_task": "D-unknown-outcome-followup-review",
+  "updated_at": "2026-10-20T15:25:36.613322+00:00",
   "verification_method": "CONTROLLER_MATCHED_TRUSTED_HEARTBEAT_MESSAGES_TO_DISTINCT_COMPLETED_LOCAL_RECEIPTS_NOT_SELF_REPORTED_SOURCE_ALONE",
   "consecutive_trigger_interval_seconds": 7472.05,
   "manual_recovery": {
@@ -118,5 +130,14 @@
     "counted_as_unattended": false
   },
   "latest_two_triggers_both_completed": true,
-  "latest_pair_two_hour_execution_verified": false
+  "latest_pair_two_hour_execution_verified": false,
+  "latest_pair_evidence": {
+    "cycle_ids": [
+      "2fc8a379-84cc-4bf6-a759-ba29483f76ff",
+      "10e948fc-af43-462d-a53a-0d3edeeb0949"
+    ],
+    "trigger_interval_seconds": 6905.081,
+    "execution_start_interval_seconds": 6919.637977,
+    "scope": "TWO_COMPLETED_LOCAL_TASKS_115_MINUTES_APART_CADENCE_NOT_SEPARATELY_ACCEPTED"
+  }
 }

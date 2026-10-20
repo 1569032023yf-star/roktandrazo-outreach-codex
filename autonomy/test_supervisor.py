@@ -166,6 +166,77 @@ class SupervisorTests(unittest.TestCase):
                 s.cycle(self.runtime, runner=runner)
                 self.assertEqual(len(calls), 1)
 
+    def test_developer_completed_recovery_enqueues_review_once(self):
+        pairs = {'D-sanitized-telemetry-adapter': 'D-telemetry-independent-review',
+                 'D-unknown-outcome-quarantine': 'D-unknown-outcome-review',
+                 'D-unknown-outcome-followup': 'D-unknown-outcome-followup-review',
+                 'B-brand-package-integration': 'B-brand-integration-review'}
+        for developer, reviewer in pairs.items():
+            for existing in (False, True):
+                with self.subTest(developer=developer, existing=existing):
+                    state = {'tasks': [{'id': developer, 'role': 'developer',
+                        'status': 'unknown', 'outcome_unknown': True, 'attempts': 1,
+                        'lease_cycle_id': 'synthetic-lease'}], 'cycles': []}
+                    review = {'id': reviewer, 'role': 'reviewer', 'status': 'queued',
+                              'attempts': 0, 'blocked_cycles': 0,
+                              'workstream': developer[0]}
+                    if existing:
+                        state['tasks'].append(dict(review))
+                    s.atomic_json(self.runtime / 'queue.json', state)
+                    s.recover_unknown(self.runtime, developer, lambda t: {
+                        'read_only': True, 'resolution': 'completed',
+                        'evidence': 'synthetic artifact hash verified'})
+                    recovered = s.read(self.runtime / 'queue.json')
+                    self.assertEqual(recovered['tasks'][0]['status'], 'needs_review')
+                    self.assertEqual(recovered['tasks'][0]['attempts'], 1)
+                    self.assertEqual(recovered['tasks'][0]['role'], 'developer')
+                    self.assertEqual(recovered['cycles'], [])
+                    self.assertEqual([t for t in recovered['tasks'] if t['id'] == reviewer], [review])
+                    calls = []
+                    s.cycle(self.runtime, runner=lambda t, root: calls.append(t['id']) or {'ok': True})
+                    s.cycle(self.runtime, runner=lambda *a: self.fail('completed work cannot rerun'))
+                    self.assertEqual(calls, [reviewer])
+
+    def test_lock_cleanup_preserves_queue_or_receipt_primary_exception(self):
+        for stage, note in (('queue', 'QUEUE_COMMIT_FAILED_OUTCOME_UNKNOWN'),
+                            ('receipt', 'QUEUE_COMMITTED_RECEIPT_PENDING')):
+            with self.subTest(stage=stage), tempfile.TemporaryDirectory() as tmp:
+                self.runtime = Path(tmp)
+                self.single_task()
+                primary = OSError(28, 'synthetic storage failure')
+                calls, before = [], []
+                write, unlink = s.atomic_json, Path.unlink
+                def injected(path, value):
+                    if calls and ((stage == 'queue' and path.name == 'queue.json')
+                                  or (stage == 'receipt' and path.parent.name == 'cycles')):
+                        before.append((self.runtime / 'queue.json').read_bytes())
+                        raise primary
+                    return write(path, value)
+                def remove(path, *args, **kwargs):
+                    if path.name == 'supervisor.lock':
+                        raise PermissionError('synthetic lock cleanup failure')
+                    return unlink(path, *args, **kwargs)
+                with patch.object(s, 'atomic_json', side_effect=injected), patch.object(Path, 'unlink', remove):
+                    with self.assertRaises(OSError) as caught:
+                        s.cycle(self.runtime, runner=lambda *a: calls.append(1) or {'ok': True})
+                self.assertIs(caught.exception, primary)
+                self.assertIn(note, primary.__notes__)
+                self.assertIn('LOCK_CLEANUP_FAILED', primary.__notes__)
+                self.assertEqual((self.runtime / 'queue.json').read_bytes(), before[0])
+                self.assertEqual(s.read(self.runtime / 'queue.json')['tasks'][0]['status'],
+                                 'running' if stage == 'queue' else 'completed')
+                self.assertTrue((self.runtime / 'supervisor.lock').exists())
+                with self.assertRaises(FileExistsError):
+                    s.cycle(self.runtime, runner=lambda *a: self.fail('orphan lock must block'))
+                self.assertEqual(calls, [1])
+
+    def test_lock_cleanup_failure_without_primary_is_reported(self):
+        with patch.object(Path, 'unlink', side_effect=PermissionError('synthetic lock cleanup failure')):
+            with self.assertRaises(PermissionError):
+                with s.exclusive(self.runtime):
+                    pass
+        self.assertTrue((self.runtime / 'supervisor.lock').exists())
+
     def test_atomic_faults_preserve_old_json_and_primary_exception(self):
         path = self.runtime / 'state.json'
         old = {'old': [1, 2, 3]}

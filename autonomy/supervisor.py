@@ -67,7 +67,13 @@ def exclusive(runtime):
         with os.fdopen(fd, 'w') as handle:
             json.dump({'pid': os.getpid(), 'started_at': now()}, handle)
         yield
-    finally:
+    except BaseException as error:
+        try:
+            lock.unlink()
+        except OSError:
+            error.add_note('LOCK_CLEANUP_FAILED')
+        raise
+    else:
         lock.unlink()
 
 
@@ -236,6 +242,18 @@ def run_agent(task, root, timeout=600):
             'output_sha256': hashlib.sha256(result.stdout.encode()).hexdigest()}
 
 
+def enqueue_independent_review(state, task):
+    reviews = {'D-sanitized-telemetry-adapter': ('D', 'D-telemetry-independent-review'),
+               'D-unknown-outcome-quarantine': ('D', 'D-unknown-outcome-review'),
+               'D-unknown-outcome-followup': ('D', 'D-unknown-outcome-followup-review'),
+               'B-brand-package-integration': ('B', 'B-brand-integration-review')}
+    if task['role'] == 'developer' and task['id'] in reviews:
+        workstream, review_id = reviews[task['id']]
+        if not any(t['id'] == review_id for t in state['tasks']):
+            state['tasks'].append({'id': review_id, 'workstream': workstream,
+                'status': 'queued', 'attempts': 0, 'role': 'reviewer', 'blocked_cycles': 0})
+
+
 def cycle(runtime=RUNTIME, root=ROOT, source='manual', runner=run_agent):
     if source not in {'manual', 'codex_heartbeat'}:
         raise ValueError('INVALID_SOURCE')
@@ -282,15 +300,8 @@ def cycle(runtime=RUNTIME, root=ROOT, source='manual', runner=run_agent):
                 # Never serialize exception messages, prompts or environment secrets.
                 outcome = {'ok': False, 'reason': 'RUNNER_EXCEPTION', 'type': type(error).__name__}
             task['status'] = ('needs_review' if task['role'] == 'developer' else 'completed') if outcome['ok'] else 'unknown'
-            reviews = {'D-sanitized-telemetry-adapter': ('D', 'D-telemetry-independent-review'),
-                       'D-unknown-outcome-quarantine': ('D', 'D-unknown-outcome-review'),
-                       'D-unknown-outcome-followup': ('D', 'D-unknown-outcome-followup-review'),
-                       'B-brand-package-integration': ('B', 'B-brand-integration-review')}
-            if outcome['ok'] and task['id'] in reviews:
-                workstream, review_id = reviews[task['id']]
-                if not any(t['id'] == review_id for t in state['tasks']):
-                    state['tasks'].append({'id': review_id, 'workstream': workstream,
-                        'status': 'queued', 'attempts': 0, 'role': 'reviewer', 'blocked_cycles': 0})
+            if outcome['ok']:
+                enqueue_independent_review(state, task)
             task['blocked_cycles'] = 0 if outcome['ok'] else task.get('blocked_cycles', 0) + 1
             task['needs_reassessment'] = not outcome['ok']
             task['outcome_unknown'] = not outcome['ok']
@@ -332,6 +343,8 @@ def recover_unknown(runtime, task_id, readonly_check):
         task['reconciliation'] = dict(result, checked_at=now(),
                                       lease_cycle_id=task.get('lease_cycle_id'))
         task['status'] = ('needs_review' if task['role'] == 'developer' else 'completed') if result['resolution'] == 'completed' else 'queued'
+        if result['resolution'] == 'completed':
+            enqueue_independent_review(state, task)
         task.update(outcome_unknown=False, needs_reassessment=False)
         atomic_json(runtime / 'queue.json', state)
         return task

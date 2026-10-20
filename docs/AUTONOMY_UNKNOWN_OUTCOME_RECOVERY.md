@@ -2,6 +2,28 @@
 
 日期 / Date: 2026-10-20
 
+## 本轮补修与当前验证状态 / Current follow-up and verification status
+
+中文：本节为本轮状态，优先于下文历史测试记录。本轮按独立审核的两项发现，仅修改 supervisor.py、test_supervisor.py 及本报告。正常完成与显式 completed 恢复复用固定审核任务映射；developer 恢复为 needs_review 时，同一 queue 原子提交中去重登记 reviewer，不重置已有审核任务、不改角色、不把历史未知周期改为成功。已有审核任务按 ID 保留原状态；若其本身未知，仍须单独只读核对，不能借开发恢复放行。
+
+English: This section describes the current follow-up and takes precedence over historical test records below. Only supervisor.py, test_supervisor.py and this report were changed for the two independent-review findings. Normal completion and explicit completed recovery share the fixed review-task mapping. Recovering a developer to needs_review atomically registers a deduplicated reviewer in the same queue commit, without resetting existing reviews, changing roles or converting unknown historical cycles into successes. Existing review tasks retain their state by ID; an unknown reviewer still requires separate read-only reconciliation.
+
+中文：exclusive 现在在主异常传播时捕获锁删除 OSError，给原异常附注 LOCK_CLEANUP_FAILED 并重新抛出同一异常对象；queue/receipt 阶段附注保留。没有主异常时，锁删除失败继续向调用方报错。残留锁继续阻止派发，本轮没有添加自动解锁或删除用户锁的入口。临时文件清理仍保留原写入异常。
+
+English: During primary-exception propagation, exclusive now catches lock-removal OSError, annotates the primary exception with LOCK_CLEANUP_FAILED and rethrows the same exception object, retaining queue/receipt stage notes. With no primary exception, lock-removal failure still propagates. A remaining lock continues to block dispatch; no automatic unlock or user-lock deletion entry point was added. Temporary-file cleanup still preserves the original write exception.
+
+中文：新增 3 个测试方法，总计 22 个：四组固定 developer/reviewer 映射分别覆盖审核缺失和已有两种恢复分支，断言审核只登记一次、只派发 reviewer、developer 不重执行、历史周期不增加；queue 完成提交失败与 receipt 失败分别叠加锁删除失败，断言原异常对象身份、两个阶段附注、旧 queue 字节、权威状态、残留锁阻塞及 runner 调用次数为 1；另测无主异常的锁删除失败仍报错。原 dump/flush/fsync/replace 故障、未知结果隔离、receipt 按需修复及真实触发证据断言均保留，没有降低旧断言。
+
+English: Three test methods were added, bringing the total to 22. All four fixed developer/reviewer mappings cover both absent and existing reviews, asserting single registration, reviewer-only dispatch, no developer rerun and no added historical cycles. Queue-completion and receipt failures are each combined with lock-removal failure, asserting primary-exception identity, both stage notes, unchanged queue bytes, authoritative status, orphan-lock exclusion and exactly one runner invocation. A separate test checks lock-removal failure with no primary exception still propagates. Existing dump/flush/fsync/replace injections, unknown-outcome quarantine, selective receipt repair and authentic-trigger assertions remain intact without weakened assertions.
+
+中文：本轮实际验证仅有 git diff --check 通过及静态差异自检。尝试执行 Python312/python.exe -B -m unittest autonomy.test_supervisor -q 被系统以“拒绝访问”阻止，22 项测试均未在本轮运行；下文 19 项通过是历史记录，不是当前通过证据。未绕过访问控制或更换执行环境。本轮开发已写入但运行验证未完成，也未独立审核验收。CURRENT_STATUS.md 和 FILE_MANIFEST.md 启动检查未找到。
+
+English: Current verification consists only of a passing git diff --check and static diff inspection. Running Python312/python.exe -B -m unittest autonomy.test_supervisor -q was blocked by system access denial; none of the 22 tests ran in this follow-up. The 19-test passes below are historical, not current evidence. No access-control bypass or alternate execution environment was used. Changes are written, but runtime verification and independent acceptance remain incomplete. Startup checks did not find CURRENT_STATUS.md or FILE_MANIFEST.md.
+
+中文：未修改 process_job.py 或既有未提交文件，未触发真实代理、联网、采集、生产 DB、SMTP，未读取凭据、删除用户文件、自行提交或部署。风险仍包括空间预检、输出上限、异常进程清理及只读核对证据的可信性；本轮不证明历史故障已恢复或自主运行已恢复。下一步在获准可执行 Python 的环境运行全部 22 项离线测试，再独立审核。报告已自检双语、数量、未执行事项、风险、下一步及敏感信息；无真实客户数据或秘密。
+
+English: process_job.py and pre-existing uncommitted files were not edited. No real agents, networking, collection, production DB, SMTP, credentials, user-file deletion, commits or deployment were used. Remaining risks include space preflight, output caps, exceptional process cleanup and trustworthy read-only reconciliation evidence. This follow-up establishes neither historical incident recovery nor autonomous-operation recovery. Next, run all 22 offline tests where Python execution is authorized, then obtain independent review. The report was checked for bilingual content, counts, non-executed work, risks, next steps and sensitive information; it contains no real customer data or secrets.
+
 ## 执行结果 / Results
 
 中文：本次仅修改 `autonomy/supervisor.py`、`autonomy/test_supervisor.py` 并新增本报告。中断 running 租约、runner 超时、不完整输出、无效结果及执行异常均隔离为 `unknown`，标记 `outcome_unknown=true`，不自动重执行。旧版 failed/interrupted 周期关联的 queued/blocked 任务也保守隔离；attempts 较小或 needs_reassessment=false 均不能使未知结果放行。固定任务角色、互斥锁、真实触发证据规则和生产隔离保持。
@@ -46,3 +68,20 @@ Unknown-outcome quarantine development completed; developer and parent checks pa
 08:57Z无执行回执，不计成功；10:55:53Z触发于12:54:48Z才启动，延迟7135秒，12:59:59Z完成。如实记录延迟，不作为准点两小时运行证明。累计成功任务5，历史两连续周期证明保留，最新两触发非连续成功，AUTONOMOUS_OPERATIONS_ACTIVE=false。未部署、未发信、未访问生产DB，指标UNKNOWN。
 
 The 08:57Z trigger has no execution receipt and is not successful. The 10:55:53Z trigger started at 12:54:48Z after a 7135-second delay and finished at 12:59:59Z. This delay is recorded, not treated as evidence of punctual two-hour execution. Five tasks completed; the historical consecutive pair remains verified, the latest pair is not consecutive, and AUTONOMOUS_OPERATIONS_ACTIVE=false. No deployment, email sending or production DB access; metrics remain UNKNOWN.
+
+
+## 2026-10-20 23:25 补修及父复核 / Follow-up and parent verification
+
+两项恢复补修完成，父进程使用已提交启动器复跑22项测试通过；开发代理未运行测试，独立审核待完成。
+
+Two recovery follow-up fixes implemented; parent rerun with the committed runner passed 22 tests. Developer could not execute tests; independent review remains pending.
+
+触发 / Trigger: 2026-10-20T15:20:55.089Z; cycle `10e948fc-af43-462d-a53a-0d3edeeb0949`; execution 2026-10-20T15:21:58.004329+00:00 — 2026-10-20T15:24:21.798422+00:00.
+
+下次真实心跳独立审核恢复后审核去重与主异常保留；其余存储发现继续保留，整体未验收。
+
+Next genuine heartbeat independently reviews recovery review-deduplication and primary-error preservation; other storage findings remain open and overall acceptance is incomplete.
+
+三份既有未提交文件哈希不变；无生产部署、采集、DB访问或发信，业务指标UNKNOWN。
+
+Three pre-existing uncommitted file hashes are unchanged. No production deployment, discovery, DB access or sending; business metrics remain UNKNOWN.
