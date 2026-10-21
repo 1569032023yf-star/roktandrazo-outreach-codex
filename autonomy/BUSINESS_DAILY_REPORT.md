@@ -132,3 +132,12 @@ Cycle: 326516b6-651e-40c4-b406-6df8e9e5b1e2; evidence: `autonomy/runtime/city_ob
 03:24 official-channel observation: APPLIED and both hashes match; original Inventory is not due until 05:43:24 +08:00. Cooperstown remains active; no post-deploy Inventory observed. SMTP=0, sends today=0, cumulative sends unchanged at 517, one active Inventory, lock released. SAFE and growth UNKNOWN. Both observations precede the due time and do not establish business or unattended release acceptance; continue existing heartbeats without substitute collection.
 
 Cycle: 0dae5a0f-a555-49d6-b855-6a79b64087d2; evidence: `autonomy/runtime/city_observation_20261021T192338`.
+
+
+## 心跳观察 / Heartbeat observation — 2026-10-22 05:24 +08:00
+
+05:24正式只读复核：APPLIED及两文件SHA一致；05:43:24原Inventory尚未到期，未见部署后自然run。Cooperstown仍active；SMTP=0、今日发送0、累计517、唯一Inventory=1、锁released。SAFE及增长UNKNOWN。继续既有心跳等待自然运行证据；到期前观察不构成业务验收或无人值守发布验收。
+
+05:24 official read-only check: APPLIED and both file hashes match. Original Inventory is not due until 05:43:24 +08:00; no post-deploy natural run observed. Cooperstown remains active; SMTP=0, sends today=0, total=517, one active Inventory, lock released. SAFE and growth UNKNOWN. Continue existing heartbeat for natural-run evidence; pre-window observations do not establish business or unattended release acceptance.
+
+Cycle: c9b67309-8f9d-4193-a800-d99fbbe404a6; evidence: `autonomy/runtime/city_observation_20261021T212409`.
