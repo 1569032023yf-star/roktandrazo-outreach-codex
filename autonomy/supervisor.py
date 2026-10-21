@@ -18,8 +18,10 @@ import uuid
 
 try:
     from autonomy.process_job import run_tree
+    from autonomy.storage_preflight import check_storage
 except ModuleNotFoundError:
     from process_job import run_tree
+    from storage_preflight import check_storage
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / 'autonomy' / 'runtime'
@@ -40,10 +42,21 @@ def atomic_json(path, value):
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=path.parent, suffix='.tmp')
     try:
-        with os.fdopen(fd, 'w', encoding='utf-8') as handle:
+        handle = os.fdopen(fd, 'w', encoding='utf-8')
+        try:
             json.dump(value, handle, ensure_ascii=False, indent=2)
             handle.flush()
             os.fsync(handle.fileno())
+        except BaseException as error:
+            # Capture the write failure before close can flush and fail again.
+            try:
+                handle.close()
+            except BaseException:
+                error.add_note('FILE_CLOSE_FAILED')
+            raise
+        else:
+            # With no write failure, close itself is the primary failure.
+            handle.close()
         os.replace(tmp, path)
     except BaseException as error:
         try:
@@ -111,8 +124,24 @@ def reconcile(runtime, state):
 
 def task_prompt(task):
     # Queue data never becomes executable commands or arbitrary agent instructions.
-    if task['id'] in {'D-unknown-outcome-quarantine', 'D-unknown-outcome-followup'} and task['role'] == 'developer':
+    if task['id'] == 'D-output-cleanup-repair' and task['role'] == 'developer':
+        return ('执行有界开发，先读AGENTS和docs/AUTONOMY_RELIABILITY_CLOSURE_REVIEW.md。'
+                '仅补R3/R4：输出读取线程及无线程关闭失败必须纳入cleanup错误，保留主异常；'
+                'supervisor保留白名单化OUTPUT_LIMIT和CLEANUP_UNVERIFIED证据而不输出异常消息。'
+                '允许最小修改autonomy/process_job.py、test_process_job.py、supervisor.py、test_supervisor.py'
+                '及新增双语docs/AUTONOMY_OUTPUT_CLEANUP_REPAIR.md。候选启动器原始副本及hash在'
+                'autonomy/runtime/preserved_runner_20261021，保留既有功能，不覆盖整个文件。'
+                '补合成线程close故障及主异常组合测试；正常Python若被拒绝就报告，禁止改安全策略。'
+                '不改lock_recovery.py、不自动删锁、不联网或启动真实代理、不触生产DB/SMTP。'
+                '10分钟内退出、不自行提交，最终JSON summary_zh/summary_en/findings。')
+    if task['id'] == 'D-output-cleanup-review' and task['role'] == 'reviewer':
+        return ('独立只读审核process_job.py/test_process_job.py及supervisor.py最新输出清理补修；'
+                '依据docs/AUTONOMY_RELIABILITY_CLOSURE_REVIEW.md核查R3/R4及输出限额、异常清理。'
+                '可以运行离线合成测试，不联网、不改文件、不运行真实代理或生产DB/SMTP。'
+                '不能测试时如实说明，最终JSON summary_zh/summary_en/findings。')
+    if task['id'] in {'D-unknown-outcome-quarantine', 'D-unknown-outcome-followup', 'D-write-close-preservation'} and task['role'] == 'developer':
         return ('执行一项有界开发：先读AGENTS.md及docs/AUTONOMY_STORAGE_FAILURE_AUDIT.md。'
+                '如存在docs/AUTONOMY_FOLLOWUP_REVIEW.md，优先补修atomic_json写入失败叠加文件close失败：在关闭前保存原异常，关闭失败仅附注，补纯内存组合故障及close单独失败测试；不关闭其余存储发现。'
                 '如存在docs/AUTONOMY_UNKNOWN_OUTCOME_REVIEW.md，先修其两项：developer completed恢复必须去重排独立审核；exclusive锁删除失败须保留正在传播的主异常及附注，并补组合故障测试。'
                 '仅修改autonomy/supervisor.py、autonomy/test_supervisor.py，新增或更新双语'
                 'docs/AUTONOMY_UNKNOWN_OUTCOME_RECOVERY.md。优先修复审查前两项：'
@@ -125,7 +154,7 @@ def task_prompt(task):
                 '不修改process_job.py，不执行真实代理/联网/采集/生产DB/SMTP，不读取凭据，'
                 '不删除用户文件，不自行提交。10分钟内完成可验证改动或如实报告未完成。'
                 '最终仅JSON summary_zh、summary_en、findings数组。')
-    if task['id'] in {'D-unknown-outcome-review', 'D-unknown-outcome-followup-review'} and task['role'] == 'reviewer':
+    if task['id'] in {'D-unknown-outcome-review', 'D-unknown-outcome-followup-review', 'D-write-close-review'} and task['role'] == 'reviewer':
         return ('独立只读审核autonomy/supervisor.py、test_supervisor.py及'
                 'docs/AUTONOMY_UNKNOWN_OUTCOME_RECOVERY.md，对照存储失败专项审核报告。'
                 '重点验证未知结果隔离、禁止自动重执行、queue权威与receipt恢复、主异常保留、'
@@ -246,6 +275,8 @@ def enqueue_independent_review(state, task):
     reviews = {'D-sanitized-telemetry-adapter': ('D', 'D-telemetry-independent-review'),
                'D-unknown-outcome-quarantine': ('D', 'D-unknown-outcome-review'),
                'D-unknown-outcome-followup': ('D', 'D-unknown-outcome-followup-review'),
+               'D-write-close-preservation': ('D', 'D-write-close-review'),
+               'D-output-cleanup-repair': ('D', 'D-output-cleanup-review'),
                'B-brand-package-integration': ('B', 'B-brand-integration-review')}
     if task['role'] == 'developer' and task['id'] in reviews:
         workstream, review_id = reviews[task['id']]
@@ -286,6 +317,17 @@ def cycle(runtime=RUNTIME, root=ROOT, source='manual', runner=run_agent):
         record = {'cycle_id': str(uuid.uuid4()), 'source': source, 'started_at': now(),
                   'status': 'idle', 'task_id': None, 'human_trigger_excluded': source == 'manual'}
         state['cycles'].append(record)
+        if eligible:
+            task = eligible[0]
+            storage = check_storage(runtime, root)
+            record['storage_preflight'] = storage
+            if not storage['allow_start']:
+                task['blocked_cycles'] = task.get('blocked_cycles', 0) + 1
+                task['needs_reassessment'] = task['blocked_cycles'] >= 2
+                record.update(status='blocked_preflight', task_id=task['id'],
+                              outcome={'ok': False, 'reason': 'STORAGE_PREFLIGHT_BLOCKED',
+                                       'execution_started': False})
+                eligible = []
         if eligible:
             task = eligible[0]
             task.update(status='running', attempts=task['attempts'] + 1,

@@ -6,8 +6,53 @@ import sys
 import os
 import time
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 from autonomy import supervisor as s
+
+
+class AtomicJsonMemoryTests(unittest.TestCase):
+    """No directories, real descriptors or files / 不创建真实文件。"""
+
+    def check_close_failure(self, stage, cleanup_fails=False):
+        primary = OSError(28, 'synthetic write failure')
+        close_error = OSError('synthetic close failure')
+        handle = Mock()
+        handle.fileno.return_value = 17
+        handle.close.side_effect = close_error
+        if stage == 'flush':
+            handle.flush.side_effect = primary
+        with patch.object(Path, 'mkdir'), \
+                patch.object(s.tempfile, 'mkstemp', return_value=(17, 'memory.tmp')), \
+                patch.object(s.os, 'fdopen', return_value=handle), \
+                patch.object(s.json, 'dump', side_effect=primary if stage == 'dump' else None), \
+                patch.object(s.os, 'fsync', side_effect=primary if stage == 'fsync' else None), \
+                patch.object(s.os, 'replace') as replace, \
+                patch.object(s.os.path, 'exists', return_value=True), \
+                patch.object(s.os, 'unlink', side_effect=OSError('synthetic cleanup failure')
+                             if cleanup_fails else None) as unlink:
+            with self.assertRaises(OSError) as caught:
+                s.atomic_json(Path('memory.json'), {'synthetic': True})
+        self.assertIs(caught.exception, close_error if stage == 'close' else primary)
+        if cleanup_fails:
+            self.assertIn('TEMP_CLEANUP_FAILED', caught.exception.__notes__)
+        if stage != 'close':
+            self.assertIn('FILE_CLOSE_FAILED', caught.exception.__notes__)
+        else:
+            self.assertNotIn('FILE_CLOSE_FAILED', getattr(caught.exception, '__notes__', []))
+        handle.close.assert_called_once_with()
+        replace.assert_not_called()
+        unlink.assert_called_once_with('memory.tmp')
+
+    def test_write_and_close_failures_preserve_original_exception_in_memory(self):
+        for stage in ('dump', 'flush', 'fsync'):
+            for cleanup_fails in (False, True):
+                with self.subTest(stage=stage, cleanup_fails=cleanup_fails):
+                    self.check_close_failure(stage, cleanup_fails)
+
+    def test_close_only_failure_is_primary_in_memory(self):
+        for cleanup_fails in (False, True):
+            with self.subTest(cleanup_fails=cleanup_fails):
+                self.check_close_failure('close', cleanup_fails)
 
 
 class SupervisorTests(unittest.TestCase):
@@ -27,6 +72,28 @@ class SupervisorTests(unittest.TestCase):
         self.assertEqual(one['status'], 'completed')
         self.assertEqual(two['status'], 'idle')
         self.assertEqual(len(s.read(self.runtime / 'queue.json')['cycles']), 2)
+
+    def test_storage_rejection_never_invokes_runner_or_consumes_attempt(self):
+        for status in ('LOW_SPACE', 'UNKNOWN'):
+            with self.subTest(status=status), tempfile.TemporaryDirectory() as tmp:
+                self.runtime = Path(tmp)
+                self.single_task()
+                admission = {'allow_start': False, 'checks': [{'status': status}]}
+                with patch.object(s, 'check_storage', return_value=admission):
+                    for _ in range(2):
+                        result = s.cycle(self.runtime, runner=lambda *a: self.fail('must not launch'))
+                        self.assertEqual(result['status'], 'blocked_preflight')
+                        self.assertFalse(result['outcome']['execution_started'])
+                task = s.read(self.runtime / 'queue.json')['tasks'][0]
+                self.assertEqual(task['status'], 'queued')
+                self.assertEqual(task['attempts'], 0)
+                self.assertTrue(task['needs_reassessment'])
+                self.assertNotIn('lease_cycle_id', task)
+                with patch.object(s, 'check_storage', return_value={'allow_start': True}):
+                    calls = []
+                    result = s.cycle(self.runtime, runner=lambda *a: calls.append(1) or {'ok': True})
+                self.assertEqual(calls, [1])
+                self.assertEqual(result['status'], 'completed')
 
     def test_lock_excludes_another_worker(self):
         with s.exclusive(self.runtime):
@@ -63,6 +130,8 @@ class SupervisorTests(unittest.TestCase):
         pairs = {'D-sanitized-telemetry-adapter': 'D-telemetry-independent-review',
                  'D-unknown-outcome-quarantine': 'D-unknown-outcome-review',
                  'D-unknown-outcome-followup': 'D-unknown-outcome-followup-review',
+                 'D-write-close-preservation': 'D-write-close-review',
+                 'D-output-cleanup-repair': 'D-output-cleanup-review',
                  'B-brand-package-integration': 'B-brand-integration-review'}
         for developer, reviewer in pairs.items():
             with self.subTest(developer=developer):
@@ -170,6 +239,8 @@ class SupervisorTests(unittest.TestCase):
         pairs = {'D-sanitized-telemetry-adapter': 'D-telemetry-independent-review',
                  'D-unknown-outcome-quarantine': 'D-unknown-outcome-review',
                  'D-unknown-outcome-followup': 'D-unknown-outcome-followup-review',
+                 'D-write-close-preservation': 'D-write-close-review',
+                 'D-output-cleanup-repair': 'D-output-cleanup-review',
                  'B-brand-package-integration': 'B-brand-integration-review'}
         for developer, reviewer in pairs.items():
             for existing in (False, True):
@@ -247,13 +318,10 @@ class SupervisorTests(unittest.TestCase):
                 primary = OSError(28, 'synthetic disk full')
                 original = s.os.fdopen
                 class Handle:
-                    def __enter__(self):
-                        self.handle = original_handle.__enter__()
-                        return self
-                    def __exit__(self, *args):
-                        return original_handle.__exit__(*args)
+                    def close(self):
+                        original_handle.close()
                     def write(self, value):
-                        return self.handle.write(value)
+                        return original_handle.write(value)
                     def flush(self):
                         raise primary
                 def fdopen(*args, **kwargs):
@@ -306,13 +374,10 @@ class SupervisorTests(unittest.TestCase):
                         if stage == 'flush':
                             original = s.os.fdopen
                             class Wrapper:
-                                def __enter__(self):
-                                    self.handle = handle.__enter__()
-                                    return self
-                                def __exit__(self, *args):
-                                    return handle.__exit__(*args)
+                                def close(self):
+                                    handle.close()
                                 def write(self, text):
-                                    return self.handle.write(text)
+                                    return handle.write(text)
                                 def flush(self):
                                     raise primary
                             handle = None

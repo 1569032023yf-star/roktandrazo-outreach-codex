@@ -1,6 +1,6 @@
 {
-  "summary_zh": "两项恢复补修完成，父进程使用已提交启动器复跑22项测试通过；开发代理未运行测试，独立审核待完成",
-  "summary_en": "Two recovery follow-up fixes implemented; parent rerun with the committed runner passed 22 tests. Developer could not execute tests; independent review remains pending",
+  "summary_zh": "累计九项真实自动任务完成；最近两触发无完成回执；当前手动续接不计无人值守",
+  "summary_en": "Nine genuine unattended tasks completed; latest two triggers lack completion receipts; this manual continuation is excluded",
   "automation_id": "rokt-razo",
   "triggers": [
     {
@@ -114,13 +114,44 @@
       "output_sha256": "96787650235c1d70a655cfb1f89bb77390d7b87758e4513fefe452f72b98ccc9",
       "developer_tests_executed": false,
       "parent_tests_passed_with_committed_process_runner": 22
+    },
+    {
+      "trigger_at": "2026-10-20T17:29:53.906Z",
+      "cycle_id": "4e13f42a-1305-4ee9-aed9-46b1e6954797",
+      "scheduler": "codex_heartbeat",
+      "status": "COMPLETED_REVIEW_CHANGES_REQUESTED",
+      "execution_started_at": "2026-10-20T17:30:27.206997+00:00",
+      "execution_finished_at": "2026-10-20T17:32:10.136853+00:00",
+      "output_sha256": "2e7ab40b9e5127bd33596da13e8920640f1ef815f54c59039f6b5d6c8811fff8",
+      "findings_count": 1
+    },
+    {
+      "trigger_at": "2026-10-20T19:33:55.683Z",
+      "cycle_id": "0a31801d-57a8-4dd1-8a5b-1e0c64bcbdd2",
+      "scheduler": "codex_heartbeat",
+      "status": "COMPLETED_DEVELOPMENT_SUBSEQUENT_SCOPED_REVIEW_PASSED",
+      "execution_started_at": "2026-10-20T19:34:56.388909+00:00",
+      "execution_finished_at": "2026-10-20T19:36:54.585256+00:00",
+      "output_sha256": "22cea284cd5fe327bfcd5af272e0d49454fe1640cd582fca8c89214373386504"
+    },
+    {
+      "trigger_at": "2026-10-20T21:33:27.404Z",
+      "cycle_id": null,
+      "scheduler": "codex_heartbeat",
+      "status": "NO_COMPLETED_EXECUTION_RECEIPT_NOT_SUCCESS"
+    },
+    {
+      "trigger_at": "2026-10-20T23:36:29.262Z",
+      "cycle_id": null,
+      "scheduler": "codex_heartbeat",
+      "status": "NO_COMPLETED_EXECUTION_RECEIPT_NOT_SUCCESS"
     }
   ],
   "two_unattended_cycles_verified": true,
   "scope": "TRUSTED_CHAT_HEARTBEAT_METADATA_PLUS_LOCAL_TASK_RECEIPTS_NOT_PRODUCTION_ACCEPTANCE",
-  "successful_unattended_cycles_confirmed": 7,
-  "next_task": "D-unknown-outcome-followup-review",
-  "updated_at": "2026-10-20T15:25:36.613322+00:00",
+  "successful_unattended_cycles_confirmed": 9,
+  "next_task": "D-output-cleanup-repair",
+  "updated_at": "2026-10-21T00:42:27.698044+00:00",
   "verification_method": "CONTROLLER_MATCHED_TRUSTED_HEARTBEAT_MESSAGES_TO_DISTINCT_COMPLETED_LOCAL_RECEIPTS_NOT_SELF_REPORTED_SOURCE_ALONE",
   "consecutive_trigger_interval_seconds": 7472.05,
   "manual_recovery": {
@@ -129,7 +160,7 @@
     "independent_review_id": "b35ce83a-9109-4243-b208-ce24ce56c42e",
     "counted_as_unattended": false
   },
-  "latest_two_triggers_both_completed": true,
+  "latest_two_triggers_both_completed": false,
   "latest_pair_two_hour_execution_verified": false,
   "latest_pair_evidence": {
     "cycle_ids": [

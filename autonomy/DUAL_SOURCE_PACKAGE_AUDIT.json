@@ -1,0 +1,95 @@
+{
+  "audited_at": "2026-10-20T19:36:18.399302+00:00",
+  "status": "PACKAGE_VERIFIED_WITH_LIMITATIONS",
+  "zip_sha256": "74a5e58fcf708391f6a44bd29f86e88b47773773fb2d721fea6769f72321707c",
+  "collector_sha256": "5ad7a32e501d302fd909d3641521e4554bd3eca1e8b11962fbc7c9396b2e784d",
+  "collector_version": "0.1.0",
+  "source_git_revision": "UNKNOWN",
+  "package_hashes_matched": 38,
+  "export_hashes_and_bytes_matched": 22,
+  "sqlite_integrity": "ok",
+  "sqlite_mode": "ro&immutable=1",
+  "counts": {
+    "osm_objects": 18,
+    "website_records": 4,
+    "unique_website_domains": 3,
+    "unique_emails": 1,
+    "email_source_rows": 3,
+    "logical_osm_searches": 1,
+    "google_search_rows": 0,
+    "http_requests": "UNKNOWN",
+    "out_of_city_address_records_at_least": 3
+  },
+  "production_new_organizations": "UNKNOWN",
+  "history_status": "UNKNOWN",
+  "mx_status": "UNKNOWN",
+  "safe_status": "NOT_ASSESSED",
+  "same_city_dual_source_validated": false,
+  "production_ready": false,
+  "findings": [
+    {
+      "title_zh": "结论",
+      "title_en": "Conclusion",
+      "zh": "包内18/4/1计数可复现，但仅为历史候选观察，非18个唯一新组织、4个已核实官网或1个合格收件人。",
+      "en": "The packaged 18/4/1 counts reproduce, but represent historical candidate observations, not 18 unique new organizations, four verified official sites or one eligible recipient."
+    },
+    {
+      "title_zh": "来源与城市",
+      "title_en": "Sources and geography",
+      "zh": "仅1个OSM逻辑搜索、attempts=1。Overpass TLS失败后走Nominatim关键词回退；配置为50城8词但max_searches=1，只观察New York。SQLite无Google搜索，包内无Google请求证据；不推断包外是否曾请求。实际HTTP总数UNKNOWN：源码回退循环8词，缺逐请求回执与原始响应。",
+      "en": "Only one OSM logical search with attempts=1 is recorded. Overpass TLS failure led to Nominatim keyword fallback. Configuration lists 50 cities and eight terms but max_searches=1; only New York was observed. SQLite has no Google search and the package has no Google request evidence; activity outside the package is unknown. Total HTTP requests are UNKNOWN: source loops over eight fallback terms but per-request receipts and raw responses are absent."
+    },
+    {
+      "title_zh": "地理与重复",
+      "title_en": "Geography and duplicates",
+      "zh": "18个OSM对象中至少3条地址为East Aurora、City of Albany、City of Syracuse，不是目标纽约市；回退未使用viewbox/bounded或坐标距离过滤。另有成人店Passions Adult Toy Store。Little Things两条对象共享官网及电话：4条网站记录仅3独立域，不能据此计4组织。",
+      "en": "At least three of 18 OSM objects have addresses in East Aurora, City of Albany and City of Syracuse rather than target New York City. Fallback lacks viewbox/bounded or distance filtering. Passions Adult Toy Store is also present. Two Little Things objects share website and phone: four website records represent three distinct domains, not four verified organizations."
+    },
+    {
+      "title_zh": "邮箱证据",
+      "title_en": "Email evidence",
+      "zh": "唯一邮箱info@grandslamnewyork.com，emails表3行对应首页、Contact-Us、about-us三页面；三个已保存文本都包含该邮箱。网页JSON保存解析文本和原HTML哈希，未保存原HTML，故不能独立重算其内部HTML哈希。只能确认包内文本一致，不证明当前网站、所有权、MX或历史资格。",
+      "en": "The sole email info@grandslamnewyork.com has three database rows for the homepage, Contact-Us and about-us. All three retained page texts contain it. Website JSON stores parsed text and original-HTML hashes but not original HTML, so those inner hashes cannot be independently recomputed. This proves packaged textual consistency, not current website ownership, MX or history eligibility."
+    },
+    {
+      "title_zh": "状态细分",
+      "title_en": "State details",
+      "zh": "18详情observed为OSM标签读取，detail_attempts均0，不是18次官网核验。网站状态14无列示网站、2已查页无邮箱、1邮箱观察、1 HTTP429 blocked。无网站标签不等于实际无官网；429不得解释为无邮箱。",
+      "en": "All 18 detail records are observed OSM tags with detail_attempts=0, not 18 website validations. Website states are 14 without listed websites, two without email on checked pages, one email observation and one HTTP429 blocked. Missing tags do not prove absent websites; 429 does not prove absent email."
+    },
+    {
+      "title_zh": "代码与证据风险",
+      "title_en": "Source and evidence risks",
+      "zh": "collector.py版本0.1.0，无Git提交来源证明。Overpass选择器首段缺nwr，且内层except Exception会对SourceBlocked同样转回退；关键词请求之间无休眠，pace仅在城市末尾。配置pace=0。无累计预算共享或逐域持久禁止记录。禁止直接接生产；本轮未联网验证服务规则或法律适用性，不宣称其合规已通过。",
+      "en": "collector.py reports 0.1.0 with no proven Git revision. The first Overpass selector lacks nwr, and inner except Exception also falls back on SourceBlocked. Keyword requests have no per-request delay; pacing occurs only after a city, and captured pace is zero. Shared cumulative budgets and durable restricted-domain state are absent. Do not wire this directly into production. No online service-policy or legal assessment was performed; compliance is not asserted."
+    },
+    {
+      "title_zh": "同城对照与可复用接口",
+      "title_en": "Same-city comparison and reusable interface",
+      "zh": "目前不能验收真实Google/OSM同城对照。最小准备：独立source/request receipt、相同城市边界与类别、逐请求共享预算与限制持久化、来源对象去重再组织确认；授权入口进行有界双来源实测。可适配主仓BrandCandidate，但source URLs/capture IDs/观察时间与包SHA必须保留，网站仅official_site_candidates；identity=IDENTITY_UNVERIFIED、official_site_verified=false、history=UNKNOWN、MX=unknown，保留邮箱为待核验证据。不要调用brand_candidate_importer.write_to_db。",
+      "en": "A real Google/OSM same-city comparison is not accepted. Minimum preparation: independent source/request receipts, matching city boundaries and categories, shared per-request budgets and persistent restrictions, source-object deduplication followed by organization verification; bounded live comparison through an authorized entry point. The repository BrandCandidate can be adapted, preserving source URLs, capture IDs, timestamps and package SHA. Websites remain official_site_candidates; identity=IDENTITY_UNVERIFIED, official_site_verified=false, history=UNKNOWN and MX=unknown. Retain email as unverified evidence. Do not call brand_candidate_importer.write_to_db."
+    },
+    {
+      "title_zh": "执行范围与下一步",
+      "title_en": "Scope and next steps",
+      "zh": "本轮仅安全提取、SHA/字节核对、SQLite immutable只读完整性和聚合查询、静态源码审核。未执行包脚本/测试、未采集、未部署、未发信、未读生产DB。下一步开发离线标准候选适配与边界测试，再独立审查；生产指标UNKNOWN。",
+      "en": "This audit performed safe extraction, SHA/byte checks, immutable read-only SQLite integrity and aggregate queries, and static source review only. No package scripts/tests, collection, deployment, email or production DB access occurred. Next build an offline standard-candidate adapter and boundary tests, then independent review; production metrics remain UNKNOWN."
+    },
+    {
+      "title_zh": "公共服务政策门禁",
+      "title_en": "Public-service policy gates",
+      "zh": "父代理已在线核实官方政策：公共Nominatim禁止系统性POI清单下载，不能将8关键词自动回退当作获准采集路线；Google Places API有储存和署名约束，须经正式Provider许可与接口设计校核。当前包未通过这些门禁。",
+      "en": "The parent agent verified official policies online: public Nominatim forbids systematic POI-list downloads, so automatic eight-keyword fallback is not an approved collection route. Google Places API imposes storage and attribution constraints requiring authorized provider access and interface review. This package has not passed these gates.",
+      "sources": [
+        "https://operations.osmfoundation.org/policies/nominatim/",
+        "https://developers.google.com/maps/documentation/places/web-service/policies"
+      ]
+    }
+  ],
+  "self_check": {
+    "bilingual": true,
+    "no_credentials": true,
+    "results_nonexecuted_risks_next_steps": true,
+    "no_incomplete_work_marked_complete": true
+  }
+}

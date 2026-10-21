@@ -1,0 +1,13 @@
+{
+  "work_id": "0f219dc8-e010-4198-8242-3b9f05bf4336",
+  "source": "manual",
+  "scheduler": "manual",
+  "started_at": "2026-10-21T00:36:55+00:00",
+  "finished_at": "2026-10-21T00:42:27.698044+00:00",
+  "status": "completed",
+  "task": "storage_preflight_integration_and_interrupted_handoff_reconciliation",
+  "counted_as_unattended": false,
+  "parent_tests_passed": 45,
+  "independent_checks_passed": 21,
+  "independent_evidence": "autonomy/ADMISSION_HANDOFF_REVIEW.json"
+}

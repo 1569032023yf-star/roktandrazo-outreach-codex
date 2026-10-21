@@ -1,5 +1,27 @@
 # 未知结果隔离与恢复 / Unknown-outcome quarantine and recovery
 
+## 2026-10-21 close 补修状态 / Close-preservation follow-up status
+
+中文：本节优先于下文历史验证记录。本轮仅修改 supervisor.py、test_supervisor.py 和本报告；工作树原有其他未提交改动全部保留，尤其未修改 process_job.py。当前源码已包含 developer completed 恢复时去重登记固定独立审核任务，以及锁删除失败保留主异常与附注的补修，本轮未重复改写这些分支。
+
+English: This section supersedes historical verification statements below. This turn changed only supervisor.py, test_supervisor.py and this report. All other pre-existing worktree changes were preserved, especially process_job.py. Current source already contains deduplicated fixed independent-review registration after developer completed recovery and primary-exception preservation with lock-cleanup notes; these branches were not rewritten this turn.
+
+中文：atomic_json 改为显式关闭文件，在 dump、flush 或 fsync 抛错时先捕获原异常，再尝试 close；close 失败仅附注 FILE_CLOSE_FAILED，继续传播同一原异常对象。无先行写入异常时，close 失败本身向外传播，且不调用 replace。临时文件清理失败仍附注 TEMP_CLEANUP_FAILED，不覆盖原异常。旧 JSON、queue 权威、未知任务隔离、只读核对恢复、固定角色与真实触发证据规则均保持。
+
+English: atomic_json now closes explicitly, capturing a dump, flush or fsync error before attempting close. A secondary close failure only adds FILE_CLOSE_FAILED while the same primary exception propagates. With no preceding write error, close failure is itself propagated and replace is not called. Temporary-file cleanup failure still adds TEMP_CLEANUP_FAILED without masking the primary exception. Old JSON preservation, queue authority, unknown-task quarantine, explicit read-only reconciliation, fixed roles and authentic-trigger rules remain intact.
+
+中文：新增独立 AtomicJsonMemoryTests 类，不使用临时目录或真实文件描述符；两项方法共覆盖八组子场景：dump/flush/fsync 与 close 同时失败、close 单独失败，分别再叠加或不叠加 unlink 失败。断言原异常对象身份、阶段附注、close 恰好一次、禁止 replace 和清理尝试。原有两个 flush 故障包装器适配显式 close，未降低旧 JSON 字节、runner 调用次数为 1、receipt 按需恢复或锁阻塞断言。当前文件共 24 项测试方法，保留原 22 项。
+
+English: A separate AtomicJsonMemoryTests class uses no temporary directories or real descriptors. Two methods cover eight subcases: dump/flush/fsync combined with close failure and close-only failure, each with and without unlink failure. Assertions check primary exception identity, stage notes, exactly one close, no replace and attempted cleanup. Two existing flush-injection wrappers were adapted to explicit close without weakening old JSON byte checks, exactly-one runner invocation, selective receipt repair or lock exclusion. The file now has 24 test methods, retaining all previous 22.
+
+中文：实际尝试执行 Python312/python.exe -B -m unittest autonomy.test_supervisor.AtomicJsonMemoryTests -v，系统拒绝访问，未启动 Python；新增两项及全部回归均未运行，不能声明通过，也未绕过访问控制。静态差异自检和 git diff --check 的结果见本轮最终说明。CURRENT_STATUS.md 与 FILE_MANIFEST.md 仍不存在。代码补修已写入，运行验证及独立复审尚未完成。
+
+English: Attempting Python312/python.exe -B -m unittest autonomy.test_supervisor.AtomicJsonMemoryTests -v was denied by the system before Python started. Neither the two new tests nor the full regression suite ran; no pass is claimed and no access-control bypass was attempted. Static diff inspection and git diff --check results are recorded in this turn's final response. CURRENT_STATUS.md and FILE_MANIFEST.md remain absent. The patch is written; runtime verification and independent re-review remain incomplete.
+
+中文：未执行真实代理、网络、采集、生产 DB、SMTP、凭据读取、用户文件删除、提交或部署。其余存储发现（空间预检、输出限额、异常进程清理）保持未关闭；未证明历史故障恢复或自主运行恢复。下一步在获准环境先运行两项纯内存测试，再运行合成 supervisor 回归并独立复审。报告已核对双语、数量、风险、未执行事项和敏感信息，无客户数据或秘密。
+
+English: No real agents, networking, collection, production DB, SMTP, credential access, user-file deletion, commit or deployment occurred. Other storage findings (space preflight, output caps and exceptional process cleanup) remain open. Historical recovery and autonomous operation are not established. Next run the two memory-only tests in an authorized environment, then the synthetic supervisor regressions and independent re-review. The report was checked for bilingual coverage, counts, risks, non-executed work and sensitive information; no customer data or secrets are included.
+
 日期 / Date: 2026-10-20
 
 ## 本轮补修与当前验证状态 / Current follow-up and verification status

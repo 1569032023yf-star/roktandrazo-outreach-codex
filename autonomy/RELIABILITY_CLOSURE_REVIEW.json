@@ -1,0 +1,58 @@
+{
+  "reviewed_at": "2026-10-20T19:38:59.954734+00:00",
+  "reviewer": "independent_subagent_reliability_review",
+  "baseline": "9af8a23596969dabd44e9ab57ef99ea6e03fa9ed",
+  "decision": "PARTIAL_PASS_CHANGES_REQUIRED",
+  "write_close_patch_review": "PASS_SCOPED",
+  "reliability_closure": false,
+  "tests": {
+    "committed_launcher_injected_atomic_memory": {
+      "passed": 2,
+      "subcases": 8
+    },
+    "uncommitted_launcher_synthetic_process": {
+      "passed": 7,
+      "platform": "Windows"
+    },
+    "capture_close_fault_reproduction": "CONFIRMED_UNRECORDED"
+  },
+  "findings": [
+    {
+      "id": "R1",
+      "severity": "MEDIUM",
+      "file": "autonomy/supervisor.py:270",
+      "detail_zh": "启动前仍无runtime、工作树和TEMP卷空间预检；加入可配置余量及提交预算，低空间或检查异常禁止调用runner，覆盖多卷模拟测试。",
+      "detail_en": "There is still no prelaunch free-space gate for runtime, worktree and TEMP volumes. Add configurable headroom and commit reserve; low space or inspection failure must prevent runner invocation, with multi-volume mocked tests."
+    },
+    {
+      "id": "R2",
+      "severity": "HIGH",
+      "file": "autonomy/lock_recovery.py:40; autonomy/supervisor.py:72",
+      "detail_zh": "恢复模块未接线：要求schema2/token/process_identity/tree_state，但现行锁只含pid/started_at；exclusive不参与recovery guard。不能将新文件视为有效锁恢复。先实现统一互斥协议与进程实例/关联树生命周期证据，旧锁保持拒绝；添加PID重用、存活后代、恢复并发测试。",
+      "detail_en": "Recovery is not integrated: it requires schema2/token/process_identity/tree_state, whereas current locks contain only pid/started_at; exclusive does not participate in the recovery guard. Implement shared exclusion and process-instance/tree lifecycle evidence before enabling recovery; reject legacy locks and test PID reuse, surviving descendants and concurrent recovery."
+    },
+    {
+      "id": "R3",
+      "severity": "MEDIUM",
+      "file": "autonomy/supervisor.py:228; autonomy/supervisor.py:310",
+      "detail_zh": "未提交启动器输出异常含OUTPUT_LIMIT及cleanup_verified/cleanup_errors，但run_agent超时分支丢弃清理证据，cycle通用捕获只存类型。UNKNOWN仍禁止重跑，然而无法区分清理已证实与未证实。只序列化白名单reason/清理布尔及有界错误类别，禁止存异常正文；补端到端合成故障测试。",
+      "detail_en": "The uncommitted launcher exposes OUTPUT_LIMIT and cleanup_verified/cleanup_errors, but run_agent discards timeout cleanup evidence and cycle keeps only exception type. UNKNOWN still prevents retry, but verified and unverified cleanup become indistinguishable. Persist allowlisted reason/cleanup flags and bounded error classes, never exception messages; add end-to-end synthetic fault tests."
+    },
+    {
+      "id": "R4",
+      "severity": "MEDIUM",
+      "file": "autonomy/process_job.py:58; autonomy/process_job.py:296",
+      "detail_zh": "未提交启动器_Capture.read的finally直接close，close异常不进入capture.failure，真实线程异常可能退出后被当作清理成功；无读取线程时的直接close也可能覆盖主异常。纯内存复现close失败后capture.failure仍None。将全部关闭异常纳入清理错误通道并保持主异常，添加组合测试后再整合。",
+      "detail_en": "In the uncommitted launcher, _Capture.read closes directly in finally; close errors never enter capture.failure, so thread failure can be treated as clean completion. The direct close path with no reader threads may also mask a primary error. An in-memory reproduction leaves capture.failure None after close fails. Route every close error through cleanup reporting while preserving the primary exception, then add combined-fault tests before integration."
+    }
+  ],
+  "hashes": {
+    "autonomy/supervisor.py": "42fc7f5b545d582fe64e161263f26a974d1c791f1acd1843ca8a260f3c9a2b44",
+    "autonomy/test_supervisor.py": "1a835aa7ca82f4dce2ebd5152a1a35107f8c4f06c6f88621110a7aa5720f47b3",
+    "autonomy/process_job.py": "f26afc936fd05725fc8f661d1d6c933e7e26f81a37974740d82881d812e2d114",
+    "autonomy/lock_recovery.py": "8d4926ae8e176121aab66f0c7f120c205c5f7d254283f47cf8232be666cf0762",
+    "autonomy/test_process_job.py": "f94b56d565ed9eeb45388ae61472084b658bdb807d10f782db3367e4d67df687"
+  },
+  "summary_zh": "atomic_json写入加关闭补修通过限定独立审核；未知隔离、queue权威、按需receipt恢复及开发者恢复审核去重静态保留。整体可靠性未闭环，历史三文件不可直接宣称整合完成。",
+  "summary_en": "The atomic_json write-plus-close repair passes scoped independent review; quarantine, queue authority, selective receipt repair and deduplicated developer recovery review remain intact on static inspection. Overall reliability is not closed; the three historical files cannot be claimed integrated."
+}
