@@ -68,3 +68,14 @@ Scoped unknown-outcome and write-close review passed; storage admission and disc
 包18/4/1为历史候选，当前新组织/邮箱/SAFE均UNKNOWN。详见DUAL_SOURCE_PRODUCTION_CLOSURE.md。
 
 Packaged 18/4/1 are historical observations; current new organizations/emails/SAFE are UNKNOWN. See DUAL_SOURCE_PRODUCTION_CLOSURE.md.
+
+
+## 新通道实测 / Live channel verification
+
+已恢复原通道监督进程，独立认证并接通v2脱敏遥测；城市补丁精确适配失败，未登记或部署。常驻与真实回滚未验收。
+
+Restored the existing channel supervisor, independently authenticated v2 and connected sanitized telemetry. Exact city patch compatibility failed; no registration or deployment. Persistence and actual rollback remain unverified.
+
+近24小时Provider请求 / Provider requests in 24h: 0; SAFE: UNKNOWN; 新增组织与第一方邮箱 / New organizations and first-party emails: UNKNOWN.
+
+详见 / See CODEX_WORKBUDDY_HANDOFF_ACCEPTANCE.md/json.

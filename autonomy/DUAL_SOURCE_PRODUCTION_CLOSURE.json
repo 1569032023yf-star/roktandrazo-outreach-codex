@@ -1,6 +1,6 @@
 {
-  "CITY_FIX_DEPLOYED": "UNKNOWN",
-  "COOPERSTOWN_CLOSED": "UNKNOWN",
+  "CITY_FIX_DEPLOYED": false,
+  "COOPERSTOWN_CLOSED": false,
   "LAKE_PLACID_ACTIVATED": "UNKNOWN",
   "NEXT_CITY_REAL_REQUESTS": "UNKNOWN",
   "GOOGLE_MAPS_REAL_ORGS": "UNKNOWN",
@@ -17,8 +17,8 @@
   "PRODUCTION_SHA_EVIDENCE": "UNKNOWN",
   "ROLLBACK_VERIFIED": "UNKNOWN",
   "generated_at": "2026-10-21T00:42:27.698044+00:00",
-  "summary_zh": "未知结果及写入关闭补修限定审核通过；空间预检与双来源交接45项回归、21项独立审核通过；生产仍受通道及来源访问阻塞",
-  "summary_en": "Scoped unknown-outcome and write-close review passed; storage admission and discovery handoff passed 45 regressions and 21 independent checks; production remains blocked by channel and source access",
+  "summary_zh": "已恢复原通道监督进程，独立认证并接通v2脱敏遥测；城市补丁精确适配失败，未登记或部署。常驻与真实回滚未验收。",
+  "summary_en": "Restored the existing channel supervisor, independently authenticated v2 and connected sanitized telemetry. Exact city patch compatibility failed; no registration or deployment. Persistence and actual rollback remain unverified.",
   "SOURCE_REPORT_VERIFIED": true,
   "SOURCE_REPORT_SCOPE": "PACKAGE_MANIFEST_AND_DB_COUNTS_ONLY_NOT_LIVE_QUALIFICATION",
   "AUTONOMOUS_OPERATIONS_ACTIVE": false,
@@ -271,5 +271,7 @@
     "unknowns_preserved": true,
     "historical_not_today_growth": true
   },
-  "GIT_COMMIT_SCOPE": "REVIEWED_IMPLEMENTATION_AND_INITIAL_REPORT_COMMIT_REMOTE_VERIFIED"
+  "GIT_COMMIT_SCOPE": "REVIEWED_IMPLEMENTATION_AND_INITIAL_REPORT_COMMIT_REMOTE_VERIFIED",
+  "updated_at": "2026-10-21T13:18:54.954773+00:00",
+  "WORKBUDDY_HANDOFF_ACCEPTANCE": "autonomy/CODEX_WORKBUDDY_HANDOFF_ACCEPTANCE.json"
 }

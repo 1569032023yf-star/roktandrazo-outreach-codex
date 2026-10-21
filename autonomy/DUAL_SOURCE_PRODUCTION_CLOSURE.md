@@ -99,3 +99,14 @@ Report self-check completed: bilingual results, counts, incomplete items, risks,
 GIT_COMMIT指已核实远端一致的实现提交；本报告回填属于后续证据提交。
 
 GIT_COMMIT identifies the remotely verified implementation commit; report backfill is a subsequent evidence commit.
+
+
+## 新通道实测 / Live channel verification
+
+已恢复原通道监督进程，独立认证并接通v2脱敏遥测；城市补丁精确适配失败，未登记或部署。常驻与真实回滚未验收。
+
+Restored the existing channel supervisor, independently authenticated v2 and connected sanitized telemetry. Exact city patch compatibility failed; no registration or deployment. Persistence and actual rollback remain unverified.
+
+近24小时Provider请求 / Provider requests in 24h: 0; SAFE: UNKNOWN; 新增组织与第一方邮箱 / New organizations and first-party emails: UNKNOWN.
+
+详见 / See CODEX_WORKBUDDY_HANDOFF_ACCEPTANCE.md/json.

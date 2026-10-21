@@ -1,14 +1,14 @@
 {
   "generated_at": "2026-10-21T00:42:27.698044+00:00",
-  "summary_zh": "未知结果及写入关闭补修限定审核通过；空间预检与双来源交接45项回归、21项独立审核通过；生产仍受通道及来源访问阻塞",
-  "summary_en": "Scoped unknown-outcome and write-close review passed; storage admission and discovery handoff passed 45 regressions and 21 independent checks; production remains blocked by channel and source access",
+  "summary_zh": "已恢复原通道监督进程，独立认证并接通v2脱敏遥测；城市补丁精确适配失败，未登记或部署。常驻与真实回滚未验收。",
+  "summary_en": "Restored the existing channel supervisor, independently authenticated v2 and connected sanitized telemetry. Exact city patch compatibility failed; no registration or deployment. Persistence and actual rollback remain unverified.",
   "AUTONOMOUS_LAUNCHER_AVAILABLE": true,
   "AUTONOMOUS_SCHEDULER_ACTIVE": true,
   "SCHEDULER_STATUS_SCOPE": "TWO_CONSECUTIVE_TRUSTED_HEARTBEAT_TRIGGERS_MATCH_COMPLETED_DEVELOPER_AND_REVIEWER_RECEIPTS",
   "TWO_UNATTENDED_CYCLES_VERIFIED": true,
   "PARALLEL_WORKSTREAMS_ACTIVE": false,
   "INDEPENDENT_REVIEW_WORKING": true,
-  "CONTROLLED_DEPLOYMENT_WORKING": "EXISTING_CHANNEL_ONLY_NEW_RELEASES_UNREGISTERED",
+  "CONTROLLED_DEPLOYMENT_WORKING": "LIVE_V2_HEALTH_AUTH_TELEMETRY_VERIFIED_RELEASE_NOT_ACCEPTED",
   "CITY_RECOVERY_PROGRESS": "97_TESTS_43_SUBTESTS_PASSED_INTEGRATED_PRODUCTION_ADVANCE_UNVERIFIED",
   "BRAND_EMAIL_CONVERSION_PROGRESS": "25_FILES_INTEGRATED_177_OFFLINE_TESTS_STATIC_REVIEW_PASSED_NOT_LIVE_YIELD",
   "FOUR_V6_TEMPLATES_STATUS": "58_TARGETED_PASSED_FULL_563_560_PASSED_THREE_BASELINE_ISSUES_NO_NEW_FAILURES",
@@ -77,5 +77,7 @@
   "TWO_UNATTENDED_CYCLES_SCOPE": "HISTORICAL_TRUSTED_PAIR_2026_10_19_20_44_AND_22_48_LATEST_115_MINUTE_PAIR_NOT_SEPARATELY_ACCEPTED",
   "UNKNOWN_OUTCOME_REPAIR_STATUS": "SCOPED_REVIEW_PASS_OTHER_RELIABILITY_OPEN",
   "LATEST_PAIR_TWO_HOUR_EXECUTION_VERIFIED": false,
-  "NEW_UNATTENDED_CYCLES_VERIFIED": false
+  "NEW_UNATTENDED_CYCLES_VERIFIED": false,
+  "updated_at": "2026-10-21T13:18:54.954773+00:00",
+  "WORKBUDDY_HANDOFF_ACCEPTANCE": "autonomy/CODEX_WORKBUDDY_HANDOFF_ACCEPTANCE.json"
 }

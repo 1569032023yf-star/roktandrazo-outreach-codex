@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-21T00:42:27.698044+00:00",
-  "summary_zh": "未知结果及写入关闭补修限定审核通过；空间预检与双来源交接45项回归、21项独立审核通过；生产仍受通道及来源访问阻塞",
-  "summary_en": "Scoped unknown-outcome and write-close review passed; storage admission and discovery handoff passed 45 regressions and 21 independent checks; production remains blocked by channel and source access",
+  "updated_at": "2026-10-21T13:18:54.954773+00:00",
+  "summary_zh": "已恢复原通道监督进程，独立认证并接通v2脱敏遥测；城市补丁精确适配失败，未登记或部署。常驻与真实回滚未验收。",
+  "summary_en": "Restored the existing channel supervisor, independently authenticated v2 and connected sanitized telemetry. Exact city patch compatibility failed; no registration or deployment. Persistence and actual rollback remain unverified.",
   "production_inventory_id": "1784775229336",
   "automation_id": "rokt-razo",
   "workstreams": {
@@ -17,9 +17,9 @@
       "expected_business_effect_zh": "解除城市阻塞而不降低SAFE标准",
       "expected_business_effect_en": "Remove city blockage without weakening SAFE rules",
       "review": "PASSED_PARENT_REVIEW_FINDINGS_REPAIRED",
-      "deployment": "CURRENT_UNKNOWN_CHANNEL_UNAVAILABLE",
-      "next_automatic_action_zh": "沿issue2等待原获授权运维身份恢复桥接及新严格release登记，后核验生产SHA与城市切换",
-      "next_automatic_action_en": "Follow issue 2 for authorized bridge recovery and new scoped release; then verify production SHA and city transition",
+      "deployment": "NOT_DEPLOYED_EXACT_PATCH_INCOMPATIBLE",
+      "next_automatic_action_zh": "基于固定生产代码快照重建精确城市补丁并独立审核",
+      "next_automatic_action_en": "Rebuild exact city patch from pinned production snapshots and independently review",
       "commit": "6ce6e317b82ee1173cd0703ab876df23a3f33d27",
       "integration_commit": "860728f",
       "tests": {
@@ -144,5 +144,8 @@
     "existing_registration_request": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/1",
     "alternative_task": "D-unknown-outcome-quarantine",
     "production_qa_recheck": "HTTP_400_UNKNOWN_RELEASE_ID_2026_10_20_06_50_PLUS08"
-  }
+  },
+  "WORKBUDDY_HANDOFF_ACCEPTANCE": "autonomy/CODEX_WORKBUDDY_HANDOFF_ACCEPTANCE.json",
+  "AUTONOMOUS_OPERATIONS_ACTIVE": false,
+  "NEW_UNATTENDED_CYCLES_VERIFIED": false
 }

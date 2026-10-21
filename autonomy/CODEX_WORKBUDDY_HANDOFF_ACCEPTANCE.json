@@ -1,0 +1,75 @@
+{
+  "NEW_CHANNEL_DISCOVERED": true,
+  "BRIDGE_HEALTH_VERIFIED": true,
+  "REGISTER_OPERATION_VERIFIED": "UNKNOWN_SUCCESS_PATH_NOT_TESTED",
+  "MULTIFILE_ROLLBACK_VERIFIED": "UNKNOWN",
+  "TELEMETRY_CONNECTED": true,
+  "CITY_RELEASE_REGISTERED": false,
+  "CITY_FIX_DEPLOYED": false,
+  "COOPERSTOWN_CLOSED": false,
+  "LAKE_PLACID_ACTIVATED": "UNKNOWN",
+  "NEW_CITY_PROVIDER_REQUESTS": "UNKNOWN",
+  "SAFE_LATEST": "UNKNOWN",
+  "V6_INTERNAL_QA_SENT": "UNKNOWN",
+  "UNATTENDED_RELEASE_VERIFIED": false,
+  "BRIDGE_PERSISTENCE_VERIFIED": "PERSISTENCE_NOT_VERIFIED",
+  "NEXT_AUTOMATIC_ACTION": "REBASE_EXACT_CITY_PATCH_ON_PINNED_PRODUCTION_SNAPSHOTS_THEN_INDEPENDENT_REVIEW_REGISTER_PREFLIGHT",
+  "OVERALL_RESULT": "PARTIAL_HANDOFF_LIVE_CHANNEL_VERIFIED_CITY_RELEASE_BLOCKED",
+  "generated_at": "2026-10-21T13:18:54.954773+00:00",
+  "summary_zh": "已恢复原通道监督进程，独立认证并接通v2脱敏遥测；城市补丁精确适配失败，未登记或部署。常驻与真实回滚未验收。",
+  "summary_en": "Restored the existing channel supervisor, independently authenticated v2 and connected sanitized telemetry. Exact city patch compatibility failed; no registration or deployment. Persistence and actual rollback remain unverified.",
+  "cycle_id": "802e9d68-4e95-49c5-8fb4-e73e2addd03f",
+  "trigger_at": "2026-10-21T10:31:06.838Z",
+  "observed_at": "2026-10-21T21:15:35+08:00",
+  "provider_requests_24h": 0,
+  "active_city": "Cooperstown",
+  "safe_note_zh": "旧Inventory actual=56不是实时SAFE或今日新增；SAFE快照不存在",
+  "safe_note_en": "Historical Inventory actual=56 is neither current SAFE nor today growth; no SAFE snapshot exists",
+  "security_checks": {
+    "passed": 4,
+    "total": 4,
+    "registry_sealed": false,
+    "credential_in_memory_only": true,
+    "loopback_proxy_disabled": true
+  },
+  "compatibility": [
+    {
+      "path": "discovery/discovery_service.py",
+      "before_sha256": "96dcc751dff7ff9174b556120bdf440211328ccf52b32559509164cb0169ae14",
+      "bytes": 102761,
+      "applicable": false,
+      "error": "PATCH_CONTEXT_MISMATCH: line 571"
+    },
+    {
+      "path": "retail_city_queue.py",
+      "before_sha256": "03b4c6302dba271b5b0bed34567db5048086d4b1d0e9b2aee9a878023f349432",
+      "bytes": 15314,
+      "applicable": false,
+      "error": "PATCH_HUNK_COUNT_INVALID: 4 != 3"
+    }
+  ],
+  "implementation_sha256": {
+    "bridge.py": "7a15d77b8f12391903e31a0c292a57773846ebb98d4f4f46215710f22ea6db33",
+    "executor.py": "a3c271424131b4d42d8b0ed3f46e8355e3ff9d0556406e2199a5da093043105b",
+    "launch_supervisor.py": "7a13496969ddfa6310023260f726222c4149e1ea73d49cfbe5bd084498dd295c",
+    "multifile.py": "897e6860b8d6687e95d3e3844c08de9bc6f06be32162199a3faf027aaf6222ae",
+    "registry.py": "e5ec8e29cdbd14da3cbb722b8e6db8b5ecc89601972a3994e952d778fd129bbe",
+    "supervisor.py": "420e1596ce4c9c09abaeca4de4c0b17ecb2bdfe0862850a1a58027017f67cd0f",
+    "telemetry.py": "fc2db4e484af1b335b2a340ed222aab7e5d2a484235881c8b1a4556a50e9316f"
+  },
+  "evidence_path": "autonomy/runtime/channel_takeover_20261021",
+  "production_mutations_this_cycle": 0,
+  "qa_sends_this_cycle": 0,
+  "qa_note_zh": "八操作白名单没有专用内部QA；不能用客户接口代替",
+  "qa_note_en": "Eight-operation allowlist has no dedicated internal QA; customer sending cannot substitute",
+  "remaining_zh": [
+    "新发布精确补丁、完整回归和独立审核",
+    "register成功路径、多文件回滚及自然Inventory业务验收",
+    "WorkBuddy维护跨会话桥接，当前仅正常隐藏启动，未使用breakaway或修改安全策略"
+  ],
+  "remaining_en": [
+    "Exact release patch, full regression and independent review",
+    "Successful registration, multifile rollback and natural Inventory acceptance",
+    "WorkBuddy owns cross-session lifecycle; only normal hidden startup used, without breakaway or security-policy changes"
+  ]
+}
