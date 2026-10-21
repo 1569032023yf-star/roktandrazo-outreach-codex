@@ -44,3 +44,12 @@ No current blocker requires additional operator authority; remaining dependencie
 
 自查 / Self-check: 中英双语、证据范围、未执行事项及下一步已列；未包含秘密。工程及发布包已推送 `4db2f5b`（实现 `475be19c0d149a8c0e5ffc2b3b3866908c185eaa`）；本报告及部署回执另作证据提交，可按本文件git history查得。
 Bilingual content, evidence scope, unexecuted work and next actions are listed; no secrets included. Engineering/release bundle pushed at `4db2f5b` (implementation `475be19c0d149a8c0e5ffc2b3b3866908c185eaa`); this report and deployment receipts form a separate evidence commit discoverable through this file's Git history.
+
+
+## 心跳观察 / Heartbeat observation — 2026-10-22 01:23 +08:00
+
+正式通道复核部署状态及两文件SHA一致；原Inventory尚未到05:43:24自然运行时间。SMTP=0、今日发送0、唯一Inventory=1；当前SAFE及增长UNKNOWN。
+
+Official channel confirms applied status and both file hashes. Original Inventory is not due until 05:43:24 +08:00. SMTP=0, sends today=0, one active Inventory; current SAFE and growth UNKNOWN.
+
+Cycle: 326516b6-651e-40c4-b406-6df8e9e5b1e2; evidence: `autonomy/runtime/city_observation_20261021T172106`.

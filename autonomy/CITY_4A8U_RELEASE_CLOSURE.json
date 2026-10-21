@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-21T17:22:38.555526+00:00",
+  "updated_at": "2026-10-21T17:24:16.500997+00:00",
   "summary_zh": "工程、审核、登记与正式部署完成；等待唯一原Inventory自然运行验收，业务增长未知。",
   "summary_en": "Engineering, review, registration and official deployment completed; awaiting the sole original Inventory natural run; business growth unknown.",
   "CITY_PATCH_SOURCE_RECONCILED": true,
@@ -74,5 +74,10 @@
     "city": "Cooperstown active",
     "current_safe_reason": "no persisted SAFE snapshot"
   },
-  "AUTONOMOUS_OPERATIONS_ACTIVE": false
+  "AUTONOMOUS_OPERATIONS_ACTIVE": false,
+  "latest_cycle_id": "326516b6-651e-40c4-b406-6df8e9e5b1e2",
+  "latest_observation_evidence": "autonomy/runtime/city_observation_20261021T172106",
+  "latest_cycle_summary_zh": "正式通道复核部署状态及两文件SHA一致；原Inventory尚未到05:43:24自然运行时间。SMTP=0、今日发送0、唯一Inventory=1；当前SAFE及增长UNKNOWN。",
+  "latest_cycle_summary_en": "Official channel confirms applied status and both file hashes. Original Inventory is not due until 05:43:24 +08:00. SMTP=0, sends today=0, one active Inventory; current SAFE and growth UNKNOWN.",
+  "NEW_UNATTENDED_CYCLES_VERIFIED": false
 }

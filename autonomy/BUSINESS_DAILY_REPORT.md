@@ -114,3 +114,12 @@ Engineering, review, registration and official deployment completed; awaiting th
 Independent review approved; primary 84/84 and transaction-failure paths 20/20 (86 unique tests overall). Official preflight 14/14; applied at 01:18:11 +08; both after hashes and backups verified. Cooperstown remains active; current SAFE and new organization/email/SAFE growth are UNKNOWN. Original Inventory next 05:43:24 +08; existing two-hour heartbeat continues. No extra Inventory; SMTP=0 and no sends in the deployment observation window.
 
 完整证据及风险 / Full evidence and risks: CITY_4A8U_RELEASE_CLOSURE.md/json. Earlier sections are historical observations superseded by this timestamped city release result. / 前文为历史观察，城市发布现状以本时点为准。
+
+
+## 心跳观察 / Heartbeat observation — 2026-10-22 01:23 +08:00
+
+正式通道复核部署状态及两文件SHA一致；原Inventory尚未到05:43:24自然运行时间。SMTP=0、今日发送0、唯一Inventory=1；当前SAFE及增长UNKNOWN。
+
+Official channel confirms applied status and both file hashes. Original Inventory is not due until 05:43:24 +08:00. SMTP=0, sends today=0, one active Inventory; current SAFE and growth UNKNOWN.
+
+Cycle: 326516b6-651e-40c4-b406-6df8e9e5b1e2; evidence: `autonomy/runtime/city_observation_20261021T172106`.
