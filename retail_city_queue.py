@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from urllib.parse import urlsplit
 
 from outreach_control import DEFAULT_RETAIL_CITIES, RETAIL_QUERY_FAMILIES, RETAIL_SOURCES, all_city_completion_conditions_met
@@ -215,25 +215,58 @@ def city_completion_checks(conn: sqlite3.Connection, city_id: int, provider: str
 
 
 NETWORK_RECOVERY_ATTEMPT_LIMIT = 3
+NETWORK_RECOVERY_RETRY_SECONDS = 1800
+
+
+def recovery_history_valid(retry: dict, key: str) -> bool:
+    try:
+        events = retry['failures']
+        count_key = 'unavailable_attempts' if key == 'linked_backlog_retry' else 'attempts'
+        count = retry[count_key]
+        if type(count) is not int or not 1 <= count <= NETWORK_RECOVERY_ATTEMPT_LIMIT or len(events) != count:
+            return False
+        times = [datetime.fromisoformat(event['at']) for event in events]
+        return (all(t.tzinfo is not None and t <= datetime.now(timezone.utc) for t in times)
+                and all(event['error'] and event['status'] in ({'site_unavailable'} if key == 'linked_backlog_retry' else {'network_retry', 'network_error'}) for event in events)
+                and all((b - a).total_seconds() >= NETWORK_RECOVERY_RETRY_SECONDS for a, b in zip(times, times[1:]))
+                and retry['last_failure_at'] == events[-1]['at']
+                and datetime.fromisoformat(retry['next_retry_at']) == times[-1] + timedelta(seconds=NETWORK_RECOVERY_RETRY_SECONDS))
+    except (KeyError, TypeError, ValueError, AttributeError, OverflowError):
+        return False
+
+
+def network_recovery_due(row: dict, key: str) -> bool:
+    try:
+        payload = json.loads(row.get('raw_payload_json') or '{}')
+        retry = payload.get(key, {})
+        if not isinstance(retry, dict):
+            return False
+        # Linked bookkeeping without completed unavailable scans is not a failure budget.
+        if key == 'linked_backlog_retry' and not retry.get('unavailable_attempts'):
+            return not retry.get('automation_terminal_outcome')
+        if not retry:
+            return True
+        if not recovery_history_valid(retry, key) or retry.get('automation_terminal_outcome'):
+            return False
+        return datetime.now(timezone.utc) >= datetime.fromisoformat(retry['next_retry_at'])
+    except (KeyError, TypeError, ValueError, AttributeError):
+        return False
 
 
 def automatic_recovery_deferred(row: dict) -> bool:
-    """Recognize durable operational review handoff; never assert an email fact."""
+    """Only complete, spaced failure evidence ends automatic work; no SAFE promotion."""
     try:
-        payload = json.loads(str(row.get("raw_payload_json") or "{}"))
-        if not isinstance(payload, dict):
-            return False
-        for key in ("website_resolution_retry", "linked_backlog_retry"):
-            retry = payload.get(key)
-            if not isinstance(retry, dict):
-                continue
-            count_key = "unavailable_attempts" if key == "linked_backlog_retry" else "attempts"
-            if (retry.get("automation_terminal_outcome") == "network_retry_exhausted"
-                    and int(retry.get(count_key, 0)) >= NETWORK_RECOVERY_ATTEMPT_LIMIT
-                    and retry.get("automation_terminal_at")
-                    and row.get("validation_status") in {"manual_review_needed", "review_recovery"}):
+        payload = json.loads(row.get('raw_payload_json') or '{}')
+        for key in ('website_resolution_retry', 'linked_backlog_retry'):
+            retry = payload.get(key, {})
+            count_key = 'unavailable_attempts' if key == 'linked_backlog_retry' else 'attempts'
+            expected = 'review_recovery' if key == 'linked_backlog_retry' else 'manual_review_needed'
+            if (row.get('validation_status') == expected and recovery_history_valid(retry, key)
+                    and retry[count_key] == NETWORK_RECOVERY_ATTEMPT_LIMIT
+                    and retry.get('automation_terminal_outcome') == 'network_retry_exhausted'
+                    and retry.get('automation_terminal_at') == retry['last_failure_at']):
                 return True
-    except (TypeError, ValueError):
+    except (KeyError, TypeError, ValueError, AttributeError):
         return False
     return False
 

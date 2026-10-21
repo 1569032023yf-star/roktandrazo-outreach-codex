@@ -1,8 +1,9 @@
 """Bounded recovery and city liveness / 有界恢复与城市推进。"""
 import json
 import unittest
+from datetime import datetime, timezone, timedelta
 from types import SimpleNamespace
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from discovery.discovery_service import DiscoveryService
 from discovery.providers.mock_provider import MockPlacesProvider
@@ -19,6 +20,81 @@ class TimeoutFetcher:
 
 
 class CityNetworkRecoveryTests(unittest.TestCase):
+    def setUp(self):
+        self.now = datetime(2026, 10, 22, tzinfo=timezone.utc)
+        owner = self
+        class Clock(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return owner.now if tz else owner.now.replace(tzinfo=None)
+        for module in ('discovery.discovery_service', 'retail_city_queue'):
+            clock = patch(module + '.datetime', Clock)
+            clock.start()
+            self.addCleanup(clock.stop)
+
+    def elapse(self):
+        self.now += timedelta(seconds=1801)
+
+    def test_early_duplicate_schedule_waits_then_next_day_resumes(self):
+        with DiscoveryDb() as conn:
+            service, city, row, _, _ = self.missing_website(conn)
+            resolver = Mock()
+            resolver.resolve.side_effect = TimeoutError('transport timeout')
+            service.run_website_resolution(city, resolver)
+            conn.commit()
+            self.assertEqual(service.run_website_resolution(city, resolver).results_seen, 0)
+            self.assertEqual(service.run_website_resolution(city, resolver, staging_ids=[row['id']]).results_seen, 0)
+            self.assertEqual(resolver.resolve.call_count, 1)
+            self.now += timedelta(days=1)
+            restarted = DiscoveryService(conn, provider=MockPlacesProvider())
+            restarted.run_website_resolution(city, resolver)
+            saved = dict(conn.execute('SELECT * FROM lead_discovery_results WHERE id=?', (row['id'],)).fetchone())
+            self.assertEqual(json.loads(saved['raw_payload_json'])['website_resolution_retry']['attempts'], 2)
+            self.assertFalse(automatic_recovery_deferred(saved))
+
+    def test_wrapped_program_errors_do_not_consume_network_budget(self):
+        for error in ('RuntimeError:internal bug', 'ModuleNotFoundError:browser', 'provider_process_no_result'):
+            with DiscoveryDb() as conn:
+                service, city, row, _, _ = self.missing_website(conn)
+                resolver = Mock()
+                resolver.resolve.return_value = SimpleNamespace(status='network_retry', error=error)
+                for _ in range(4):
+                    self.elapse()
+                    service.run_website_resolution(city, resolver)
+                saved = dict(conn.execute('SELECT * FROM lead_discovery_results WHERE id=?', (row['id'],)).fetchone())
+                self.assertNotIn('website_resolution_retry', json.loads(saved['raw_payload_json']))
+                self.assertFalse(automatic_recovery_deferred(saved))
+
+    def test_duplicate_provider_hit_preserves_internal_retry_and_rejects_injected_budget(self):
+        from tests.test_discovery_service import result
+        with DiscoveryDb() as conn:
+            service = DiscoveryService(conn, provider=MockPlacesProvider())
+            city = activate_next_city(conn)
+            item = result('Retry Shop', result_id='retry-test', website='')
+            item.raw_payload = {'website_resolution_retry': {'forged': True}}
+            row_id, _ = service._upsert_result(city['id'], RETAIL_QUERY_FAMILIES[0], item)
+            row = dict(conn.execute('SELECT * FROM lead_discovery_results WHERE id=?', (row_id,)).fetchone())
+            self.assertNotIn('website_resolution_retry', json.loads(row['raw_payload_json']))
+            payload = {'website_resolution_retry': {'sentinel': 'persist'}, 'linked_backlog_retry': {'sentinel': 'persist'}}
+            conn.execute('UPDATE lead_discovery_results SET raw_payload_json=? WHERE id=?', (json.dumps(payload), row_id))
+            item.raw_payload = {'website_resolution_retry': {'forged': True}, 'fresh_fact': True}
+            saved_id, created = service._upsert_result(city['id'], RETAIL_QUERY_FAMILIES[0], item)
+            saved = json.loads(conn.execute('SELECT raw_payload_json FROM lead_discovery_results WHERE id=?', (saved_id,)).fetchone()[0])
+            self.assertFalse(created)
+            self.assertEqual(saved['website_resolution_retry'], payload['website_resolution_retry'])
+            self.assertEqual(saved['linked_backlog_retry'], payload['linked_backlog_retry'])
+            self.assertTrue(saved['fresh_fact'])
+
+    def test_linked_cooldown_blocks_duplicate_schedule(self):
+        with DiscoveryDb() as conn:
+            service, city, row, _, lead_id = backlog_fixture.LinkedBacklogTests().setup_case(conn)
+            conn.execute("UPDATE leads SET review_reason_code='review_recovery',review_reason_detail='review_recovery=official_site_unavailable' WHERE id=?", (lead_id,))
+            conn.execute("UPDATE lead_discovery_results SET validation_status='review_recovery' WHERE id=?", (row['id'],))
+            service.run_linked_backlog(city, Mock(), fetcher=TimeoutFetcher())
+            self.assertEqual(service.run_linked_backlog(city, Mock(), fetcher=TimeoutFetcher())['processed'], 0)
+            self.elapse()
+            self.assertEqual(service.run_linked_backlog(city, Mock(), fetcher=TimeoutFetcher())['processed'], 1)
+
     def missing_website(self, conn):
         service, city, row, fetch, lead_id = backlog_fixture.LinkedBacklogTests().setup_case(conn)
         conn.execute("UPDATE leads SET review_reason_code='website_lookup_required',official_website='' WHERE id=?", (lead_id,))
@@ -33,6 +109,7 @@ class CityNetworkRecoveryTests(unittest.TestCase):
             resolver = Mock()
             resolver.resolve.return_value = SimpleNamespace(status='network_retry', error='provider_timeout:100ms')
             for attempt in range(1, 4):
+                self.elapse()
                 service.run_website_resolution(city, resolver)
                 saved = dict(conn.execute('SELECT * FROM lead_discovery_results WHERE id=?', (row['id'],)).fetchone())
                 self.assertEqual(automatic_recovery_deferred(saved), attempt == 3)
@@ -58,6 +135,7 @@ class CityNetworkRecoveryTests(unittest.TestCase):
             resolver.resolve.side_effect = [SimpleNamespace(status='network_retry', error='timeout')] * 2 + [
                 SimpleNamespace(status='resolved', website='https://confirmed.example')]
             for _ in range(3):
+                self.elapse()
                 service.run_website_resolution(city, resolver)
             saved = dict(conn.execute('SELECT * FROM lead_discovery_results WHERE id=?', (row['id'],)).fetchone())
             self.assertEqual(saved['validation_status'], 'email_extraction_pending')
@@ -70,6 +148,7 @@ class CityNetworkRecoveryTests(unittest.TestCase):
             resolver = Mock()
             resolver.resolve.return_value = SimpleNamespace(status='network_error', error='timeout')
             for _ in range(3):
+                self.elapse()
                 service.run_website_resolution(city, resolver, max_results=1)
             conn.execute("INSERT INTO lead_discovery_results(provider,business_name,active_city_id,website,validation_status,discovered_at,last_seen_at) "
                          "VALUES ('mock','Next Shop',?,'','website_lookup_pending',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)", (city['id'],))
@@ -84,6 +163,7 @@ class CityNetworkRecoveryTests(unittest.TestCase):
             conn.execute("UPDATE lead_discovery_results SET validation_status='review_recovery' WHERE id=?", (row['id'],))
             fetcher = TimeoutFetcher()
             for attempt in range(1, 4):
+                self.elapse()
                 summary = service.run_linked_backlog(city, Mock(), fetcher=fetcher)
                 self.assertEqual(summary['automation_deferred'], int(attempt == 3))
             saved = dict(conn.execute('SELECT * FROM lead_discovery_results WHERE id=?', (row['id'],)).fetchone())
@@ -121,6 +201,7 @@ class CityNetworkRecoveryTests(unittest.TestCase):
             resolver = Mock()
             resolver.resolve.return_value = SimpleNamespace(status='network_retry', error='provider_timeout')
             for attempt in range(3):
+                self.elapse()
                 self.assertFalse(complete_active_city_if_exhausted(conn, 'mock', state='NY'))
                 DiscoveryService(conn, provider=MockPlacesProvider()).run_website_resolution(city, resolver)
             self.assertTrue(all(city_completion_checks(conn, city['id'], 'mock').values()))
@@ -171,7 +252,9 @@ class CityNetworkRecoveryTests(unittest.TestCase):
                          "review_reason_detail='review_recovery=official_site_unavailable' WHERE id=?", (lead_id,))
             conn.execute("UPDATE lead_discovery_results SET validation_status='review_recovery' WHERE id=?", (row['id'],))
             for _ in range(2):
+                self.elapse()
                 self.assertEqual(service.run_linked_backlog(city, Mock(), fetcher=TimeoutFetcher())['automation_deferred'], 0)
+            self.elapse()
             summary = service.run_linked_backlog(city, Mock(), fetcher=fetch)
             self.assertEqual(summary['existing_leads_linked'], 1)
             self.assertEqual(summary['automation_deferred'], 0)
@@ -203,7 +286,7 @@ class CityNetworkRecoveryTests(unittest.TestCase):
         payload = json.loads(row['raw_payload_json'])
         payload['linked_backlog_retry']['unavailable_attempts'] = 3
         row['raw_payload_json'] = json.dumps(payload)
-        self.assertTrue(automatic_recovery_deferred(row))
+        self.assertFalse(automatic_recovery_deferred(row))  # Count-only metadata is insufficient.
 
     def test_previous_site_transport_flag_cannot_defer_a_missing_website_row(self):
         with DiscoveryDb() as conn:

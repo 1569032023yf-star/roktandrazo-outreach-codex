@@ -103,7 +103,8 @@ class AccessUnreachableRuntimeTests(unittest.TestCase):
             self.assertEqual(transient["automation_deferred"], 0)
             retry = json.loads(conn.execute("SELECT raw_payload_json FROM lead_discovery_results WHERE id=?", (row["id"],)).fetchone()[0])["linked_backlog_retry"]
             self.assertNotIn("automation_terminal_outcome", retry)
-            self.assertEqual(service.run_linked_backlog(city, Mock(), fetcher=_StaticOnlyFailure())["processed"], 1)
+            # Retry work remains open, but a duplicate schedule must respect cooldown.
+            self.assertEqual(service.run_linked_backlog(city, Mock(), fetcher=_StaticOnlyFailure())["processed"], 0)
 
     def test_http400_plus_bounded_compatibility_browser_failure_defers_without_email_fact(self):
         with DiscoveryDb() as conn:

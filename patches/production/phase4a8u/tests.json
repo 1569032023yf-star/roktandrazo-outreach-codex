@@ -1,0 +1,20 @@
+{
+  "summary_zh": "固定源码离线回归，非生产运行证据",
+  "summary_en": "Pinned-source offline regression, not production execution evidence",
+  "ran_at": "2026-10-21T17:16:16.886876+00:00",
+  "loaded_files": {
+    "retail_city_queue": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-autonomy\\autonomy\\runtime\\city_semantic_rebase_20261021\\candidate\\retail_city_queue.py",
+    "discovery.discovery_service": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-autonomy\\autonomy\\runtime\\city_semantic_rebase_20261021\\candidate\\discovery\\discovery_service.py"
+  },
+  "total": 104,
+  "failed": 0,
+  "failures": [],
+  "errors": [],
+  "exit_code": 0,
+  "artifact": "tests.log",
+  "artifact_sha256": "51800ee3fccebe8b1202950658a653f9cf958f5effd6efc8c5c08d5771c3ee82",
+  "primary_total": 84,
+  "failure_path_invocations": 20,
+  "unique_tests": 86,
+  "patch_sha256": "a050aa91ed1b73c39e30b9ae4692d626964d62eb0dfbcd7a6632b6b5d67113cb"
+}

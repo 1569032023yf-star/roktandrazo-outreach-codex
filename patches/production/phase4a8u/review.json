@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "reviewer_identity": "/root/city_reviewer",
+  "independent_from_implementation": true,
+  "reviewed_at": "2026-10-21T17:16:14.487661+00:00",
+  "verdict": "APPROVED",
+  "patch_sha256": "a050aa91ed1b73c39e30b9ae4692d626964d62eb0dfbcd7a6632b6b5d67113cb",
+  "summary_zh": "独立复审最终两文件城市恢复补丁及开发静态扫描修正。首轮三项阻断已修复，最终无剩余阻断；限定工程代码审核通过，不代表生产登记、部署或自然运行验收。",
+  "summary_en": "Independently reviewed the final two-file city recovery patch and development static-scan repair. All three initial blocking findings are resolved and no blockers remain. Engineering code review approved; this does not establish production registration, deployment or natural scheduled-run acceptance.",
+  "target_files": [
+    {
+      "path": "discovery/discovery_service.py",
+      "before_sha256": "96dcc751dff7ff9174b556120bdf440211328ccf52b32559509164cb0169ae14",
+      "after_sha256": "415fbe0cc3323bf45b389f84719c2ee6b52b9ca3d481da6d2f7f70b1c396bd8c"
+    },
+    {
+      "path": "retail_city_queue.py",
+      "before_sha256": "03b4c6302dba271b5b0bed34567db5048086d4b1d0e9b2aee9a878023f349432",
+      "after_sha256": "02d04313de82464f0f6933df9e7a72f8675ccb6e7ca63b14859751db3e80a6b2"
+    }
+  ],
+  "findings": [],
+  "resolved_findings": [
+    {
+      "id": "R1",
+      "summary_zh": "缺少重试间隔及到期持久化：已改为1800秒间隔、逐次失败证据、到期过滤，并拒绝未来或状态不匹配的损坏记录。",
+      "summary_en": "Missing persistent retry interval and due time: repaired with 1800-second spacing, per-failure evidence, due filtering and rejection of future or mismatched records."
+    },
+    {
+      "id": "R2",
+      "summary_zh": "重复Provider命中抹除恢复元数据：已保留内部恢复字段并剔除Provider注入。",
+      "summary_en": "Duplicate Provider hits erased recovery metadata: internal metadata is preserved and Provider-supplied recovery fields are stripped."
+    },
+    {
+      "id": "R3",
+      "summary_zh": "程序与依赖错误消耗传输预算：已限定明确传输错误并捕获原生网络异常，程序错误保持未耗尽。",
+      "summary_en": "Program and dependency errors consumed transport budgets: explicit transport failures and native network exceptions are classified; program errors do not exhaust the budget."
+    },
+    {
+      "id": "R4",
+      "summary_zh": "回归基线测试副本触发扫描：已移至现有非生产根 _audit_quarantine，未扩大忽略范围，复跑通过。",
+      "summary_en": "Copied baseline fixtures triggered scanning: moved to the existing non-production _audit_quarantine root without broadening exclusions; rerun passed."
+    }
+  ],
+  "verification": {
+    "exact_forward_pass": true,
+    "exact_reverse_pass": true,
+    "manifest_sha_match": true,
+    "independent_parser": "In-memory exact-context unified-diff parser; no normalization or production writes",
+    "independent_tests_total": 22,
+    "independent_tests_passed": 22,
+    "independent_test_modules": [
+      "tests.test_city_network_recovery (18)",
+      "tests.test_lead_insert_scan (3)",
+      "tests.test_discovery_service.DiscoveryServiceTests.test_static_scan_fails_on_unauthorized_direct_lead_inserts (1)"
+    ],
+    "new_recovery_tests": [
+      "test_early_duplicate_schedule_waits_then_next_day_resumes",
+      "test_wrapped_program_errors_do_not_consume_network_budget",
+      "test_duplicate_provider_hit_preserves_internal_retry_and_rejects_injected_budget",
+      "test_linked_cooldown_blocks_duplicate_schedule"
+    ],
+    "extra_independent_scenarios": [
+      "early_duplicate_call_blocks_provider",
+      "cross_midnight_retry_due_persisted",
+      "native_TimeoutError_recorded",
+      "duplicate_hit_preserves_internal_and_rejects_Injected_metadata",
+      "ModuleNotFoundError_does_not_consume_budget",
+      "three_spaced_failures_terminalize_without_SAFE_promotion"
+    ],
+    "scan_exception_review_zh": "collector.py仅连接 --run-dir/state.sqlite3 并自建独立采集schema；豁免绑定准确相对路径及SHA，未发现正式数据库连接路径。新增恶意runtime和根路径插入仍检测，字节变化仍拒绝。",
+    "scan_exception_review_en": "collector.py connects only to --run-dir/state.sqlite3 with its own discovery schema. The exception pins the exact relative path and SHA; no production DB connection path was found. New malicious inserts in runtime/root remain detected and changed bytes are rejected.",
+    "qualification_history_identity_gates_preserved": true,
+    "new_production_leads_insert_capability": false,
+    "new_SMTP_capability": false,
+    "new_arbitrary_command_capability": false
+  },
+  "limitations_zh": [
+    "未访问生产数据库、凭据或生产服务。",
+    "精确还原证明限固定生产源码快照；发布前仍须实时核对生产SHA、备份、排他锁与安全窗口。",
+    "独立定向22项通过；完整扩展与原基线比较由主执行代理另行记录。"
+  ],
+  "limitations_en": [
+    "No production database, credentials or production services were accessed.",
+    "Exact restoration applies to pinned source snapshots; live production SHA, backups, exclusion and safety window remain release gates.",
+    "The independent targeted suite passed 22 checks; the primary agent separately records expanded and baseline comparisons."
+  ],
+  "next_step_zh": "主执行代理核对完整回归和清单契约，通过正式登记与预检后才部署；保持客户发送冻结。",
+  "next_step_en": "The primary agent must reconcile expanded regression and manifest contracts, then use formal registration and preflight before deployment; preserve the customer sending freeze.",
+  "report_self_check": {
+    "bilingual": true,
+    "contains_results_limits_risks_next_steps": true,
+    "no_secrets": true,
+    "no_unfinished_production_marked_complete": true
+  }
+}

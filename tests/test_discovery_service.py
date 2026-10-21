@@ -470,20 +470,8 @@ class DiscoveryServiceTests(unittest.TestCase):
         self.assertNotIn("send_email", inventory)
 
     def test_static_scan_fails_on_unauthorized_direct_lead_inserts(self):
-        pattern = re.compile(r"INSERT\s+(?:OR\s+IGNORE\s+|OR\s+REPLACE\s+)?INTO\s+leads\b(?!_)", re.IGNORECASE)
-        # 非生产目录（历史/备份/归档/迁移/输出）不参与扫描；生产代码直写 leads 必须走 require_legacy_lead_insert_approval
-        non_production_dirs = {"tests", "backup", "backups", "data", "migrations",
-                               "output", "_archived_scripts", "_audit_quarantine", "_retired",
-                               "audit_evidence", ".workbuddy", "discovery"}
-        unauthorized = []
-        for path in ROOT.rglob("*.py"):
-            rel = path.relative_to(ROOT)
-            if rel.parts and rel.parts[0] in non_production_dirs or path.name == "bd_db.py":
-                continue
-            text = path.read_text(encoding="utf-8", errors="replace")
-            if pattern.search(text) and "require_legacy_lead_insert_approval" not in text:
-                unauthorized.append(str(rel))
-        self.assertEqual(unauthorized, [])
+        from tests.lead_insert_scan import unauthorized_lead_inserts
+        self.assertEqual(unauthorized_lead_inserts(ROOT), [])
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 """Linked-only routing safety / 仅已关联积压的路由安全。"""
 import json
+from datetime import datetime, timezone, timedelta
 import unittest
 from types import SimpleNamespace
 from unittest.mock import patch, Mock
@@ -12,6 +13,18 @@ from tests import test_phase3d_existing_linkage as linkage
 
 
 class LinkedBacklogTests(unittest.TestCase):
+    def setUp(self):
+        self.now = datetime(2026, 10, 22, tzinfo=timezone.utc)
+        owner = self
+        class Clock(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return owner.now if tz else owner.now.replace(tzinfo=None)
+        for module in ('discovery.discovery_service', 'retail_city_queue'):
+            clock = patch(module + '.datetime', Clock)
+            clock.start()
+            self.addCleanup(clock.stop)
+
     def setup_case(self, conn):
         service, city, row, fetch, lid = linkage.ExistingLinkageTests().setup_case(conn)
         conn.execute("UPDATE leads SET review_reason_code='no_public_email_or_form' WHERE id=?", (lid,))
@@ -35,6 +48,7 @@ class LinkedBacklogTests(unittest.TestCase):
             conn.execute("UPDATE leads SET review_reason_code='review_recovery',review_reason_detail='review_recovery=official_site_unavailable'")
             conn.execute("UPDATE lead_discovery_results SET validation_status='review_recovery'")
             service.run_linked_backlog(city, Mock(), fetcher=MockFetcher({}))
+            self.now += timedelta(seconds=1801)
             self.assertEqual(service.run_linked_backlog(city, Mock(), fetcher=fetch)['existing_leads_linked'], 1)
             raw = json.loads(conn.execute('SELECT raw_payload_json FROM lead_discovery_results').fetchone()[0])
             self.assertEqual(raw['linked_backlog_retry']['attempts'], 2)
@@ -121,6 +135,7 @@ class LinkedBacklogTests(unittest.TestCase):
             resolver = Mock()
             resolver.resolve.return_value = SimpleNamespace(status='network_retry',error='timeout')
             for _ in range(2):
+                self.now += timedelta(seconds=1801)
                 self.assertEqual(service.run_linked_backlog(city,resolver,fetcher=fetch)['website_processed'],1)
             self.assertEqual(resolver.resolve.call_count,2)
 

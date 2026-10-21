@@ -1,15 +1,24 @@
 --- a/discovery/discovery_service.py
 +++ b/discovery/discovery_service.py
+@@ -14,7 +14,7 @@
+ import urllib.parse
+ import urllib.request
+ from dataclasses import dataclass, field
+-from datetime import datetime, timezone
++from datetime import datetime, timezone, timedelta
+ from html.parser import HTMLParser
+ from typing import Any
+ 
 @@ -32,7 +32,7 @@
  from history_crosscheck import cross_check, normalize_email, host
  from lead_hygiene_gate import evaluate_a0
  from outreach_control import RETAIL_QUERY_FAMILIES
 -from retail_city_queue import search_queries
-+from retail_city_queue import search_queries, automatic_recovery_deferred, NETWORK_RECOVERY_ATTEMPT_LIMIT
++from retail_city_queue import search_queries, automatic_recovery_deferred, NETWORK_RECOVERY_ATTEMPT_LIMIT, NETWORK_RECOVERY_RETRY_SECONDS, network_recovery_due
  from broad_outreach_gate import _gen_organization_key
  from timezone_resolver import resolve_timezone
  
-@@ -563,9 +563,10 @@
+@@ -563,50 +563,104 @@
                 WHERE active_city_id=? AND COALESCE(website,'')=''
                   AND validation_status IN ('website_lookup_pending','manual_review_needed')
                   AND (?=0 OR linked_lead_id IS NULL)
@@ -18,14 +27,17 @@
 +               ORDER BY discovered_at,id""",
 +            (int(city_row["id"]), int(unlinked_only)),
          ).fetchall()
-+        rows = [row for row in rows if not automatic_recovery_deferred(dict(row))][:max(1, int(max_results))]
++        rows = [row for row in rows if network_recovery_due(dict(row), 'website_resolution_retry')][:max(1, int(max_results))]
          if staging_ids is not None:
              rows = self._linked_retry_rows(city_row, staging_ids, require_website=False)
++        rows = [row for row in rows if network_recovery_due(dict(row), 'website_resolution_retry')][:max(1, int(max_results))]
          summary = DiscoveryRunSummary(
-@@ -575,38 +576,63 @@
+             status="website_resolution", city=city_row["city"], state=city_row["state"],
+             provider=self.provider.provider_name, results_seen=len(rows),
+         )
          for raw_row in rows:
              row = dict(raw_row)
-             result = resolver.resolve(row)
+-            result = resolver.resolve(row)
 -            status = result.status
 -            if status == "resolved":
 -                self.conn.execute(
@@ -35,6 +47,11 @@
 -                    (result.website, normalized_domain(result.website), utc_now(), row["id"]),
 -                )
 -                if row.get("linked_lead_id"):
++            try:
++                result = resolver.resolve(row)
++            except (TimeoutError, ConnectionError, socket.gaierror, urllib.error.URLError) as exc:
++                from discovery.website_resolver import WebsiteResolution
++                result = WebsiteResolution('network_error', error=type(exc).__name__)
 +            # Preserve the caller's transaction ownership even when its
 +            # connection context has not yet issued its first write.
 +            if not self.conn.in_transaction:
@@ -76,18 +93,9 @@
 +                        terminal_status = "identity_review"
 +                    else:
 +                        terminal_status = row["validation_status"]
-+                    if status in {"network_retry", "network_error"}:
-+                        payload = _raw_payload(row)
-+                        previous = payload.get("website_resolution_retry") or {}
-+                        retry = {**previous, "attempts": int(previous.get("attempts", 0)) + 1,
-+                                 "last_attempt_at": utc_now(), "last_outcome": status}
-+                        if retry["attempts"] >= NETWORK_RECOVERY_ATTEMPT_LIMIT:
-+                            retry.update(automation_terminal_outcome="network_retry_exhausted",
-+                                         automation_terminal_at=utc_now())
-+                            terminal_status = "manual_review_needed"
-+                        payload["website_resolution_retry"] = retry
-+                        self.conn.execute("UPDATE lead_discovery_results SET raw_payload_json=? WHERE id=?",
-+                                          (json.dumps(payload, sort_keys=True), row["id"]))
++                    if self._transport_failure(status, result.error):
++                        if self._record_network_failure(row, 'website_resolution_retry', status, result.error):
++                            terminal_status = 'manual_review_needed'
 +                    self.conn.execute(
 +                        "UPDATE lead_discovery_results SET validation_status=?,rejection_reason=?,last_seen_at=? WHERE id=?",
 +                        (terminal_status, f"website_resolution:{status}:{result.error}"[:500], utc_now(), row["id"]),
@@ -102,14 +110,46 @@
              summary.status = "website_resolution_empty"
          return summary
  
++    def _record_network_failure(self, row, key, status, error):
++        payload = _raw_payload(row)
++        retry = dict(payload.get(key) or {})
++        events = list(retry.get('failures') or [])
++        stamp = datetime.now(timezone.utc).isoformat()
++        events.append({'at': stamp, 'status': status, 'error': str(error)})
++        count_key = 'unavailable_attempts' if key == 'linked_backlog_retry' else 'attempts'
++        retry.update({count_key: len(events), 'failures': events, 'last_failure_at': stamp,
++                      'next_retry_at': (datetime.fromisoformat(stamp) + timedelta(seconds=NETWORK_RECOVERY_RETRY_SECONDS)).isoformat(),
++                      'original_validation_status': retry.get('original_validation_status', row.get('validation_status')),
++                      'original_rejection_reason': retry.get('original_rejection_reason', row.get('rejection_reason'))})
++        terminal = len(events) == NETWORK_RECOVERY_ATTEMPT_LIMIT
++        if terminal:
++            retry.update(automation_terminal_outcome='network_retry_exhausted', automation_terminal_at=stamp)
++        payload[key] = retry
++        self.conn.execute('UPDATE lead_discovery_results SET raw_payload_json=? WHERE id=?',
++                          (json.dumps(payload, sort_keys=True), row['id']))
++        return terminal
++
++    @staticmethod
++    def _transport_failure(status, error):
++        if status not in {'network_retry', 'network_error'}:
++            return False
++        error = str(error or '').lower()
++        return error.startswith(('provider_timeout', 'timeouterror', 'connectionerror', 'gaierror',
++                                 'urlerror', 'timeout', 'connectionreseterror', 'connectionrefusederror',
++                                 'connecttimeout', 'readtimeout'))
++
      def _linked_retry_allowed(self, row: dict, city_row: dict) -> bool:
          """Fail closed on history/identity; a linkage alone is not official evidence."""
 +        if automatic_recovery_deferred(row):
 +            return False
++        if not network_recovery_due(row, 'linked_backlog_retry'):
++            return False
++        if not str(row.get('website') or '').strip() and not network_recovery_due(row, 'website_resolution_retry'):
++            return False
          retry = _raw_payload(row).get('linked_backlog_retry') or {}
          if retry.get('automation_terminal_outcome') == 'access_unreachable':
              return False
-@@ -708,9 +734,29 @@
+@@ -708,9 +762,22 @@
                  if terminal:
                      self._terminalize_linked_backlog(row['id'], terminal)
                      summary['terminalized'] += 1
@@ -128,19 +168,12 @@
 +                            and telemetry.get('UNAVAILABLE_REQUESTS', 0) > 0
 +                            and not telemetry.get('UNEXPECTED_FETCH_ERRORS', 0)
 +                            and self._linked_backlog_site_unavailable(current)):
-+                        retry['unavailable_attempts'] = int(retry.get('unavailable_attempts', 0)) + 1
-+                        if retry['unavailable_attempts'] >= NETWORK_RECOVERY_ATTEMPT_LIMIT:
-+                            retry.update(automation_terminal_outcome='network_retry_exhausted',
-+                                         automation_terminal_at=utc_now())
++                        if self._record_network_failure(current, 'linked_backlog_retry', 'site_unavailable', 'official_site_unavailable'):
 +                            summary['automation_deferred'] += 1
-+                        payload = _raw_payload(current)
-+                        payload['linked_backlog_retry'] = retry
-+                        self.conn.execute('UPDATE lead_discovery_results SET raw_payload_json=? WHERE id=?',
-+                                          (json.dumps(payload, sort_keys=True), row['id']))
              except Exception as exc:
                  self.conn.execute('ROLLBACK TO linked_retry_attempt')
                  summary['errors'] = summary.get('errors', 0) + 1
-@@ -723,6 +769,13 @@
+@@ -723,6 +790,13 @@
                  self.conn.execute('UPDATE lead_discovery_results SET linked_lead_id=? WHERE id=? AND linked_lead_id IS NULL',
                                    (row['linked_lead_id'], row['id']))
          return summary
@@ -154,7 +187,27 @@
  
      def _linked_backlog_terminal_outcome(self, discovery_id: int) -> str:
          """Return a durable existing-stage outcome, never for retryable failures."""
-@@ -1834,11 +1887,15 @@
+@@ -850,6 +924,8 @@
+         ).fetchone()
+ 
+     def _upsert_result(self, city_id: int, query_family: str, result: PlaceSearchResult) -> tuple[int, bool]:
++        result.raw_payload = {key: value for key, value in (result.raw_payload or {}).items()
++                              if key not in {'website_resolution_retry', 'linked_backlog_retry'}}
+         now = utc_now()
+         norm_name = normalize_business_name(result.business_name)
+         norm_addr = normalize_address(result.formatted_address)
+@@ -882,6 +958,10 @@
+             ).fetchone()
+             stored_payload = _raw_payload({"raw_payload_json": current[0] if current else ""})
+             merged_payload = dict(result.raw_payload or {})
++            for recovery_key in ('website_resolution_retry', 'linked_backlog_retry'):
++                merged_payload.pop(recovery_key, None)
++                if recovery_key in stored_payload:
++                    merged_payload[recovery_key] = stored_payload[recovery_key]
+             if stored_payload.get("official_email_evidence"):
+                 merged_payload["official_email_evidence"] = stored_payload["official_email_evidence"]
+             existing_website = str(current["website"] or "").strip() if current else ""
+@@ -1834,11 +1914,15 @@
      return [(url, method) for _rank, url, method in candidates]
  
  
@@ -172,7 +225,7 @@
          return {}
      if not isinstance(fetched, dict):
          # A plain string cannot prove HTTP or TLS success and therefore cannot
-@@ -1849,6 +1906,8 @@
+@@ -1849,6 +1933,8 @@
      final_url = str(fetched.get("final_url") or url)
      status = int(fetched.get("status") or 0)
      http_success = 200 <= status < 400
@@ -181,7 +234,7 @@
      tls_success = bool(fetched.get("tls_verified", False))
      same_party = _same_party_domain(final_url, website)
      if not text or not http_success or not tls_success or not same_party:
-@@ -1875,6 +1934,7 @@
+@@ -1875,6 +1961,7 @@
      fixed = _fixed_first_party_urls(website)
      if not fixed:
          return []
@@ -189,7 +242,7 @@
      begin_site = getattr(fetcher, "begin_site", None)
      end_site = getattr(fetcher, "end_site", None)
      if callable(begin_site):
-@@ -1883,7 +1943,8 @@
+@@ -1883,7 +1970,8 @@
          pages: list[dict] = []
          seen: set[str] = set()
          homepage_url, homepage_method = fixed[0]
@@ -199,7 +252,7 @@
          if homepage:
              pages.append(homepage)
              seen.add(homepage["final_url"])
-@@ -1905,7 +1966,8 @@
+@@ -1905,7 +1993,8 @@
              if not canonical or canonical in seen:
                  continue
              attempted += 1
@@ -209,7 +262,7 @@
              if page:
                  seen.add(page["final_url"])
                  pages.append(page)
-@@ -1913,6 +1975,10 @@
+@@ -1913,6 +2002,10 @@
                      qualifying_https_homepage = True
          return pages
      finally:
@@ -222,6 +275,15 @@
  
 --- a/retail_city_queue.py
 +++ b/retail_city_queue.py
+@@ -3,7 +3,7 @@
+ 
+ import json
+ import sqlite3
+-from datetime import datetime, timezone
++from datetime import datetime, timezone, timedelta
+ from urllib.parse import urlsplit
+ 
+ from outreach_control import DEFAULT_RETAIL_CITIES, RETAIL_QUERY_FAMILIES, RETAIL_SOURCES, all_city_completion_conditions_met
 @@ -184,13 +184,6 @@
              'email_extraction_pending') LIMIT 1""",
          (city_id,),
@@ -248,30 +310,63 @@
      retryable_manual = any(_manual_review_retryable(dict(row)) for row in candidate_rows)
      linked_retry = any(_linked_backlog_retryable(dict(row)) for row in candidate_rows)
      no_open_work = not (staged_pending or retryable_network or retryable_manual or linked_retry)
-@@ -216,8 +214,34 @@
+@@ -216,8 +214,67 @@
      }
  
  
 +NETWORK_RECOVERY_ATTEMPT_LIMIT = 3
++NETWORK_RECOVERY_RETRY_SECONDS = 1800
++
++
++def recovery_history_valid(retry: dict, key: str) -> bool:
++    try:
++        events = retry['failures']
++        count_key = 'unavailable_attempts' if key == 'linked_backlog_retry' else 'attempts'
++        count = retry[count_key]
++        if type(count) is not int or not 1 <= count <= NETWORK_RECOVERY_ATTEMPT_LIMIT or len(events) != count:
++            return False
++        times = [datetime.fromisoformat(event['at']) for event in events]
++        return (all(t.tzinfo is not None and t <= datetime.now(timezone.utc) for t in times)
++                and all(event['error'] and event['status'] in ({'site_unavailable'} if key == 'linked_backlog_retry' else {'network_retry', 'network_error'}) for event in events)
++                and all((b - a).total_seconds() >= NETWORK_RECOVERY_RETRY_SECONDS for a, b in zip(times, times[1:]))
++                and retry['last_failure_at'] == events[-1]['at']
++                and datetime.fromisoformat(retry['next_retry_at']) == times[-1] + timedelta(seconds=NETWORK_RECOVERY_RETRY_SECONDS))
++    except (KeyError, TypeError, ValueError, AttributeError, OverflowError):
++        return False
++
++
++def network_recovery_due(row: dict, key: str) -> bool:
++    try:
++        payload = json.loads(row.get('raw_payload_json') or '{}')
++        retry = payload.get(key, {})
++        if not isinstance(retry, dict):
++            return False
++        # Linked bookkeeping without completed unavailable scans is not a failure budget.
++        if key == 'linked_backlog_retry' and not retry.get('unavailable_attempts'):
++            return not retry.get('automation_terminal_outcome')
++        if not retry:
++            return True
++        if not recovery_history_valid(retry, key) or retry.get('automation_terminal_outcome'):
++            return False
++        return datetime.now(timezone.utc) >= datetime.fromisoformat(retry['next_retry_at'])
++    except (KeyError, TypeError, ValueError, AttributeError):
++        return False
 +
 +
 +def automatic_recovery_deferred(row: dict) -> bool:
-+    """Recognize durable operational review handoff; never assert an email fact."""
++    """Only complete, spaced failure evidence ends automatic work; no SAFE promotion."""
 +    try:
-+        payload = json.loads(str(row.get("raw_payload_json") or "{}"))
-+        if not isinstance(payload, dict):
-+            return False
-+        for key in ("website_resolution_retry", "linked_backlog_retry"):
-+            retry = payload.get(key)
-+            if not isinstance(retry, dict):
-+                continue
-+            count_key = "unavailable_attempts" if key == "linked_backlog_retry" else "attempts"
-+            if (retry.get("automation_terminal_outcome") == "network_retry_exhausted"
-+                    and int(retry.get(count_key, 0)) >= NETWORK_RECOVERY_ATTEMPT_LIMIT
-+                    and retry.get("automation_terminal_at")
-+                    and row.get("validation_status") in {"manual_review_needed", "review_recovery"}):
++        payload = json.loads(row.get('raw_payload_json') or '{}')
++        for key in ('website_resolution_retry', 'linked_backlog_retry'):
++            retry = payload.get(key, {})
++            count_key = 'unavailable_attempts' if key == 'linked_backlog_retry' else 'attempts'
++            expected = 'review_recovery' if key == 'linked_backlog_retry' else 'manual_review_needed'
++            if (row.get('validation_status') == expected and recovery_history_valid(retry, key)
++                    and retry[count_key] == NETWORK_RECOVERY_ATTEMPT_LIMIT
++                    and retry.get('automation_terminal_outcome') == 'network_retry_exhausted'
++                    and retry.get('automation_terminal_at') == retry['last_failure_at']):
 +                return True
-+    except (TypeError, ValueError):
++    except (KeyError, TypeError, ValueError, AttributeError):
 +        return False
 +    return False
 +
@@ -283,7 +378,7 @@
      if row.get("validation_status") != "manual_review_needed":
          return False
      # The normal resolver owns unlinked, website-less manual-review rows.
-@@ -233,6 +257,8 @@
+@@ -233,6 +290,8 @@
      reviews) are intentionally excluded.  This function performs no network,
      no lead mutation, and no evidence mutation.
      """

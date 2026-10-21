@@ -1,0 +1,16 @@
+{
+  "summary_zh": "固定源码离线回归，非生产运行证据",
+  "summary_en": "Pinned-source offline regression, not production execution evidence",
+  "ran_at": "2026-10-21T17:15:59.465201+00:00",
+  "loaded_files": {
+    "retail_city_queue": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-autonomy\\_audit_quarantine\\city_closure_20261022_baseline_source\\retail_city_queue.py",
+    "discovery.discovery_service": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-autonomy\\_audit_quarantine\\city_closure_20261022_baseline_source\\discovery\\discovery_service.py"
+  },
+  "total": 80,
+  "failed": 1,
+  "failures": [
+    "tests.test_discovery_service.DiscoveryServiceTests.test_static_scan_fails_on_unauthorized_direct_lead_inserts"
+  ],
+  "errors": [],
+  "exit_code": 1
+}

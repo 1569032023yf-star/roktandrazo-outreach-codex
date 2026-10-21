@@ -5,3 +5,4 @@ patches/production/phase4a8s/continuous_discovery.patch -text
 patches/production/phase5a/proposed-v6.patch -text
 patches/production/phase5a/internal-qa.patch -text
 patches/autonomy_city_recovery.patch -text
+patches/production/phase4a8u/** -text
