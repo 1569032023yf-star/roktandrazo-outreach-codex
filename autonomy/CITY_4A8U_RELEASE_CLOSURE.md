@@ -53,3 +53,12 @@ Bilingual content, evidence scope, unexecuted work and next actions are listed; 
 Official channel confirms applied status and both file hashes. Original Inventory is not due until 05:43:24 +08:00. SMTP=0, sends today=0, one active Inventory; current SAFE and growth UNKNOWN.
 
 Cycle: 326516b6-651e-40c4-b406-6df8e9e5b1e2; evidence: `autonomy/runtime/city_observation_20261021T172106`.
+
+
+## 心跳观察 / Heartbeat observation — 2026-10-22 03:24 +08:00
+
+03:24正式通道复核：APPLIED及两文件SHA一致，尚未到05:43:24原Inventory自然运行时间；Cooperstown仍active，未观察到部署后Inventory。SMTP=0、今日发送0、累计517未变、唯一Inventory=1、锁released。SAFE及增长UNKNOWN。连续两轮均为到期前观察，不构成自然生产或无人值守发布验收；继续既有心跳，不触发替代采集。
+
+03:24 official-channel observation: APPLIED and both hashes match; original Inventory is not due until 05:43:24 +08:00. Cooperstown remains active; no post-deploy Inventory observed. SMTP=0, sends today=0, cumulative sends unchanged at 517, one active Inventory, lock released. SAFE and growth UNKNOWN. Both observations precede the due time and do not establish business or unattended release acceptance; continue existing heartbeats without substitute collection.
+
+Cycle: 0dae5a0f-a555-49d6-b855-6a79b64087d2; evidence: `autonomy/runtime/city_observation_20261021T192338`.

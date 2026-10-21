@@ -78,10 +78,10 @@
   "UNKNOWN_OUTCOME_REPAIR_STATUS": "SCOPED_REVIEW_PASS_OTHER_RELIABILITY_OPEN",
   "LATEST_PAIR_TWO_HOUR_EXECUTION_VERIFIED": false,
   "NEW_UNATTENDED_CYCLES_VERIFIED": false,
-  "updated_at": "2026-10-21T17:24:16.512963+00:00",
+  "updated_at": "2026-10-21T19:24:28.196395+00:00",
   "WORKBUDDY_HANDOFF_ACCEPTANCE": "autonomy/CODEX_WORKBUDDY_HANDOFF_ACCEPTANCE.json",
-  "latest_cycle_id": "326516b6-651e-40c4-b406-6df8e9e5b1e2",
-  "latest_cycle_summary_zh": "正式通道复核部署状态及两文件SHA一致；原Inventory尚未到05:43:24自然运行时间。SMTP=0、今日发送0、唯一Inventory=1；当前SAFE及增长UNKNOWN。",
-  "latest_cycle_summary_en": "Official channel confirms applied status and both file hashes. Original Inventory is not due until 05:43:24 +08:00. SMTP=0, sends today=0, one active Inventory; current SAFE and growth UNKNOWN.",
-  "latest_observation_evidence": "autonomy/runtime/city_observation_20261021T172106"
+  "latest_cycle_id": "0dae5a0f-a555-49d6-b855-6a79b64087d2",
+  "latest_cycle_summary_zh": "03:24正式通道复核：APPLIED及两文件SHA一致，尚未到05:43:24原Inventory自然运行时间；Cooperstown仍active，未观察到部署后Inventory。SMTP=0、今日发送0、累计517未变、唯一Inventory=1、锁released。SAFE及增长UNKNOWN。连续两轮均为到期前观察，不构成自然生产或无人值守发布验收；继续既有心跳，不触发替代采集。",
+  "latest_cycle_summary_en": "03:24 official-channel observation: APPLIED and both hashes match; original Inventory is not due until 05:43:24 +08:00. Cooperstown remains active; no post-deploy Inventory observed. SMTP=0, sends today=0, cumulative sends unchanged at 517, one active Inventory, lock released. SAFE and growth UNKNOWN. Both observations precede the due time and do not establish business or unattended release acceptance; continue existing heartbeats without substitute collection.",
+  "latest_observation_evidence": "autonomy/runtime/city_observation_20261021T192338"
 }
