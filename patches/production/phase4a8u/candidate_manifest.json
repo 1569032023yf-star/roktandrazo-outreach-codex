@@ -34,5 +34,6 @@
   "tests": "tests.json",
   "review": "review.json",
   "independent_review_passed": true,
-  "production_source_reconciled_at": "2026-10-22T01:16:33+08:00"
+  "production_source_reconciled_at": "2026-10-22T01:16:33+08:00",
+  "source_commit": "475be19c0d149a8c0e5ffc2b3b3866908c185eaa"
 }
