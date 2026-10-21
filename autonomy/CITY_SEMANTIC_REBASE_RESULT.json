@@ -1,0 +1,44 @@
+{
+  "generated_at": "2026-10-21T15:27:56.886584+00:00",
+  "release_id": "phase4a8u-city-recovery-production-rebase-20261021",
+  "status": "DEVELOPMENT_CANDIDATE_REQUIRES_INDEPENDENT_REVIEW",
+  "summary_zh": "已按生产快照逐函数重建城市补丁，两文件精确正反向校验通过，14项恢复测试通过；扩展回归95项中94通过、1项静态扫描失败，原开发副本同项复现。独立审核、登记、部署与真实城市验收待完成。",
+  "summary_en": "Rebuilt the city patch function by function against pinned production snapshots. Both files pass exact forward/reverse checks and all 14 recovery tests pass. Expanded regression: 94/95 passed; the static-scan failure also reproduces on the original development tree. Independent review, registration, deployment and production city acceptance remain pending.",
+  "patch_sha256": "53143f5326a16df3ef7acbde21607d53745ab0b0a963da5d307027d8f9f500bb",
+  "target_files": [
+    {
+      "path": "discovery/discovery_service.py",
+      "before_sha256": "96dcc751dff7ff9174b556120bdf440211328ccf52b32559509164cb0169ae14",
+      "after_sha256": "48b7f429952356c8170f6cb37158117d7fe73d6fe4b47ee737661dc9eb702ae8",
+      "hunks": 11,
+      "exact_forward_reverse": true
+    },
+    {
+      "path": "retail_city_queue.py",
+      "before_sha256": "03b4c6302dba271b5b0bed34567db5048086d4b1d0e9b2aee9a878023f349432",
+      "after_sha256": "af10866c9f3a4c80d0f836a789ad6aa933157a95394906a96ee99c6a171fba1f",
+      "hunks": 4,
+      "exact_forward_reverse": true
+    }
+  ],
+  "tests": {
+    "recovery_total": 14,
+    "recovery_passed": 14,
+    "expanded_total": 95,
+    "expanded_passed": 94,
+    "expanded_failed": 1,
+    "baseline_reproduced_failure": "test_static_scan_fails_on_unauthorized_direct_lead_inserts: autonomy/runtime/dual_source_import/collector.py"
+  },
+  "independent_review": "PENDING",
+  "registered": false,
+  "production_deployed": false,
+  "scope_zh": "仅生产两文件的有界恢复方法及必要辅助函数，保留生产其余代码与identity_review分支。",
+  "scope_en": "Only bounded recovery methods and required helpers in two production files; preserve other production code and identity_review branch.",
+  "correction_zh": "上轮retail的PATCH_HUNK_COUNT_INVALID来自诊断调用遗漏expected_hunks参数（默认3），不是补丁语法错误；discovery生产上下文差异仍真实存在。本轮传真实块数并精确正反向校验。",
+  "correction_en": "Prior retail PATCH_HUNK_COUNT_INVALID came from the diagnostic omitting expected_hunks (default 3), not malformed patch syntax. Discovery production context incompatibility was real. This cycle supplies actual hunk counts for exact forward/reverse checks.",
+  "cycle_id": "66e0aa9c-3557-4477-b24f-a2296eae1c3b",
+  "trigger_at": "2026-10-21T15:23:07.441Z",
+  "scheduler": "codex_heartbeat",
+  "AUTONOMOUS_OPERATIONS_ACTIVE": false,
+  "NEW_UNATTENDED_CYCLES_VERIFIED": false
+}
