@@ -110,3 +110,12 @@ Restored the existing channel supervisor, independently authenticated v2 and con
 近24小时Provider请求 / Provider requests in 24h: 0; SAFE: UNKNOWN; 新增组织与第一方邮箱 / New organizations and first-party emails: UNKNOWN.
 
 详见 / See CODEX_WORKBUDDY_HANDOFF_ACCEPTANCE.md/json.
+
+
+### 城市补丁核对 / City patch reconciliation
+
+城市精确重建试验在第3个discovery补丁块发现生产上下文不匹配，已生成基线差异证据并安全停止；没有模糊应用、候选发布、登记或生产写入。后续需逐函数语义核对生产差异后重建并独立审核。
+
+Exact city rebase trial found incompatible production context at the third discovery hunk. Baseline differences were preserved and execution stopped safely. No fuzzy apply, release candidate, registration or production write occurred. Next reconcile production differences function by function, rebuild and independently review.
+
+实时业务指标 / Current business metrics: UNKNOWN.

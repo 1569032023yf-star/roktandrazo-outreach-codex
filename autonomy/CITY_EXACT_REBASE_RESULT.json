@@ -1,0 +1,17 @@
+{
+  "generated_at": "2026-10-21T13:21:45.037698+00:00",
+  "cycle_id": "27b7f19d-1e2b-4441-bb3a-18b4ec3b93d5",
+  "trigger_at": "2026-10-21T13:20:03.708Z",
+  "scheduler": "codex_heartbeat",
+  "summary_zh": "城市精确重建试验在第3个discovery补丁块发现生产上下文不匹配，已生成基线差异证据并安全停止；没有模糊应用、候选发布、登记或生产写入。后续需逐函数语义核对生产差异后重建并独立审核。",
+  "summary_en": "Exact city rebase trial found incompatible production context at the third discovery hunk. Baseline differences were preserved and execution stopped safely. No fuzzy apply, release candidate, registration or production write occurred. Next reconcile production differences function by function, rebuild and independently review.",
+  "REBASE_COMPLETED": false,
+  "PRODUCTION_MUTATIONS": 0,
+  "NEW_UNATTENDED_CYCLES_VERIFIED": false,
+  "AUTONOMOUS_OPERATIONS_ACTIVE": false,
+  "SAFE_LATEST": "UNKNOWN",
+  "NEXT_ACTION": "FUNCTION_LEVEL_PRODUCTION_CONTEXT_RECONCILIATION",
+  "evidence": "autonomy/runtime/city_exact_rebase_20261021/production_baseline_difference.diff",
+  "alternative_zh": "放弃按行或模糊套用；按生产函数保留现有身份与事务门禁，单独移植有界网络恢复，再重跑回归。",
+  "alternative_en": "Do not use line-based or fuzzy application. Preserve production identity/transaction gates and port bounded network recovery function by function, then rerun regression."
+}
