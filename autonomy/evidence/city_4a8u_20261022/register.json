@@ -1,0 +1,59 @@
+{
+  "http_status": 200,
+  "response": {
+    "operation": "register",
+    "release_id": "phase4a8u-city-recovery-production-rebase-20261022",
+    "state": "registered",
+    "verdict": "REGISTERED_DEPLOYABLE",
+    "ts": "2026-10-22T01:17:41+08:00",
+    "channel_id": "rokt-deploy-channel",
+    "test_mode": false,
+    "caller": "bridge",
+    "file_count": 2,
+    "patch_sha256": "a050aa91ed1b73c39e30b9ae4692d626964d62eb0dfbcd7a6632b6b5d67113cb",
+    "deployable": true,
+    "attestation": {
+      "discovery/discovery_service.py": {
+        "exists": true,
+        "actual_sha256": "96dcc751dff7ff9174b556120bdf440211328ccf52b32559509164cb0169ae14",
+        "actual_bytes": 102761,
+        "matches_before": true
+      },
+      "retail_city_queue.py": {
+        "exists": true,
+        "actual_sha256": "03b4c6302dba271b5b0bed34567db5048086d4b1d0e9b2aee9a878023f349432",
+        "actual_bytes": 15314,
+        "matches_before": true
+      }
+    },
+    "byte_verification": {
+      "discovery/discovery_service.py": {
+        "feasible": true,
+        "after_sha256": "415fbe0cc3323bf45b389f84719c2ee6b52b9ca3d481da6d2f7f70b1c396bd8c",
+        "reversible": true
+      },
+      "retail_city_queue.py": {
+        "feasible": true,
+        "after_sha256": "02d04313de82464f0f6933df9e7a72f8675ccb6e7ca63b14859751db3e80a6b2",
+        "reversible": true
+      }
+    },
+    "tests": {
+      "total": 104,
+      "failed": 0,
+      "artifact": "tests.log"
+    },
+    "review": {
+      "reviewer_identity": "/root/city_reviewer",
+      "verdict": "APPROVED"
+    },
+    "registry_backup": "C:\\Users\\15690\\WorkBuddy\\deploy-channel\\releases\\channel_config.json.bak-20261022-011741",
+    "seal_written": true,
+    "next_step": "preflight then apply",
+    "note_zh": "已登记为固定发布条目；未触碰生产代码。部署仍需独立的 preflight/apply。",
+    "note_en": "Pinned into the registry; production code untouched. Deployment still requires the separate preflight/apply operations."
+  },
+  "observed_at": "2026-10-21T17:17:41.427386+00:00",
+  "summary_zh": "正式受限通道真实响应；传输失败不推断生产状态。",
+  "summary_en": "Live restricted-channel response; transport failures do not establish production state."
+}

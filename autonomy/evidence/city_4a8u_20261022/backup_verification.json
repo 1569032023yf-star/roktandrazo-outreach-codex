@@ -1,0 +1,16 @@
+{
+  "summary_zh": "只读重新核验正式逐文件备份，SHA匹配部署前。",
+  "summary_en": "Read-only rehash of official per-file backups matches pre-deployment bytes.",
+  "files": [
+    {
+      "path": "discovery/discovery_service.py",
+      "backup_sha256": "96dcc751dff7ff9174b556120bdf440211328ccf52b32559509164cb0169ae14",
+      "matches_before": true
+    },
+    {
+      "path": "retail_city_queue.py",
+      "backup_sha256": "03b4c6302dba271b5b0bed34567db5048086d4b1d0e9b2aee9a878023f349432",
+      "matches_before": true
+    }
+  ]
+}

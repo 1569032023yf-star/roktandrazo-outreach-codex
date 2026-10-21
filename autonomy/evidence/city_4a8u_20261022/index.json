@@ -1,0 +1,18 @@
+{
+  "summary_zh": "脱敏正式通道回执及续接证据索引。",
+  "summary_en": "Sanitized official channel receipts and continuation evidence index.",
+  "sha256": {
+    "apply.json": "3a682e305476d1bf205126df15993815a3462d2248c5f64e708187e085e452a8",
+    "health.json": "95d6b71ae8d70ee8d6df16fabbbc0ceafaddc338485b73f182681873c1743654",
+    "health_after.json": "3ade7a60df7f05b25b221cfb16068fc687ed46ec3df88beca590241e9c4949f4",
+    "negative_checks.json": "e94c2809825f1a0e752959d9eaa3820bbfbc71e6856f5c8a6caeb615146519e5",
+    "preflight.json": "dcc7c128d5a5a0ac0691a485523bb26dd7c4b0c31c0466693e12557984e71acb",
+    "register.json": "6c110f6c5791268f26a36dc38b3448111aa7282d067d0bbe1eb578ea51824238",
+    "releases.json": "359943c4a1e31443d61e15f9b920cca0d475a03c6c716758d3ac12c8e57e2b01",
+    "status.json": "102d9e66ee13ee804c61ae8ac5587c960cdb2a647c7a97fe1dd5c9a1cdebbb1a",
+    "telemetry_after.json": "c5543a4362676933aa289893f83aaf4bb9b903e848c37763b96d4da6b758a7b6",
+    "telemetry_before.json": "e281b0cb707f182a287115e82af081bf7f558f709922d1f5ab47b14a8e876492",
+    "backup_verification.json": "5ac0c0b605b307151f799dafce55984d9ae9966882806ec2170fee7545c3cc42",
+    "heartbeat_continuation.json": "10d34d6f2ee09dc1cd7cf9c7c8a50a9fbf3f76f2a0035be2e5bbb6756cd5decc"
+  }
+}

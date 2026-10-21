@@ -1,0 +1,29 @@
+{
+  "http_status": 200,
+  "response": {
+    "operation": "releases",
+    "count": 1,
+    "releases": [
+      {
+        "release_id": "phase4a8s-safe50-continuous-discovery",
+        "file_count": 1,
+        "targets": [
+          "bd_orchestrator.py"
+        ],
+        "deployable": true,
+        "registered_at": null,
+        "registered_by": null,
+        "patch_sha256": "3c7ba8d9baf9c6c4e35ecd5cfa5ef91e87b949ef10abad560fe191f768714bda"
+      }
+    ],
+    "seal": {
+      "sealed": false,
+      "note": "no seal yet (first controlled write will create one)",
+      "tampered": false
+    },
+    "ts": "2026-10-22T01:16:33+0800"
+  },
+  "observed_at": "2026-10-21T17:16:33.356048+00:00",
+  "summary_zh": "正式受限通道真实响应；传输失败不推断生产状态。",
+  "summary_en": "Live restricted-channel response; transport failures do not establish production state."
+}

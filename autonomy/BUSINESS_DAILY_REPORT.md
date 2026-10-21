@@ -101,3 +101,16 @@ Rebuilt the city patch function by function against pinned production snapshots.
 Prior retail PATCH_HUNK_COUNT_INVALID came from the diagnostic omitting expected_hunks (default 3), not malformed patch syntax. Discovery production context incompatibility was real. This cycle supplies actual hunk counts for exact forward/reverse checks.
 
 实时业务指标仍UNKNOWN / Live business metrics remain UNKNOWN.
+
+
+## 2026-10-22 城市正式部署 / Official city deployment
+
+工程、审核、登记与正式部署完成；等待唯一原Inventory自然运行验收，业务增长未知。
+
+Engineering, review, registration and official deployment completed; awaiting the sole original Inventory natural run; business growth unknown.
+
+独立审核通过；主回归84/84、事务失败路径20/20（合计86项唯一测试）；正式预检14/14，01:18:11 +08部署成功，两个after SHA及备份已核验。Cooperstown仍active；当前SAFE及新增组织/邮箱/SAFE增长UNKNOWN。原Inventory下次05:43:24 +08，既有两小时心跳接续；未新增Inventory，SMTP=0，部署观察窗口无发送。
+
+Independent review approved; primary 84/84 and transaction-failure paths 20/20 (86 unique tests overall). Official preflight 14/14; applied at 01:18:11 +08; both after hashes and backups verified. Cooperstown remains active; current SAFE and new organization/email/SAFE growth are UNKNOWN. Original Inventory next 05:43:24 +08; existing two-hour heartbeat continues. No extra Inventory; SMTP=0 and no sends in the deployment observation window.
+
+完整证据及风险 / Full evidence and risks: CITY_4A8U_RELEASE_CLOSURE.md/json. Earlier sections are historical observations superseded by this timestamped city release result. / 前文为历史观察，城市发布现状以本时点为准。

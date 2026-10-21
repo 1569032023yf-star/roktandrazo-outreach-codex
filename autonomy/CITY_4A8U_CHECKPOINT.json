@@ -1,0 +1,13 @@
+{
+  "updated_at": "2026-10-21T17:22:38.555526+00:00",
+  "stage": "APPLIED_AWAITING_NATURAL_RUN",
+  "summary_zh": "工程、审核、登记与正式部署完成；等待唯一原Inventory自然运行验收，业务增长未知。",
+  "summary_en": "Engineering, review, registration and official deployment completed; awaiting the sole original Inventory natural run; business growth unknown.",
+  "last_completed_action": "OFFICIAL_APPLY_STATUS_HEALTH_BACKUPS_VERIFIED_HEARTBEAT_UPDATED",
+  "operation_id": "op-20261022-011811-4925c1",
+  "production_side_effect": "EXACT_TWO_FILE_RELEASE_APPLIED",
+  "patch_sha256": "a050aa91ed1b73c39e30b9ae4692d626964d62eb0dfbcd7a6632b6b5d67113cb",
+  "release_id": "phase4a8u-city-recovery-production-rebase-20261022",
+  "next_action": "Existing rokt-razo heartbeat observes original Inventory 1784775229336 expected 2026-10-22T05:43:24+08:00; reconcile post-deploy run and city/provider evidence; no reapply or extra Inventory.",
+  "observed_at": "2026-10-22T01:18:27+08:00"
+}

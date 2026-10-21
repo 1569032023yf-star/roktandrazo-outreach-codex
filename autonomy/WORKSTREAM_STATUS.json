@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-21T15:27:56.886584+00:00",
-  "summary_zh": "已恢复原通道监督进程，独立认证并接通v2脱敏遥测；城市补丁精确适配失败，未登记或部署。常驻与真实回滚未验收。",
-  "summary_en": "Restored the existing channel supervisor, independently authenticated v2 and connected sanitized telemetry. Exact city patch compatibility failed; no registration or deployment. Persistence and actual rollback remain unverified.",
+  "updated_at": "2026-10-21T17:22:38.555526+00:00",
+  "summary_zh": "工程、审核、登记与正式部署完成；等待唯一原Inventory自然运行验收，业务增长未知。",
+  "summary_en": "Engineering, review, registration and official deployment completed; awaiting the sole original Inventory natural run; business growth unknown.",
   "production_inventory_id": "1784775229336",
   "automation_id": "rokt-razo",
   "workstreams": {
@@ -12,22 +12,26 @@
       "baseline": "93a8d0a",
       "worktree": "../roktandrazo-outreach-autonomy-city",
       "branch": "codex/autonomy-city-recovery",
-      "status_zh": "修复及97测试/43子测试通过，已保留5A身份门禁整合；真实城市推进未验证",
-      "status_en": "Repair passed 97 tests/43 subtests and integrated with 5A identity gate preserved; actual city advance unverified",
+      "status_zh": "工程、审核、登记与正式部署完成；等待唯一原Inventory自然运行验收，业务增长未知。",
+      "status_en": "Engineering, review, registration and official deployment completed; awaiting the sole original Inventory natural run; business growth unknown.",
       "expected_business_effect_zh": "解除城市阻塞而不降低SAFE标准",
       "expected_business_effect_en": "Remove city blockage without weakening SAFE rules",
-      "review": "PASSED_PARENT_REVIEW_FINDINGS_REPAIRED",
-      "deployment": "NOT_DEPLOYED_CANDIDATE_REBUILT_REVIEW_PENDING",
-      "next_automatic_action_zh": "独立审核固定生产补丁及回归基线失败，随后登记及预检",
-      "next_automatic_action_en": "Independently review pinned production patch and baseline failure, then register and preflight",
+      "review": "INDEPENDENT_APPROVED_PINNED_PATCH",
+      "deployment": "APPLIED_AWAITING_NATURAL_RUN",
+      "next_automatic_action_zh": "既有心跳等待原Inventory 05:43自然运行并验收城市证据，不重复apply。",
+      "next_automatic_action_en": "Existing heartbeat waits for the original 05:43 Inventory natural run and validates city evidence; no reapply.",
       "commit": "6ce6e317b82ee1173cd0703ab876df23a3f33d27",
       "integration_commit": "860728f",
       "tests": {
-        "developer_passed": 97,
-        "developer_subtests": 43,
-        "recovery_tests_passed": 14,
-        "parent_integrated_tests": "14 recovery tests included in 86 passing integrated tests, plus four identity terminal tests"
-      }
+        "primary": 84,
+        "failure_path_invocations": 20,
+        "total_invocations": 104,
+        "unique_tests": 86,
+        "independent_reviewer_subset": 22
+      },
+      "release_id": "phase4a8u-city-recovery-production-rebase-20261022",
+      "operation_id": "op-20261022-011811-4925c1",
+      "current_release_source_commit": "475be19c0d149a8c0e5ffc2b3b3866908c185eaa"
     },
     "B": {
       "goal_zh": "转换现有44候选的企业官网与第一方商务邮箱",
@@ -134,7 +138,7 @@
       ]
     }
   },
-  "production_metrics_source": "UNKNOWN",
+  "production_metrics_source": "OFFICIAL_V2_TELEMETRY_2026_10_22_011827_PLUS08",
   "prior_metrics_are_not_current_growth": true,
   "parallel_execution_scope": "THREE_PRIOR_REAL_AGENTS_DEMONSTRATED_CAPABILITY_CURRENT_HEARTBEAT_ONE_BOUNDED_TASK",
   "repeated_blocker_reassessment": {
@@ -149,6 +153,6 @@
   "AUTONOMOUS_OPERATIONS_ACTIVE": false,
   "NEW_UNATTENDED_CYCLES_VERIFIED": false,
   "latest_cycle_id": "66e0aa9c-3557-4477-b24f-a2296eae1c3b",
-  "latest_cycle_summary_zh": "已按生产快照逐函数重建城市补丁，两文件精确正反向校验通过，14项恢复测试通过；扩展回归95项中94通过、1项静态扫描失败，原开发副本同项复现。独立审核、登记、部署与真实城市验收待完成。",
-  "latest_cycle_summary_en": "Rebuilt the city patch function by function against pinned production snapshots. Both files pass exact forward/reverse checks and all 14 recovery tests pass. Expanded regression: 94/95 passed; the static-scan failure also reproduces on the original development tree. Independent review, registration, deployment and production city acceptance remain pending."
+  "latest_cycle_summary_zh": "工程、审核、登记与正式部署完成；等待唯一原Inventory自然运行验收，业务增长未知。",
+  "latest_cycle_summary_en": "Engineering, review, registration and official deployment completed; awaiting the sole original Inventory natural run; business growth unknown."
 }

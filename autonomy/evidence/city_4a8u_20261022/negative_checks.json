@@ -1,0 +1,26 @@
+{
+  "unregistered_release": {
+    "http_status": 400,
+    "response": {
+      "error": "UNKNOWN_RELEASE_ID",
+      "detail": "not in pinned registry"
+    }
+  },
+  "arbitrary_command": {
+    "http_status": 404,
+    "response": {
+      "error": "NOT_FOUND",
+      "note": "unknown endpoint; the channel exposes only the pinned deploy, registration and telemetry operations"
+    }
+  },
+  "path_traversal": {
+    "http_status": 400,
+    "response": {
+      "error": "INVALID_RELEASE_ID",
+      "detail": "release_id failed strict pattern"
+    }
+  },
+  "observed_at": "2026-10-21T17:17:53.260378+00:00",
+  "summary_zh": "正式受限通道真实响应；传输失败不推断生产状态。",
+  "summary_en": "Live restricted-channel response; transport failures do not establish production state."
+}
