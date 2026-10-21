@@ -84,8 +84,8 @@ Next genuine heartbeat repairs candidate launcher output-cleanup findings R3/R4,
 | NEW_UNATTENDED_CYCLES_VERIFIED | False |
 | CUSTOMER_OUTREACH_ENABLED | False |
 | INDEPENDENT_REVIEW_RESULT | SCOPED_PASS_WRITE_CLOSE_STORAGE_ADMISSION_HANDOFF_OVERALL_CHANGES_REQUIRED |
-| GIT_COMMIT | PENDING_THIS_DELIVERY |
-| PUSH_SUCCESS | False |
+| GIT_COMMIT | 2d1594d725065f6b0edd17eb8f4f17f2322a3473 |
+| PUSH_SUCCESS | True |
 | OVERALL_RESULT | PARTIAL_ENGINEERING_COMPLETE_PRODUCTION_BLOCKED |
 
 
@@ -95,3 +95,7 @@ Next genuine heartbeat repairs candidate launcher output-cleanup findings R3/R4,
 报告自检：双语、结果、数量、未完成、风险、下一步和敏感信息检查已完成。
 
 Report self-check completed: bilingual results, counts, incomplete items, risks, next steps and sensitive-data review.
+
+GIT_COMMIT指已核实远端一致的实现提交；本报告回填属于后续证据提交。
+
+GIT_COMMIT identifies the remotely verified implementation commit; report backfill is a subsequent evidence commit.
