@@ -71,3 +71,12 @@ Cycle: 0dae5a0f-a555-49d6-b855-6a79b64087d2; evidence: `autonomy/runtime/city_ob
 05:24 official read-only check: APPLIED and both file hashes match. Original Inventory is not due until 05:43:24 +08:00; no post-deploy natural run observed. Cooperstown remains active; SMTP=0, sends today=0, total=517, one active Inventory, lock released. SAFE and growth UNKNOWN. Continue existing heartbeat for natural-run evidence; pre-window observations do not establish business or unattended release acceptance.
 
 Cycle: c9b67309-8f9d-4193-a800-d99fbbe404a6; evidence: `autonomy/runtime/city_observation_20261021T212409`.
+
+
+## 自然运行观察 / Natural-run observation — 2026-10-22 07:24 +08:00
+
+07:24已观察到部署后Inventory inventory:2026-10-22:03b70e7a，completed/target_met，actual=56不计当前SAFE或新增。Cooperstown仍active，Lake Placid未激活，Provider过去24小时0；城市业务验收未通过。部署SHA一致，SMTP=0、今日发送0、累计517、唯一Inventory=1、锁released。正式遥测不含本次运行日志或城市级Provider明细，根因UNKNOWN；本地orchestrator与生产SHA不同，不能以本地逻辑推断生产提前退出。下一原Inventory预期11:58:01，继续既有心跳补证，不重部署或手动采集。
+
+07:24 observed post-deploy Inventory inventory:2026-10-22:03b70e7a, completed/target_met; actual=56 is not current SAFE or growth. Cooperstown remains active, Lake Placid is not active, and Provider requests over 24h are zero; city business acceptance is not met. Deployed hashes match; SMTP=0, sends today=0, total=517, one active Inventory, lock released. Official telemetry lacks run logs and city-level Provider details; root cause UNKNOWN. Local orchestrator differs from production SHA and cannot establish production early-exit behavior. Next original Inventory is expected at 11:58:01 +08:00; continue existing heartbeat, no reapply or manual collection.
+
+Cycle: ecc230f4-a4fc-4cc5-8737-1481a3643ba9; evidence: `autonomy/runtime/city_observation_20261021T232411`.

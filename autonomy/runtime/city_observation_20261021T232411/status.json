@@ -1,0 +1,310 @@
+{
+  "http_status": 200,
+  "response": {
+    "operation": "status",
+    "operation_id": "op-20261022-011811-4925c1",
+    "state": "applied",
+    "release_id": "phase4a8u-city-recovery-production-rebase-20261022",
+    "file_count": 2,
+    "files": [
+      {
+        "path": "discovery/discovery_service.py",
+        "target": "C:\\Users\\15690\\WorkBuddy\\2026-06-05-15-31-42\\roktandrazo-outreach\\discovery\\discovery_service.py",
+        "before": {
+          "sha256": "96dcc751dff7ff9174b556120bdf440211328ccf52b32559509164cb0169ae14",
+          "bytes": 102761,
+          "line_endings": "LF",
+          "lf": 2042,
+          "crlf": 0,
+          "bare_cr": 0,
+          "utf8_bom": false
+        },
+        "after": {
+          "sha256": "415fbe0cc3323bf45b389f84719c2ee6b52b9ca3d481da6d2f7f70b1c396bd8c",
+          "bytes": 109153,
+          "line_endings": "LF",
+          "lf": 2135,
+          "crlf": 0,
+          "bare_cr": 0,
+          "utf8_bom": false
+        },
+        "backup": {
+          "path": "discovery/discovery_service.py",
+          "backup": "C:\\Users\\15690\\WorkBuddy\\deploy-channel\\backups\\op-20261022-011811-4925c1\\discovery__discovery_service.py.before.bak",
+          "backup_sha256": "96dcc751dff7ff9174b556120bdf440211328ccf52b32559509164cb0169ae14"
+        }
+      },
+      {
+        "path": "retail_city_queue.py",
+        "target": "C:\\Users\\15690\\WorkBuddy\\2026-06-05-15-31-42\\roktandrazo-outreach\\retail_city_queue.py",
+        "before": {
+          "sha256": "03b4c6302dba271b5b0bed34567db5048086d4b1d0e9b2aee9a878023f349432",
+          "bytes": 15314,
+          "line_endings": "LF",
+          "lf": 289,
+          "crlf": 0,
+          "bare_cr": 0,
+          "utf8_bom": false
+        },
+        "after": {
+          "sha256": "02d04313de82464f0f6933df9e7a72f8675ccb6e7ca63b14859751db3e80a6b2",
+          "bytes": 18373,
+          "line_endings": "LF",
+          "lf": 348,
+          "crlf": 0,
+          "bare_cr": 0,
+          "utf8_bom": false
+        },
+        "backup": {
+          "path": "retail_city_queue.py",
+          "backup": "C:\\Users\\15690\\WorkBuddy\\deploy-channel\\backups\\op-20261022-011811-4925c1\\retail_city_queue.py.before.bak",
+          "backup_sha256": "03b4c6302dba271b5b0bed34567db5048086d4b1d0e9b2aee9a878023f349432"
+        }
+      }
+    ],
+    "record": {
+      "operation": "apply",
+      "operation_id": "op-20261022-011811-4925c1",
+      "release_id": "phase4a8u-city-recovery-production-rebase-20261022",
+      "state": "applied",
+      "started_at": "2026-10-22T01:18:11+08:00",
+      "finished_at": "2026-10-22T01:18:11+08:00",
+      "channel_id": "rokt-deploy-channel",
+      "test_mode": false,
+      "file_count": 2,
+      "target": "C:\\Users\\15690\\WorkBuddy\\2026-06-05-15-31-42\\roktandrazo-outreach\\discovery\\discovery_service.py",
+      "backup": "C:\\Users\\15690\\WorkBuddy\\deploy-channel\\backups\\op-20261022-011811-4925c1\\discovery__discovery_service.py.before.bak",
+      "files": [
+        {
+          "path": "discovery/discovery_service.py",
+          "target": "C:\\Users\\15690\\WorkBuddy\\2026-06-05-15-31-42\\roktandrazo-outreach\\discovery\\discovery_service.py",
+          "before": {
+            "sha256": "96dcc751dff7ff9174b556120bdf440211328ccf52b32559509164cb0169ae14",
+            "bytes": 102761,
+            "line_endings": "LF",
+            "lf": 2042,
+            "crlf": 0,
+            "bare_cr": 0,
+            "utf8_bom": false
+          },
+          "after": {
+            "sha256": "415fbe0cc3323bf45b389f84719c2ee6b52b9ca3d481da6d2f7f70b1c396bd8c",
+            "bytes": 109153,
+            "line_endings": "LF",
+            "lf": 2135,
+            "crlf": 0,
+            "bare_cr": 0,
+            "utf8_bom": false
+          },
+          "backup": {
+            "path": "discovery/discovery_service.py",
+            "backup": "C:\\Users\\15690\\WorkBuddy\\deploy-channel\\backups\\op-20261022-011811-4925c1\\discovery__discovery_service.py.before.bak",
+            "backup_sha256": "96dcc751dff7ff9174b556120bdf440211328ccf52b32559509164cb0169ae14"
+          }
+        },
+        {
+          "path": "retail_city_queue.py",
+          "target": "C:\\Users\\15690\\WorkBuddy\\2026-06-05-15-31-42\\roktandrazo-outreach\\retail_city_queue.py",
+          "before": {
+            "sha256": "03b4c6302dba271b5b0bed34567db5048086d4b1d0e9b2aee9a878023f349432",
+            "bytes": 15314,
+            "line_endings": "LF",
+            "lf": 289,
+            "crlf": 0,
+            "bare_cr": 0,
+            "utf8_bom": false
+          },
+          "after": {
+            "sha256": "02d04313de82464f0f6933df9e7a72f8675ccb6e7ca63b14859751db3e80a6b2",
+            "bytes": 18373,
+            "line_endings": "LF",
+            "lf": 348,
+            "crlf": 0,
+            "bare_cr": 0,
+            "utf8_bom": false
+          },
+          "backup": {
+            "path": "retail_city_queue.py",
+            "backup": "C:\\Users\\15690\\WorkBuddy\\deploy-channel\\backups\\op-20261022-011811-4925c1\\retail_city_queue.py.before.bak",
+            "backup_sha256": "03b4c6302dba271b5b0bed34567db5048086d4b1d0e9b2aee9a878023f349432"
+          }
+        }
+      ],
+      "business_date": "2026-10-22",
+      "lock": {
+        "lock_key": "run_lock:daily_outreach:inventory:2026-10-22",
+        "holder": "deploy:op-20261022-011811-4925c1",
+        "overrode_stale": false,
+        "released": true
+      },
+      "before": {
+        "sha256": "96dcc751dff7ff9174b556120bdf440211328ccf52b32559509164cb0169ae14",
+        "bytes": 102761,
+        "line_endings": "LF",
+        "lf": 2042,
+        "crlf": 0,
+        "bare_cr": 0,
+        "utf8_bom": false
+      },
+      "after": {
+        "sha256": "415fbe0cc3323bf45b389f84719c2ee6b52b9ca3d481da6d2f7f70b1c396bd8c",
+        "bytes": 109153,
+        "line_endings": "LF",
+        "lf": 2135,
+        "crlf": 0,
+        "bare_cr": 0,
+        "utf8_bom": false
+      },
+      "gates": {
+        "runtime_path_verified": {
+          "pass": true,
+          "file_count": 2,
+          "targets": {
+            "discovery/discovery_service.py": "C:\\Users\\15690\\WorkBuddy\\2026-06-05-15-31-42\\roktandrazo-outreach\\discovery\\discovery_service.py",
+            "retail_city_queue.py": "C:\\Users\\15690\\WorkBuddy\\2026-06-05-15-31-42\\roktandrazo-outreach\\retail_city_queue.py"
+          },
+          "target": null
+        },
+        "source_sha_matches": {
+          "pass": true,
+          "files": {
+            "discovery/discovery_service.py": {
+              "pass": true,
+              "actual": "96dcc751dff7ff9174b556120bdf440211328ccf52b32559509164cb0169ae14",
+              "expected": "96dcc751dff7ff9174b556120bdf440211328ccf52b32559509164cb0169ae14",
+              "actual_bytes": 102761,
+              "expected_bytes": 102761
+            },
+            "retail_city_queue.py": {
+              "pass": true,
+              "actual": "03b4c6302dba271b5b0bed34567db5048086d4b1d0e9b2aee9a878023f349432",
+              "expected": "03b4c6302dba271b5b0bed34567db5048086d4b1d0e9b2aee9a878023f349432",
+              "actual_bytes": 15314,
+              "expected_bytes": 15314
+            }
+          },
+          "actual": null,
+          "expected": null
+        },
+        "version_compatible": {
+          "pass": true,
+          "files": {
+            "discovery/discovery_service.py": {
+              "pass": true,
+              "dry_run_after_sha256": "415fbe0cc3323bf45b389f84719c2ee6b52b9ca3d481da6d2f7f70b1c396bd8c",
+              "expected_after_sha256": "415fbe0cc3323bf45b389f84719c2ee6b52b9ca3d481da6d2f7f70b1c396bd8c",
+              "dry_run_bytes": 109153,
+              "expected_bytes": 109153
+            },
+            "retail_city_queue.py": {
+              "pass": true,
+              "dry_run_after_sha256": "02d04313de82464f0f6933df9e7a72f8675ccb6e7ca63b14859751db3e80a6b2",
+              "expected_after_sha256": "02d04313de82464f0f6933df9e7a72f8675ccb6e7ca63b14859751db3e80a6b2",
+              "dry_run_bytes": 18373,
+              "expected_bytes": 18373
+            }
+          },
+          "dry_run_after_sha256": null,
+          "expected_after_sha256": null
+        },
+        "targeted_tests_pass": {
+          "pass": true,
+          "method": "ast_parse + byte-exact dry-run for every file; functional suite is attested by the registration bundle tests.json",
+          "syntax_errors": []
+        },
+        "rollback_verified": {
+          "pass": true,
+          "files": {
+            "discovery/discovery_service.py": {
+              "pass": true
+            },
+            "retail_city_queue.py": {
+              "pass": true
+            }
+          },
+          "method": "reverse patch reproduces before-SHA for every file"
+        },
+        "no_new_critical_regressions": {
+          "pass": true,
+          "scope": "2 files: discovery/discovery_service.py, retail_city_queue.py; 18 hunks; no whole-tree overwrite"
+        },
+        "backup_dir_writable": {
+          "pass": true,
+          "dir": "C:\\Users\\15690\\WorkBuddy\\deploy-channel\\backups"
+        },
+        "smtp_disabled": {
+          "pass": true,
+          "SMTP_enabled": "0"
+        },
+        "run_locks_healthy": {
+          "pass": true,
+          "lock_key": "run_lock:daily_outreach:inventory:2026-10-22",
+          "value": null,
+          "acquired_at": null,
+          "stale": false
+        },
+        "inventory_exclusion_held": {
+          "pass": true,
+          "note": "preflight is read-only; apply acquires the official Inventory lock for the swap window"
+        },
+        "inventory_not_running": {
+          "pass": true,
+          "running": [],
+          "stale_unfinished_rows": 6,
+          "oldest_stale": "2026-07-23 02:54:03"
+        },
+        "no_executable_send_authorization": {
+          "pass": true,
+          "pending_entries": 43,
+          "executable": 0
+        },
+        "safe_window_verified": {
+          "pass": true,
+          "inventory_status": "ACTIVE",
+          "inventory_next_run": "2026-10-22 05:43:24 +08",
+          "minutes_to_next_run": 265.2,
+          "min_required_minutes": 20
+        },
+        "sending_tasks_paused": {
+          "pass": true,
+          "tasks": {
+            "presend": {
+              "id": "automation-1785804406748",
+              "status": "PAUSED",
+              "deleted": true,
+              "pass": true
+            },
+            "preflight": {
+              "id": "automation-1785804413719",
+              "status": "PAUSED",
+              "deleted": true,
+              "pass": true
+            },
+            "outreach": {
+              "id": "automation-1785804421539",
+              "status": "PAUSED",
+              "deleted": true,
+              "pass": true
+            }
+          }
+        }
+      },
+      "summary": {
+        "all_pass": true,
+        "failed": [],
+        "count": 14,
+        "passed": 14
+      },
+      "verdict": "APPLIED",
+      "note_zh": "全部文件通过门禁、持官方 Inventory 锁、逐文件字节级备份、同卷原子替换并复核 SHA；任一文件失败即整体回滚。",
+      "note_en": "Every file passed the gates; official Inventory lock held; per-file byte-exact backup; atomic replace; post-replace SHA verified; any failure rolls the whole release back.",
+      "caller": "bridge"
+    },
+    "rollback_last_error": null,
+    "channel_id": "rokt-deploy-channel",
+    "verdict": "OK"
+  },
+  "observed_at": "2026-10-21T23:24:34.549649+00:00",
+  "summary_zh": "正式受限通道真实响应；传输失败不推断生产状态。",
+  "summary_en": "Live restricted-channel response; transport failures do not establish production state."
+}
