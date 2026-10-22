@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-22T17:00:12.284277+00:00",
+  "updated_at": "2026-10-22T23:05:32.565648+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -48,16 +48,16 @@
     },
     {
       "id": "A-4a8w-natural-city-acceptance",
-      "status": "awaiting_natural_run",
+      "status": "blocked_external",
       "workstream": "A",
       "role": "app_heartbeat",
       "attempts": 0,
       "parent_goal": "BD_FULL_PRODUCTION",
       "release_id": "phase4a8w-city-legacy-ledger-20261022",
       "operation_id": "op-20261022-231834-15aa6f",
-      "next_retry_at": "2026-10-23T06:54:25.136000+08:00",
-      "blocked_reason": "WAITING_ORIGINAL_NATURAL_INVENTORY",
-      "next_action": "Observe next original Inventory2026-10-23T06:54:25+08 for Lake Placid activation and provider requests; no manual collection or reapply.",
+      "next_retry_at": null,
+      "blocked_reason": "PROVIDER_EXCEPTION_DETAIL_NOT_EXPOSED",
+      "next_action": "Reconcile canonical firing final state and next_run; consume approved sanitized provider exception evidence. No manual collection, replay or reapply.",
       "branch": "codex/autonomous-bd-supervisor",
       "current_commit": "7eb46c4f2399e368f8db3240a27fac7d9ceb46d5",
       "known_side_effects": [
@@ -66,10 +66,10 @@
       "task_id": "A-4a8w-natural-city-acceptance",
       "worktree": null,
       "input_commit": null,
-      "last_verified_step": "COOPERSTOWN_CLOSED_NEXT_CITY_PENDING",
+      "last_verified_step": "LAKE_ACTIVE_PROVIDER_FAILED",
       "test_receipt": null,
       "review_receipt": null,
-      "completion_evidence": null,
+      "completion_evidence": "evidence/lake_failure_20261023/ACCEPTANCE.json",
       "dependency_evidence": {},
       "satisfied_dependencies": []
     }

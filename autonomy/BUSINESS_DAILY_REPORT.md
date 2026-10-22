@@ -204,7 +204,7 @@ Cycle: ecc230f4-a4fc-4cc5-8737-1481a3643ba9; evidence: `autonomy/runtime/city_ob
 <!-- BD_LIVE_OBSERVATION_BEGIN -->
 ## 自动业务观察 / Automated business observation
 
-观测时间 / Observed at: 2026-10-23T05:05:14+08:00
+观测时间 / Observed at: 2026-10-23T07:03:39+08:00
 来源 / Source: authenticated rokt-deploy-channel v2 telemetry; freshness <= 1h
 
 历史累计、最近运行actual和当前SAFE不是同一指标；缺少阶段/资格合同的字段保持UNKNOWN。
@@ -216,13 +216,13 @@ Historical totals, the latest run actual and current SAFE are distinct. Missing 
 | NEW_FIRST_PARTY_EMAILS_24H | UNKNOWN |
 | SAFE_TOTAL_LATEST | UNKNOWN |
 | SAFE_NET_GROWTH_7D | UNKNOWN |
-| ACTIVE_CITY | UNKNOWN |
+| ACTIVE_CITY | Lake Placid |
 | HISTORICAL_LEADS | 1213 |
 | HISTORICAL_LEADS_WITH_EMAIL | 652 |
-| PROVIDER_REQUESTS_24H | 0 |
+| PROVIDER_REQUESTS_24H | 2 |
 | SENDS_TODAY | 0 |
 | SMTP_OBSERVED | 0 |
-| LAST_INVENTORY_RUN | inventory:2026-10-22:27b410bf |
+| LAST_INVENTORY_RUN | inventory:2026-10-23:3eca4eae |
 | GLOBAL_INVENTORY_UNIQUENESS | UNKNOWN |
 
 ## 工作线快照 / Workstream snapshot
@@ -270,3 +270,10 @@ Bounded production evidence connected; two city blockers remain. Independently r
 未执行 / Not executed: new code, tests, release, manual collection, SMTP, V6 or dual-source experiment. 完整A/B/C/D及无人值守全链均未验收 / No complete A/B/C/D block or unattended engineering chain accepted.
 
 下一步 / Next: Observe original Inventory after 2026-10-23T00:42:26+08:00 through fixed read-only routes; do not reapply or manually collect. Revalidate SAFE age; after measured_at+6h retain only historical56 and mark current UNKNOWN unless a new authorized measurement exists.
+
+
+## 07:03最新生产验收 / Latest production acceptance
+
+Lake Placid已激活，但07:00–07:02原Inventory因scrape_error停止。两条失败审计不等于两次HTTP请求；尚未证明有效获客。精确Provider源码已匹配，异常细因未暴露，不猜测修复。 当前SAFE/净增UNKNOWN，SMTP0；本轮不计完整无人值守验收。下一步只读核对触发终态和获准脱敏异常，未重跑采集或重apply。
+
+Lake Placid activated, but the07:00–07:02 canonical Inventory stopped on scrape_error. Two failed audit rows do not prove two HTTP requests or effective acquisition. Exact Provider source is matched; the underlying exception remains unavailable, so no speculative fix is applied. Current SAFE/net growth UNKNOWN, SMTP0. This cycle does not count as complete unattended acceptance. Reconcile the firing final state and approved sanitized exception evidence; no manual discovery or repeated apply.
