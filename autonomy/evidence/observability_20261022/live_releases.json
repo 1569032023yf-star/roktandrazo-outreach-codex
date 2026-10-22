@@ -1,0 +1,42 @@
+{
+  "http_status": 200,
+  "response": {
+    "operation": "releases",
+    "count": 2,
+    "releases": [
+      {
+        "release_id": "phase4a8s-safe50-continuous-discovery",
+        "file_count": 1,
+        "targets": [
+          "bd_orchestrator.py"
+        ],
+        "deployable": true,
+        "registered_at": null,
+        "registered_by": null,
+        "patch_sha256": "3c7ba8d9baf9c6c4e35ecd5cfa5ef91e87b949ef10abad560fe191f768714bda"
+      },
+      {
+        "release_id": "phase4a8u-city-recovery-production-rebase-20261022",
+        "file_count": 2,
+        "targets": [
+          "discovery/discovery_service.py",
+          "retail_city_queue.py"
+        ],
+        "deployable": true,
+        "registered_at": "2026-10-22T01:17:41+08:00",
+        "registered_by": "bridge",
+        "patch_sha256": "a050aa91ed1b73c39e30b9ae4692d626964d62eb0dfbcd7a6632b6b5d67113cb"
+      }
+    ],
+    "seal": {
+      "sealed": true,
+      "tampered": false,
+      "diffs": [],
+      "sealed_at": "2026-10-22T01:17:41+0800"
+    },
+    "ts": "2026-10-22T19:03:57+0800"
+  },
+  "observed_at": "2026-10-22T11:03:57.337811+00:00",
+  "summary_zh": "正式受限通道真实响应；传输失败不推断生产状态。",
+  "summary_en": "Live restricted-channel response; transport failures do not establish production state."
+}

@@ -1,0 +1,64 @@
+{
+  "verdict": "APPROVED_SCOPED_SAFE_SNAPSHOT_CONSUMER",
+  "summary_zh": "11项独立测试通过；真实当前时间纯消费已保存认证回执成功，56限定为六小时测量策略内权威SAFE快照。",
+  "summary_en": "Eleven independent tests pass; pure consumption of the saved authenticated receipt succeeds at actual current time, limiting 56 to an authoritative SAFE snapshot under the six-hour measurement policy.",
+  "blocking_findings": [],
+  "tests": {
+    "summary_zh": "离线测试及已保存真实回执纯消费，无新HTTP。",
+    "summary_en": "Offline tests and pure consumption of an existing live receipt; no new HTTP.",
+    "now_utc": "2026-10-22T11:03:12.807277+00:00",
+    "unit_tests": 11,
+    "unit_success": true,
+    "live_saved_receipt": {
+      "accepted": true,
+      "projection": {
+        "schema": "rokt.safe-authority-observation.v1",
+        "source": "rokt-deploy-channel",
+        "observed_at": "2026-10-22T11:00:26.016024+00:00",
+        "measured_at": "2026-10-22T15:49:52+08:00",
+        "finished_at": "2026-10-22T15:56:46+08:00",
+        "safe_authority_connected": true,
+        "current_safe": 56,
+        "rule_sha256": {
+          "campaign_eligible_v2.py": "1143bedf563c0f76b883359362ffb2c2ea11c375fd923dc59768c5529cf3ad34",
+          "preflight_gate.py": "2cd286f201430fb9a48c68ead512671f398732e50e768c2fd69031f127f52622"
+        },
+        "db_sha256": "66509daab31eebe2bd39b27aa5be416179e7e96f40bddb1a5fa26f509a9b6f36",
+        "measurement_age_hours": 3.2224464658333334,
+        "rolling_24h": {
+          "merchant_records_discovered": 0,
+          "unique_organizations_discovered": 0,
+          "verified_official_sites": 0,
+          "new_leads": 0,
+          "new_leads_with_email": 0,
+          "new_first_party_official_emails": 0,
+          "new_distinct_organization_keys": 0
+        },
+        "rolling_7d": {
+          "merchant_records_discovered": 8,
+          "unique_organizations_discovered": 8,
+          "verified_official_sites": 4,
+          "new_leads": 6,
+          "new_leads_with_email": 5,
+          "new_first_party_official_emails": 4,
+          "new_distinct_organization_keys": 6
+        },
+        "new_verified_organizations_24h": "UNKNOWN",
+        "safe_net_growth_24h": "UNKNOWN",
+        "safe_net_growth_7d": "UNKNOWN",
+        "summary_zh": "双读与权威规则验证通过；发现不等于身份确认，无可比历史不计算净增。",
+        "summary_en": "Two readings and authority rules validated; discovery is not confirmed identity; no net growth without comparable history.",
+        "acceptance_scope": "SAFE_AUTHORITY_SNAPSHOT_ONLY_NOT_FULL_B_ACCEPTANCE"
+      }
+    },
+    "sha256": {
+      "autonomy/safe_authority.py": "9f6746edf98221f0dd676102ca7284b18b716e90c2b4337b779074303d99ca4f",
+      "tests/test_safe_authority.py": "970f806aa88c8005a8abe94627c28a80f4c44ef3d013ed05bc70acb2df0ad3aa"
+    }
+  },
+  "limitations_zh": "权威身份来自外部已认证调用方，不是JSON自证；六小时为消费端明确策略，不等于实时SAFE或整板块验收。净增长仍UNKNOWN，发现不当确认组织。",
+  "limitations_en": "Authority depends on the externally authenticated caller, not JSON self-assertion. Six hours is an explicit consumer policy, not real-time SAFE or full-block acceptance. Net growth stays UNKNOWN and discovery is not confirmed identity.",
+  "production_http_requests": 0,
+  "source_changes": false,
+  "full_B_acceptance": false
+}

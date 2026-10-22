@@ -1,0 +1,7 @@
+{
+  "summary_zh": "仅AST提取正式executor纯补丁函数，未导入模块或执行生产接口，正反向精确字节通过。",
+  "summary_en": "AST-only extraction of the existing executor pure patch function; no module import or production interface executed; exact-byte forward/reverse checks pass.",
+  "forward_exact": true,
+  "reverse_exact": true,
+  "hunks": 4
+}

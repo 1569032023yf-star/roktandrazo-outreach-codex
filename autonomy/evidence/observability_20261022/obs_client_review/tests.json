@@ -1,0 +1,49 @@
+{
+  "summary_zh": "6项合同测试及5条main全链模拟通过，未读真实凭据或发真实HTTP。",
+  "summary_en": "Six contract tests and five full-main mocked operations pass; no real credential access or HTTP occurred.",
+  "unit_tests": 6,
+  "unit_success": true,
+  "cli_mock_operations": [
+    {
+      "operation": "runtime",
+      "mocked_full_main_pass": true,
+      "request_body": {
+        "run_id": "inventory:2026-10-22:bc1c588b",
+        "limit": 2
+      }
+    },
+    {
+      "operation": "city",
+      "mocked_full_main_pass": true,
+      "request_body": {
+        "city": "Cooperstown"
+      }
+    },
+    {
+      "operation": "provider-audit",
+      "mocked_full_main_pass": true,
+      "request_body": {
+        "city": "Cooperstown",
+        "hours": 24
+      }
+    },
+    {
+      "operation": "scheduler",
+      "mocked_full_main_pass": true,
+      "request_body": {
+        "hours": 24
+      }
+    },
+    {
+      "operation": "safe",
+      "mocked_full_main_pass": true,
+      "request_body": {}
+    }
+  ],
+  "source_stable": true,
+  "sha256": {
+    "tools/city_channel_client.py": "24badafe2c9bcaa30258c9cc99105e13f904de32333224781a593c0d29a23d8f",
+    "tests/test_city_channel_observations.py": "fdec8a3022ef9aed27caf2c39e6ea6795d0874d279e3430866dc9a5ce2b8e63b"
+  },
+  "live_candidate_cli_invoked": false
+}

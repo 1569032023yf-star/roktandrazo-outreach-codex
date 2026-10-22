@@ -1,0 +1,15 @@
+{
+  "summary_zh": "精确固定源码离线定向测试；不是生产验收。",
+  "summary_en": "Targeted offline tests of exact pinned source; not production acceptance.",
+  "total": 31,
+  "failed": 0,
+  "exit_code": 0,
+  "ran_at": "2026-10-22T11:12:29.021172+00:00",
+  "artifact": "tests.log",
+  "artifact_sha256": "b6a36645bcf61613b91e083894f62c08ea0368344c0e9016df2c042f77530554",
+  "suite": [
+    "tests.test_city_channel_observations",
+    "tests.test_safe_authority",
+    "tests.test_inventory_stage_trace"
+  ]
+}

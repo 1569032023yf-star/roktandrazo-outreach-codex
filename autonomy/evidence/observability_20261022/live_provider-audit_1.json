@@ -1,0 +1,30 @@
+{
+  "http_status": 200,
+  "response": {
+    "schema": "rokt.provider_audit.v1",
+    "generated_at": "2026-10-22T19:00:26+08:00",
+    "business_timezone": "Asia/Shanghai (+08)",
+    "window_hours": 24,
+    "window_start_utc": "2026-10-21T11:00:25+00:00",
+    "city_id": 22,
+    "source": "bd_leads.db:provider_request_audit + job_runs + lead_discovery_query_state",
+    "verdict": "ZERO_REQUESTS_CONFIRMED",
+    "verdict_basis": "no audit row in window AND all query families for the city/provider are already completed, so discovery had no request to issue",
+    "audit_rows": 0,
+    "per_provider": [],
+    "inventory_runs_in_window": 3,
+    "query_matrix": {
+      "total": 20,
+      "completed": 20,
+      "exhausted": true
+    },
+    "distinction": {
+      "zero_real_requests": "ZERO_REQUESTS_CONFIRMED",
+      "no_evidence": "UNKNOWN_NO_RECORD"
+    },
+    "operation": "provider_audit"
+  },
+  "observed_at": "2026-10-22T11:00:26.048831+00:00",
+  "summary_zh": "正式受限通道真实响应；传输失败不推断生产状态。",
+  "summary_en": "Live restricted-channel response; transport failures do not establish production state."
+}

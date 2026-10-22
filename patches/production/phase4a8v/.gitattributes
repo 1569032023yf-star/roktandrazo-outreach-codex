@@ -1,0 +1,4 @@
+# Exact-byte release fixtures / 精确字节发布夹具。
+baseline/bd_orchestrator.py -text
+candidate/bd_orchestrator.py -text
+change.patch -text

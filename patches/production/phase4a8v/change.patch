@@ -1,0 +1,145 @@
+--- a/bd_orchestrator.py
++++ b/bd_orchestrator.py
+@@ -391,6 +391,45 @@
+                 if str(r.get('organization_key') or '').strip()})
+ 
+ 
++def _inventory_trace_event(run_id, events, phase, outcome, *, city_id=None, count=None, conn=None):
++    """Bounded identity-free durable trace / 有界脱敏持久轨迹。"""
++    import json
++    if phase not in {'inventory', 'state', 'city', 'places', 'website', 'postprocess', 'linked', 'completion'}:
++        raise ValueError('invalid_inventory_trace_phase')
++    if outcome not in {'enter', 'complete', 'failed'}:
++        raise ValueError('invalid_inventory_trace_outcome')
++    if conn is not None and conn.in_transaction:
++        raise RuntimeError('inventory_trace_inside_transaction')
++    if len(events) >= 20:
++        raise ValueError('inventory_trace_event_limit')
++    event = {'seq': len(events) + 1, 'phase': phase, 'outcome': outcome,
++             'at': datetime.now(timezone.utc).isoformat()}
++    for key, value in (('city_id', city_id), ('count', count)):
++        if value is not None:
++            if type(value) is not int or not 0 <= value <= 9223372036854775807:
++                raise ValueError('invalid_inventory_trace_integer')
++            event[key] = value
++    candidate = events + [event]
++    for index, item in enumerate(candidate, 1):
++        if (set(item) - {'seq', 'phase', 'outcome', 'at', 'city_id', 'count'}
++                or item.get('seq') != index or type(item.get('seq')) is not int
++                or item.get('phase') not in {'inventory', 'state', 'city', 'places', 'website', 'postprocess', 'linked', 'completion'}
++                or item.get('outcome') not in {'enter', 'complete', 'failed'}):
++            raise ValueError('invalid_inventory_trace_history')
++        stamp = datetime.fromisoformat(item['at'])
++        if stamp.utcoffset() != timedelta(0):
++            raise ValueError('invalid_inventory_trace_time')
++        for field in ('city_id', 'count'):
++            if field in item and (type(item[field]) is not int or not 0 <= item[field] <= 9223372036854775807):
++                raise ValueError('invalid_inventory_trace_history_integer')
++    encoded = json.dumps({'schema': 'rokt.inventory_stage_trace.v1', 'events': candidate},
++                         ensure_ascii=True, separators=(',', ':'))
++    if len(encoded.encode('utf-8')) > 16384:
++        raise ValueError('inventory_trace_byte_limit')
++    update_job_run(run_id, current_step=encoded)
++    events.append(event)
++
++
+ def stage_inventory(run_id: str, business_date: str, dry_run: bool):
+     target = inventory_target_for_date(business_date)
+     header(f"STAGE: Inventory — Target {target}, send_enabled=false")
+@@ -412,14 +451,20 @@
+     if not acquire_run_lock(f'inventory:{business_date}', run_id):
+         finish_job_run(run_id, 'stopped', stop_reason='lock_conflict')
+         return False
+-    try:
++    trace_events = []
++    try:
++        _inventory_trace_event(run_id, trace_events, 'inventory', 'enter')
+         from retail_city_queue import activate_next_city, complete_active_city_if_exhausted, seed_default_queue
+         from discovery.discovery_service import DiscoveryService
+         from discovery.website_resolver import ProviderWebsiteResolver
++        _inventory_trace_event(run_id, trace_events, 'state', 'enter')
+         active_state, state_error = _resolve_active_discovery_state()
+         if state_error:
++            _inventory_trace_event(run_id, trace_events, 'state', 'failed')
++            _inventory_trace_event(run_id, trace_events, 'inventory', 'failed')
+             finish_job_run(run_id, 'stopped', stop_reason=state_error)
+             return False
++        _inventory_trace_event(run_id, trace_events, 'state', 'complete')
+         conn = get_db()
+         try:
+             safe = _count_safe_ready_pool(conn)
+@@ -429,49 +474,63 @@
+             # Inventory sufficiency is an outcome, never permission to skip the
+             # bounded discovery path. Keep city/query checkpoints authoritative.
+             log(f"INVENTORY_TARGET_MET={str(safe >= target).lower()}; DISCOVERY_PATH_EXECUTED=false")
++            _inventory_trace_event(run_id, trace_events, 'city', 'enter', conn=conn)
+             with conn:
+                 seed_default_queue(conn)
+                 service = DiscoveryService(conn)
+                 complete_active_city_if_exhausted(conn, service.provider.provider_name, state=active_state)
+                 city = activate_next_city(conn, state=active_state)
++            _inventory_trace_event(run_id, trace_events, 'city', 'complete', city_id=city['id'], conn=conn)
+             log(f"Active city: {city['city']}, {city['state']}; new discovery then linked backlog")
+             resolver = ProviderWebsiteResolver(service.provider)
+             # Keep the deployed safe new-merchant lanes. Existing linked rows use
+             # the guarded backlog lane, never the normal lane as a safety bypass.
+             discovery_pages = min(3, max(1, int(os.getenv('WORKBUDDY_DISCOVERY_MAX_PAGES', '3'))))
++            _inventory_trace_event(run_id, trace_events, 'places', 'enter', city_id=city['id'], conn=conn)
+             with conn:
+                 log("DISCOVERY_PATH_EXECUTED=true")
+                 discovered = service.run_places_batch(city, max_pages=discovery_pages)
++            _inventory_trace_event(run_id, trace_events, 'places', 'complete', city_id=city['id'], count=discovered.results_seen, conn=conn)
+             log(f"NEW_DISCOVERY_PATH_EXECUTED=true; DISCOVERY_RESULTS_SEEN={discovered.results_seen}; NEW_UNIQUE_PLACES={discovered.new_unique_places}")
+             # Providers also report failures without raising. A met SAFE target
+             # must not turn those failures into a successful Inventory run.
+             if discovered.status not in {'running', 'paused_by_runtime_limit', 'query_completed',
+                                          'places_matrix_completed_web_pending'} or discovered.provider_errors:
++                _inventory_trace_event(run_id, trace_events, 'inventory', 'failed', conn=conn)
+                 finish_job_run(run_id, 'stopped', actual=safe, gap=max(0, target - safe),
+                                stop_reason=f'discovery_provider_error:{discovered.status}', error=discovered.error)
+                 return False
++            _inventory_trace_event(run_id, trace_events, 'website', 'enter', city_id=city['id'], conn=conn)
+             with conn:
+                 websites = service.run_website_resolution(city, resolver,
+                     max_results=max(1, int(os.getenv('WORKBUDDY_WEBSITE_RESOLUTION_MAX', '20'))), unlinked_only=True)
++            _inventory_trace_event(run_id, trace_events, 'website', 'complete', city_id=city['id'], count=websites.results_seen, conn=conn)
+             log(f"WEBSITE_RESOLUTION_PROCESSED={websites.results_seen}")
++            _inventory_trace_event(run_id, trace_events, 'postprocess', 'enter', city_id=city['id'], conn=conn)
+             with conn:
+                 processed = service.run_staging_postprocess(city,
+                     max_results=max(1, int(os.getenv('WORKBUDDY_STAGING_POSTPROCESS_MAX', '20'))), unlinked_only=True)
++            _inventory_trace_event(run_id, trace_events, 'postprocess', 'complete', city_id=city['id'], count=processed.results_seen, conn=conn)
+             log(f"NORMAL_STAGING_POSTPROCESS_PROCESSED={processed.results_seen}")
+             limit = min(20, max(0, int(os.getenv('WORKBUDDY_WEBSITE_RESOLUTION_MAX', '20'))),
+                         max(0, int(os.getenv('WORKBUDDY_STAGING_POSTPROCESS_MAX', '20'))))
++            _inventory_trace_event(run_id, trace_events, 'linked', 'enter', city_id=city['id'], conn=conn)
+             with conn:
+                 summary = service.run_linked_backlog(city, resolver, max_results=limit)
++            _inventory_trace_event(run_id, trace_events, 'linked', 'complete', city_id=city['id'], count=summary['processed'], conn=conn)
+             log(f"LINKED_BACKLOG_PATH_EXECUTED=true; Linked backlog: {summary}")
+             # A city may finish its final retry/staging item during this run.
+             # Mark it terminal now; the next canonical Inventory invocation
+             # activates the next pending city through the existing queue.
++            _inventory_trace_event(run_id, trace_events, 'completion', 'enter', city_id=city['id'], conn=conn)
+             with conn:
+                 complete_active_city_if_exhausted(conn, service.provider.provider_name, state=active_state)
++            _inventory_trace_event(run_id, trace_events, 'completion', 'complete', city_id=city['id'], conn=conn)
+             safe = _count_safe_ready_pool(conn)
+             broad = _count_broad_ready_pool()
+             gap = max(0, target - safe)
+             log(f"INVENTORY_TARGET_MET={str(gap == 0).lower()}; DISCOVERY_PATH_EXECUTED=true")
++            _inventory_trace_event(run_id, trace_events, 'inventory', 'complete', count=safe, conn=conn)
+             finish_job_run(run_id, 'completed' if gap == 0 else 'partial', actual=safe, gap=gap,
+                            stop_reason='target_met' if gap == 0 else 'safe_inventory_gap')
+             planned = conn.execute("SELECT COUNT(*) FROM final_send_plan WHERE status='planned'").fetchone()[0]
+@@ -480,6 +539,10 @@
+         finally:
+             conn.close()
+     except Exception as exc:
++        try:
++            _inventory_trace_event(run_id, trace_events, 'inventory', 'failed')
++        except Exception:
++            pass  # Preserve the original business/trace failure.
+         finish_job_run(run_id, 'stopped', stop_reason=f'linked_backlog_error:{type(exc).__name__}')
+         raise
+     finally:

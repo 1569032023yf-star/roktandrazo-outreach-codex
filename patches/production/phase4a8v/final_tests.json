@@ -1,0 +1,53 @@
+{
+  "summary_zh": "最终定向测试及完整补丁正反向字节验证，显式关闭Git自动换行转换。",
+  "summary_en": "Final focused tests and exact-byte forward/reverse patch verification, with Git newline conversion explicitly disabled.",
+  "tests": 14,
+  "success": true,
+  "elapsed_seconds": 0.23662920000060694,
+  "source_stable": true,
+  "sha256_before": {
+    "patches\\production\\phase4a8v\\baseline\\bd_orchestrator.py": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903",
+    "patches\\production\\phase4a8v\\candidate\\bd_orchestrator.py": "0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8",
+    "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-autonomy\\patches\\production\\phase4a8v\\change.patch": "2c4e1750fe7e39c996baa731bed740e8b2ef08546147b1f9976e25ae550c2081",
+    "tests\\test_inventory_stage_trace.py": "c4a2106515c74633e9face705ebf7ad42bca7277f50a2ef2c02c3f606b376755"
+  },
+  "sha256_after": {
+    "patches\\production\\phase4a8v\\baseline\\bd_orchestrator.py": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903",
+    "patches\\production\\phase4a8v\\candidate\\bd_orchestrator.py": "0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8",
+    "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-autonomy\\patches\\production\\phase4a8v\\change.patch": "2c4e1750fe7e39c996baa731bed740e8b2ef08546147b1f9976e25ae550c2081",
+    "tests\\test_inventory_stage_trace.py": "c4a2106515c74633e9face705ebf7ad42bca7277f50a2ef2c02c3f606b376755"
+  },
+  "patch_steps": [
+    {
+      "args": [
+        "--check"
+      ],
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "args": [],
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "args": [
+        "--reverse",
+        "--check"
+      ],
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "args": [
+        "--reverse"
+      ],
+      "returncode": 0,
+      "stderr": ""
+    }
+  ],
+  "git_config_override": "core.autocrlf=false",
+  "target_files": [
+    "bd_orchestrator.py"
+  ]
+}

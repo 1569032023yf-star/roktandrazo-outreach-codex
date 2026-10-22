@@ -1,0 +1,18 @@
+{
+  "summary_zh": "正式受限只读回执与固定脱敏SAFE投影；不包含凭据或客户明细。",
+  "summary_en": "Restricted read-only receipts and fixed sanitized SAFE projection; no credentials or customer records.",
+  "handoff_repository": "1569032023yf-star/workbuddy-task-window",
+  "handoff_commit": "aded425cf863104d907f6b00def4331e2151d515",
+  "issue_comment": 6336864328,
+  "files": {
+    "LEGACY_RETRY_SOURCE_INVESTIGATION.md": "c0cfef01e29d54e8ab09ef498c63d1baaa12e86cb271c72163dc0589126b733b",
+    "live_city_1.json": "c0c575ca4b242eb6d9ed024b0dfaf337805e1fd8fff2ccb6a4983291b281c38e",
+    "live_next_city.json": "d8bfdf08dcc4a534d1ce053759e72037e6ba6e1e7b0b472a739bd10da4a2c3b3",
+    "live_next_provider.json": "5b07ea261b6eb54f22e067ec47a8b417b14d3da40a022043e10333387bc68d36",
+    "live_provider-audit_1.json": "db08d49872b5d66b3cf90c9576383cfe5869d91a7c80bd38abff4e1c0f97cb80",
+    "live_releases.json": "3049016074adaae56d3e3684f44894be96c076da33e61aaabd1e6610c8e54c1a",
+    "live_runtime_1.json": "e8f80f7a932fe4e69bdf597e3eb74fba1e4939134f780e26cf74ec4fcfac719c",
+    "live_scheduler_1.json": "24cc5348fdede4168b40c380520e8bb3111ad134ddc7eb0a3dbd34a40ddf60cf",
+    "safe_projection_1.json": "4ddff9d2c0f65c778a778b3ba109eb81895791686b1c582734d7fdc35ed70627"
+  }
+}

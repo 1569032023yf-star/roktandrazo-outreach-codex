@@ -1,0 +1,16 @@
+# SAFE权威投影独立审核 / Independent SAFE authority projection review
+
+结论：APPROVED_SCOPED_SAFE_SNAPSHOT_CONSUMER。未发现P1/P2。独立11/11测试通过；2026-10-22T11:03:12.807277Z真实当前时间消费已保存live_safe_1.json成功，测量年龄3.22245小时，current_safe=56。未新发HTTP或读取凭据，未修改源码。完整脱敏聚合及源码SHA见tests.json。
+Verdict: APPROVED_SCOPED_SAFE_SNAPSHOT_CONSUMER. No P1/P2 finding identified. Independent tests pass 11/11. At actual time 2026-10-22T11:03:12.807277Z the saved live_safe_1.json is accepted with measurement age 3.22245 hours and current_safe=56. No new HTTP, credential access or source changes. See tests.json for allowlisted aggregates and source hashes.
+
+校验覆盖外部approved_channel、HTTP200、schema/operation/route/verdict、严格布尔完成/可用/新鲜/MX/双读一致、failure_reason为空、完整时间顺序、测量最长6小时及receipt/generated最长1小时、固定两规则源码hash、固定生产入口和去重方法、DB合法hash及quick_check、正负MX控制、两次时间独立读数及SAFE总数一致。bool、负数、浮点、字符串和超大计数拒绝；无效漏斗字段UNKNOWN不填0。
+Validation covers caller-provided approved channel, HTTP 200, schema/operation/route/verdict, strict boolean completion/availability/freshness/MX/agreement flags, absent failure, ordered timestamps, six-hour measurement and one-hour receipt/generated limits, pinned rule hashes, fixed entrypoint/deduplication method, DB hash/quick_check, positive/negative MX controls, distinct sample times and matching SAFE counts. Invalid counts are rejected; malformed funnel values remain UNKNOWN rather than zero.
+
+56可限定报告为该生产权威路径在15:49:52–15:56:46 +08测得的双读一致快照，消费时符合明确6小时策略；不可称现在实时SAFE=56、自然Inventory actual=56即SAFE、完整B已验收或客户可发信。时效继续流逝，已保存投影本身不会自动续期；未来使用须重新按当时aware now验证。
+56 may be reported as the matching two-reading production-authority snapshot measured at 15:49:52–15:56:46 +08 and accepted under the explicit six-hour consumer policy. It does not establish real-time SAFE, equivalence to Inventory actual, full B acceptance or sending eligibility. Time continues to pass; a stored projection does not renew its own validity and must be revalidated against then-current aware time.
+
+净增24h/7d无论输入数值始终UNKNOWN，因为未输入同规则同去重可比较历史账本。漏斗字段保留发现/官网/邮箱各自原义，new_verified_organizations_24h固定UNKNOWN，不将7天8家发现当确认组织。输出固定字段，原始自由文本、商家字段、控制域名、payload不投影；不修改输入且规则hash返回副本。
+Net growth remains UNKNOWN regardless of producer numeric claims because no comparable same-rule/deduplication history is accepted. Funnel fields retain distinct discovery/site/email meanings; confirmed organizations remain UNKNOWN. The seven-day discovery count is not promoted to confirmed organizations. Output is fixed-field; free text, business fields, control domains and payloads are omitted. Inputs remain unchanged and rule hashes are copied.
+
+认证信任边界仍由既有正式通道调用方承担。live回执没有channel_id/test_mode，消费者按固定authority route、source、规则hash和外部approved_channel验证，不能把任何任意JSON加approved_channel当成已认证生产证据。本审核只消费父级已获取的真实回执，不独立重新证明桥接实现的测量SQL、全局调度、服务持久性或生产阶段轨迹。
+Transport authentication remains the existing caller's responsibility. The live receipt lacks channel_id/test_mode; the consumer validates authority route/source/rule hashes plus externally supplied approval. Passing approved_channel with arbitrary JSON does not authenticate it. This review consumes the previously acquired receipt and does not independently re-prove bridge SQL, global scheduling, service persistence or production stage traces.

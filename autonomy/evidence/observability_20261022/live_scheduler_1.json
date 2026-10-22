@@ -1,0 +1,244 @@
+{
+  "http_status": 200,
+  "response": {
+    "schema": "rokt.scheduler.v1",
+    "generated_at": "2026-10-22T19:00:26+08:00",
+    "business_timezone": "Asia/Shanghai (+08)",
+    "window_hours": 48,
+    "source": "workbuddy.db:automations/automation_runs/automation_runtime_state + bd_leads.db:job_runs/system_config + Windows SCM (read-only)",
+    "canonical_automation": {
+      "id": "automation-1784775229336",
+      "status": "ACTIVE",
+      "rrule": "FREQ=HOURLY;INTERVAL=6",
+      "next_run_at": "2026-10-23T00:42:26.447000+08:00",
+      "runtime_last_run_at": "2026-10-22T18:42:26.447000+08:00",
+      "runtime_last_error": null,
+      "automations_last_run_at_note": "automations.last_run_at is stale/unreliable; automation_runtime_state.last_run_at is authoritative"
+    },
+    "reconciliation_model": {
+      "method": "PAIRWISE: planned(next) = completed(previous) + rrule interval, because the scheduler re-anchors HOURLY rules on run completion, so an absolute grid cannot match and would report false misses",
+      "tolerance_seconds": 600,
+      "receipts_paired": 8,
+      "drift_seconds": {
+        "min": 12.2,
+        "max": 446.4,
+        "avg": 81.8
+      },
+      "skipped_slots_total": 0,
+      "skipped_slot_detail": [],
+      "pending_slot": "2026-10-23T00:42:26.350000+08:00",
+      "next_run_at_vs_pending_slot_seconds": 0.1
+    },
+    "matched_slots": 8,
+    "missed_inventory_runs_confirmed": 0,
+    "firings_in_window": 8,
+    "firings_executed_production": 5,
+    "firings_without_production_run": 3,
+    "firings": [
+      {
+        "firing_id": "automation-1784775229336:1792664321158",
+        "triggered_at": "2026-10-22T18:18:41.176000+08:00",
+        "completed_at": "2026-10-22T18:42:26.350000+08:00",
+        "automation_status": "ACCEPTED",
+        "automation_result_success": true,
+        "automation_failure_code": null,
+        "automation_reason_code": null,
+        "planned_at": "2026-10-22T18:18:22.540000+08:00",
+        "planned_basis": "DERIVED_PREVIOUS_COMPLETION_PLUS_INTERVAL",
+        "trigger_drift_seconds": 18.6,
+        "cycle_gap_seconds": 21618.6,
+        "skipped_slots_between": 0,
+        "executed": true,
+        "run_id": "inventory:2026-10-22:bc1c588b",
+        "execution_evidence": "JOB_RUNS_ROW_IN_TRIGGER_WINDOW"
+      },
+      {
+        "firing_id": "automation-1784775229336:1792641501956",
+        "triggered_at": "2026-10-22T11:58:21.964000+08:00",
+        "completed_at": "2026-10-22T12:18:22.540000+08:00",
+        "automation_status": "ACCEPTED",
+        "automation_result_success": true,
+        "automation_failure_code": null,
+        "automation_reason_code": null,
+        "planned_at": "2026-10-22T11:58:01.774000+08:00",
+        "planned_basis": "DERIVED_PREVIOUS_COMPLETION_PLUS_INTERVAL",
+        "trigger_drift_seconds": 20.2,
+        "cycle_gap_seconds": 21620.2,
+        "skipped_slots_between": 0,
+        "executed": false,
+        "run_id": null,
+        "execution_evidence": "NO_RUN_ROW_IN_TRIGGER_WINDOW"
+      },
+      {
+        "firing_id": "automation-1784775229336:1792619057342",
+        "triggered_at": "2026-10-22T05:44:17.353000+08:00",
+        "completed_at": "2026-10-22T05:58:01.774000+08:00",
+        "automation_status": "ACCEPTED",
+        "automation_result_success": true,
+        "automation_failure_code": null,
+        "automation_reason_code": null,
+        "planned_at": "2026-10-22T05:43:24.855000+08:00",
+        "planned_basis": "DERIVED_PREVIOUS_COMPLETION_PLUS_INTERVAL",
+        "trigger_drift_seconds": 52.5,
+        "cycle_gap_seconds": 21652.5,
+        "skipped_slots_between": 0,
+        "executed": true,
+        "run_id": "inventory:2026-10-22:03b70e7a",
+        "execution_evidence": "JOB_RUNS_ROW_IN_TRIGGER_WINDOW"
+      },
+      {
+        "firing_id": "automation-1784775229336:1792596292643",
+        "triggered_at": "2026-10-21T23:24:52.650000+08:00",
+        "completed_at": "2026-10-21T23:43:24.855000+08:00",
+        "automation_status": "ACCEPTED",
+        "automation_result_success": true,
+        "automation_failure_code": null,
+        "automation_reason_code": null,
+        "planned_at": "2026-10-21T23:24:23.231000+08:00",
+        "planned_basis": "DERIVED_PREVIOUS_COMPLETION_PLUS_INTERVAL",
+        "trigger_drift_seconds": 29.4,
+        "cycle_gap_seconds": 21629.4,
+        "skipped_slots_between": 0,
+        "executed": true,
+        "run_id": "inventory:2026-10-21:c894911a",
+        "execution_evidence": "JOB_RUNS_ROW_IN_TRIGGER_WINDOW"
+      },
+      {
+        "firing_id": "automation-1784775229336:1792574486636",
+        "triggered_at": "2026-10-21T17:21:26.646000+08:00",
+        "completed_at": "2026-10-21T17:24:23.231000+08:00",
+        "automation_status": "ACCEPTED",
+        "automation_result_success": true,
+        "automation_failure_code": null,
+        "automation_reason_code": null,
+        "planned_at": "2026-10-21T17:20:53.542000+08:00",
+        "planned_basis": "DERIVED_PREVIOUS_COMPLETION_PLUS_INTERVAL",
+        "trigger_drift_seconds": 33.1,
+        "cycle_gap_seconds": 21633.1,
+        "skipped_slots_between": 0,
+        "executed": false,
+        "run_id": null,
+        "execution_evidence": "NO_RUN_ROW_IN_TRIGGER_WINDOW"
+      },
+      {
+        "firing_id": "automation-1784775229336:1792551700788",
+        "triggered_at": "2026-10-21T11:01:40.796000+08:00",
+        "completed_at": "2026-10-21T11:20:53.542000+08:00",
+        "automation_status": "ACCEPTED",
+        "automation_result_success": true,
+        "automation_failure_code": null,
+        "automation_reason_code": null,
+        "planned_at": "2026-10-21T10:54:14.409000+08:00",
+        "planned_basis": "DERIVED_PREVIOUS_COMPLETION_PLUS_INTERVAL",
+        "trigger_drift_seconds": 446.4,
+        "cycle_gap_seconds": 22046.4,
+        "skipped_slots_between": 0,
+        "executed": false,
+        "run_id": null,
+        "execution_evidence": "NO_RUN_ROW_IN_TRIGGER_WINDOW"
+      },
+      {
+        "firing_id": "automation-1784775229336:1792528597914",
+        "triggered_at": "2026-10-21T04:36:37.923000+08:00",
+        "completed_at": "2026-10-21T04:54:14.409000+08:00",
+        "automation_status": "ACCEPTED",
+        "automation_result_success": true,
+        "automation_failure_code": null,
+        "automation_reason_code": null,
+        "planned_at": "2026-10-21T04:35:56.180000+08:00",
+        "planned_basis": "DERIVED_PREVIOUS_COMPLETION_PLUS_INTERVAL",
+        "trigger_drift_seconds": 41.7,
+        "cycle_gap_seconds": 21641.7,
+        "skipped_slots_between": 0,
+        "executed": true,
+        "run_id": "inventory:2026-10-21:1a7f7233",
+        "execution_evidence": "JOB_RUNS_ROW_IN_TRIGGER_WINDOW"
+      },
+      {
+        "firing_id": "automation-1784775229336:1792505768479",
+        "triggered_at": "2026-10-20T22:16:08.485000+08:00",
+        "completed_at": "2026-10-20T22:35:56.180000+08:00",
+        "automation_status": "ACCEPTED",
+        "automation_result_success": true,
+        "automation_failure_code": null,
+        "automation_reason_code": null,
+        "planned_at": "2026-10-20T22:15:56.328000+08:00",
+        "planned_basis": "DERIVED_PREVIOUS_COMPLETION_PLUS_INTERVAL",
+        "trigger_drift_seconds": 12.2,
+        "cycle_gap_seconds": 21612.2,
+        "skipped_slots_between": 0,
+        "executed": true,
+        "run_id": "inventory:2026-10-20:8b9f1d72",
+        "execution_evidence": "JOB_RUNS_ROW_IN_TRIGGER_WINDOW"
+      }
+    ],
+    "uniqueness": {
+      "workbuddy_active_inventory_drivers": 1,
+      "workbuddy_active_unclassified_drivers": 0,
+      "workbuddy_drivers": [
+        {
+          "id": "automation-1784775229336",
+          "name": "RoktRazo BD Inventory — 4x/day (6h interval) Asia/Shanghai",
+          "status": "ACTIVE",
+          "role": "INVENTORY",
+          "references_orchestrator": true,
+          "canonical": true
+        },
+        {
+          "id": "automation-1786002601925",
+          "name": "BD Result Recovery Sync — 08:45 Asia/Shanghai",
+          "status": "ACTIVE",
+          "role": "RESULT_RECOVERY_SYNC",
+          "references_orchestrator": false,
+          "canonical": false
+        },
+        {
+          "id": "75fbacd1-fa43-46ea-8388-1d47647c3f4d",
+          "name": "BD SAFE40 Milestone Checkpoint — 4x/day (6h interval) Asia/Shanghai",
+          "status": "ACTIVE",
+          "role": "READ_ONLY_SAFE_CHECKPOINT",
+          "references_orchestrator": true,
+          "canonical": false
+        },
+        {
+          "id": "488f4c21-a70b-4611-a388-9a3f61c02db9",
+          "name": "BD checkpoint phase fix (one-off, 07:38) — restore +40 min offset",
+          "status": "PAUSED",
+          "role": "UNCLASSIFIED",
+          "references_orchestrator": true,
+          "canonical": false
+        },
+        {
+          "id": "c6bf1717-a7a6-40c7-a1de-074fab9b6128",
+          "name": "BD Production Evidence Refresh — 22:40 (read-only, no inventory)",
+          "status": "ACTIVE",
+          "role": "READ_ONLY_EVIDENCE_REFRESH",
+          "references_orchestrator": true,
+          "canonical": false
+        }
+      ],
+      "windows_service": {
+        "name": "BDExecutionHost",
+        "status": "STOPPED",
+        "start_type": "MANUAL",
+        "method": "Read-only SCM QueryServiceStatusEx + registry Start value; no start/stop/delete, no schtasks/sc.exe shell-out",
+        "status_raw": 1
+      },
+      "scheduled_tasks": {
+        "status": "UNKNOWN",
+        "reason": "schtasks.exe / sc.exe are blocked by host policy; no equivalent read-only enumeration is available from this process, so task-level uniqueness stays UNKNOWN"
+      },
+      "verdict": "UNIQUE",
+      "basis": "exactly one ACTIVE non-deleted WorkBuddy automation is classified role=INVENTORY, no ACTIVE orchestrator-referencing automation is UNCLASSIFIED, and the BDExecutionHost service is not RUNNING; Windows scheduled tasks remain UNKNOWN by policy"
+    },
+    "verdict": {
+      "inventory_scheduler_verified": true,
+      "expected_vs_actual_reconciled": true,
+      "note": "a firing that produced no job_runs row is classified firings_without_production_run, NOT automatically a missed firing: the agent layer can refuse to execute fail-closed (e.g. network gate)."
+    },
+    "operation": "scheduler"
+  },
+  "observed_at": "2026-10-22T11:00:26.395339+00:00",
+  "summary_zh": "正式受限通道真实响应；传输失败不推断生产状态。",
+  "summary_en": "Live restricted-channel response; transport failures do not establish production state."
+}

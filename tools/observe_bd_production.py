@@ -16,7 +16,7 @@ from autonomy.telemetry import consume_bridge_receipt
 from autonomy.supervisor import atomic_json, persist_business_observation, read
 
 EXPECTED = {
-    'bd_orchestrator.py': 'e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903',
+    'bd_orchestrator.py': '0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8',
     'discovery/discovery_service.py': '415fbe0cc3323bf45b389f84719c2ee6b52b9ca3d481da6d2f7f70b1c396bd8c',
     'retail_city_queue.py': '02d04313de82464f0f6933df9e7a72f8675ccb6e7ca63b14859751db3e80a6b2',
 }
