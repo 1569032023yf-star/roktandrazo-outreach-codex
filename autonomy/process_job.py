@@ -1,35 +1,165 @@
-"""Bounded process trees / 有界进程树；Windows uses a kill-on-close Job Object."""
+"""Bounded process trees / 有界进程树：输出只存在有界内存中。"""
 from __future__ import annotations
-
 import os
 import subprocess
-import tempfile
+import threading
 import time
 
 
-def run_tree(args, *, timeout, cwd=None):
+class OutputLimitExceeded(RuntimeError):
+    reason = 'OUTPUT_LIMIT'
+    outcome = 'UNKNOWN'
+
+
+class ProcessCleanupError(RuntimeError):
+    reason = 'PROCESS_TREE_CLEANUP_UNVERIFIED'
+    outcome = 'UNKNOWN'
+
+
+class _Capture:
+    def __init__(self, stdout_limit, stderr_limit, event_limit):
+        self.limits = (stdout_limit, stderr_limit)
+        self.event_limit = event_limit
+        self.data = [bytearray(), bytearray()]
+        self.threads = []
+        self.failure = None
+        self.cleanup_errors = []
+        self.lock = threading.Lock()
+
+    def fail(self, error):
+        with self.lock:
+            if self.failure is None:
+                self.failure = error
+
+    def start(self, streams):
+        for index, stream in enumerate(streams):
+            thread = threading.Thread(target=self.read, args=(index, stream), daemon=True)
+            self.threads.append(thread)
+            thread.start()
+
+    def read(self, index, stream):
+        line_size = 0
+        total = 0
+        try:
+            while True:
+                chunk = os.read(stream.fileno(), 8192)
+                if not chunk:
+                    break
+                total += len(chunk)
+                parts = chunk.split(b'\n')
+                longest = max([line_size + len(parts[0])] + [len(p) for p in parts[1:]])
+                line_size = line_size + len(chunk) if len(parts) == 1 else len(parts[-1])
+                if total > self.limits[index] or longest > self.event_limit:
+                    self.fail(OutputLimitExceeded('OUTPUT_LIMIT: ' + ('stdout' if index == 0 else 'stderr')))
+                if self.failure is None:
+                    self.data[index].extend(chunk)
+        except BaseException as error:
+            self.fail(error)
+        finally:
+            try:
+                stream.close()
+            except BaseException as error:
+                with self.lock:
+                    self.cleanup_errors.append(type(error).__name__)
+
+    def finish(self, timeout):
+        deadline = time.monotonic() + timeout
+        for thread in self.threads:
+            thread.join(max(0, deadline - time.monotonic()))
+        if self.cleanup_errors:
+            error = ProcessCleanupError('OUTPUT_STREAM_CLOSE_FAILED')
+            error.reason = 'OUTPUT_STREAM_CLOSE_FAILED'
+            error.cleanup_errors = tuple(self.cleanup_errors)
+            raise error
+        if any(thread.is_alive() for thread in self.threads):
+            raise ProcessCleanupError('OUTPUT_READERS_CLEANUP_UNVERIFIED')
+
+    def result(self, args, code):
+        return subprocess.CompletedProcess(args, code, *(bytes(x).decode('utf-8', errors='replace') for x in self.data))
+
+
+def _cleanup_codes(step, error):
+    # Fixed classifications only; never persist exception messages or child output.
+    codes = [step, type(error).__name__]
+    reason = getattr(error, 'reason', None)
+    if reason in {'OUTPUT_STREAM_CLOSE_FAILED', 'PROCESS_TREE_CLEANUP_UNVERIFIED'}:
+        codes.append(reason)
+    codes.extend(code for code in getattr(error, 'cleanup_errors', ())
+                 if isinstance(code, str) and code.isidentifier())
+    return codes
+
+
+def _finish(primary, cleanup_errors):
+    if primary is None and cleanup_errors:
+        primary = ProcessCleanupError('PROCESS_TREE_CLEANUP_UNVERIFIED')
+    if primary is not None:
+        primary.cleanup_verified = not cleanup_errors
+        primary.cleanup_errors = tuple(cleanup_errors)
+        raise primary
+
+
+def run_tree(args, *, timeout, cwd=None, stdout_limit_bytes=4*1024*1024,
+             stderr_limit_bytes=1024*1024, event_limit_bytes=256*1024,
+             cleanup_timeout=10):
+    for value in (stdout_limit_bytes, stderr_limit_bytes, event_limit_bytes):
+        if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
+            raise ValueError('Output byte limits must be positive integers')
+    if timeout <= 0 or cleanup_timeout <= 0:
+        raise ValueError('Timeouts must be positive')
+    capture = _Capture(stdout_limit_bytes, stderr_limit_bytes, event_limit_bytes)
     if os.name == 'nt':
-        return _windows_job(args, timeout, cwd)
+        return _windows_job(args, timeout, cwd, capture, cleanup_timeout)
+    return _posix_tree(args, timeout, cwd, capture, cleanup_timeout)
+
+
+def _posix_cleanup(process, timeout):
     import signal
-    with subprocess.Popen(args, cwd=cwd, stdin=subprocess.DEVNULL,
-                          stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                          start_new_session=True) as process:
+    try:
+        os.killpg(process.pid, signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+    process.wait(timeout=timeout)
+    deadline = time.monotonic() + timeout
+    while True:
         try:
-            stdout, stderr = process.communicate(timeout=timeout)
-        except subprocess.TimeoutExpired:
-            os.killpg(process.pid, signal.SIGKILL)
-            process.communicate()
-            raise
-        # Do not allow tool descendants to outlive a successfully exited parent.
-        try:
-            os.killpg(process.pid, signal.SIGKILL)
+            os.killpg(process.pid, 0)
         except ProcessLookupError:
-            pass
-        return subprocess.CompletedProcess(args, process.returncode,
-            stdout.decode('utf-8', errors='replace'), stderr.decode('utf-8', errors='replace'))
+            return
+        if time.monotonic() >= deadline:
+            raise ProcessCleanupError('PROCESS_GROUP_CLEANUP_UNVERIFIED')
+        time.sleep(0.02)
 
 
-def _windows_job(args, timeout, cwd):
+def _posix_tree(args, timeout, cwd, capture, cleanup_timeout):
+    process = subprocess.Popen(args, cwd=cwd, stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
+    primary = None
+    errors = []
+    try:
+        capture.start((process.stdout, process.stderr))
+        deadline = time.monotonic() + timeout
+        while process.poll() is None:
+            if capture.failure:
+                raise capture.failure
+            if time.monotonic() >= deadline:
+                raise subprocess.TimeoutExpired(args, timeout)
+            time.sleep(0.01)
+    except BaseException as error:
+        primary = error
+    finally:
+        for step, action in (('PROCESS_GROUP_CLEANUP', lambda: _posix_cleanup(process, cleanup_timeout)),
+                             ('OUTPUT_READERS_CLEANUP', lambda: capture.finish(cleanup_timeout))):
+            try:
+                action()
+            except BaseException as error:
+                errors.extend(_cleanup_codes(step, error))
+    _finish(primary or capture.failure, errors)
+    result = capture.result(args, process.returncode)
+    result.cleanup_verified = True
+    return result
+
+
+def _windows_job(args, timeout, cwd, capture, cleanup_timeout):
     import ctypes as c
     from ctypes import wintypes as w
     import msvcrt
@@ -97,59 +227,101 @@ def _windows_job(args, timeout, cwd):
             raise c.WinError(c.get_last_error())
         return value
 
-    job = checked(k.CreateJobObjectW(None, None))
+    job = None
     info = PROCESS_INFORMATION()
+    primary = None
+    errors = []
+    code = w.DWORD()
+    assigned = False
+    streams = []
+    writes = []
+    input_file = None
     try:
+        job = checked(k.CreateJobObjectW(None, None))
         limits = EXTENDED_LIMIT()
-        limits.BasicLimitInformation.LimitFlags = 0x2000  # KILL_ON_JOB_CLOSE
+        limits.BasicLimitInformation.LimitFlags = 0x2000
         checked(k.SetInformationJobObject(job, 9, c.byref(limits), c.sizeof(limits)))
-        # Only temporary, unlinked output captures; nothing is retained in audit logs.
-        with open(os.devnull, 'rb') as input_file, tempfile.TemporaryFile() as output, tempfile.TemporaryFile() as error:
-            handles = [msvcrt.get_osfhandle(f.fileno()) for f in (input_file, output, error)]
-            for handle in handles:
-                os.set_handle_inheritable(handle, True)
-            startup = STARTUPINFO()
-            startup.cb = c.sizeof(startup)
-            startup.dwFlags = 0x100  # STARTF_USESTDHANDLES
-            startup.hStdInput, startup.hStdOutput, startup.hStdError = handles
-            command = c.create_unicode_buffer(subprocess.list2cmdline(args))
-            # Suspend before assigning to the job: descendants cannot escape assignment.
-            checked(k.CreateProcessW(None, command, None, None, True, 0x4 | 0x08000000,
-                None, str(cwd) if cwd else None, c.byref(startup), c.byref(info)))
-            try:
-                checked(k.AssignProcessToJobObject(job, info.hProcess))
-                if k.ResumeThread(info.hThread) == 0xFFFFFFFF:
-                    raise c.WinError(c.get_last_error())
-                wait = k.WaitForSingleObject(info.hProcess, int(timeout * 1000))
-                if wait not in (0, 258):
-                    raise c.WinError(c.get_last_error())
-                timed_out = wait == 258
-                checked(k.TerminateJobObject(job, 124 if timed_out else 0))
-                deadline = time.monotonic() + 10
-                while True:
-                    accounting = ACCOUNTING()
-                    checked(k.QueryInformationJobObject(job, 1, c.byref(accounting), c.sizeof(accounting), None))
-                    if accounting.ActiveProcesses == 0:
-                        break
-                    if time.monotonic() >= deadline:
-                        raise RuntimeError('PROCESS_TREE_CLEANUP_UNVERIFIED')
-                    time.sleep(0.02)
-                if timed_out:
-                    raise subprocess.TimeoutExpired(args, timeout)
-                code = w.DWORD()
+        input_file = open(os.devnull, 'rb')
+        for _ in range(2):
+            read_fd, write_fd = os.pipe()
+            streams.append(os.fdopen(read_fd, 'rb', buffering=0))
+            writes.append(os.fdopen(write_fd, 'wb', buffering=0))
+        handles = [msvcrt.get_osfhandle(f.fileno()) for f in (input_file, *writes)]
+        for handle in handles:
+            os.set_handle_inheritable(handle, True)
+        startup = STARTUPINFO()
+        startup.cb = c.sizeof(startup)
+        startup.dwFlags = 0x100
+        startup.hStdInput, startup.hStdOutput, startup.hStdError = handles
+        command = c.create_unicode_buffer(subprocess.list2cmdline(args))
+        checked(k.CreateProcessW(None, command, None, None, True, 0x4 | 0x08000000,
+            None, str(cwd) if cwd else None, c.byref(startup), c.byref(info)))
+        for stream in writes:
+            stream.close()
+        checked(k.AssignProcessToJobObject(job, info.hProcess))
+        assigned = True
+        capture.start(streams)
+        if k.ResumeThread(info.hThread) == 0xFFFFFFFF:
+            raise c.WinError(c.get_last_error())
+        deadline = time.monotonic() + timeout
+        while True:
+            if capture.failure:
+                raise capture.failure
+            wait = k.WaitForSingleObject(info.hProcess, 10)
+            if wait == 0:
                 checked(k.GetExitCodeProcess(info.hProcess, c.byref(code)))
-                output.seek(0)
-                error.seek(0)
-                return subprocess.CompletedProcess(args, code.value,
-                    output.read().decode('utf-8', errors='replace'),
-                    error.read().decode('utf-8', errors='replace'))
-            finally:
-                # Also fail closed on assignment failure while the process is suspended.
-                k.TerminateProcess(info.hProcess, 125)
-                k.WaitForSingleObject(info.hProcess, 10000)
+                break
+            if wait != 258:
+                raise c.WinError(c.get_last_error())
+            if time.monotonic() >= deadline:
+                raise subprocess.TimeoutExpired(args, timeout)
+    except BaseException as error:
+        primary = error
     finally:
-        if info.hThread:
-            k.CloseHandle(info.hThread)
+        # Every failure, including suspended assignment failure, uses verified cleanup.
         if info.hProcess:
-            k.CloseHandle(info.hProcess)
-        k.CloseHandle(job)
+            try:
+                if assigned:
+                    checked(k.TerminateJobObject(job, 125))
+                    deadline = time.monotonic() + cleanup_timeout
+                    while True:
+                        accounting = ACCOUNTING()
+                        checked(k.QueryInformationJobObject(job, 1, c.byref(accounting), c.sizeof(accounting), None))
+                        if accounting.ActiveProcesses == 0:
+                            break
+                        if time.monotonic() >= deadline:
+                            raise ProcessCleanupError('JOB_CLEANUP_UNVERIFIED')
+                        time.sleep(0.02)
+                else:
+                    checked(k.TerminateProcess(info.hProcess, 125))
+                if k.WaitForSingleObject(info.hProcess, int(cleanup_timeout*1000)) != 0:
+                    raise ProcessCleanupError('PARENT_CLEANUP_UNVERIFIED')
+            except BaseException as error:
+                errors.append(type(error).__name__)
+        # Closing the job is a final kill-on-close fallback, but is not verification.
+        for handle in (job, info.hThread, info.hProcess):
+            if handle:
+                try:
+                    checked(k.CloseHandle(handle))
+                except BaseException as error:
+                    errors.append(type(error).__name__)
+        for stream in [input_file, *writes]:
+            if stream:
+                try:
+                    stream.close()
+                except BaseException as error:
+                    errors.append(type(error).__name__)
+        try:
+            capture.finish(cleanup_timeout)
+        except BaseException as error:
+            errors.extend(_cleanup_codes('OUTPUT_READERS_CLEANUP', error))
+        if not capture.threads:
+            for stream in streams:
+                try:
+                    stream.close()
+                except BaseException as error:
+                    errors.extend(_cleanup_codes('UNSTARTED_OUTPUT_CLOSE_FAILED', error))
+    _finish(primary or capture.failure, errors)
+    result = capture.result(args, code.value)
+    result.cleanup_verified = True
+    return result

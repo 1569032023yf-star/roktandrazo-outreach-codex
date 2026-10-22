@@ -150,3 +150,44 @@ Cycle: c9b67309-8f9d-4193-a800-d99fbbe404a6; evidence: `autonomy/runtime/city_ob
 07:24 observed post-deploy Inventory inventory:2026-10-22:03b70e7a, completed/target_met; actual=56 is not current SAFE or growth. Cooperstown remains active, Lake Placid is not active, and Provider requests over 24h are zero; city business acceptance is not met. Deployed hashes match; SMTP=0, sends today=0, total=517, one active Inventory, lock released. Official telemetry lacks run logs and city-level Provider details; root cause UNKNOWN. Local orchestrator differs from production SHA and cannot establish production early-exit behavior. Next original Inventory is expected at 11:58:01 +08:00; continue existing heartbeat, no reapply or manual collection.
 
 Cycle: ecc230f4-a4fc-4cc5-8737-1481a3643ba9; evidence: `autonomy/runtime/city_observation_20261021T232411`.
+
+
+<!-- BD_LIVE_OBSERVATION_BEGIN -->
+## 自动业务观察 / Automated business observation
+
+观测时间 / Observed at: 2026-10-22T09:28:04+08:00
+来源 / Source: authenticated rokt-deploy-channel v2 telemetry; freshness <= 1h
+
+历史累计、最近运行actual和当前SAFE不是同一指标；缺少阶段/资格合同的字段保持UNKNOWN。
+Historical totals, the latest run actual and current SAFE are distinct. Missing stage/eligibility contracts remain UNKNOWN.
+
+| 指标 / Metric | 结果 / Result |
+|---|---|
+| NEW_VERIFIED_ORGANIZATIONS_24H | UNKNOWN |
+| NEW_FIRST_PARTY_EMAILS_24H | UNKNOWN |
+| SAFE_TOTAL_LATEST | UNKNOWN |
+| SAFE_NET_GROWTH_7D | UNKNOWN |
+| ACTIVE_CITY | Cooperstown |
+| HISTORICAL_LEADS | 1213 |
+| HISTORICAL_LEADS_WITH_EMAIL | 652 |
+| PROVIDER_REQUESTS_24H | 0 |
+| SENDS_TODAY | 0 |
+| SMTP_OBSERVED | 0 |
+| LAST_INVENTORY_RUN | inventory:2026-10-22:03b70e7a |
+| GLOBAL_INVENTORY_UNIQUENESS | UNKNOWN |
+
+## 工作线快照 / Workstream snapshot
+
+- A: 工程、审核、登记与正式部署完成；等待唯一原Inventory自然运行验收，业务增长未知。 / Engineering, review, registration and official deployment completed; awaiting the sole original Inventory natural run; business growth unknown.
+- B: 品牌25文件已整合，177离线测试及独立静态审核通过；磁盘故障已恢复，生产验收仍未完成 / 25 brand files integrated, 177 offline tests and independent static review passed; disk failure recovered, production acceptance remains incomplete
+- C: 四套V6定向58项通过；可比全量563项560通过、3项与基线相同；整合后86项加4身份门禁测试通过；QA未登记未发送 / Four V6 variants passed 58 targeted tests; comparable full suite 563/560 passed with three baseline-identical issues; integrated 86 tests plus four identity-gate tests passed; QA unregistered and unsent
+- D: 未知结果及写入关闭补修限定审核通过；空间预检与双来源交接45项回归、21项独立审核通过；生产仍受通道及来源访问阻塞 / Scoped unknown-outcome and write-close review passed; storage admission and discovery handoff passed 45 regressions and 21 independent checks; production remains blocked by channel and source access
+
+未执行与风险：未据库存56确认SAFE；未确认完整阶段、全局调度唯一性或持续无人值守。
+Not executed / risks: inventory 56 does not confirm SAFE; full stage telemetry, global scheduler uniqueness and sustained unattended operation remain unverified.
+下一步：消费既有运维受限补证；无新数据时推进其他已授权工程。
+Next: consume the existing bounded operations handoff; advance other authorized engineering when data is unavailable.
+敏感检查：仅固定脱敏聚合，无凭据及客户明细。
+Sensitive-data check: fixed sanitized aggregates only; no credentials or customer records.
+
+<!-- BD_LIVE_OBSERVATION_END -->

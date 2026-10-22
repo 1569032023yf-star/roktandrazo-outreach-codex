@@ -1,0 +1,26 @@
+{
+  "task_id": "BD-FULL-PRODUCTION-20261022",
+  "updated_at": "2026-10-22T01:29:26.575450+00:00",
+  "branch": "codex/autonomous-bd-supervisor",
+  "summary_zh": "限定工程审核通过，生产完整板块尚未验收；继续原队列。",
+  "summary_en": "Scoped engineering approved; no complete production block accepted; continue the existing queue.",
+  "review": "evidence/bd_full_20261022/reviewer/review.json",
+  "tests_passed": 81,
+  "production_acceptance": false,
+  "sensitive_check_zh": "无凭据、邮箱或客户明细；仅固定聚合。",
+  "sensitive_check_en": "No credentials, email addresses or customer records; fixed aggregates only.",
+  "D_GOOGLE_LIVE_REQUESTS": "NOT_EXECUTED",
+  "D_OSM_LIVE_REQUESTS": "NOT_EXECUTED",
+  "D_CROSS_SOURCE_UNIQUE_ORGS": "UNKNOWN",
+  "D_HISTORY_CLEAN_NEW_ORGS": "UNKNOWN",
+  "D_VERIFIED_FIRST_PARTY_EMAILS": "UNKNOWN",
+  "D_NEW_SAFE": "UNKNOWN",
+  "D_DUAL_SOURCE_ACCEPTANCE": false,
+  "policy_sources": [
+    "https://operations.osmfoundation.org/policies/nominatim/",
+    "https://developers.google.com/maps/documentation/places/web-service/policies",
+    "https://wiki.openstreetmap.org/wiki/Overpass_API"
+  ],
+  "limitations_zh": "未具备正式执行/导入契约；公共Nominatim禁止系统性商家清单采集；保留资格、history、MX和SAFE门禁。",
+  "limitations_en": "Supported execution/import contract unavailable; public Nominatim forbids systematic POI harvesting; preserve qualification, history, MX and SAFE gates."
+}

@@ -1,0 +1,58 @@
+{
+  "verdict": "APPROVED_SCOPED_ENGINEERING",
+  "verdict_zh": "限定范围工程审核通过",
+  "tests": {
+    "failures": 0,
+    "tests": 81,
+    "errors": 0,
+    "infrastructure_failure": "Initial PowerShell host Out of memory; no result generated; excluded from test verdict. 首次宿主内存不足无结果，不计代码结果。",
+    "tested_at": "2026-10-22T09:10:20.0677497+08:00",
+    "sha256": {
+      "autonomy/supervisor.py": "2a8be35a0954442b1fa7cbb223eab4e0ee380940aae9e178465816a20ad2ed23",
+      "autonomy/test_process_job.py": "b852ad13f12bcf86cbd076f1f89717ae66a2623d45d07783641330fd0bea9125",
+      "autonomy/process_job.py": "cbee7a6d9e2d8cc219839b276c48870607d182a0026b2b6b450a00bd487ae94f",
+      "autonomy/lock_recovery.py": "98b63a2e09c7a8c09258bf13cd511402faa57e61ea9227c971276dcb106da7cb",
+      "autonomy/test_lock_recovery.py": "69decc2cd43504e9b6262f17c71a09edef2d1b7f545fd425d5f557325d019560",
+      "autonomy/test_supervisor.py": "448324edbbc09b25d59ca675659c4e2f13aec07aa66ad70abd555411383e4ed5",
+      "tools/reconstruct_production_orchestrator.py": "cb5085495df4b8f512a94dfe58a27394dad5228522fad686f0cdc61d01b4e4ba",
+      "tools/observe_bd_production.py": "9670851f47bd94b92ef48dd8334b3537d8e77607085398e88d8333b7b47e7c9e",
+      "autonomy/telemetry.py": "a567344ead3f59e3c56bf5bdfdbb19fe2cabd7efb93caa0d18ce26d752ae3faf",
+      "tests/test_production_inventory_path.py": "983bd7f924306b4e432e1cc2ebf9868ede53d1d8f0a6ced1e663cd7daeb36b3c",
+      "autonomy/test_bridge_telemetry.py": "27c01ebb890b6672203bef6e5c35dea94a82c6be04a7a7c7bb6743c23d0691ad"
+    },
+    "elapsed_seconds": 13.338,
+    "success": true
+  },
+  "source_modified_by_reviewer": false,
+  "commit_created_by_reviewer": false,
+  "streams": {
+    "A": {
+      "engineering": "APPROVED",
+      "limitations_zh": "固定Git源码AST模拟不证明真实生产入口、active state或停滞根因；需生产阶段证据。",
+      "limitations_en": "Fixed-Git-source AST mocks do not establish actual production entry point, active state or stall root cause; production stage evidence remains required."
+    },
+    "B": {
+      "engineering": "APPROVED",
+      "limitations_zh": "消费与展示测试通过；无权威SAFE、全局唯一或两次独立生产资格/阶段对账证明。",
+      "limitations_en": "Consumer and dashboard tests pass; authoritative SAFE, global uniqueness, and two independent production qualification/stage reconciliations are unproven.",
+      "B_TWO_LIVE_RECONCILIATIONS": false
+    },
+    "C": {
+      "engineering": "APPROVED",
+      "limitations_zh": "真实Windows本地进程与锁测试通过；真实无人值守多心跳验收未完成。",
+      "limitations_en": "Real local Windows process and lock tests pass; unattended multi-heartbeat acceptance remains incomplete."
+    }
+  },
+  "closed_findings": [
+    "ORIGINAL_TIMEOUT_MASKED_BY_LOCK_STATE_WRITE",
+    "OUTPUT_CLOSE_CLASSIFICATION_LOST",
+    "EXITED_PROCESS_RETAINED_HANDLE_LIVENESS",
+    "MALFORMED_STATUS_TYPEERROR",
+    "STALE_DASHBOARD_AUTHENTICATION_FRESHNESS"
+  ],
+  "production_acceptance": false,
+  "unattended_heartbeat_acceptance": false,
+  "report": "review.md",
+  "log": "tests.log",
+  "reviewer_live_production_requests": 0
+}

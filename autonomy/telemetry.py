@@ -22,6 +22,98 @@ FIELDS = frozenset({'schema_version', 'snapshot_id', 'source', 'collected_at',
 SOURCE = re.compile(r'[a-z][a-z0-9_-]{0,63}\Z', re.ASCII)
 
 
+def consume_bridge_receipt(receipt, *, approved_channel=None, now=None):
+    """Allowlisted v2 aggregate consumer; no network/DB access.
+
+    只消费调用方认证过的正式回执；缺失指标和不充分证明保持UNKNOWN。
+    Channel identity inside JSON is not authorization: the trusted caller must
+    separately supply approved_channel after authenticated transport.
+    """
+    now = _now(now)
+    if approved_channel != 'rokt-deploy-channel':
+        _reject('UNAPPROVED_SOURCE')
+    if type(receipt) is not dict or receipt.get('http_status') != 200:
+        _reject('TRANSPORT_NOT_VERIFIED')
+    raw = receipt.get('response')
+    if (type(raw) is not dict or raw.get('schema') != 'rokt.telemetry.v1'
+            or raw.get('channel_id') != approved_channel
+            or raw.get('test_mode') is not False or raw.get('verdict') != 'OK'):
+        _reject('INVALID_BRIDGE_ENVELOPE')
+    try:
+        collected = datetime.fromisoformat(raw['generated_at'])
+        if collected.tzinfo is None or collected.utcoffset() is None:
+            _reject('INVALID_TIMESTAMP')
+    except (KeyError, TypeError, ValueError):
+        _reject('INVALID_TIMESTAMP')
+    if collected > now or now - collected > MAX_AGE:
+        _reject('STALE_OR_FUTURE_BRIDGE_RECEIPT')
+
+    def section(key):
+        value = raw.get(key)
+        return value if type(value) is dict else {}
+
+    def count(obj, key):
+        value = obj.get(key)
+        return value if type(value) is int and 0 <= value <= 2**63 - 1 else 'UNKNOWN'
+
+    discovery, sends = section('discovery'), section('sends')
+    guard, inventory = section('guardrails'), section('inventory')
+    city, safe = section('city'), section('safe')
+    result = {
+        'source': approved_channel, 'observed_at': collected.isoformat(),
+        'schema': 'rokt.bd-business-observation.v1',
+        'summary_zh': '正式认证回执的固定聚合投影；存量、观察窗口和未知资格分开。',
+        'summary_en': 'Fixed aggregate projection of an authenticated receipt; totals, observation windows and unknown eligibility remain separate.',
+        'historical_totals': {key: count(discovery, key) for key in ('leads_total', 'leads_with_email')},
+        'rolling_24h': {'provider_requests': count(discovery, 'provider_requests_24h'),
+                        'new_raw_merchants': 'UNKNOWN', 'new_verified_organizations': 'UNKNOWN',
+                        'new_verified_official_sites': 'UNKNOWN', 'new_first_party_emails': 'UNKNOWN',
+                        'new_history_clean_organizations': 'UNKNOWN', 'safe_net_growth': 'UNKNOWN'},
+        'rolling_7d': {'new_verified_organizations': 'UNKNOWN', 'safe_net_growth': 'UNKNOWN'},
+        'current_safe': 'UNKNOWN',
+        'safe_authority_connected': False,
+        'safety': {'smtp_disabled': guard.get('smtp_enabled') == '0',
+                   'smtp_observed': guard.get('smtp_enabled') if guard.get('smtp_enabled') in ('0', '1') else 'UNKNOWN',
+                   'sent_today': count(sends, 'sent_today'), 'total_sent': count(sends, 'total_sent'),
+                   'duplicate_inventory': 'UNKNOWN',
+                   'designated_inventory_active_count': count(section('automations'), 'active_inventory_count'),
+                   'running_inventory_last_2h': count(inventory, 'running_inventory_24h_window'),
+                   'lock_released': inventory.get('lock_value') == 'released'},
+        'bounce_total': count(sends, 'bounce_log'),
+        'suppression_total': count(sends, 'suppression_list'),
+        'stage_telemetry': 'NOT_EXPOSED',
+        'city_completion_conditions': 'NOT_EXPOSED',
+        'lake_placid_provider_requests': 'UNKNOWN',
+        'last_inventory_run': 'UNKNOWN',
+        'active_cities': [],
+        'limitations_zh': ['指定ID计数不能证明全局Inventory唯一性。', '旧running_inventory_24h_window实际上只统计2小时。', 'SAFE快照未包含完整资格来源和有效性契约，不能据此确认权威连接。'],
+        'limitations_en': ['A designated-ID count does not establish global Inventory uniqueness.', 'Legacy running_inventory_24h_window actually covers two hours.', 'SAFE snapshots lack a complete authority/validity contract and cannot establish authority connectivity.'],
+    }
+    # Never copy arbitrary strings or customer details into the public projection.
+    statuses = {'active', 'ACTIVE', 'pending', 'PENDING', 'QUEUED', 'completed', 'COMPLETED'}
+    cities = city.get('active')
+    if isinstance(cities, list):
+        for row in cities[:100]:
+            if (type(row) is dict and type(row.get('city')) is str
+                    and re.fullmatch(r'[A-Za-z .\x27-]{1,80}', row['city'])
+                    and type(row.get('status')) is str and row['status'] in statuses):
+                result['active_cities'].append({'city': row['city'], 'status': row['status']})
+    runs = inventory.get('recent_runs')
+    if isinstance(runs, list):
+        for row in runs[:100]:
+            if (type(row) is dict and row.get('stage') == 'inventory'
+                    and type(row.get('run_id')) is str
+                    and re.fullmatch(r'inventory:\d{4}-\d{2}-\d{2}:[a-zA-Z0-9_-]{1,64}', row['run_id'])
+                    and type(row.get('status')) is str
+                    and row['status'] in {'completed', 'partial', 'stopped', 'running'}):
+                result['last_inventory_run'] = {key: row[key] for key in ('run_id', 'status')}
+                result['last_inventory_run']['actual_historical_run_count'] = count(row, 'actual')
+                # stop_reason/error are untrusted free text; do not echo them.
+                result['last_inventory_run']['target_met'] = row.get('stop_reason') == 'target_met'
+                break
+    return result
+
+
 class InvalidSnapshot(ValueError):
     """Only fixed reason codes; never echo rejected payloads / 不回显输入。"""
 

@@ -17,9 +17,11 @@ import tempfile
 import uuid
 
 try:
+    from autonomy.lock_recovery import exclusive_lock, mark_tree
     from autonomy.process_job import run_tree
     from autonomy.storage_preflight import check_storage
 except ModuleNotFoundError:
+    from lock_recovery import exclusive_lock, mark_tree
     from process_job import run_tree
     from storage_preflight import check_storage
 
@@ -72,22 +74,9 @@ def atomic_json(path, value):
 
 @contextmanager
 def exclusive(runtime):
-    """Fail closed on an orphan lock: explicit recovery audits it first."""
-    runtime.mkdir(parents=True, exist_ok=True)
-    lock = runtime / 'supervisor.lock'
-    fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-    try:
-        with os.fdopen(fd, 'w') as handle:
-            json.dump({'pid': os.getpid(), 'started_at': now()}, handle)
+    """Instance-token lock, serialized against explicit recovery / 实例令牌互斥锁。"""
+    with exclusive_lock(runtime):
         yield
-    except BaseException as error:
-        try:
-            lock.unlink()
-        except OSError:
-            error.add_note('LOCK_CLEANUP_FAILED')
-        raise
-    else:
-        lock.unlink()
 
 
 def _init_locked(runtime):
@@ -240,10 +229,32 @@ def run_agent(task, root, timeout=600):
     sandbox = 'workspace-write' if task['role'] == 'developer' else 'read-only'
     args = [exe, '-a', 'never', 'exec', '-s', sandbox, '--ephemeral',
             '--json', '-C', str(root), prompt]
+    mark_tree('unverified')
     try:
         result = run_tree(args, timeout=timeout, cwd=root)
-    except subprocess.TimeoutExpired:
-        return {'ok': False, 'reason': 'AGENT_TIMEOUT'}
+    except Exception as error:
+        verified = getattr(error, 'cleanup_verified', False) is True
+        lock_error_type = None
+        if verified:
+            try:
+                mark_tree('verified_closed')
+            except Exception as lock_error:
+                # Preserve the process failure even if its lock receipt cannot persist.
+                lock_error_type = type(lock_error).__name__
+        reason = ('AGENT_TIMEOUT' if isinstance(error, subprocess.TimeoutExpired)
+                  else getattr(error, 'reason', 'AGENT_PROCESS_ERROR'))
+        # Serialize only fixed classifications, never prompts, output or exception text.
+        allowed = {'AGENT_TIMEOUT', 'OUTPUT_LIMIT', 'PROCESS_TREE_CLEANUP_UNVERIFIED'}
+        if reason not in allowed:
+            reason = 'AGENT_PROCESS_ERROR'
+        errors = tuple(getattr(error, 'cleanup_errors', ()))
+        return {'ok': False, 'reason': reason, 'result': 'UNKNOWN',
+                'cleanup_verified': verified,
+                'cleanup_errors': [str(x) for x in errors if str(x).isidentifier()],
+                'error_type': type(error).__name__,
+                'lock_state_update_failed': lock_error_type is not None,
+                'lock_state_update_error_type': lock_error_type}
+    mark_tree('verified_closed')
     events = []
     for line in result.stdout.splitlines():
         try:
@@ -401,48 +412,70 @@ def two_unattended_cycles(records):
     return False
 
 
-def dashboard(root=ROOT):
-    """Unknown is not zero; there is no approved production telemetry feed yet."""
-    unknown = 'UNKNOWN'
-    metrics = {key: unknown for key in ('NEW_VERIFIED_ORGANIZATIONS_24H',
-        'NEW_FIRST_PARTY_EMAILS_24H', 'SAFE_TOTAL_LATEST', 'SAFE_NET_GROWTH_7D',
-        'CUSTOMER_EMAILS_SENT_24H', 'REPLIES_24H', 'BOUNCES_24H', 'UNSUBSCRIBES_24H',
-        'NEW_VERIFIED_ORGANIZATIONS_7D', 'NEW_FIRST_PARTY_EMAILS_7D',
-        'CUSTOMER_EMAILS_SENT_7D', 'REPLIES_7D', 'BOUNCES_7D', 'UNSUBSCRIBES_7D',
-        'OFFICIAL_SITES_24H', 'OFFICIAL_SITES_7D', 'HISTORY_MX_VERIFIED_24H',
-        'HISTORY_MX_VERIFIED_7D', 'ACTIVE_CITY')}
+def dashboard(root=ROOT, *, bridge_receipt=None):
+    """Preserve historical reports; render a fresh authenticated aggregate section.
+
+    保留历史日报，固定回执来源由受控采集调用方负责认证；缺证不补零。
+    """
+    try:
+        from autonomy.telemetry import consume_bridge_receipt, InvalidSnapshot
+    except ModuleNotFoundError:
+        from telemetry import consume_bridge_receipt, InvalidSnapshot
+    metrics = {key: 'UNKNOWN' for key in (
+        'NEW_VERIFIED_ORGANIZATIONS_24H', 'NEW_FIRST_PARTY_EMAILS_24H',
+        'SAFE_TOTAL_LATEST', 'SAFE_NET_GROWTH_7D', 'ACTIVE_CITY',
+        'HISTORICAL_LEADS', 'HISTORICAL_LEADS_WITH_EMAIL',
+        'PROVIDER_REQUESTS_24H', 'SENDS_TODAY', 'SMTP_OBSERVED',
+        'LAST_INVENTORY_RUN', 'GLOBAL_INVENTORY_UNIQUENESS')}
+    observed = 'UNKNOWN'
+    source_note = 'UNKNOWN / NOT_VALIDATED'
+    if bridge_receipt is not None:
+        try:
+            live = consume_bridge_receipt(bridge_receipt,
+                approved_channel='rokt-deploy-channel')
+        except InvalidSnapshot:
+            live = None
+        if live:
+            observed = live['observed_at']
+            source_note = 'authenticated rokt-deploy-channel v2 telemetry; freshness <= 1h'
+            metrics.update(HISTORICAL_LEADS=live['historical_totals']['leads_total'],
+                HISTORICAL_LEADS_WITH_EMAIL=live['historical_totals']['leads_with_email'],
+                PROVIDER_REQUESTS_24H=live['rolling_24h']['provider_requests'],
+                SENDS_TODAY=live['safety']['sent_today'],
+                SMTP_OBSERVED=live['safety']['smtp_observed'])
+            active = [x['city'] for x in live['active_cities']
+                      if x['status'].lower() == 'active']
+            metrics['ACTIVE_CITY'] = ', '.join(active) if active else 'UNKNOWN'
+            last = live['last_inventory_run']
+            metrics['LAST_INVENTORY_RUN'] = last['run_id'] if isinstance(last, dict) else 'UNKNOWN'
     state = read(root / 'autonomy' / 'WORKSTREAM_STATUS.json', {})
-    control = state.get('workstreams', {}).get('D', {})
-    next_zh = control.get('next_automatic_action_zh', unknown)
-    next_en = control.get('next_automatic_action_en', unknown)
-    report = ['# ROKT&RAZO 业务日报 / Business Daily Report', '',
-              '日期 / Date: ' + datetime.now(LOCAL_TZ).date().isoformat(), '',
-              '生产指标未接入获准脱敏数据源，UNKNOWN不能当成零或历史累计。',
-              'Production telemetry has no authorized sanitized feed; UNKNOWN is neither zero nor a historical total.', '',
-              f"成功无人值守周期 / Successful unattended cycles: {control.get('successful_unattended_cycles', unknown)}；整体自主运行尚未验收 / Overall autonomy not accepted.", '',
-              '| 今日业务问题 / Daily business question | 结果 / Result |', '|---|---|',
-              '| 新增真实组织 / New real organizations | UNKNOWN；B本轮0 / B current run: 0 |',
-              '| 新增第一方邮箱 / New first-party emails | UNKNOWN；B本轮0 / B current run: 0 |',
-              '| SAFE总量及增长 / SAFE total and growth | UNKNOWN |',
-              '| 活动城市 / Active city | UNKNOWN；城市修复开发验证与生产状态分开 / Development validation is separate from production state |',
-              '| V6和发信缺口 / V6 and sending gaps | 新QA登记、收件认证、客户地址及全资格门禁 / New QA registration, receipt/authentication, customer address and full eligibility gates |',
-              '| 本轮生产部署 / Production releases this run | 0；当日其他发布UNKNOWN / 0; other releases today UNKNOWN |',
-              '| 阻塞 / Blockers | 新发布入口、历史副本、遥测待接通 / New release entrypoint, history copy and telemetry unavailable |',
-              f'| 下一步 / Next | {next_zh} / {next_en} |', '',
-              '| 指标 / Metric | 当前 / Current |', '|---|---|']
-    report.extend(f'| {key} | {value} |' for key, value in metrics.items())
-    report.extend(['', '## 工作线 / Workstreams', ''])
+    lines = ['## 自动业务观察 / Automated business observation', '',
+             f'观测时间 / Observed at: {observed}',
+             f'来源 / Source: {source_note}', '',
+             '历史累计、最近运行actual和当前SAFE不是同一指标；缺少阶段/资格合同的字段保持UNKNOWN。',
+             'Historical totals, the latest run actual and current SAFE are distinct. Missing stage/eligibility contracts remain UNKNOWN.', '',
+             '| 指标 / Metric | 结果 / Result |', '|---|---|']
+    lines.extend(f'| {key} | {value} |' for key, value in metrics.items())
+    lines.extend(['', '## 工作线快照 / Workstream snapshot', ''])
     for key, stream in state.get('workstreams', {}).items():
-        report.append(f"- {key}: {stream.get('status_zh', unknown)} / {stream.get('status_en', unknown)}")
-    report.extend(['', '本日实际生产部署 / Actual production deployments today: UNKNOWN',
-                   '', '已完成审核与周期证据见验收JSON；后续新改动仍需独立审核。待完成：真实生产遥测、新发布登记及持续并行。',
-                   'Completed reviews and cycle evidence are in the validation JSON; future changes still require independent review. Pending: real production telemetry, new release registration and sustained parallel operation.',
-                   '', '下一步：继续队列工程、审核各线提交，并通过受控入口查询发布状态。',
-                   'Next: continue queued engineering, review stream commits, query releases through the controlled channel.',
-                   '', '风险与未执行：未证明持续自主开发；本报告不授权生产DB或SMTP。',
-                   'Risks and non-executed work: sustained autonomy is unproven; this report grants no production DB or SMTP access.', ''])
+        lines.append(f"- {key}: {stream.get('status_zh', 'UNKNOWN')} / {stream.get('status_en', 'UNKNOWN')}")
+    lines.extend(['', '未执行与风险：未据库存56确认SAFE；未确认完整阶段、全局调度唯一性或持续无人值守。',
+                  'Not executed / risks: inventory 56 does not confirm SAFE; full stage telemetry, global scheduler uniqueness and sustained unattended operation remain unverified.',
+                  '下一步：消费既有运维受限补证；无新数据时推进其他已授权工程。',
+                  'Next: consume the existing bounded operations handoff; advance other authorized engineering when data is unavailable.',
+                  '敏感检查：仅固定脱敏聚合，无凭据及客户明细。',
+                  'Sensitive-data check: fixed sanitized aggregates only; no credentials or customer records.', ''])
     path = root / 'autonomy' / 'BUSINESS_DAILY_REPORT.md'
-    path.write_text('\n'.join(report), encoding='utf-8')
+    original = path.read_text(encoding='utf-8-sig') if path.exists() else '# ROKT&RAZO 业务日报 / Business Daily Report\n'
+    begin, end = '<!-- BD_LIVE_OBSERVATION_BEGIN -->', '<!-- BD_LIVE_OBSERVATION_END -->'
+    section = begin + '\n' + '\n'.join(lines) + '\n' + end
+    if begin in original and end in original and original.index(begin) < original.index(end):
+        left, right = original.index(begin), original.index(end) + len(end)
+        original = original[:left] + section + original[right:]
+    else:
+        original += '\n\n' + section + '\n'
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(original, encoding='utf-8')
     return metrics
 
 

@@ -1,0 +1,41 @@
+{
+  "task_id": "BD-FULL-PRODUCTION-20261022",
+  "updated_at": "2026-10-22T01:30:07.246630+00:00",
+  "branch": "codex/autonomous-bd-supervisor",
+  "start_commit": "371c299ca7b97e595f3dfe84f33f2cc5f32be74d",
+  "workstreams": [
+    "A_RUNTIME_INVESTIGATION",
+    "B_AUTHENTICATED_TELEMETRY_CONSUMER",
+    "C_LOCK_OUTPUT_RELIABILITY"
+  ],
+  "last_verified_action": "REAL_HEARTBEAT_HEALTH_STATUS_TELEMETRY_RECONCILED_AND_REVIEW_HASHES_MATCH",
+  "production_operation_id": "op-20261022-011811-4925c1",
+  "known_external_side_effects": [
+    "Existing GitHub issue2 comment6330120094: minimal read-only handoff request; delivery to GitHub confirmed, operator acknowledgement not verified"
+  ],
+  "uncommitted_files": [
+    " M autonomy/process_job.py",
+    " M autonomy/supervisor.py",
+    " M autonomy/telemetry.py",
+    "?? autonomy/lock_recovery.py",
+    "?? autonomy/test_bridge_telemetry.py",
+    "?? autonomy/test_lock_recovery.py",
+    "?? autonomy/test_process_job.py",
+    "?? tests/test_production_inventory_path.py",
+    "?? tools/reconstruct_production_orchestrator.py"
+  ],
+  "test_evidence": {
+    "total": 81,
+    "C": 46,
+    "B": 28,
+    "A": 7,
+    "source_hashes_verified": true
+  },
+  "reviewer_status": "APPROVED_SCOPED_ENGINEERING",
+  "root_cause": "UNKNOWN_PENDING_ACTUAL_STAGE_TRACE_ACTIVE_STATE_AND_ENTRYPOINT",
+  "next_automatic_action": "Check existing bounded handoff; observe original scheduled Inventory at 11:58 +08; continue true-heartbeat reliability acceptance; never reapply.",
+  "summary_zh": "长期任务已持久化；正式城市运行停滞转根因调查，其他工程并行。",
+  "summary_en": "Long-term task persisted; stalled production city moves to root-cause investigation while independent engineering continues.",
+  "heartbeat_trigger": "2026-10-22T01:25:06.394Z",
+  "reports_written": true
+}

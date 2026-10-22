@@ -1,0 +1,18 @@
+{
+  "summary_zh": "固定聚合与独立审核证据，不构成生产验收。",
+  "summary_en": "Fixed aggregate and independent review evidence, not production acceptance.",
+  "files": {
+    "business_observation.json": "4aa3b2369393ca4654e5354846474ca3493cc77e0b4d3415f6d606823103755d",
+    "heartbeat_cycle.json": "068ab2ce1fce3fc63d52466091fed4c2e735a1f26e4de0fc91ed95f1361b99cc",
+    "telemetry_00.json": "113fa30d43ef61cac965cab15f38284d423abb1a3d5aaf04efe092b239cb068d",
+    "telemetry_01.json": "8d1be8a5cd722efc510ece53127bb6f4421109147764b5026f0a2605bb88b1c2",
+    "telemetry_02.json": "f6af58e43089a3851020006d9ac692ffd8d2407c1d5331b1af20935b28507513",
+    "reliability\\developer_handoff.md": "052139d05a2d7a67afe1ed3ab5b7aad3772edd7e9d1882df2ffcbe9fbc7ae2f9",
+    "reliability\\tests.json": "2f33478c9285d7a65be230e195ff19636becebaa21dd8d41454bfdba6ab47aac",
+    "reliability\\tests.log": "b0543615ca79b47afc36a52f2b5db633c146eff1e2c1a4dd72c345492d65f57b",
+    "reviewer\\review.json": "fc4f5224a96c68b97a8f2ad43678a8bb233c528aa29a1f69d6ec5b4b119c99ba",
+    "reviewer\\review.md": "c9917a401fc3da53580ff055817eec0915c04282b1c45a79e8cbe01f11a8dd4c",
+    "reviewer\\tests.json": "7684522b125514cb97da42fecce64a61181672f6a17773d49f78fd2c6868df8a",
+    "reviewer\\tests.log": "7abe468ecc5d3bbbabdcfe1b5363f73a0eac15336c9be52f25491f72e7ef9853"
+  }
+}

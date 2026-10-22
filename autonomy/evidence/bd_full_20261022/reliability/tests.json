@@ -1,0 +1,34 @@
+{
+  "summary_zh": "本地工程失败路径与Windows真实进程/锁回归，不代表生产或真实心跳验收。",
+  "summary_en": "Local engineering failure-path and Windows real-process/lock regressions; not production or real-heartbeat acceptance.",
+  "started_at": "2026-10-22T01:08:35.601323+00:00",
+  "finished_at": "2026-10-22T01:08:50.076229+00:00",
+  "duration_seconds": 14.475,
+  "exit_code": 0,
+  "tests_passed": 46,
+  "command": [
+    "C:\\Users\\15690\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "autonomy.test_process_job",
+    "autonomy.test_lock_recovery",
+    "autonomy.test_supervisor",
+    "-v"
+  ],
+  "source_sha256": {
+    "autonomy/process_job.py": "cbee7a6d9e2d8cc219839b276c48870607d182a0026b2b6b450a00bd487ae94f",
+    "autonomy/lock_recovery.py": "98b63a2e09c7a8c09258bf13cd511402faa57e61ea9227c971276dcb106da7cb",
+    "autonomy/test_process_job.py": "b852ad13f12bcf86cbd076f1f89717ae66a2623d45d07783641330fd0bea9125",
+    "autonomy/test_lock_recovery.py": "69decc2cd43504e9b6262f17c71a09edef2d1b7f545fd425d5f557325d019560",
+    "autonomy/supervisor.py": "2a8be35a0954442b1fa7cbb223eab4e0ee380940aae9e178465816a20ad2ed23"
+  },
+  "source_unchanged_during_tests": true,
+  "log_sha256": "b0543615ca79b47afc36a52f2b5db633c146eff1e2c1a4dd72c345492d65f57b",
+  "real_process_tests": true,
+  "real_heartbeat_cycles_tested": 0,
+  "production_modified": false,
+  "customer_data_modified": false,
+  "secrets_check": "NO_CREDENTIALS_OR_CUSTOMER_CONTENT_READ_OR_WRITTEN"
+}
