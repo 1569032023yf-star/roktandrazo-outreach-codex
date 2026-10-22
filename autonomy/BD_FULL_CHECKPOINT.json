@@ -1,6 +1,6 @@
 {
   "task_id": "BD-FULL-PRODUCTION-20261022",
-  "updated_at": "2026-10-22T01:30:07.246630+00:00",
+  "updated_at": "2026-10-22T01:30:47.250662+00:00",
   "branch": "codex/autonomous-bd-supervisor",
   "start_commit": "371c299ca7b97e595f3dfe84f33f2cc5f32be74d",
   "workstreams": [
@@ -8,22 +8,12 @@
     "B_AUTHENTICATED_TELEMETRY_CONSUMER",
     "C_LOCK_OUTPUT_RELIABILITY"
   ],
-  "last_verified_action": "REAL_HEARTBEAT_HEALTH_STATUS_TELEMETRY_RECONCILED_AND_REVIEW_HASHES_MATCH",
+  "last_verified_action": "REVIEWED_ENGINEERING_AND_SIX_REPORTS_PUSHED_REMOTE_SHA_MATCH",
   "production_operation_id": "op-20261022-011811-4925c1",
   "known_external_side_effects": [
     "Existing GitHub issue2 comment6330120094: minimal read-only handoff request; delivery to GitHub confirmed, operator acknowledgement not verified"
   ],
-  "uncommitted_files": [
-    " M autonomy/process_job.py",
-    " M autonomy/supervisor.py",
-    " M autonomy/telemetry.py",
-    "?? autonomy/lock_recovery.py",
-    "?? autonomy/test_bridge_telemetry.py",
-    "?? autonomy/test_lock_recovery.py",
-    "?? autonomy/test_process_job.py",
-    "?? tests/test_production_inventory_path.py",
-    "?? tools/reconstruct_production_orchestrator.py"
-  ],
+  "uncommitted_files": [],
   "test_evidence": {
     "total": 81,
     "C": 46,
@@ -37,5 +27,11 @@
   "summary_zh": "长期任务已持久化；正式城市运行停滞转根因调查，其他工程并行。",
   "summary_en": "Long-term task persisted; stalled production city moves to root-cause investigation while independent engineering continues.",
   "heartbeat_trigger": "2026-10-22T01:25:06.394Z",
-  "reports_written": true
+  "reports_written": true,
+  "commit": "7ed0a42f74e36be0e25492e2a02ec39a94ec11df",
+  "remote_verified_commit": "7ed0a42f74e36be0e25492e2a02ec39a94ec11df",
+  "git_push_success": true,
+  "external_side_effects_this_heartbeat": [
+    "Git branch push only; authenticated read-only health/status/telemetry; no production mutations"
+  ]
 }

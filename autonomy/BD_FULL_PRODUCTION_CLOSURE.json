@@ -304,8 +304,15 @@
   "PRODUCTION_OPERATION_IDS": [
     "op-20261022-011811-4925c1"
   ],
-  "REVIEWED_COMMITS": [],
-  "GIT_PUSH_SUCCESS": false,
+  "REVIEWED_COMMITS": [
+    {
+      "commit": "7ed0a42f74e36be0e25492e2a02ec39a94ec11df",
+      "scope": "REVIEWED_SOURCE_HASHES_MATCH_81_PASS",
+      "evidence": "autonomy/evidence/bd_full_20261022/reviewer/tests.json"
+    }
+  ],
+  "GIT_PUSH_SUCCESS": true,
   "BLOCKERS_REQUIRING_USER": [],
-  "NEXT_AUTOMATIC_ACTION": "Check existing bounded handoff; observe original scheduled Inventory at 11:58 +08; continue true-heartbeat reliability acceptance; never reapply."
+  "NEXT_AUTOMATIC_ACTION": "Check existing bounded handoff; observe original scheduled Inventory at 11:58 +08; continue true-heartbeat reliability acceptance; never reapply.",
+  "remote_verified_commit": "7ed0a42f74e36be0e25492e2a02ec39a94ec11df"
 }
