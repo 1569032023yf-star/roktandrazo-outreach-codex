@@ -1,10 +1,11 @@
 {
   "command": "python -m unittest tests.test_city_legacy_retry -q",
-  "tests": 22,
+  "tests": 23,
   "result": "PASS / 通过",
-  "duration_seconds": 9.753,
+  "duration_seconds": 11.043,
   "offline_only": true,
   "patch_forward_reverse_byte_exact": true,
   "patch_git_config": "core.autocrlf=false for exact production LF / 精确生产LF",
-  "production_acceptance": "NOT_RUN / 未运行"
+  "production_acceptance": "NOT_RUN / 未运行",
+  "allowlist_regression": "PASS: empty no writes; single ID leaves other row byte-identical / 空列表无写入，单ID不改其他行"
 }

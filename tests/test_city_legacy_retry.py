@@ -54,6 +54,25 @@ class LegacyCompatibilityTests(CityNetworkRecoveryTests):
             saved=dict(conn.execute('SELECT * FROM lead_discovery_results WHERE id=?',(row['id'],)).fetchone())
             self.assertTrue(automatic_recovery_deferred(saved))
 
+    def test_website_allowlist_limits_compatibility_writes(self):
+        with DiscoveryDb() as conn:
+            service,city,row,_,_=self.missing_website(conn)
+            row=self.save_retry(conn,row,{'attempts':31})
+            clone=dict(row);clone.pop('id');clone['linked_lead_id']=None
+            clone['provider_result_id']=str(clone.get('provider_result_id',''))+'-unrequested'
+            columns=list(clone)
+            cursor=conn.execute('INSERT INTO lead_discovery_results ('+','.join(columns)+') VALUES ('+','.join('?' for _ in columns)+')',list(clone.values()))
+            other_id=cursor.lastrowid
+            before={r['id']:dict(r) for r in conn.execute('SELECT * FROM lead_discovery_results')}
+            resolver=Mock()
+            self.assertEqual(service.run_website_resolution(city,resolver,staging_ids=[]).results_seen,0)
+            self.assertEqual({r['id']:dict(r) for r in conn.execute('SELECT * FROM lead_discovery_results')},before)
+            self.assertEqual(service.run_website_resolution(city,resolver,staging_ids=[row['id']]).results_seen,0)
+            self.assertEqual(dict(conn.execute('SELECT * FROM lead_discovery_results WHERE id=?',(other_id,)).fetchone()),before[other_id])
+            selected=dict(conn.execute('SELECT * FROM lead_discovery_results WHERE id=?',(row['id'],)).fetchone())
+            self.assertTrue(automatic_recovery_deferred(selected))
+            resolver.resolve.assert_not_called()
+
     def save_retry(self, conn, row, retry):
         conn.execute('UPDATE lead_discovery_results SET raw_payload_json=? WHERE id=?', (json.dumps({'provider_fact':'retained','website_resolution_retry':retry}),row['id']))
         return dict(conn.execute('SELECT * FROM lead_discovery_results WHERE id=?',(row['id'],)).fetchone())

@@ -566,6 +566,9 @@ class DiscoveryService:
                ORDER BY discovered_at,id""",
             (int(city_row["id"]), int(unlinked_only)),
         ).fetchall()
+        requested_ids = {int(value) for value in staging_ids} if staging_ids is not None else None
+        if requested_ids is not None:
+            rows = [row for row in rows if int(row['id']) in requested_ids]
         prepared = []
         migrations = 0
         for raw_row in rows:
