@@ -1,0 +1,10 @@
+{
+  "command": "python -m unittest tests.test_city_legacy_retry -q",
+  "tests": 22,
+  "result": "PASS / 通过",
+  "duration_seconds": 9.753,
+  "offline_only": true,
+  "patch_forward_reverse_byte_exact": true,
+  "patch_git_config": "core.autocrlf=false for exact production LF / 精确生产LF",
+  "production_acceptance": "NOT_RUN / 未运行"
+}
