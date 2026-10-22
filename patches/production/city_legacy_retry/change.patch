@@ -1,0 +1,197 @@
+--- a/discovery/discovery_service.py
++++ b/discovery/discovery_service.py
+@@ -32,7 +32,7 @@
+ from history_crosscheck import cross_check, normalize_email, host
+ from lead_hygiene_gate import evaluate_a0
+ from outreach_control import RETAIL_QUERY_FAMILIES
+-from retail_city_queue import search_queries, automatic_recovery_deferred, NETWORK_RECOVERY_ATTEMPT_LIMIT, NETWORK_RECOVERY_RETRY_SECONDS, network_recovery_due
++from retail_city_queue import search_queries, automatic_recovery_deferred, NETWORK_RECOVERY_ATTEMPT_LIMIT, NETWORK_RECOVERY_RETRY_SECONDS, network_recovery_due, recovery_history_valid, compatible_recovery_history
+ from broad_outreach_gate import _gen_organization_key
+ from timezone_resolver import resolve_timezone
+ 
+@@ -566,7 +566,15 @@
+                ORDER BY discovered_at,id""",
+             (int(city_row["id"]), int(unlinked_only)),
+         ).fetchall()
+-        rows = [row for row in rows if network_recovery_due(dict(row), 'website_resolution_retry')][:max(1, int(max_results))]
++        prepared = []
++        migrations = 0
++        for raw_row in rows:
++            row = dict(raw_row)
++            if migrations < max(1, int(max_results)) and (not row.get('linked_lead_id') or self._linked_retry_allowed(row, city_row, check_recovery=False)):
++                row, changed = self._prepare_recovery_compatibility(row, 'website_resolution_retry')
++                migrations += int(changed)
++            prepared.append(row)
++        rows = [row for row in prepared if network_recovery_due(dict(row), 'website_resolution_retry')][:max(1, int(max_results))]
+         if staging_ids is not None:
+             rows = self._linked_retry_rows(city_row, staging_ids, require_website=False)
+         rows = [row for row in rows if network_recovery_due(dict(row), 'website_resolution_retry')][:max(1, int(max_results))]
+@@ -625,6 +633,58 @@
+             summary.status = "website_resolution_empty"
+         return summary
+ 
++    def _prepare_recovery_compatibility(self, row, key):
++        """Bounded, idempotent legacy classification; retain exact old ledger / 保留旧账本。"""
++        payload = _raw_payload(row)
++        original = payload.get(key)
++        if not original or automatic_recovery_deferred(row):
++            return row, False
++        valid = recovery_history_valid(original, key) if isinstance(original, dict) else False
++        count_key = 'unavailable_attempts' if key == 'linked_backlog_retry' else 'attempts'
++        normalized = compatible_recovery_history(original, key)
++        if valid:
++            if original[count_key] != NETWORK_RECOVERY_ATTEMPT_LIMIT:
++                return row, False
++            action = 'restore_proven_exhaustion'
++            retry = dict(original)
++        elif isinstance(original, dict) and original.get('ledger_schema_version') == 2 and not original.get('failures') and not original.get(count_key):
++            return row, False  # Current bookkeeping/program errors are not network failures.
++        elif normalized is not None:
++            action = 'normalize_proven_count'
++            retry = normalized
++            retry.pop('automation_terminal_outcome', None)
++            retry.pop('automation_terminal_at', None)
++        else:
++            action = 'manual_review'
++            retry = dict(original) if isinstance(original, dict) else {}
++        encoded = json.dumps(original, sort_keys=True, separators=(',', ':'))
++        if len(encoded.encode()) > 65536:
++            return row, False  # Preserve oversized unknown data, do not truncate evidence.
++        stamp = datetime.now(timezone.utc).isoformat()
++        retry['ledger_schema_version'] = 2
++        retry['compatibility_handoff'] = {'schema_version': 1, 'action': action, 'applied_at': stamp,
++            'legacy_sha256': hashlib.sha256(encoded.encode()).hexdigest(), 'legacy_retry': original}
++        if action == 'manual_review':
++            retry.update(automation_terminal_outcome='legacy_metadata_manual_review', automation_terminal_at=stamp)
++        elif retry.get(count_key) == NETWORK_RECOVERY_ATTEMPT_LIMIT:
++            retry.update(automation_terminal_outcome='network_retry_exhausted', automation_terminal_at=retry['last_failure_at'])
++        payload[key] = retry
++        status = row['validation_status']
++        if key == 'website_resolution_retry' and (action == 'manual_review' or retry.get(count_key) == NETWORK_RECOVERY_ATTEMPT_LIMIT):
++            status = 'manual_review_needed'
++        if not self.conn.in_transaction:
++            self.conn.execute('BEGIN')
++        self.conn.execute('SAVEPOINT recovery_compatibility')
++        try:
++            self.conn.execute('UPDATE lead_discovery_results SET raw_payload_json=?,validation_status=? WHERE id=?',
++                              (json.dumps(payload, sort_keys=True), status, row['id']))
++        except Exception:
++            self.conn.execute('ROLLBACK TO recovery_compatibility')
++            raise
++        finally:
++            self.conn.execute('RELEASE recovery_compatibility')
++        return {**row, 'raw_payload_json': json.dumps(payload, sort_keys=True), 'validation_status': status}, True
++
+     def _record_network_failure(self, row, key, status, error):
+         payload = _raw_payload(row)
+         retry = dict(payload.get(key) or {})
+@@ -632,7 +692,7 @@
+         stamp = datetime.now(timezone.utc).isoformat()
+         events.append({'at': stamp, 'status': status, 'error': str(error)})
+         count_key = 'unavailable_attempts' if key == 'linked_backlog_retry' else 'attempts'
+-        retry.update({count_key: len(events), 'failures': events, 'last_failure_at': stamp,
++        retry.update({'ledger_schema_version': 2, count_key: len(events), 'failures': events, 'last_failure_at': stamp,
+                       'next_retry_at': (datetime.fromisoformat(stamp) + timedelta(seconds=NETWORK_RECOVERY_RETRY_SECONDS)).isoformat(),
+                       'original_validation_status': retry.get('original_validation_status', row.get('validation_status')),
+                       'original_rejection_reason': retry.get('original_rejection_reason', row.get('rejection_reason'))})
+@@ -653,13 +713,13 @@
+                                  'urlerror', 'timeout', 'connectionreseterror', 'connectionrefusederror',
+                                  'connecttimeout', 'readtimeout'))
+ 
+-    def _linked_retry_allowed(self, row: dict, city_row: dict) -> bool:
++    def _linked_retry_allowed(self, row: dict, city_row: dict, check_recovery=True) -> bool:
+         """Fail closed on history/identity; a linkage alone is not official evidence."""
+         if automatic_recovery_deferred(row):
+             return False
+-        if not network_recovery_due(row, 'linked_backlog_retry'):
++        if check_recovery and not network_recovery_due(row, 'linked_backlog_retry'):
+             return False
+-        if not str(row.get('website') or '').strip() and not network_recovery_due(row, 'website_resolution_retry'):
++        if check_recovery and not str(row.get('website') or '').strip() and not network_recovery_due(row, 'website_resolution_retry'):
+             return False
+         retry = _raw_payload(row).get('linked_backlog_retry') or {}
+         if retry.get('automation_terminal_outcome') == 'access_unreachable':
+@@ -732,6 +792,19 @@
+             ORDER BY coalesce(json_extract(CASE WHEN json_valid(s.raw_payload_json) THEN s.raw_payload_json ELSE '{}' END,
+                 '$.linked_backlog_retry.last_attempt_at'), ''), s.id""", (city_row['id'],)).fetchall()
+         requested_ids = {int(value) for value in staging_ids} if staging_ids is not None else None
++        prepared = []
++        migrations = 0
++        for raw_row in rows:
++            row = dict(raw_row)
++            if (migrations < limit and (requested_ids is None or int(row['id']) in requested_ids)
++                    and self._linked_retry_allowed(row, city_row, check_recovery=False)):
++                for key in ('website_resolution_retry', 'linked_backlog_retry'):
++                    if migrations >= limit:
++                        break
++                    row, changed = self._prepare_recovery_compatibility(row, key)
++                    migrations += int(changed)
++            prepared.append(row)
++        rows = prepared
+         eligible = [dict(r) for r in rows if self._linked_retry_allowed(dict(r), city_row)
+                     and (requested_ids is None or int(r["id"]) in requested_ids)]
+         selected = eligible[:limit]
+@@ -745,7 +818,7 @@
+         for row in selected:
+             payload = json.loads(row.get('raw_payload_json') or '{}')
+             previous = payload.get('linked_backlog_retry', {})
+-            payload['linked_backlog_retry'] = {**previous, 'last_attempt_at': utc_now(),
++            payload['linked_backlog_retry'] = {**previous, 'ledger_schema_version': 2, 'last_attempt_at': utc_now(),
+                 'attempts': int(previous.get('attempts', 0)) + 1,
+                 'original_validation_status': previous.get('original_validation_status', row['validation_status']),
+                 'original_rejection_reason': previous.get('original_rejection_reason', row['rejection_reason'])}
+--- a/retail_city_queue.py
++++ b/retail_city_queue.py
+@@ -2,6 +2,7 @@
+ from __future__ import annotations
+ 
+ import json
++import hashlib
+ import sqlite3
+ from datetime import datetime, timezone, timedelta
+ from urllib.parse import urlsplit
+@@ -235,6 +236,35 @@
+         return False
+ 
+ 
++def compatible_recovery_history(retry: dict, key: str) -> dict | None:
++    """Recover counts only from unchanged, complete failure events / 只按完整真实事件恢复计数。"""
++    if not isinstance(retry, dict) or not isinstance(retry.get('failures'), list):
++        return None
++    value = dict(retry)
++    value['unavailable_attempts' if key == 'linked_backlog_retry' else 'attempts'] = len(value['failures'])
++    return value if recovery_history_valid(value, key) else None
++
++
++def legacy_recovery_handoff_valid(retry: dict, key: str) -> bool:
++    """Manual classification only, never network exhaustion or SAFE / 仅人工分类。"""
++    try:
++        handoff = retry['compatibility_handoff']
++        original = handoff['legacy_retry']
++        stamp = datetime.fromisoformat(handoff['applied_at'])
++        expected_hash = hashlib.sha256(json.dumps(original, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
++        return (type(handoff['schema_version']) is int and handoff['schema_version'] == 1
++                and retry.get('ledger_schema_version') == 2 and set(handoff) == {'schema_version', 'action', 'applied_at', 'legacy_sha256', 'legacy_retry'}
++                and handoff['action'] == 'manual_review'
++                and stamp.tzinfo is not None and stamp.utcoffset() == timedelta(0) and stamp <= datetime.now(timezone.utc)
++                and (not isinstance(original, dict) or all(retry.get(k) == v for k, v in original.items() if k not in {'ledger_schema_version', 'compatibility_handoff', 'automation_terminal_outcome', 'automation_terminal_at'}))
++                and handoff['legacy_sha256'] == expected_hash
++                and compatible_recovery_history(original, key) is None
++                and bool(original) and retry['automation_terminal_outcome'] == 'legacy_metadata_manual_review'
++                and retry['automation_terminal_at'] == handoff['applied_at'])
++    except (KeyError, TypeError, ValueError, AttributeError, OverflowError):
++        return False
++
++
+ def network_recovery_due(row: dict, key: str) -> bool:
+     try:
+         payload = json.loads(row.get('raw_payload_json') or '{}')
+@@ -261,6 +291,8 @@
+             retry = payload.get(key, {})
+             count_key = 'unavailable_attempts' if key == 'linked_backlog_retry' else 'attempts'
+             expected = 'review_recovery' if key == 'linked_backlog_retry' else 'manual_review_needed'
++            if row.get('validation_status') in {expected, 'manual_review_needed'} and legacy_recovery_handoff_valid(retry, key):
++                return True
+             if (row.get('validation_status') == expected and recovery_history_valid(retry, key)
+                     and retry[count_key] == NETWORK_RECOVERY_ATTEMPT_LIMIT
+                     and retry.get('automation_terminal_outcome') == 'network_retry_exhausted'
