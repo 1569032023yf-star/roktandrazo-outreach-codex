@@ -722,7 +722,7 @@ class DiscoveryService:
         if check_recovery and not str(row.get('website') or '').strip() and not network_recovery_due(row, 'website_resolution_retry'):
             return False
         retry = _raw_payload(row).get('linked_backlog_retry') or {}
-        if retry.get('automation_terminal_outcome') == 'access_unreachable':
+        if isinstance(retry, dict) and retry.get('automation_terminal_outcome') == 'access_unreachable':
             return False
         lead_row = self.conn.execute('SELECT * FROM leads WHERE id=?', (row.get('linked_lead_id'),)).fetchone()
         if not lead_row or self._row_outside_active_city(row, city_row):

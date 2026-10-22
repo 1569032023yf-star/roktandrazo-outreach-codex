@@ -1,11 +1,11 @@
 {
   "discovery/discovery_service.py": {
     "before_sha256": "415fbe0cc3323bf45b389f84719c2ee6b52b9ca3d481da6d2f7f70b1c396bd8c",
-    "after_sha256": "801071523ac9416591ca18b2b36a0a323850cb06944e04de8a4c3ef312cba8b9"
+    "after_sha256": "8640b936acadddde65cbd1ab7b05f010e8b18c4bb0ccafbc969c55b380f5722d"
   },
   "retail_city_queue.py": {
     "before_sha256": "02d04313de82464f0f6933df9e7a72f8675ccb6e7ca63b14859751db3e80a6b2",
     "after_sha256": "27d60fa77644f15b786bfc61390d3671d4a3ee50cc8ae6e9e0fa42b19e820146"
   },
-  "patch_sha256": "e79d28a12ccdcb7153ba37b3bec63ba61866b82e8aee0c82ce9ef10c63003fa1"
+  "patch_sha256": "0b84c0e5dba0161184c2cbe485ea2a2cd3795790fa35589caccc1eb1e4c11bca"
 }

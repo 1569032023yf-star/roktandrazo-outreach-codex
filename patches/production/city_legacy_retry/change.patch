@@ -94,7 +94,7 @@
                        'next_retry_at': (datetime.fromisoformat(stamp) + timedelta(seconds=NETWORK_RECOVERY_RETRY_SECONDS)).isoformat(),
                        'original_validation_status': retry.get('original_validation_status', row.get('validation_status')),
                        'original_rejection_reason': retry.get('original_rejection_reason', row.get('rejection_reason'))})
-@@ -653,13 +713,13 @@
+@@ -653,16 +713,16 @@
                                   'urlerror', 'timeout', 'connectionreseterror', 'connectionrefusederror',
                                   'connecttimeout', 'readtimeout'))
  
@@ -110,7 +110,11 @@
 +        if check_recovery and not str(row.get('website') or '').strip() and not network_recovery_due(row, 'website_resolution_retry'):
              return False
          retry = _raw_payload(row).get('linked_backlog_retry') or {}
-         if retry.get('automation_terminal_outcome') == 'access_unreachable':
+-        if retry.get('automation_terminal_outcome') == 'access_unreachable':
++        if isinstance(retry, dict) and retry.get('automation_terminal_outcome') == 'access_unreachable':
+             return False
+         lead_row = self.conn.execute('SELECT * FROM leads WHERE id=?', (row.get('linked_lead_id'),)).fetchone()
+         if not lead_row or self._row_outside_active_city(row, city_row):
 @@ -732,6 +792,19 @@
              ORDER BY coalesce(json_extract(CASE WHEN json_valid(s.raw_payload_json) THEN s.raw_payload_json ELSE '{}' END,
                  '$.linked_backlog_retry.last_attempt_at'), ''), s.id""", (city_row['id'],)).fetchall()
