@@ -1,0 +1,139 @@
+{
+  "http_status": 200,
+  "response": {
+    "operation": "preflight",
+    "release_id": "phase4a8v-inventory-stage-trace-20261022",
+    "read_only": true,
+    "ts": "2026-10-22T19:14:48+08:00",
+    "channel_id": "rokt-deploy-channel",
+    "test_mode": false,
+    "gates": {
+      "runtime_path_verified": {
+        "pass": true,
+        "file_count": 1,
+        "targets": {
+          "bd_orchestrator.py": "C:\\Users\\15690\\WorkBuddy\\2026-06-05-15-31-42\\roktandrazo-outreach\\bd_orchestrator.py"
+        },
+        "target": "C:\\Users\\15690\\WorkBuddy\\2026-06-05-15-31-42\\roktandrazo-outreach\\bd_orchestrator.py"
+      },
+      "source_sha_matches": {
+        "pass": true,
+        "files": {
+          "bd_orchestrator.py": {
+            "pass": true,
+            "actual": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903",
+            "expected": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903",
+            "actual_bytes": 31552,
+            "expected_bytes": 31552
+          }
+        },
+        "actual": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903",
+        "expected": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903"
+      },
+      "version_compatible": {
+        "pass": true,
+        "files": {
+          "bd_orchestrator.py": {
+            "pass": true,
+            "dry_run_after_sha256": "0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8",
+            "expected_after_sha256": "0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8",
+            "dry_run_bytes": 36070,
+            "expected_bytes": 36070
+          }
+        },
+        "dry_run_after_sha256": "0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8",
+        "expected_after_sha256": "0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8"
+      },
+      "targeted_tests_pass": {
+        "pass": true,
+        "method": "ast_parse + byte-exact dry-run for every file; functional suite is attested by the registration bundle tests.json",
+        "syntax_errors": []
+      },
+      "rollback_verified": {
+        "pass": true,
+        "files": {
+          "bd_orchestrator.py": {
+            "pass": true
+          }
+        },
+        "method": "reverse patch reproduces before-SHA for every file"
+      },
+      "no_new_critical_regressions": {
+        "pass": true,
+        "scope": "1 files: bd_orchestrator.py; 4 hunks; no whole-tree overwrite"
+      },
+      "backup_dir_writable": {
+        "pass": true,
+        "dir": "C:\\Users\\15690\\WorkBuddy\\deploy-channel\\backups"
+      },
+      "smtp_disabled": {
+        "pass": true,
+        "SMTP_enabled": "0"
+      },
+      "run_locks_healthy": {
+        "pass": true,
+        "lock_key": "run_lock:daily_outreach:inventory:2026-10-22",
+        "value": "released",
+        "acquired_at": "2026-10-22 10:26:16",
+        "stale": false
+      },
+      "inventory_exclusion_held": {
+        "pass": true,
+        "note": "preflight is read-only; apply acquires the official Inventory lock for the swap window"
+      },
+      "inventory_not_running": {
+        "pass": true,
+        "running": [],
+        "stale_unfinished_rows": 6,
+        "oldest_stale": "2026-07-23 02:54:03"
+      },
+      "no_executable_send_authorization": {
+        "pass": true,
+        "pending_entries": 43,
+        "executable": 0
+      },
+      "safe_window_verified": {
+        "pass": true,
+        "inventory_status": "ACTIVE",
+        "inventory_next_run": "2026-10-23 00:42:26 +08",
+        "minutes_to_next_run": 327.6,
+        "min_required_minutes": 20
+      },
+      "sending_tasks_paused": {
+        "pass": true,
+        "tasks": {
+          "presend": {
+            "id": "automation-1785804406748",
+            "status": "PAUSED",
+            "deleted": true,
+            "pass": true
+          },
+          "preflight": {
+            "id": "automation-1785804413719",
+            "status": "PAUSED",
+            "deleted": true,
+            "pass": true
+          },
+          "outreach": {
+            "id": "automation-1785804421539",
+            "status": "PAUSED",
+            "deleted": true,
+            "pass": true
+          }
+        }
+      }
+    },
+    "summary": {
+      "all_pass": true,
+      "failed": [],
+      "count": 14,
+      "passed": 14
+    },
+    "verdict": "PREFLIGHT_PASS",
+    "note_zh": "只读门禁证据；未写入任何生产数据。",
+    "note_en": "Read-only gate evidence; no production data written."
+  },
+  "observed_at": "2026-10-22T11:14:48.357925+00:00",
+  "summary_zh": "正式受限通道真实响应；传输失败不推断生产状态。",
+  "summary_en": "Live restricted-channel response; transport failures do not establish production state."
+}

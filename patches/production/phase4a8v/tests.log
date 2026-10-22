@@ -1,0 +1,19 @@
+test_baseline_business_calls_and_outcome_preserved (tests.test_inventory_stage_trace.StageTraceTests.test_baseline_business_calls_and_outcome_preserved) ... ok
+test_exact_baseline_and_only_two_functions_changed (tests.test_inventory_stage_trace.StageTraceTests.test_exact_baseline_and_only_two_functions_changed) ... ok
+test_final_trace_failure_never_first_finishes_job_completed (tests.test_inventory_stage_trace.StageTraceTests.test_final_trace_failure_never_first_finishes_job_completed) ... ok
+test_helper_rejects_pii_values_transaction_and_limits (tests.test_inventory_stage_trace.StageTraceTests.test_helper_rejects_pii_values_transaction_and_limits) ... ok
+test_lock_conflict_and_dry_run_preserve_no_trace_no_provider (tests.test_inventory_stage_trace.StageTraceTests.test_lock_conflict_and_dry_run_preserve_no_trace_no_provider) ... ok
+test_midstage_exception_retains_enter_without_false_completion (tests.test_inventory_stage_trace.StageTraceTests.test_midstage_exception_retains_enter_without_false_completion) ... ok
+test_order_counts_aware_utc_and_no_identity (tests.test_inventory_stage_trace.StageTraceTests.test_order_counts_aware_utc_and_no_identity) ... ok
+test_provider_failure_preserves_baseline_stop (tests.test_inventory_stage_trace.StageTraceTests.test_provider_failure_preserves_baseline_stop) ... ok
+test_real_sqlite_owner_rejects_in_transaction_and_writes_after_commit (tests.test_inventory_stage_trace.StageTraceTests.test_real_sqlite_owner_rejects_in_transaction_and_writes_after_commit) ... ok
+test_secondary_trace_failure_does_not_mask_business_error (tests.test_inventory_stage_trace.StageTraceTests.test_secondary_trace_failure_does_not_mask_business_error) ... ok
+test_sqlite_text_stores_full_trace_without_schema_change (tests.test_inventory_stage_trace.StageTraceTests.test_sqlite_text_stores_full_trace_without_schema_change) ... ok
+test_state_failure_records_failure_without_provider (tests.test_inventory_stage_trace.StageTraceTests.test_state_failure_records_failure_without_provider) ... ok
+test_trace_failure_is_fail_closed_and_releases_lock (tests.test_inventory_stage_trace.StageTraceTests.test_trace_failure_is_fail_closed_and_releases_lock) ... ok
+test_transport_patch_matches_exact_fixture_bytes_without_crlf (tests.test_inventory_stage_trace.StageTraceTests.test_transport_patch_matches_exact_fixture_bytes_without_crlf) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.200s
+
+OK

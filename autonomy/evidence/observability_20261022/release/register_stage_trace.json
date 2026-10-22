@@ -1,0 +1,48 @@
+{
+  "http_status": 200,
+  "response": {
+    "operation": "register",
+    "release_id": "phase4a8v-inventory-stage-trace-20261022",
+    "state": "registered",
+    "verdict": "REGISTERED_DEPLOYABLE",
+    "ts": "2026-10-22T19:14:35+08:00",
+    "channel_id": "rokt-deploy-channel",
+    "test_mode": false,
+    "caller": "bridge",
+    "file_count": 1,
+    "patch_sha256": "2c4e1750fe7e39c996baa731bed740e8b2ef08546147b1f9976e25ae550c2081",
+    "deployable": true,
+    "attestation": {
+      "bd_orchestrator.py": {
+        "exists": true,
+        "actual_sha256": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903",
+        "actual_bytes": 31552,
+        "matches_before": true
+      }
+    },
+    "byte_verification": {
+      "bd_orchestrator.py": {
+        "feasible": true,
+        "after_sha256": "0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8",
+        "reversible": true
+      }
+    },
+    "tests": {
+      "total": 14,
+      "failed": 0,
+      "artifact": "tests.log"
+    },
+    "review": {
+      "reviewer_identity": "codex:/root/independent_reviewer",
+      "verdict": "APPROVED"
+    },
+    "registry_backup": "C:\\Users\\15690\\WorkBuddy\\deploy-channel\\releases\\channel_config.json.bak-20261022-191435",
+    "seal_written": true,
+    "next_step": "preflight then apply",
+    "note_zh": "已登记为固定发布条目；未触碰生产代码。部署仍需独立的 preflight/apply。",
+    "note_en": "Pinned into the registry; production code untouched. Deployment still requires the separate preflight/apply operations."
+  },
+  "observed_at": "2026-10-22T11:14:35.250597+00:00",
+  "summary_zh": "正式受限通道真实响应；传输失败不推断生产状态。",
+  "summary_en": "Live restricted-channel response; transport failures do not establish production state."
+}

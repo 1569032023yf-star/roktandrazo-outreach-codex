@@ -1,5 +1,11 @@
 # 城市根因调查 / City root-cause investigation
 
+> 当前状态 / Current status (2026-10-22 19:18 +08): 4A8V已部署、生产只读通道已连接；权威SAFE快照56（15:49–15:56测量，非实时/净增）；完整无人值守周期0，所有完整业务板块未验收。详情见文末本轮段落。 / 4A8V applied; bounded production channel connected; authoritative SAFE snapshot56 measured15:49–15:56, not real time or net growth; full unattended cycles0, no complete business block accepted. See the latest section below.
+
+## 历史快照与既往记录 / Historical snapshots and prior records
+
+以下旧指标和阶段限制只代表其记录时点，不能覆盖文末19:18更新。 / Earlier metrics and constraints describe their recorded times and do not override the19:18 update below.
+
 根因未确认。精确生产源码已恢复并匹配，排除源码因SAFE56立即早退；真实入口、活动州与阶段轨迹待补证。以下保留历次调查及后续更正。
 Root cause unconfirmed. Exact live-matching source recovered, excluding immediate SAFE56 exit in that source. Actual entry, active state and stage traces remain required. Chronological findings and corrections follow.
 
@@ -75,3 +81,22 @@ Execution time 2026-10-22T14:36:00+08:00; trigger timestamp03:26 UTC was delayed
 
 
 共享报告补修 / Shared-report repair: docs/AUTONOMY_SHARED_REPORT_WRITE_REPAIR.md。独立42项通过，正式摘要本地发布及CLI保留实测通过；当前手动续接不计无人值守，城市根因仍未确认。 / 42 independent tests pass and real summary publication/CLI preservation is verified locally. This manual continuation is excluded from unattended counts; city root cause remains unconfirmed.
+
+
+## 2026-10-22 19:18 +08 — 正式补证与4A8V部署 / Bounded evidence and 4A8V deployment
+
+正式只读补证已接入；剩余2条城市阻塞。4A8V阶段轨迹独立审核、14项门禁及部署后SHA核验通过，已部署；城市推进与完整板块仍待原计划自然验收。
+
+Bounded production evidence connected; two city blockers remain. Independently reviewed 4A8V stage tracing passed 14 gates and post-deploy SHA checks and is applied; city progress and complete blocks still await the original natural run.
+
+- 发布 / Release: `phase4a8v-inventory-stage-trace-20261022`; operation `op-20261022-191501-18edf5`; source commit `cab40e5fbfbdcf87eb78c59f9907c6be552f7762`.
+- 验证 / Validation: 31/31 scoped offline tests (client 6, SAFE 11, trace 14); independent review approved; 14/14 production gates; byte-exact backup, atomic replacement SHA and released lock confirmed. 本地测试与部署均不等于业务验收 / Neither local tests nor deployment establish business acceptance.
+- SAFE: **56**, measured `2026-10-22T15:49:52+08:00` to `2026-10-22T15:56:46+08:00`; two readings 56/56 under pinned qualification/history/MX rules. 仅测量快照，非实时或净增 / Measurement snapshot only, not real time or net growth. 24h/7d SAFE net growth: UNKNOWN. New verified organizations: UNKNOWN.
+- 城市 / City: Cooperstown active, 20/20 query families complete; `ldr:571` actual network failures 2, retry due 19:00+08; linked blocker `ldr:556`; `ldr:565` left the blocking set for an UNKNOWN reason. 不据退出推断SAFE成功 / Exit does not prove SAFE success. Old run `inventory:2026-10-22:bc1c588b` completed/target_met with actual 56; it predates this deployment and has no per-stage trace. Lake Placid pending, provider UNKNOWN_NO_RECORD; Cooperstown 24h requests ZERO_REQUESTS_CONFIRMED.
+- 排除与未知 / Exclusions and unknowns: true entry state NY; sufficient SAFE does not short-circuit pinned baseline. Legacy raw bookkeeping is not actual failure evidence; no speculative terminalization patch applied. Full ldr:556 cause remains UNKNOWN.
+- 调度 / Scheduler: one ACTIVE WorkBuddy Inventory and zero unclassified ACTIVE tasks; 48h 8 firings / 8 matched, 5 production-executed; no-job rows do not prove missed firing. Six stale unfinished historical rows are not six running processes. Cross-host global uniqueness UNKNOWN; Scheduled Tasks inventory UNKNOWN; boot persistence not accepted.
+- 安全 / Safety: SMTP 0; no manual collection, new Inventory, customer send, DB access or bridge/ACL modification. Original Inventory and SAFE40 checkpoint preserved. V6 and dual-source live experiment NOT_EXECUTED.
+- 下一步 / Next: Observe the original Inventory scheduled 2026-10-23T00:42:26+08:00 via fixed runtime/city/provider/scheduler/SAFE routes; require a new run after apply and real stage events. Never manually trigger discovery or reapply either release.
+- 验收 / Acceptance: A/B/C/D full blocks NOT ACCEPTED; full unattended engineering cycles 0; BD_FULL_PRODUCTION NOT COMPLETE.
+
+证据 / Evidence: `evidence/observability_20261022/release/`; handoff issue2 comment6336864328, pinned WorkBuddy commit `aded425cf863104d907f6b00def4331e2151d515`. The limited legacy summary route still reports SAFE UNKNOWN because it lacks the new authority contract; the separate verified snapshot above supplies that scoped authority.

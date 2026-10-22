@@ -1,0 +1,78 @@
+{
+  "source": "rokt-deploy-channel",
+  "observed_at": "2026-10-22T19:18:02+08:00",
+  "schema": "rokt.bd-business-observation.v1",
+  "summary_zh": "正式认证回执的固定聚合投影；存量、观察窗口和未知资格分开。",
+  "summary_en": "Fixed aggregate projection of an authenticated receipt; totals, observation windows and unknown eligibility remain separate.",
+  "historical_totals": {
+    "leads_total": 1213,
+    "leads_with_email": 652
+  },
+  "rolling_24h": {
+    "provider_requests": 0,
+    "new_raw_merchants": "UNKNOWN",
+    "new_verified_organizations": "UNKNOWN",
+    "new_verified_official_sites": "UNKNOWN",
+    "new_first_party_emails": "UNKNOWN",
+    "new_history_clean_organizations": "UNKNOWN",
+    "safe_net_growth": "UNKNOWN"
+  },
+  "rolling_7d": {
+    "new_verified_organizations": "UNKNOWN",
+    "safe_net_growth": "UNKNOWN"
+  },
+  "current_safe": "UNKNOWN",
+  "safe_authority_connected": false,
+  "safety": {
+    "smtp_disabled": true,
+    "smtp_observed": "0",
+    "sent_today": 0,
+    "total_sent": 517,
+    "duplicate_inventory": "UNKNOWN",
+    "designated_inventory_active_count": 1,
+    "running_inventory_last_2h": "UNKNOWN",
+    "lock_released": true
+  },
+  "bounce_total": 63,
+  "suppression_total": 63,
+  "stage_telemetry": "NOT_EXPOSED",
+  "city_completion_conditions": "NOT_EXPOSED",
+  "lake_placid_provider_requests": "UNKNOWN",
+  "last_inventory_run": {
+    "run_id": "inventory:2026-10-22:bc1c588b",
+    "status": "completed",
+    "actual_historical_run_count": 56,
+    "target_met": true
+  },
+  "active_cities": [
+    {
+      "city": "Cooperstown",
+      "status": "active"
+    },
+    {
+      "city": "Little Rock",
+      "status": "QUEUED"
+    },
+    {
+      "city": "Louisville",
+      "status": "QUEUED"
+    }
+  ],
+  "limitations_zh": [
+    "指定ID计数不能证明全局Inventory唯一性。",
+    "旧running_inventory_24h_window实际上只统计2小时。",
+    "SAFE快照未包含完整资格来源和有效性契约，不能据此确认权威连接。"
+  ],
+  "limitations_en": [
+    "A designated-ID count does not establish global Inventory uniqueness.",
+    "Legacy running_inventory_24h_window actually covers two hours.",
+    "SAFE snapshots lack a complete authority/validity contract and cannot establish authority connectivity."
+  ],
+  "production_sha_matches": {
+    "bd_orchestrator.py": true,
+    "discovery/discovery_service.py": true,
+    "retail_city_queue.py": true
+  },
+  "receipt_sha256": "e2aff4d8247dceeb0a8eb01e78783076c854a82666b15c00c5e46dbbebcad6e9",
+  "receipt_path": "autonomy\\runtime\\bd_full_20261022\\observations\\20261022T111802328255Z\\telemetry.json"
+}

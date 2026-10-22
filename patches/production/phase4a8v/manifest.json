@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "release_id": "phase4a8v-inventory-stage-trace-20261022",
+  "generated_at": "2026-10-22T11:14:34.545743+00:00",
+  "source_commit": "cab40e5fbfbdcf87eb78c59f9907c6be552f7762",
+  "author_identity": "codex:/root/legacy_retry_investigation",
+  "summary_zh": "仅持久化有界脱敏Inventory阶段轨迹；不改重试资格、客户发送或调度。",
+  "summary_en": "Persist bounded sanitized Inventory stage traces only; no retry qualification, customer sending or scheduling changes.",
+  "target_files": [
+    {
+      "path": "bd_orchestrator.py",
+      "before_sha256": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903",
+      "after_sha256": "0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8",
+      "before_bytes": 31552,
+      "after_bytes": 36070,
+      "hunks": 4
+    }
+  ],
+  "patch_sha256": "2c4e1750fe7e39c996baa731bed740e8b2ef08546147b1f9976e25ae550c2081",
+  "independent_review_passed": true,
+  "production_acceptance": false
+}

@@ -1,6 +1,6 @@
 {
   "task_id": "BD-FULL-PRODUCTION-20261022",
-  "updated_at": "2026-10-22T06:54:54.998752+00:00",
+  "updated_at": "2026-10-22T11:19:55.047303+00:00",
   "branch": "codex/autonomous-bd-supervisor",
   "start_commit": "371c299ca7b97e595f3dfe84f33f2cc5f32be74d",
   "workstreams": [
@@ -8,49 +8,56 @@
     "B_AUTHENTICATED_TELEMETRY_CONSUMER",
     "C_LOCK_OUTPUT_RELIABILITY"
   ],
-  "last_verified_action": "THREE_CONSECUTIVE_EXTERNAL_DEPENDENCY_AUDITS_NO_REPLY_OR_RUNNABLE_TASK",
-  "production_operation_id": "op-20261022-011811-4925c1",
+  "last_verified_action": "4A8V_APPLIED_BACKUP_LOCK_POSTDEPLOY_SHA_VERIFIED",
+  "production_operation_id": "op-20261022-191501-18edf5",
   "known_external_side_effects": [
     "Existing GitHub issue2 comment6330120094: minimal read-only handoff request; delivery to GitHub confirmed, operator acknowledgement not verified"
   ],
-  "uncommitted_files": [],
-  "test_evidence": {
-    "total": 81,
-    "C": 46,
-    "B": 28,
-    "A": 7,
-    "source_hashes_verified": true
-  },
-  "reviewer_status": "SHARED_REPORT_REPAIR_APPROVED_SCOPED_ENGINEERING",
-  "root_cause": "UNKNOWN_PENDING_ACTUAL_STAGE_TRACE_ACTIVE_STATE_AND_ENTRYPOINT",
-  "next_automatic_action": "Existing rokt-razo heartbeat checks for approved bounded runtime/qualification evidence or a new original Inventory run; resume only when meaningful work becomes available.",
-  "summary_zh": "长期任务已持久化；正式城市运行停滞转根因调查，其他工程并行。",
-  "summary_en": "Long-term task persisted; stalled production city moves to root-cause investigation while independent engineering continues.",
-  "heartbeat_trigger": "2026-10-22T03:26:13.340Z",
+  "uncommitted_files": [
+    " M autonomy/AUTONOMY_RELIABILITY_ACCEPTANCE.json",
+    " M autonomy/BD_FULL_CHECKPOINT.json",
+    " M autonomy/BD_FULL_PRODUCTION_CLOSURE.json",
+    " M autonomy/BD_FULL_PRODUCTION_CLOSURE.md",
+    " M autonomy/BUSINESS_DAILY_REPORT.md",
+    " M autonomy/CITY_RUNTIME_ROOT_CAUSE.md",
+    " M autonomy/DUAL_SOURCE_LIVE_YIELD.json",
+    " M autonomy/PRODUCTION_TELEMETRY_ACCEPTANCE.json",
+    " M autonomy/WORKSTREAM_STATUS.json",
+    "?? autonomy/evidence/observability_20261022/heartbeat_cycle.json",
+    "?? autonomy/evidence/observability_20261022/release/acceptance.json",
+    "?? autonomy/evidence/observability_20261022/release/apply_stage_trace.json",
+    "?? autonomy/evidence/observability_20261022/release/postdeploy_business_observation.json",
+    "?? autonomy/evidence/observability_20261022/release/postdeploy_health.json",
+    "?? autonomy/evidence/observability_20261022/release/postdeploy_telemetry.json",
+    "?? autonomy/evidence/observability_20261022/release/preflight_stage_trace.json",
+    "?? autonomy/evidence/observability_20261022/release/register_stage_trace.json",
+    "?? autonomy/evidence/observability_20261022/release/status_stage_trace.json",
+    "?? patches/production/phase4a8v/manifest.json"
+  ],
+  "reviewer_status": "4A8V_APPROVED_14_RELEASE_TESTS_CLIENT_AND_SAFE_APPROVED",
+  "root_cause": "PARTIALLY_LOCALIZED_BLOCKER_DETAILS_AND_NEW_STAGE_TRACE_PENDING",
+  "next_automatic_action": "Observe the original Inventory scheduled 2026-10-23T00:42:26+08:00 via fixed runtime/city/provider/scheduler/SAFE routes; require a new run after apply and real stage events. Never manually trigger discovery or reapply either release.",
+  "summary_zh": "4A8V已部署并复核；权威SAFE快照已接入，完整板块仍待原计划自然运行验收。",
+  "summary_en": "4A8V applied and reconciled; authoritative SAFE snapshot connected; complete blocks still await the original natural run.",
+  "heartbeat_trigger": "2026-10-22T10:53:21.698Z",
   "reports_written": true,
-  "commit": "459cf951c02c14906906634a3bf838b35301879b",
-  "remote_verified_commit": "459cf951c02c14906906634a3bf838b35301879b",
+  "commit": "cab40e5fbfbdcf87eb78c59f9907c6be552f7762",
+  "remote_verified_commit": "cab40e5fbfbdcf87eb78c59f9907c6be552f7762",
   "git_push_success": true,
   "external_side_effects_this_heartbeat": [
-    "Git branch push only; authenticated read-only health/status/telemetry; no production mutations"
+    "Registered and applied one independently reviewed stage-trace release through formal channel",
+    "Git source commit pushed"
   ],
   "followup": {
-    "trigger_at": "2026-10-22T03:26:13.340Z",
-    "execution_observed_at": "2026-10-22T14:36:00+08:00",
-    "delayed_trigger": true,
-    "prior_expected_inventory_at": "2026-10-22T11:58:01+08:00",
-    "current_next_inventory_at": "2026-10-22T18:18:22+08:00",
-    "new_inventory_run_observed": false,
-    "missed_trigger_confirmed": false,
-    "summary_zh": "实际执行晚于心跳标记；原预计时间已过、next_run已推进，但最近run未变。只证明调度与run需补证，不证明漏跑或业务入口原因。",
-    "summary_en": "Execution is later than the trigger timestamp; the prior expected time passed and next_run advanced, while the latest run is unchanged. Scheduler/run reconciliation is needed; this alone proves neither a missed trigger nor the business-entry cause.",
-    "handoff_reply": "NO_NEW_REPLY",
-    "production_mutations": 0,
-    "tests_rerun": false,
-    "reviewed_source_hashes_match": true
+    "summary_zh": "正式只读补证已接入；剩余2条城市阻塞。4A8V阶段轨迹独立审核、14项门禁及部署后SHA核验通过，已部署；城市推进与完整板块仍待原计划自然验收。",
+    "summary_en": "Bounded production evidence connected; two city blockers remain. Independently reviewed 4A8V stage tracing passed 14 gates and post-deploy SHA checks and is applied; city progress and complete blocks still await the original natural run.",
+    "observed_at": "2026-10-22T19:18:02+08:00",
+    "new_inventory_run_observed": true,
+    "handoff_reply": "RECEIVED_6336864328",
+    "production_mutations": 1
   },
-  "current_task_id": "BD-FULL-DEPENDENCY-REVALIDATION",
-  "current_source": "manual",
+  "current_task_id": "BD-FULL-OBSERVABILITY-RELEASE-20261022T105321",
+  "current_source": "codex_heartbeat",
   "shared_report_repair": {
     "summary_zh": "共享报告竞态、逆序及半写发布保护补修已独立审核；Windows实际发布通过。",
     "summary_en": "Shared-report race, ordering and partial-publication protection independently approved; real Windows publication verified.",
@@ -62,7 +69,75 @@
     "production_acceptance": false,
     "full_C3_acceptance": false
   },
-  "blocked_audit": {
+  "goal_status": "IN_PROGRESS_NATURAL_ACCEPTANCE_PENDING",
+  "latest_heartbeat_cycle": {
+    "cycle_id": "114c018d-dabe-4e9b-b1c7-504584f7e88f",
+    "task_id": "BD-FULL-OBSERVABILITY-RELEASE-20261022T105321",
+    "source": "codex_heartbeat",
+    "trigger_at": "2026-10-22T10:53:21.698Z",
+    "started_at": "2026-10-22T10:53:21.698Z",
+    "finished_at": "2026-10-22T11:19:55.047303+00:00",
+    "status": "completed",
+    "branch": "codex/autonomous-bd-supervisor",
+    "commit": "cab40e5fbfbdcf87eb78c59f9907c6be552f7762",
+    "commit_scope": "Reviewed engineering source commit; this report is committed separately.",
+    "uncommitted_files_scope": "Report/evidence publication pending final commit; no unreviewed production source changes.",
+    "tests": 31,
+    "reviewer": "independent_reviewer + city_reviewer + safe_consumer_developer",
+    "operation_id": "op-20261022-191501-18edf5",
+    "external_side_effects": [
+      "Registered and applied one independently reviewed stage-trace release through formal channel",
+      "Git source commit pushed"
+    ],
+    "qualifies_full_unattended_engineering_cycle": false,
+    "human_trigger_excluded": false,
+    "production_acceptance": false,
+    "next_action": "Observe the original Inventory scheduled 2026-10-23T00:42:26+08:00 via fixed runtime/city/provider/scheduler/SAFE routes; require a new run after apply and real stage events. Never manually trigger discovery or reapply either release.",
+    "summary_zh": "正式只读补证已接入；剩余2条城市阻塞。4A8V阶段轨迹独立审核、14项门禁及部署后SHA核验通过，已部署；城市推进与完整板块仍待原计划自然验收。",
+    "summary_en": "Bounded production evidence connected; two city blockers remain. Independently reviewed 4A8V stage tracing passed 14 gates and post-deploy SHA checks and is applied; city progress and complete blocks still await the original natural run.",
+    "uncommitted_files": [
+      " M autonomy/AUTONOMY_RELIABILITY_ACCEPTANCE.json",
+      " M autonomy/BD_FULL_CHECKPOINT.json",
+      " M autonomy/BD_FULL_PRODUCTION_CLOSURE.json",
+      " M autonomy/BD_FULL_PRODUCTION_CLOSURE.md",
+      " M autonomy/BUSINESS_DAILY_REPORT.md",
+      " M autonomy/CITY_RUNTIME_ROOT_CAUSE.md",
+      " M autonomy/DUAL_SOURCE_LIVE_YIELD.json",
+      " M autonomy/PRODUCTION_TELEMETRY_ACCEPTANCE.json",
+      " M autonomy/WORKSTREAM_STATUS.json",
+      "?? autonomy/evidence/observability_20261022/heartbeat_cycle.json",
+      "?? autonomy/evidence/observability_20261022/release/acceptance.json",
+      "?? autonomy/evidence/observability_20261022/release/apply_stage_trace.json",
+      "?? autonomy/evidence/observability_20261022/release/postdeploy_business_observation.json",
+      "?? autonomy/evidence/observability_20261022/release/postdeploy_health.json",
+      "?? autonomy/evidence/observability_20261022/release/postdeploy_telemetry.json",
+      "?? autonomy/evidence/observability_20261022/release/preflight_stage_trace.json",
+      "?? autonomy/evidence/observability_20261022/release/register_stage_trace.json",
+      "?? autonomy/evidence/observability_20261022/release/status_stage_trace.json",
+      "?? patches/production/phase4a8v/manifest.json"
+    ]
+  },
+  "stage_trace_deployment": {
+    "release_id": "phase4a8v-inventory-stage-trace-20261022",
+    "operation_id": "op-20261022-191501-18edf5",
+    "source_commit": "cab40e5fbfbdcf87eb78c59f9907c6be552f7762",
+    "state": "applied",
+    "backup_sha_verified": true,
+    "replacement_sha_verified": true,
+    "lock_released": true,
+    "gates_passed": 14,
+    "tests_passed": 31,
+    "independent_release_tests": 14,
+    "postdeploy_observed_at": "2026-10-22T19:18:02+08:00",
+    "source_after_sha256": "0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8",
+    "reviewer": "codex:/root/independent_reviewer",
+    "natural_run_acceptance": false,
+    "business_acceptance": false,
+    "next_original_inventory_at": "2026-10-23T00:42:26+08:00",
+    "summary_zh": "正式只读补证已接入；剩余2条城市阻塞。4A8V阶段轨迹独立审核、14项门禁及部署后SHA核验通过，已部署；城市推进与完整板块仍待原计划自然验收。",
+    "summary_en": "Bounded production evidence connected; two city blockers remain. Independently reviewed 4A8V stage tracing passed 14 gates and post-deploy SHA checks and is applied; city progress and complete blocks still await the original natural run."
+  },
+  "historical_blocked_audit": {
     "audited_at": "2026-10-22T06:54:54.998752+00:00",
     "previous_goal_turn_classification": "NO_PROGRESS_EXTERNAL_DEPENDENCIES_REVALIDATED",
     "current_goal_turn_classification": "NO_PROGRESS_EXTERNAL_DEPENDENCIES_REVALIDATED",
@@ -85,5 +160,27 @@
     "source": "manual",
     "goal_status": "blocked"
   },
-  "goal_status": "blocked"
+  "production_operation_ids": [
+    "op-20261022-011811-4925c1",
+    "op-20261022-191501-18edf5"
+  ],
+  "production_release_ids": [
+    "phase4a8u-city-recovery-production-rebase-20261022",
+    "phase4a8v-inventory-stage-trace-20261022"
+  ],
+  "commit_scope": "PUSHED_REVIEWED_ENGINEERING_SOURCE_REPORT_COMMIT_PENDING",
+  "test_evidence_previous_scope": {
+    "total": 81,
+    "C": 46,
+    "B": 28,
+    "A": 7,
+    "source_hashes_verified": true
+  },
+  "test_evidence": {
+    "total": 31,
+    "client": 6,
+    "safe_consumer": 11,
+    "stage_trace": 14,
+    "scope": "THIS_HEARTBEAT_ENGINEERING_NOT_BUSINESS_ACCEPTANCE"
+  }
 }

@@ -1,11 +1,10 @@
 {
   "task_id": "BD-FULL-PRODUCTION-20261022",
-  "updated_at": "2026-10-22T06:50:25.920957+00:00",
+  "updated_at": "2026-10-22T11:19:55.047303+00:00",
   "branch": "codex/autonomous-bd-supervisor",
   "summary_zh": "限定工程审核通过，生产完整板块尚未验收；继续原队列。",
   "summary_en": "Scoped engineering approved; no complete production block accepted; continue the existing queue.",
   "review": "evidence/bd_full_20261022/reviewer/review.json",
-  "tests_passed": 81,
   "production_acceptance": false,
   "sensitive_check_zh": "无凭据、邮箱或客户明细；仅固定聚合。",
   "sensitive_check_en": "No credentials, email addresses or customer records; fixed aggregates only.",
@@ -23,7 +22,64 @@
   ],
   "limitations_zh": "未具备正式执行/导入契约；公共Nominatim禁止系统性商家清单采集；保留资格、history、MX和SAFE门禁。",
   "limitations_en": "Supported execution/import contract unavailable; public Nominatim forbids systematic POI harvesting; preserve qualification, history, MX and SAFE gates.",
-  "latest_followup": {
+  "shared_report_repair": {
+    "summary_zh": "共享报告竞态、逆序及半写发布保护补修已独立审核；Windows实际发布通过。",
+    "summary_en": "Shared-report race, ordering and partial-publication protection independently approved; real Windows publication verified.",
+    "review": "evidence/c3_shared_report_20261022/c3_report_write_review/final_review.json",
+    "targeted_tests": 42,
+    "review_verdict": "APPROVED_SCOPED_ENGINEERING",
+    "live_local_publication_verified": true,
+    "source": "manual",
+    "production_acceptance": false,
+    "full_C3_acceptance": false
+  },
+  "latest_heartbeat_cycle": {
+    "cycle_id": "114c018d-dabe-4e9b-b1c7-504584f7e88f",
+    "task_id": "BD-FULL-OBSERVABILITY-RELEASE-20261022T105321",
+    "source": "codex_heartbeat",
+    "trigger_at": "2026-10-22T10:53:21.698Z",
+    "started_at": "2026-10-22T10:53:21.698Z",
+    "finished_at": "2026-10-22T11:19:55.047303+00:00",
+    "status": "completed",
+    "branch": "codex/autonomous-bd-supervisor",
+    "commit": "cab40e5fbfbdcf87eb78c59f9907c6be552f7762",
+    "commit_scope": "Reviewed engineering source commit; this report is committed separately.",
+    "uncommitted_files_scope": "Report/evidence publication pending final commit; no unreviewed production source changes.",
+    "tests": 31,
+    "reviewer": "independent_reviewer + city_reviewer + safe_consumer_developer",
+    "operation_id": "op-20261022-191501-18edf5",
+    "external_side_effects": [
+      "Registered and applied one independently reviewed stage-trace release through formal channel",
+      "Git source commit pushed"
+    ],
+    "qualifies_full_unattended_engineering_cycle": false,
+    "human_trigger_excluded": false,
+    "production_acceptance": false,
+    "next_action": "Observe the original Inventory scheduled 2026-10-23T00:42:26+08:00 via fixed runtime/city/provider/scheduler/SAFE routes; require a new run after apply and real stage events. Never manually trigger discovery or reapply either release.",
+    "summary_zh": "正式只读补证已接入；剩余2条城市阻塞。4A8V阶段轨迹独立审核、14项门禁及部署后SHA核验通过，已部署；城市推进与完整板块仍待原计划自然验收。",
+    "summary_en": "Bounded production evidence connected; two city blockers remain. Independently reviewed 4A8V stage tracing passed 14 gates and post-deploy SHA checks and is applied; city progress and complete blocks still await the original natural run."
+  },
+  "stage_trace_deployment": {
+    "release_id": "phase4a8v-inventory-stage-trace-20261022",
+    "operation_id": "op-20261022-191501-18edf5",
+    "source_commit": "cab40e5fbfbdcf87eb78c59f9907c6be552f7762",
+    "state": "applied",
+    "backup_sha_verified": true,
+    "replacement_sha_verified": true,
+    "lock_released": true,
+    "gates_passed": 14,
+    "tests_passed": 31,
+    "independent_release_tests": 14,
+    "postdeploy_observed_at": "2026-10-22T19:18:02+08:00",
+    "source_after_sha256": "0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8",
+    "reviewer": "codex:/root/independent_reviewer",
+    "natural_run_acceptance": false,
+    "business_acceptance": false,
+    "next_original_inventory_at": "2026-10-23T00:42:26+08:00",
+    "summary_zh": "正式只读补证已接入；剩余2条城市阻塞。4A8V阶段轨迹独立审核、14项门禁及部署后SHA核验通过，已部署；城市推进与完整板块仍待原计划自然验收。",
+    "summary_en": "Bounded production evidence connected; two city blockers remain. Independently reviewed 4A8V stage tracing passed 14 gates and post-deploy SHA checks and is applied; city progress and complete blocks still await the original natural run."
+  },
+  "historical_followup_before_4a8v": {
     "trigger_at": "2026-10-22T03:26:13.340Z",
     "execution_observed_at": "2026-10-22T14:36:00+08:00",
     "delayed_trigger": true,
@@ -38,15 +94,12 @@
     "tests_rerun": false,
     "reviewed_source_hashes_match": true
   },
-  "shared_report_repair": {
-    "summary_zh": "共享报告竞态、逆序及半写发布保护补修已独立审核；Windows实际发布通过。",
-    "summary_en": "Shared-report race, ordering and partial-publication protection independently approved; real Windows publication verified.",
-    "review": "evidence/c3_shared_report_20261022/c3_report_write_review/final_review.json",
-    "targeted_tests": 42,
-    "review_verdict": "APPROVED_SCOPED_ENGINEERING",
-    "live_local_publication_verified": true,
-    "source": "manual",
-    "production_acceptance": false,
-    "full_C3_acceptance": false
+  "historical_tests_passed": 81,
+  "current_heartbeat_tests": {
+    "passed": 31,
+    "client": 6,
+    "safe": 11,
+    "stage_trace": 14,
+    "scope": "OFFLINE_ENGINEERING_ONLY"
   }
 }

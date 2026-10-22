@@ -1,11 +1,536 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-22T06:45:11.692541+00:00",
+  "updated_at": "2026-10-22T11:19:55.047303+00:00",
   "summary_zh": "原城市修复已部署且自然run已观察到，城市仍停滞；实际入口/活动州/阶段轨迹待补证，可靠性工程继续。",
   "summary_en": "Original city repair deployed and a natural run observed, but the city remains stalled; actual entry/state/stage evidence is pending while reliability engineering continues.",
   "production_inventory_id": "1784775229336",
   "automation_id": "rokt-razo",
   "workstreams": {
+    "A": {
+      "goal_zh": "Cooperstown安全收尾并推进Lake Placid",
+      "goal_en": "Safely finish Cooperstown and advance to Lake Placid",
+      "baseline": "93a8d0a",
+      "worktree": "../roktandrazo-outreach-autonomy-city",
+      "branch": "codex/autonomy-city-recovery",
+      "status_zh": "已部署；自然run completed但城市仍active，生产业务验收未通过。",
+      "status_en": "Deployed; a natural run completed but the city remains active, so business acceptance has not passed.",
+      "expected_business_effect_zh": "解除城市阻塞而不降低SAFE标准",
+      "expected_business_effect_en": "Remove city blockage without weakening SAFE rules",
+      "review": "INDEPENDENT_APPROVED_PINNED_PATCH",
+      "deployment": "APPLIED_NATURAL_RUN_OBSERVED_CITY_STILL_ACTIVE",
+      "next_automatic_action_zh": "通过固定只读接口观察原Inventory 2026-10-23 00:42+08自然运行，不手动触发。",
+      "next_automatic_action_en": "Observe the original Inventory scheduled 2026-10-23T00:42:26+08:00 via fixed runtime/city/provider/scheduler/SAFE routes; require a new run after apply and real stage events. Never manually trigger discovery or reapply either release.",
+      "commit": "6ce6e317b82ee1173cd0703ab876df23a3f33d27",
+      "integration_commit": "860728f",
+      "tests": {
+        "primary": 84,
+        "failure_path_invocations": 20,
+        "total_invocations": 104,
+        "unique_tests": 86,
+        "independent_reviewer_subset": 22
+      },
+      "release_id": "phase4a8u-city-recovery-production-rebase-20261022",
+      "operation_id": "op-20261022-011811-4925c1",
+      "current_release_source_commit": "475be19c0d149a8c0e5ffc2b3b3866908c185eaa"
+    },
+    "B": {
+      "goal_zh": "转换现有44候选的企业官网与第一方商务邮箱",
+      "goal_en": "Convert existing 44 candidates into verified sites and first-party business emails",
+      "baseline": "93a8d0a",
+      "worktree": "../roktandrazo-outreach-autonomy-brand",
+      "branch": "codex/autonomy-brand",
+      "status_zh": "品牌25文件已整合，177离线测试及独立静态审核通过；磁盘故障已恢复，生产验收仍未完成",
+      "status_en": "25 brand files integrated, 177 offline tests and independent static review passed; disk failure recovered, production acceptance remains incomplete",
+      "expected_business_effect_zh": "提高现有候选有效转化",
+      "expected_business_effect_en": "Improve valid conversion of existing candidates",
+      "review": "PASSED_INDEPENDENT_STATIC_REVIEW_NO_MIGRATION_BLOCKERS",
+      "deployment": "NOT_DEPLOYED",
+      "next_automatic_action_zh": "等待正式历史副本及受控发布条件；保留UNKNOWN资格",
+      "next_automatic_action_en": "Await authorized history copy and controlled release readiness; retain UNKNOWN eligibility",
+      "commit": "5e9b89de99a596b509426a596ef02fcc7521facc",
+      "tests": {
+        "developer_passed": 115,
+        "parent_passed": 34,
+        "developer_passed_scope": "PRIOR_ISOLATED_SOURCE_BRANCH_NOT_CURRENT_AUDIT",
+        "integrated_offline_passed": 177,
+        "independent_review": "25_BYTE_MATCHES_25_AST_VALID_NO_TEST_RERUN"
+      },
+      "integration": "INTEGRATED_PINNED_25_FILES_177_OFFLINE_TESTS_PASSED",
+      "history": "UNKNOWN",
+      "new_organizations_this_run": 0,
+      "new_first_party_emails_this_run": 0,
+      "dependency_audit_cycle_id": "c35de6c2-5533-452f-9930-9ecead4457c3",
+      "dependency_audit": "COMPLETED_STATIC_ONLY_25_FILES_115_METHODS_NOT_EXECUTED",
+      "dual_source_status_zh": "包18条OSM对象/4网站记录/1邮箱已核验；非双来源同城实采，历史资格UNKNOWN",
+      "dual_source_status_en": "Package 18 OSM objects / 4 site records / 1 email verified; not same-city dual-source acquisition; history UNKNOWN"
+    },
+    "C": {
+      "goal_zh": "完成四套V6完整回归及受控内部QA准备",
+      "goal_en": "Complete full regression and controlled internal QA readiness for four V6 templates",
+      "baseline": "0ce0b10",
+      "worktree": "../roktandrazo-outreach-autonomy-v6",
+      "branch": "codex/autonomy-v6",
+      "status_zh": "四套V6定向58项通过；可比全量563项560通过、3项与基线相同；整合后86项加4身份门禁测试通过；QA未登记未发送",
+      "status_en": "Four V6 variants passed 58 targeted tests; comparable full suite 563/560 passed with three baseline-identical issues; integrated 86 tests plus four identity-gate tests passed; QA unregistered and unsent",
+      "expected_business_effect_zh": "具备可信、受门禁的内部验收与客户发信准备",
+      "expected_business_effect_en": "Enable trustworthy gated internal acceptance and outreach readiness",
+      "review": "PASSED_PARENT_DIFF_FAILURE_BOUNDARIES_AND_INTEGRATED_TESTS",
+      "deployment": "NOT_DEPLOYED",
+      "next_automatic_action_zh": "推动新的受控QA登记；仅正式入口可试发，保留基线归档失败，不放宽断言",
+      "next_automatic_action_en": "Arrange new controlled QA registration; test-send only through supported entrypoint, preserving baseline archive failures and assertions",
+      "commit": "150ba3c8a300a8750c50b262fbc3c6dbc8cc77c5",
+      "integration_commit": "1356dde",
+      "tests": {
+        "targeted_passed": 58,
+        "full_run": 563,
+        "full_passed": 560,
+        "full_failures": 2,
+        "full_errors": 1,
+        "comparable_baseline_run": 556,
+        "baseline_failures": 2,
+        "baseline_errors": 1,
+        "new_failure_ids": [],
+        "integrated_test_group_passed": 86,
+        "identity_gate_passed": 4
+      }
+    },
+    "D": {
+      "goal_zh": "持久化队列、独立审查、串行发布与业务日报",
+      "goal_en": "Persistent queue, independent review, serialized releases and daily business reporting",
+      "baseline": "0ce0b10",
+      "worktree": ".",
+      "branch": "codex/autonomous-bd-supervisor",
+      "status_zh": "R2/R3/R4限定修复已审核；正式通道及SAFE快照接入，4A8V已部署，完整无人值守验收尚未完成。",
+      "status_en": "R2/R3/R4 scoped repairs reviewed; official channel and SAFE snapshot connected; 4A8V applied; full unattended acceptance remains incomplete.",
+      "expected_business_effect_zh": "减少用户日常调度并保留可审计门禁",
+      "expected_business_effect_en": "Reduce manual scheduling while preserving auditable gates",
+      "review": "SCOPED_ENGINEERING_APPROVED_FULL_ACCEPTANCE_PENDING",
+      "deployment": "4A8V_APPLIED_NATURAL_ACCEPTANCE_PENDING",
+      "next_automatic_action_zh": "通过固定只读接口观察原Inventory 2026-10-23 00:42+08自然运行，不手动触发。",
+      "next_automatic_action_en": "Observe the original Inventory scheduled 2026-10-23T00:42:26+08:00 via fixed runtime/city/provider/scheduler/SAFE routes; require a new run after apply and real stage events. Never manually trigger discovery or reapply either release.",
+      "commit": "cab40e5fbfbdcf87eb78c59f9907c6be552f7762",
+      "tests": {
+        "developer_passed": 14,
+        "independent_passed": 14
+      },
+      "heartbeat_trigger_receipts_observed": 15,
+      "patch_transport_fix_commit": "59b673c",
+      "successful_unattended_cycles": 0,
+      "telemetry_developer_tests": 18,
+      "telemetry_parent_tests": 18,
+      "telemetry_review": "PASSED_INDEPENDENT_NO_FINDINGS_34_IN_MEMORY_ASSERTIONS",
+      "production_telemetry": "CONNECTED_SCOPED_SUMMARY_AND_AUTHORITY_SNAPSHOT",
+      "telemetry_review_cycle_id": "dc74f93e-aee6-47c9-af8c-010c30943d3f",
+      "storage_audit_cycle_id": "925bf28f-489f-4af9-817f-e596bbd041cf",
+      "storage_findings_open": 3,
+      "unknown_outcome_repair": "SCOPED_REVIEW_PASS",
+      "unknown_outcome_review_cycle_id": "2fc8a379-84cc-4bf6-a759-ba29483f76ff",
+      "unknown_outcome_findings_open": 0,
+      "task_registration_tests_passed": 19,
+      "unknown_outcome_followup_cycle_id": "10e948fc-af43-462d-a53a-0d3edeeb0949",
+      "followup_parent_tests_passed": 22,
+      "followup_developer_tests_executed": false,
+      "storage_preflight": "INTEGRATED_45_REGRESSIONS_21_INDEPENDENT_CHECKS",
+      "remaining_reliability_findings": [
+        "FULL_REAL_UNATTENDED_CYCLE_ACCEPTANCE_PENDING"
+      ]
+    }
+  },
+  "production_metrics_source": "OFFICIAL_V2_POSTDEPLOY_2026_10_22_191802_PLUS08_AND_SCOPED_SAFE_MEASUREMENT",
+  "prior_metrics_are_not_current_growth": true,
+  "parallel_execution_scope": "THREE_PRIOR_REAL_AGENTS_DEMONSTRATED_CAPABILITY_CURRENT_HEARTBEAT_ONE_BOUNDED_TASK",
+  "WORKBUDDY_HANDOFF_ACCEPTANCE": "autonomy/CODEX_WORKBUDDY_HANDOFF_ACCEPTANCE.json",
+  "AUTONOMOUS_OPERATIONS_ACTIVE": false,
+  "NEW_UNATTENDED_CYCLES_VERIFIED": false,
+  "latest_cycle_id": "114c018d-dabe-4e9b-b1c7-504584f7e88f",
+  "latest_cycle_summary_zh": "正式只读补证已接入；剩余2条城市阻塞。4A8V阶段轨迹独立审核、14项门禁及部署后SHA核验通过，已部署；城市推进与完整板块仍待原计划自然验收。",
+  "latest_cycle_summary_en": "Bounded production evidence connected; two city blockers remain. Independently reviewed 4A8V stage tracing passed 14 gates and post-deploy SHA checks and is applied; city progress and complete blocks still await the original natural run.",
+  "latest_observation_evidence": "autonomy/runtime/city_observation_20261021T232411",
+  "production_observation": {
+    "source": "rokt-deploy-channel",
+    "observed_at": "2026-10-22T19:18:02+08:00",
+    "schema": "rokt.bd-business-observation.v1",
+    "summary_zh": "正式认证回执的固定聚合投影；存量、观察窗口和未知资格分开。",
+    "summary_en": "Fixed aggregate projection of an authenticated receipt; totals, observation windows and unknown eligibility remain separate.",
+    "historical_totals": {
+      "leads_total": 1213,
+      "leads_with_email": 652
+    },
+    "rolling_24h": {
+      "provider_requests": 0,
+      "new_raw_merchants": "UNKNOWN",
+      "new_verified_organizations": "UNKNOWN",
+      "new_verified_official_sites": "UNKNOWN",
+      "new_first_party_emails": "UNKNOWN",
+      "new_history_clean_organizations": "UNKNOWN",
+      "safe_net_growth": "UNKNOWN"
+    },
+    "rolling_7d": {
+      "new_verified_organizations": "UNKNOWN",
+      "safe_net_growth": "UNKNOWN"
+    },
+    "current_safe": "UNKNOWN",
+    "safe_authority_connected": false,
+    "safety": {
+      "smtp_disabled": true,
+      "smtp_observed": "0",
+      "sent_today": 0,
+      "total_sent": 517,
+      "duplicate_inventory": "UNKNOWN",
+      "designated_inventory_active_count": 1,
+      "running_inventory_last_2h": "UNKNOWN",
+      "lock_released": true
+    },
+    "bounce_total": 63,
+    "suppression_total": 63,
+    "stage_telemetry": "NOT_EXPOSED",
+    "city_completion_conditions": "NOT_EXPOSED",
+    "lake_placid_provider_requests": "UNKNOWN",
+    "last_inventory_run": {
+      "run_id": "inventory:2026-10-22:bc1c588b",
+      "status": "completed",
+      "actual_historical_run_count": 56,
+      "target_met": true
+    },
+    "active_cities": [
+      {
+        "city": "Cooperstown",
+        "status": "active"
+      },
+      {
+        "city": "Little Rock",
+        "status": "QUEUED"
+      },
+      {
+        "city": "Louisville",
+        "status": "QUEUED"
+      }
+    ],
+    "limitations_zh": [
+      "指定ID计数不能证明全局Inventory唯一性。",
+      "旧running_inventory_24h_window实际上只统计2小时。",
+      "SAFE快照未包含完整资格来源和有效性契约，不能据此确认权威连接。"
+    ],
+    "limitations_en": [
+      "A designated-ID count does not establish global Inventory uniqueness.",
+      "Legacy running_inventory_24h_window actually covers two hours.",
+      "SAFE snapshots lack a complete authority/validity contract and cannot establish authority connectivity."
+    ],
+    "production_sha_matches": {
+      "bd_orchestrator.py": true,
+      "discovery/discovery_service.py": true,
+      "retail_city_queue.py": true
+    },
+    "receipt_sha256": "e2aff4d8247dceeb0a8eb01e78783076c854a82666b15c00c5e46dbbebcad6e9",
+    "receipt_path": "autonomy\\runtime\\bd_full_20261022\\observations\\20261022T111802328255Z\\telemetry.json"
+  },
+  "production_completion_workstreams": {
+    "A": {
+      "A_CITY_ROOT_CAUSE_IDENTIFIED": false,
+      "A_CITY_REPAIR_TESTED": false,
+      "A_CITY_REPAIR_REVIEWED": false,
+      "A_CITY_REPAIR_DEPLOYED": false,
+      "A_COOPERSTOWN_CLOSED": false,
+      "A_LAKE_PLACID_ACTIVE": "NOT_OBSERVED",
+      "A_LAKE_PLACID_PROVIDER_REQUESTS": "UNKNOWN_NO_RECORD",
+      "A_CITY_BUSINESS_ACCEPTANCE": false,
+      "A_STAGE_TRACE_DEPLOYED": true,
+      "A_STAGE_TRACE_NATURAL_ACCEPTANCE": false,
+      "root_cause_status": "PARTIALLY_LOCALIZED_BLOCKER_DETAILS_AND_NEW_STAGE_TRACE_PENDING",
+      "blockers_remaining": 2,
+      "website_lookup_pending_record": "ldr:571",
+      "linked_blocker_records": [
+        "ldr:556"
+      ],
+      "active_discovery_state": "NY",
+      "query_families_completed": 20,
+      "query_families_total": 20,
+      "cooperstown_provider_24h": "ZERO_REQUESTS_CONFIRMED",
+      "stage_trace_release": {
+        "release_id": "phase4a8v-inventory-stage-trace-20261022",
+        "operation_id": "op-20261022-191501-18edf5",
+        "source_commit": "cab40e5fbfbdcf87eb78c59f9907c6be552f7762",
+        "state": "applied",
+        "backup_sha_verified": true,
+        "replacement_sha_verified": true,
+        "lock_released": true,
+        "gates_passed": 14,
+        "tests_passed": 31,
+        "independent_release_tests": 14,
+        "postdeploy_observed_at": "2026-10-22T19:18:02+08:00",
+        "source_after_sha256": "0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8",
+        "reviewer": "codex:/root/independent_reviewer",
+        "natural_run_acceptance": false,
+        "business_acceptance": false,
+        "next_original_inventory_at": "2026-10-23T00:42:26+08:00",
+        "summary_zh": "正式只读补证已接入；剩余2条城市阻塞。4A8V阶段轨迹独立审核、14项门禁及部署后SHA核验通过，已部署；城市推进与完整板块仍待原计划自然验收。",
+        "summary_en": "Bounded production evidence connected; two city blockers remain. Independently reviewed 4A8V stage tracing passed 14 gates and post-deploy SHA checks and is applied; city progress and complete blocks still await the original natural run."
+      }
+    },
+    "B": {
+      "task_id": "BD-FULL-PRODUCTION-20261022",
+      "updated_at": "2026-10-22T01:29:26.575450+00:00",
+      "branch": "codex/autonomous-bd-supervisor",
+      "summary_zh": "限定工程审核通过，生产完整板块尚未验收；继续原队列。",
+      "summary_en": "Scoped engineering approved; no complete production block accepted; continue the existing queue.",
+      "review": "evidence/bd_full_20261022/reviewer/review.json",
+      "tests_passed": 81,
+      "production_acceptance": false,
+      "sensitive_check_zh": "无凭据、邮箱或客户明细；仅固定聚合。",
+      "sensitive_check_en": "No credentials, email addresses or customer records; fixed aggregates only.",
+      "B_PRODUCTION_STAGE_TELEMETRY": false,
+      "B_SAFE_AUTHORITY_CONNECTED": true,
+      "B_SAFE_LATEST": 56,
+      "B_NEW_ORGANIZATIONS_24H": "UNKNOWN",
+      "B_FIRST_PARTY_EMAILS_24H": 0,
+      "B_SAFE_NET_GROWTH_7D": "UNKNOWN",
+      "B_TWO_LIVE_RECONCILIATIONS": false,
+      "B_TELEMETRY_ACCEPTANCE": false,
+      "consumer_tests": 28,
+      "summary_receipts_observed": 3,
+      "latest_observation": {
+        "source": "rokt-deploy-channel",
+        "observed_at": "2026-10-22T19:18:02+08:00",
+        "schema": "rokt.bd-business-observation.v1",
+        "summary_zh": "正式认证回执的固定聚合投影；存量、观察窗口和未知资格分开。",
+        "summary_en": "Fixed aggregate projection of an authenticated receipt; totals, observation windows and unknown eligibility remain separate.",
+        "historical_totals": {
+          "leads_total": 1213,
+          "leads_with_email": 652
+        },
+        "rolling_24h": {
+          "provider_requests": 0,
+          "new_raw_merchants": "UNKNOWN",
+          "new_verified_organizations": "UNKNOWN",
+          "new_verified_official_sites": "UNKNOWN",
+          "new_first_party_emails": "UNKNOWN",
+          "new_history_clean_organizations": "UNKNOWN",
+          "safe_net_growth": "UNKNOWN"
+        },
+        "rolling_7d": {
+          "new_verified_organizations": "UNKNOWN",
+          "safe_net_growth": "UNKNOWN"
+        },
+        "current_safe": "UNKNOWN",
+        "safe_authority_connected": false,
+        "safety": {
+          "smtp_disabled": true,
+          "smtp_observed": "0",
+          "sent_today": 0,
+          "total_sent": 517,
+          "duplicate_inventory": "UNKNOWN",
+          "designated_inventory_active_count": 1,
+          "running_inventory_last_2h": "UNKNOWN",
+          "lock_released": true
+        },
+        "bounce_total": 63,
+        "suppression_total": 63,
+        "stage_telemetry": "NOT_EXPOSED",
+        "city_completion_conditions": "NOT_EXPOSED",
+        "lake_placid_provider_requests": "UNKNOWN",
+        "last_inventory_run": {
+          "run_id": "inventory:2026-10-22:bc1c588b",
+          "status": "completed",
+          "actual_historical_run_count": 56,
+          "target_met": true
+        },
+        "active_cities": [
+          {
+            "city": "Cooperstown",
+            "status": "active"
+          },
+          {
+            "city": "Little Rock",
+            "status": "QUEUED"
+          },
+          {
+            "city": "Louisville",
+            "status": "QUEUED"
+          }
+        ],
+        "limitations_zh": [
+          "指定ID计数不能证明全局Inventory唯一性。",
+          "旧running_inventory_24h_window实际上只统计2小时。",
+          "SAFE快照未包含完整资格来源和有效性契约，不能据此确认权威连接。"
+        ],
+        "limitations_en": [
+          "A designated-ID count does not establish global Inventory uniqueness.",
+          "Legacy running_inventory_24h_window actually covers two hours.",
+          "SAFE snapshots lack a complete authority/validity contract and cannot establish authority connectivity."
+        ],
+        "production_sha_matches": {
+          "bd_orchestrator.py": true,
+          "discovery/discovery_service.py": true,
+          "retail_city_queue.py": true
+        },
+        "receipt_sha256": "e2aff4d8247dceeb0a8eb01e78783076c854a82666b15c00c5e46dbbebcad6e9",
+        "receipt_path": "autonomy\\runtime\\bd_full_20261022\\observations\\20261022T111802328255Z\\telemetry.json"
+      },
+      "limitations_zh": "权威SAFE为15:49至15:56测量快照，6小时策略内有效，不是实时数；重复读取缓存不算独立测量，净增及完整B验收仍未知。",
+      "limitations_en": "Authoritative SAFE is the 15:49-15:56 measurement snapshot, valid within a six-hour policy, not real time. Repeated cached reads are not independent measurements; net growth and complete B acceptance remain unproven.",
+      "B_SAFE_MEASURED_AT": "2026-10-22T15:49:52+08:00",
+      "B_SAFE_MEASUREMENT_FINISHED_AT": "2026-10-22T15:56:46+08:00",
+      "B_SAFE_SCOPE": "AUTHORITY_SNAPSHOT_WITHIN_6H_POLICY_NOT_REALTIME",
+      "B_FUNNEL_MEASURED_AT": "2026-10-22T15:49:52+08:00",
+      "safe_authority_snapshot": {
+        "schema": "rokt.safe-authority-observation.v1",
+        "source": "rokt-deploy-channel",
+        "observed_at": "2026-10-22T11:00:26.016024+00:00",
+        "measured_at": "2026-10-22T15:49:52+08:00",
+        "finished_at": "2026-10-22T15:56:46+08:00",
+        "safe_authority_connected": true,
+        "current_safe": 56,
+        "rule_sha256": {
+          "campaign_eligible_v2.py": "1143bedf563c0f76b883359362ffb2c2ea11c375fd923dc59768c5529cf3ad34",
+          "preflight_gate.py": "2cd286f201430fb9a48c68ead512671f398732e50e768c2fd69031f127f52622"
+        },
+        "db_sha256": "66509daab31eebe2bd39b27aa5be416179e7e96f40bddb1a5fa26f509a9b6f36",
+        "measurement_age_hours": 3.249002084166667,
+        "rolling_24h": {
+          "merchant_records_discovered": 0,
+          "unique_organizations_discovered": 0,
+          "verified_official_sites": 0,
+          "new_leads": 0,
+          "new_leads_with_email": 0,
+          "new_first_party_official_emails": 0,
+          "new_distinct_organization_keys": 0
+        },
+        "rolling_7d": {
+          "merchant_records_discovered": 8,
+          "unique_organizations_discovered": 8,
+          "verified_official_sites": 4,
+          "new_leads": 6,
+          "new_leads_with_email": 5,
+          "new_first_party_official_emails": 4,
+          "new_distinct_organization_keys": 6
+        },
+        "new_verified_organizations_24h": "UNKNOWN",
+        "safe_net_growth_24h": "UNKNOWN",
+        "safe_net_growth_7d": "UNKNOWN",
+        "summary_zh": "双读与权威规则验证通过；发现不等于身份确认，无可比历史不计算净增。",
+        "summary_en": "Two readings and authority rules validated; discovery is not confirmed identity; no net growth without comparable history.",
+        "acceptance_scope": "SAFE_AUTHORITY_SNAPSHOT_ONLY_NOT_FULL_B_ACCEPTANCE"
+      }
+    },
+    "C": {
+      "task_id": "BD-FULL-PRODUCTION-20261022",
+      "updated_at": "2026-10-22T01:29:26.575450+00:00",
+      "branch": "codex/autonomous-bd-supervisor",
+      "summary_zh": "限定工程审核通过，生产完整板块尚未验收；继续原队列。",
+      "summary_en": "Scoped engineering approved; no complete production block accepted; continue the existing queue.",
+      "review": "evidence/bd_full_20261022/reviewer/review.json",
+      "tests_passed": 81,
+      "production_acceptance": false,
+      "sensitive_check_zh": "无凭据、邮箱或客户明细；仅固定聚合。",
+      "sensitive_check_en": "No credentials, email addresses or customer records; fixed aggregates only.",
+      "C_LOCK_RECOVERY_VERIFIED": true,
+      "C_OUTPUT_CLEANUP_VERIFIED": true,
+      "C_NO_UNKNOWN_OUTCOME_RERUN": true,
+      "C_NEW_UNATTENDED_CYCLES": 0,
+      "C_AUTONOMOUS_OPERATIONS_ACTIVE": false,
+      "engineering_tests": 46,
+      "engineering_scope": "LOCAL_WINDOWS_PROCESS_AND_LOCK_ACCEPTANCE",
+      "real_heartbeat_trigger_receipts_this_continuation": 1,
+      "limitations_zh": "真实Windows本地父子进程/崩溃锁验收通过；尚无多周期无人值守工程全链验收，POSIX未测。",
+      "limitations_en": "Real local Windows child-process and crash-lock checks pass; no multi-cycle unattended engineering-chain acceptance, POSIX untested.",
+      "infrastructure_failure": "Initial PowerShell host Out of memory; no result generated; excluded from test verdict. 首次宿主内存不足无结果，不计代码结果。",
+      "shared_report_repair": {
+        "summary_zh": "共享报告竞态、逆序及半写发布保护补修已独立审核；Windows实际发布通过。",
+        "summary_en": "Shared-report race, ordering and partial-publication protection independently approved; real Windows publication verified.",
+        "review": "evidence/c3_shared_report_20261022/c3_report_write_review/final_review.json",
+        "targeted_tests": 42,
+        "review_verdict": "APPROVED_SCOPED_ENGINEERING",
+        "live_local_publication_verified": true,
+        "source": "manual",
+        "production_acceptance": false,
+        "full_C3_acceptance": false
+      }
+    },
+    "D": {
+      "task_id": "BD-FULL-PRODUCTION-20261022",
+      "updated_at": "2026-10-22T01:29:26.575450+00:00",
+      "branch": "codex/autonomous-bd-supervisor",
+      "summary_zh": "限定工程审核通过，生产完整板块尚未验收；继续原队列。",
+      "summary_en": "Scoped engineering approved; no complete production block accepted; continue the existing queue.",
+      "review": "evidence/bd_full_20261022/reviewer/review.json",
+      "tests_passed": 81,
+      "production_acceptance": false,
+      "sensitive_check_zh": "无凭据、邮箱或客户明细；仅固定聚合。",
+      "sensitive_check_en": "No credentials, email addresses or customer records; fixed aggregates only.",
+      "D_GOOGLE_LIVE_REQUESTS": "NOT_EXECUTED",
+      "D_OSM_LIVE_REQUESTS": "NOT_EXECUTED",
+      "D_CROSS_SOURCE_UNIQUE_ORGS": "UNKNOWN",
+      "D_HISTORY_CLEAN_NEW_ORGS": "UNKNOWN",
+      "D_VERIFIED_FIRST_PARTY_EMAILS": "UNKNOWN",
+      "D_NEW_SAFE": "UNKNOWN",
+      "D_DUAL_SOURCE_ACCEPTANCE": false,
+      "policy_sources": [
+        "https://operations.osmfoundation.org/policies/nominatim/",
+        "https://developers.google.com/maps/documentation/places/web-service/policies",
+        "https://wiki.openstreetmap.org/wiki/Overpass_API"
+      ],
+      "limitations_zh": "未具备正式执行/导入契约；公共Nominatim禁止系统性商家清单采集；保留资格、history、MX和SAFE门禁。",
+      "limitations_en": "Supported execution/import contract unavailable; public Nominatim forbids systematic POI harvesting; preserve qualification, history, MX and SAFE gates."
+    }
+  },
+  "shared_report_repair": {
+    "summary_zh": "共享报告竞态、逆序及半写发布保护补修已独立审核；Windows实际发布通过。",
+    "summary_en": "Shared-report race, ordering and partial-publication protection independently approved; real Windows publication verified.",
+    "review": "evidence/c3_shared_report_20261022/c3_report_write_review/final_review.json",
+    "targeted_tests": 42,
+    "review_verdict": "APPROVED_SCOPED_ENGINEERING",
+    "live_local_publication_verified": true,
+    "source": "manual",
+    "production_acceptance": false,
+    "full_C3_acceptance": false
+  },
+  "latest_heartbeat_cycle": {
+    "cycle_id": "114c018d-dabe-4e9b-b1c7-504584f7e88f",
+    "task_id": "BD-FULL-OBSERVABILITY-RELEASE-20261022T105321",
+    "source": "codex_heartbeat",
+    "trigger_at": "2026-10-22T10:53:21.698Z",
+    "started_at": "2026-10-22T10:53:21.698Z",
+    "finished_at": "2026-10-22T11:19:55.047303+00:00",
+    "status": "completed",
+    "branch": "codex/autonomous-bd-supervisor",
+    "commit": "cab40e5fbfbdcf87eb78c59f9907c6be552f7762",
+    "commit_scope": "Reviewed engineering source commit; this report is committed separately.",
+    "uncommitted_files_scope": "Report/evidence publication pending final commit; no unreviewed production source changes.",
+    "tests": 31,
+    "reviewer": "independent_reviewer + city_reviewer + safe_consumer_developer",
+    "operation_id": "op-20261022-191501-18edf5",
+    "external_side_effects": [
+      "Registered and applied one independently reviewed stage-trace release through formal channel",
+      "Git source commit pushed"
+    ],
+    "qualifies_full_unattended_engineering_cycle": false,
+    "human_trigger_excluded": false,
+    "production_acceptance": false,
+    "next_action": "Observe the original Inventory scheduled 2026-10-23T00:42:26+08:00 via fixed runtime/city/provider/scheduler/SAFE routes; require a new run after apply and real stage events. Never manually trigger discovery or reapply either release.",
+    "summary_zh": "正式只读补证已接入；剩余2条城市阻塞。4A8V阶段轨迹独立审核、14项门禁及部署后SHA核验通过，已部署；城市推进与完整板块仍待原计划自然验收。",
+    "summary_en": "Bounded production evidence connected; two city blockers remain. Independently reviewed 4A8V stage tracing passed 14 gates and post-deploy SHA checks and is applied; city progress and complete blocks still await the original natural run."
+  },
+  "stage_trace_deployment": {
+    "release_id": "phase4a8v-inventory-stage-trace-20261022",
+    "operation_id": "op-20261022-191501-18edf5",
+    "source_commit": "cab40e5fbfbdcf87eb78c59f9907c6be552f7762",
+    "state": "applied",
+    "backup_sha_verified": true,
+    "replacement_sha_verified": true,
+    "lock_released": true,
+    "gates_passed": 14,
+    "tests_passed": 31,
+    "independent_release_tests": 14,
+    "postdeploy_observed_at": "2026-10-22T19:18:02+08:00",
+    "source_after_sha256": "0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8",
+    "reviewer": "codex:/root/independent_reviewer",
+    "natural_run_acceptance": false,
+    "business_acceptance": false,
+    "next_original_inventory_at": "2026-10-23T00:42:26+08:00",
+    "summary_zh": "正式只读补证已接入；剩余2条城市阻塞。4A8V阶段轨迹独立审核、14项门禁及部署后SHA核验通过，已部署；城市推进与完整板块仍待原计划自然验收。",
+    "summary_en": "Bounded production evidence connected; two city blockers remain. Independently reviewed 4A8V stage tracing passed 14 gates and post-deploy SHA checks and is applied; city progress and complete blocks still await the original natural run."
+  },
+  "historical_workstreams_before_4a8v": {
     "A": {
       "goal_zh": "Cooperstown安全收尾并推进Lake Placid",
       "goal_en": "Safely finish Cooperstown and advance to Lake Placid",
@@ -138,10 +663,9 @@
       ]
     }
   },
-  "production_metrics_source": "OFFICIAL_V2_TELEMETRY_2026_10_22_011827_PLUS08",
-  "prior_metrics_are_not_current_growth": true,
-  "parallel_execution_scope": "THREE_PRIOR_REAL_AGENTS_DEMONSTRATED_CAPABILITY_CURRENT_HEARTBEAT_ONE_BOUNDED_TASK",
-  "repeated_blocker_reassessment": {
+  "workstream_labels_scope_zh": "旧A城市/B品牌/CV6/D监督器命名保留；完整生产A/B/C/D验收见production_completion_workstreams，历史状态另存。",
+  "workstream_labels_scope_en": "Legacy A-city/B-brand/C-V6/D-supervisor labels retained; complete production A/B/C/D acceptance is under production_completion_workstreams; prior states separately archived.",
+  "historical_repeated_blocker_reassessment": {
     "cycles_observed": 2,
     "summary_zh": "生产feed/新登记仍缺且未本轮复查；改做已证实的恢复可靠性修复，不扩大权限或重复申请",
     "summary_en": "Production feed/new registration remain unavailable and were not rechecked; proceed with evidenced recovery fixes without privilege expansion or duplicate requests",
@@ -149,266 +673,7 @@
     "alternative_task": "D-unknown-outcome-quarantine",
     "production_qa_recheck": "HTTP_400_UNKNOWN_RELEASE_ID_2026_10_20_06_50_PLUS08"
   },
-  "WORKBUDDY_HANDOFF_ACCEPTANCE": "autonomy/CODEX_WORKBUDDY_HANDOFF_ACCEPTANCE.json",
-  "AUTONOMOUS_OPERATIONS_ACTIVE": false,
-  "NEW_UNATTENDED_CYCLES_VERIFIED": false,
-  "latest_cycle_id": "ecc230f4-a4fc-4cc5-8737-1481a3643ba9",
-  "latest_cycle_summary_zh": "07:24已观察到部署后Inventory inventory:2026-10-22:03b70e7a，completed/target_met，actual=56不计当前SAFE或新增。Cooperstown仍active，Lake Placid未激活，Provider过去24小时0；城市业务验收未通过。部署SHA一致，SMTP=0、今日发送0、累计517、唯一Inventory=1、锁released。正式遥测不含本次运行日志或城市级Provider明细，根因UNKNOWN；本地orchestrator与生产SHA不同，不能以本地逻辑推断生产提前退出。下一原Inventory预期11:58:01，继续既有心跳补证，不重部署或手动采集。",
-  "latest_cycle_summary_en": "07:24 observed post-deploy Inventory inventory:2026-10-22:03b70e7a, completed/target_met; actual=56 is not current SAFE or growth. Cooperstown remains active, Lake Placid is not active, and Provider requests over 24h are zero; city business acceptance is not met. Deployed hashes match; SMTP=0, sends today=0, total=517, one active Inventory, lock released. Official telemetry lacks run logs and city-level Provider details; root cause UNKNOWN. Local orchestrator differs from production SHA and cannot establish production early-exit behavior. Next original Inventory is expected at 11:58:01 +08:00; continue existing heartbeat, no reapply or manual collection.",
-  "latest_observation_evidence": "autonomy/runtime/city_observation_20261021T232411",
-  "production_observation": {
-    "source": "rokt-deploy-channel",
-    "observed_at": "2026-10-22T14:52:15+08:00",
-    "schema": "rokt.bd-business-observation.v1",
-    "summary_zh": "正式认证回执的固定聚合投影；存量、观察窗口和未知资格分开。",
-    "summary_en": "Fixed aggregate projection of an authenticated receipt; totals, observation windows and unknown eligibility remain separate.",
-    "historical_totals": {
-      "leads_total": 1213,
-      "leads_with_email": 652
-    },
-    "rolling_24h": {
-      "provider_requests": 0,
-      "new_raw_merchants": "UNKNOWN",
-      "new_verified_organizations": "UNKNOWN",
-      "new_verified_official_sites": "UNKNOWN",
-      "new_first_party_emails": "UNKNOWN",
-      "new_history_clean_organizations": "UNKNOWN",
-      "safe_net_growth": "UNKNOWN"
-    },
-    "rolling_7d": {
-      "new_verified_organizations": "UNKNOWN",
-      "safe_net_growth": "UNKNOWN"
-    },
-    "current_safe": "UNKNOWN",
-    "safe_authority_connected": false,
-    "safety": {
-      "smtp_disabled": true,
-      "smtp_observed": "0",
-      "sent_today": 0,
-      "total_sent": 517,
-      "duplicate_inventory": "UNKNOWN",
-      "designated_inventory_active_count": 1,
-      "running_inventory_last_2h": 0,
-      "lock_released": true
-    },
-    "bounce_total": 63,
-    "suppression_total": 63,
-    "stage_telemetry": "NOT_EXPOSED",
-    "city_completion_conditions": "NOT_EXPOSED",
-    "lake_placid_provider_requests": "UNKNOWN",
-    "last_inventory_run": {
-      "run_id": "inventory:2026-10-22:03b70e7a",
-      "status": "completed",
-      "actual_historical_run_count": 56,
-      "target_met": true
-    },
-    "active_cities": [
-      {
-        "city": "Cooperstown",
-        "status": "active"
-      },
-      {
-        "city": "Little Rock",
-        "status": "QUEUED"
-      },
-      {
-        "city": "Louisville",
-        "status": "QUEUED"
-      }
-    ],
-    "limitations_zh": [
-      "指定ID计数不能证明全局Inventory唯一性。",
-      "旧running_inventory_24h_window实际上只统计2小时。",
-      "SAFE快照未包含完整资格来源和有效性契约，不能据此确认权威连接。"
-    ],
-    "limitations_en": [
-      "A designated-ID count does not establish global Inventory uniqueness.",
-      "Legacy running_inventory_24h_window actually covers two hours.",
-      "SAFE snapshots lack a complete authority/validity contract and cannot establish authority connectivity."
-    ],
-    "production_sha_matches": {
-      "bd_orchestrator.py": true,
-      "discovery/discovery_service.py": true,
-      "retail_city_queue.py": true
-    },
-    "receipt_sha256": "71bd05988c87d7fe7c810dff5eb16ded59018e03ae508a798d285ad159202c4c",
-    "receipt_path": "autonomy\\runtime\\bd_full_20261022\\observations\\20261022T065214291177Z\\telemetry.json"
-  },
-  "production_completion_workstreams": {
-    "A": {
-      "A_CITY_ROOT_CAUSE_IDENTIFIED": false,
-      "A_CITY_REPAIR_TESTED": false,
-      "A_CITY_REPAIR_REVIEWED": false,
-      "A_CITY_REPAIR_DEPLOYED": false,
-      "A_COOPERSTOWN_CLOSED": false,
-      "A_LAKE_PLACID_ACTIVE": "NOT_OBSERVED",
-      "A_LAKE_PLACID_PROVIDER_REQUESTS": "UNKNOWN",
-      "A_CITY_BUSINESS_ACCEPTANCE": false
-    },
-    "B": {
-      "task_id": "BD-FULL-PRODUCTION-20261022",
-      "updated_at": "2026-10-22T01:29:26.575450+00:00",
-      "branch": "codex/autonomous-bd-supervisor",
-      "summary_zh": "限定工程审核通过，生产完整板块尚未验收；继续原队列。",
-      "summary_en": "Scoped engineering approved; no complete production block accepted; continue the existing queue.",
-      "review": "evidence/bd_full_20261022/reviewer/review.json",
-      "tests_passed": 81,
-      "production_acceptance": false,
-      "sensitive_check_zh": "无凭据、邮箱或客户明细；仅固定聚合。",
-      "sensitive_check_en": "No credentials, email addresses or customer records; fixed aggregates only.",
-      "B_PRODUCTION_STAGE_TELEMETRY": false,
-      "B_SAFE_AUTHORITY_CONNECTED": false,
-      "B_SAFE_LATEST": "UNKNOWN",
-      "B_NEW_ORGANIZATIONS_24H": "UNKNOWN",
-      "B_FIRST_PARTY_EMAILS_24H": "UNKNOWN",
-      "B_SAFE_NET_GROWTH_7D": "UNKNOWN",
-      "B_TWO_LIVE_RECONCILIATIONS": false,
-      "B_TELEMETRY_ACCEPTANCE": false,
-      "consumer_tests": 28,
-      "summary_receipts_observed": 3,
-      "latest_observation": {
-        "source": "rokt-deploy-channel",
-        "observed_at": "2026-10-22T09:28:04+08:00",
-        "schema": "rokt.bd-business-observation.v1",
-        "summary_zh": "正式认证回执的固定聚合投影；存量、观察窗口和未知资格分开。",
-        "summary_en": "Fixed aggregate projection of an authenticated receipt; totals, observation windows and unknown eligibility remain separate.",
-        "historical_totals": {
-          "leads_total": 1213,
-          "leads_with_email": 652
-        },
-        "rolling_24h": {
-          "provider_requests": 0,
-          "new_raw_merchants": "UNKNOWN",
-          "new_verified_organizations": "UNKNOWN",
-          "new_verified_official_sites": "UNKNOWN",
-          "new_first_party_emails": "UNKNOWN",
-          "new_history_clean_organizations": "UNKNOWN",
-          "safe_net_growth": "UNKNOWN"
-        },
-        "rolling_7d": {
-          "new_verified_organizations": "UNKNOWN",
-          "safe_net_growth": "UNKNOWN"
-        },
-        "current_safe": "UNKNOWN",
-        "safe_authority_connected": false,
-        "safety": {
-          "smtp_disabled": true,
-          "smtp_observed": "0",
-          "sent_today": 0,
-          "total_sent": 517,
-          "duplicate_inventory": "UNKNOWN",
-          "designated_inventory_active_count": 1,
-          "running_inventory_last_2h": 0,
-          "lock_released": true
-        },
-        "bounce_total": 63,
-        "suppression_total": 63,
-        "stage_telemetry": "NOT_EXPOSED",
-        "city_completion_conditions": "NOT_EXPOSED",
-        "lake_placid_provider_requests": "UNKNOWN",
-        "last_inventory_run": {
-          "run_id": "inventory:2026-10-22:03b70e7a",
-          "status": "completed",
-          "actual_historical_run_count": 56,
-          "target_met": true
-        },
-        "active_cities": [
-          {
-            "city": "Cooperstown",
-            "status": "active"
-          },
-          {
-            "city": "Little Rock",
-            "status": "QUEUED"
-          },
-          {
-            "city": "Louisville",
-            "status": "QUEUED"
-          }
-        ],
-        "limitations_zh": [
-          "指定ID计数不能证明全局Inventory唯一性。",
-          "旧running_inventory_24h_window实际上只统计2小时。",
-          "SAFE快照未包含完整资格来源和有效性契约，不能据此确认权威连接。"
-        ],
-        "limitations_en": [
-          "A designated-ID count does not establish global Inventory uniqueness.",
-          "Legacy running_inventory_24h_window actually covers two hours.",
-          "SAFE snapshots lack a complete authority/validity contract and cannot establish authority connectivity."
-        ],
-        "production_sha_matches": {
-          "bd_orchestrator.py": true,
-          "discovery/discovery_service.py": true,
-          "retail_city_queue.py": true
-        },
-        "receipt_sha256": "f6af58e43089a3851020006d9ac692ffd8d2407c1d5331b1af20935b28507513",
-        "receipt_path": "autonomy\\runtime\\bd_full_20261022\\observations\\20261022T012804546176Z\\telemetry.json"
-      },
-      "limitations_zh": "三次摘要读取不构成两次阶段/资格对账；旧存量与run actual56不是当前SAFE。",
-      "limitations_en": "Three summary reads are not two stage/qualification reconciliations; historical totals and run actual56 are not current SAFE."
-    },
-    "C": {
-      "task_id": "BD-FULL-PRODUCTION-20261022",
-      "updated_at": "2026-10-22T01:29:26.575450+00:00",
-      "branch": "codex/autonomous-bd-supervisor",
-      "summary_zh": "限定工程审核通过，生产完整板块尚未验收；继续原队列。",
-      "summary_en": "Scoped engineering approved; no complete production block accepted; continue the existing queue.",
-      "review": "evidence/bd_full_20261022/reviewer/review.json",
-      "tests_passed": 81,
-      "production_acceptance": false,
-      "sensitive_check_zh": "无凭据、邮箱或客户明细；仅固定聚合。",
-      "sensitive_check_en": "No credentials, email addresses or customer records; fixed aggregates only.",
-      "C_LOCK_RECOVERY_VERIFIED": true,
-      "C_OUTPUT_CLEANUP_VERIFIED": true,
-      "C_NO_UNKNOWN_OUTCOME_RERUN": true,
-      "C_NEW_UNATTENDED_CYCLES": 0,
-      "C_AUTONOMOUS_OPERATIONS_ACTIVE": false,
-      "engineering_tests": 46,
-      "engineering_scope": "LOCAL_WINDOWS_PROCESS_AND_LOCK_ACCEPTANCE",
-      "real_heartbeat_trigger_receipts_this_continuation": 1,
-      "limitations_zh": "真实Windows本地父子进程/崩溃锁验收通过；尚无多周期无人值守工程全链验收，POSIX未测。",
-      "limitations_en": "Real local Windows child-process and crash-lock checks pass; no multi-cycle unattended engineering-chain acceptance, POSIX untested.",
-      "infrastructure_failure": "Initial PowerShell host Out of memory; no result generated; excluded from test verdict. 首次宿主内存不足无结果，不计代码结果。",
-      "shared_report_repair": {
-        "summary_zh": "共享报告竞态、逆序及半写发布保护补修已独立审核；Windows实际发布通过。",
-        "summary_en": "Shared-report race, ordering and partial-publication protection independently approved; real Windows publication verified.",
-        "review": "evidence/c3_shared_report_20261022/c3_report_write_review/final_review.json",
-        "targeted_tests": 42,
-        "review_verdict": "APPROVED_SCOPED_ENGINEERING",
-        "live_local_publication_verified": true,
-        "source": "manual",
-        "production_acceptance": false,
-        "full_C3_acceptance": false
-      }
-    },
-    "D": {
-      "task_id": "BD-FULL-PRODUCTION-20261022",
-      "updated_at": "2026-10-22T01:29:26.575450+00:00",
-      "branch": "codex/autonomous-bd-supervisor",
-      "summary_zh": "限定工程审核通过，生产完整板块尚未验收；继续原队列。",
-      "summary_en": "Scoped engineering approved; no complete production block accepted; continue the existing queue.",
-      "review": "evidence/bd_full_20261022/reviewer/review.json",
-      "tests_passed": 81,
-      "production_acceptance": false,
-      "sensitive_check_zh": "无凭据、邮箱或客户明细；仅固定聚合。",
-      "sensitive_check_en": "No credentials, email addresses or customer records; fixed aggregates only.",
-      "D_GOOGLE_LIVE_REQUESTS": "NOT_EXECUTED",
-      "D_OSM_LIVE_REQUESTS": "NOT_EXECUTED",
-      "D_CROSS_SOURCE_UNIQUE_ORGS": "UNKNOWN",
-      "D_HISTORY_CLEAN_NEW_ORGS": "UNKNOWN",
-      "D_VERIFIED_FIRST_PARTY_EMAILS": "UNKNOWN",
-      "D_NEW_SAFE": "UNKNOWN",
-      "D_DUAL_SOURCE_ACCEPTANCE": false,
-      "policy_sources": [
-        "https://operations.osmfoundation.org/policies/nominatim/",
-        "https://developers.google.com/maps/documentation/places/web-service/policies",
-        "https://wiki.openstreetmap.org/wiki/Overpass_API"
-      ],
-      "limitations_zh": "未具备正式执行/导入契约；公共Nominatim禁止系统性商家清单采集；保留资格、history、MX和SAFE门禁。",
-      "limitations_en": "Supported execution/import contract unavailable; public Nominatim forbids systematic POI harvesting; preserve qualification, history, MX and SAFE gates."
-    }
-  },
-  "production_completion_followup": {
+  "historical_production_completion_followup": {
     "trigger_at": "2026-10-22T03:26:13.340Z",
     "execution_observed_at": "2026-10-22T14:36:00+08:00",
     "delayed_trigger": true,
@@ -422,16 +687,5 @@
     "production_mutations": 0,
     "tests_rerun": false,
     "reviewed_source_hashes_match": true
-  },
-  "shared_report_repair": {
-    "summary_zh": "共享报告竞态、逆序及半写发布保护补修已独立审核；Windows实际发布通过。",
-    "summary_en": "Shared-report race, ordering and partial-publication protection independently approved; real Windows publication verified.",
-    "review": "evidence/c3_shared_report_20261022/c3_report_write_review/final_review.json",
-    "targeted_tests": 42,
-    "review_verdict": "APPROVED_SCOPED_ENGINEERING",
-    "live_local_publication_verified": true,
-    "source": "manual",
-    "production_acceptance": false,
-    "full_C3_acceptance": false
   }
 }

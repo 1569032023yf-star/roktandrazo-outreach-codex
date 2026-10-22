@@ -1,0 +1,52 @@
+{
+  "schema": "rokt.scoped-report-review.v1",
+  "reviewer": "codex:/root/independent_reviewer",
+  "reviewed_at": "2026-10-22T11:24:20.436696+00:00",
+  "verdict": "APPROVED_SCOPED_REPORT_CONSISTENCY",
+  "operation_id": "op-20261022-191501-18edf5",
+  "summary_zh": "当前报告与已保存发布证据一致；先前顶层旧状态已修正或归档。本审核不宣称城市推进、完整无人值守周期或业务验收成功。",
+  "summary_en": "Current reports agree with saved release evidence; earlier stale top-level states are corrected or archived. This review does not establish city progress, complete unattended cycles, or business acceptance.",
+  "checks": {
+    "backup_after_sha_lock_consistent": true,
+    "smtp_disabled_in_saved_telemetry": true,
+    "natural_acceptance": false,
+    "business_acceptance": false,
+    "safe_snapshot": 56,
+    "safe_measurement_start": "2026-10-22T15:49:52+08:00",
+    "safe_measurement_end": "2026-10-22T15:56:46+08:00",
+    "safe_is_realtime": false,
+    "safe_net_growth": "UNKNOWN",
+    "new_verified_organizations": "UNKNOWN",
+    "full_unattended_cycles": 0,
+    "current_offline_tests_reported": 31,
+    "tests_executed_by_this_review": 0,
+    "new_production_calls_by_this_review": 0
+  },
+  "findings": [],
+  "limitations_zh": [
+    "仅只读核对保存的回执与报告，未重新调用生产。",
+    "31项为本轮既有离线工程验证，不是本次重跑或生产自然验收。",
+    "历史嵌套工程计数与旧正文保留为历史，当前状态以19:18范围和current_heartbeat_tests为准。"
+  ],
+  "limitations_en": [
+    "Read-only reconciliation of saved receipts and reports; no fresh production calls.",
+    "The 31 tests are existing scoped offline engineering evidence, not a rerun here or natural production acceptance.",
+    "Historical nested engineering counts and old prose remain historical; current status is scoped by the 19:18 update and current_heartbeat_tests."
+  ],
+  "sha256": {
+    "BD_FULL_CHECKPOINT.json": "627a6f750e194ba084ed91e12878a0248bb974009f2bbc74acf8185605098738",
+    "WORKSTREAM_STATUS.json": "8ec5851bd41ba7562910802e5bde1b8f7b97cf0a4a5312d0720a76e82599f150",
+    "BD_FULL_PRODUCTION_CLOSURE.json": "a6e2c249833a6a4e233949e9e30270908e4eb65e80779f922bd9f97c1d1d231d",
+    "BD_FULL_PRODUCTION_CLOSURE.md": "b6ac8ba37513e920396c4d1e994b0c1053e88efc55fb2b1840986c8be0fa1c03",
+    "PRODUCTION_TELEMETRY_ACCEPTANCE.json": "46fcf35dad119db9364b591c55aa868ab320e37e520be2a8df8e76b5fac5ba77",
+    "AUTONOMY_RELIABILITY_ACCEPTANCE.json": "9a5eca06df1bcf989e922ee49af57f6edf67600b43e7ab92c1c291000ec4ae9a",
+    "DUAL_SOURCE_LIVE_YIELD.json": "ae2e458a44b156795c149be1687cde7ae0b5d3341e57813831e9275f95d74548",
+    "CITY_RUNTIME_ROOT_CAUSE.md": "369a8de905538c1b751b90f22a75fe072e855fd348df6d4acb52ff6876d31bd2",
+    "BUSINESS_DAILY_REPORT.md": "965bb6f2f40297363630fdb135b8a80959f90cc7dd294b86c8b9db1a0d27c5ee",
+    "evidence/observability_20261022/release/acceptance.json": "e7cfc434f87901181abb897740045acc08a96c9eb7b4e744fd5ffd6b64c87b50",
+    "evidence/observability_20261022/release/status_stage_trace.json": "cd1362c83dec1589d0fbcaa3ed472503d919f42fdf779c3e31ad9ab51f665183",
+    "evidence/observability_20261022/release/postdeploy_health.json": "22ac75ea2cd0b7ec06ec49e18c023945cb1428c507374b1a943838c5d9e02837",
+    "evidence/observability_20261022/release/postdeploy_telemetry.json": "e2aff4d8247dceeb0a8eb01e78783076c854a82666b15c00c5e46dbbebcad6e9",
+    "evidence/observability_20261022/heartbeat_cycle.json": "e681736b3eb2b593f78f1a5bdb34f55ba2e3cbd227387d6ba2bb135d893afdd5"
+  }
+}

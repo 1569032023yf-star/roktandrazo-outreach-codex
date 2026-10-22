@@ -1,0 +1,20 @@
+{
+  "release_id": "phase4a8v-inventory-stage-trace-20261022",
+  "operation_id": "op-20261022-191501-18edf5",
+  "source_commit": "cab40e5fbfbdcf87eb78c59f9907c6be552f7762",
+  "state": "applied",
+  "backup_sha_verified": true,
+  "replacement_sha_verified": true,
+  "lock_released": true,
+  "gates_passed": 14,
+  "tests_passed": 31,
+  "independent_release_tests": 14,
+  "postdeploy_observed_at": "2026-10-22T19:18:02+08:00",
+  "source_after_sha256": "0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8",
+  "reviewer": "codex:/root/independent_reviewer",
+  "natural_run_acceptance": false,
+  "business_acceptance": false,
+  "next_original_inventory_at": "2026-10-23T00:42:26+08:00",
+  "summary_zh": "正式只读补证已接入；剩余2条城市阻塞。4A8V阶段轨迹独立审核、14项门禁及部署后SHA核验通过，已部署；城市推进与完整板块仍待原计划自然验收。",
+  "summary_en": "Bounded production evidence connected; two city blockers remain. Independently reviewed 4A8V stage tracing passed 14 gates and post-deploy SHA checks and is applied; city progress and complete blocks still await the original natural run."
+}
