@@ -276,5 +276,32 @@
   "WORKBUDDY_HANDOFF_ACCEPTANCE": "autonomy/CODEX_WORKBUDDY_HANDOFF_ACCEPTANCE.json",
   "latest_cycle_id": "66e0aa9c-3557-4477-b24f-a2296eae1c3b",
   "latest_cycle_summary_zh": "已按生产快照逐函数重建城市补丁，两文件精确正反向校验通过，14项恢复测试通过；扩展回归95项中94通过、1项静态扫描失败，原开发副本同项复现。独立审核、登记、部署与真实城市验收待完成。",
-  "latest_cycle_summary_en": "Rebuilt the city patch function by function against pinned production snapshots. Both files pass exact forward/reverse checks and all 14 recovery tests pass. Expanded regression: 94/95 passed; the static-scan failure also reproduces on the original development tree. Independent review, registration, deployment and production city acceptance remain pending."
+  "latest_cycle_summary_en": "Rebuilt the city patch function by function against pinned production snapshots. Both files pass exact forward/reverse checks and all 14 recovery tests pass. Expanded regression: 94/95 passed; the static-scan failure also reproduces on the original development tree. Independent review, registration, deployment and production city acceptance remain pending.",
+  "last_read_only_reconciliation": {
+    "task_id": "BD-FULL-HEARTBEAT-20261022T190123",
+    "source": "codex_heartbeat",
+    "heartbeat_trigger": "2026-10-22T19:01:23.497Z",
+    "observed_at": "2026-10-22T19:04:31.367064+00:00",
+    "branch": "codex/autonomous-bd-supervisor",
+    "input_commit": "a38defa3454e431b45eb4960f6b4807283bda01d",
+    "initial_dirty": false,
+    "tests": "PASS: official health/status/telemetry/runtime/city/safe reconciliation; unchanged16-event trace; SMTP0",
+    "reviewer": "Prior independent review retained for unchanged source and natural-run evidence; no new engineering change",
+    "operation_id": "op-20261022-231834-15aa6f",
+    "production_mutations": [],
+    "external_side_effects": [
+      "Git report commit/push"
+    ],
+    "counts_as_complete_unattended_cycle": false,
+    "full_unattended_cycles_added": 0,
+    "current_safe": "UNKNOWN",
+    "safe_net_growth": "UNKNOWN",
+    "latest_run": "inventory:2026-10-22:27b410bf",
+    "lake_placid": "pending",
+    "scheduler_global_unique": "UNKNOWN",
+    "lock_scope": "Today key absent does not prove previous business-day key released",
+    "next_action": "2026-10-23T06:54:25.136000+08:00",
+    "summary_zh": "正式只读复核无业务变化；等待原计划06:54运行，未手动采集、重发部署或启用SMTP。",
+    "summary_en": "Official read-only reconciliation finds no business change; await the original06:54 run. No manual discovery, repeated deployment or SMTP enablement."
+  }
 }

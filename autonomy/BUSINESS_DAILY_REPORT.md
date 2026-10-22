@@ -204,7 +204,7 @@ Cycle: ecc230f4-a4fc-4cc5-8737-1481a3643ba9; evidence: `autonomy/runtime/city_ob
 <!-- BD_LIVE_OBSERVATION_BEGIN -->
 ## 自动业务观察 / Automated business observation
 
-观测时间 / Observed at: 2026-10-23T00:57:37+08:00
+观测时间 / Observed at: 2026-10-23T03:01:36+08:00
 来源 / Source: authenticated rokt-deploy-channel v2 telemetry; freshness <= 1h
 
 历史累计、最近运行actual和当前SAFE不是同一指标；缺少阶段/资格合同的字段保持UNKNOWN。
@@ -230,7 +230,7 @@ Historical totals, the latest run actual and current SAFE are distinct. Missing 
 - A: 已部署；自然run completed但城市仍active，生产业务验收未通过。 / Deployed; a natural run completed but the city remains active, so business acceptance has not passed.
 - B: 品牌25文件已整合，177离线测试及独立静态审核通过；磁盘故障已恢复，生产验收仍未完成 / 25 brand files integrated, 177 offline tests and independent static review passed; disk failure recovered, production acceptance remains incomplete
 - C: 四套V6定向58项通过；可比全量563项560通过、3项与基线相同；整合后86项加4身份门禁测试通过；QA未登记未发送 / Four V6 variants passed 58 targeted tests; comparable full suite 563/560 passed with three baseline-identical issues; integrated 86 tests plus four identity-gate tests passed; QA unregistered and unsent
-- D: 网络恢复及事件依赖模块已独审集成；4A8W已受控部署，SAFE双读不一致保持UNKNOWN，完整无人值守验收尚未完成。 / Reviewed network/dependency modules integrated;4A8W deployed through gates; inconsistent SAFE readings remain UNKNOWN; full unattended acceptance pending.
+- D: 4A8V真实16事件与Cooperstown结案已自然验证；下城和完整无人值守验收待原计划后续运行。 / 4A8V16 real events and Cooperstown closure naturally verified; next-city and full unattended acceptance await subsequent original runs.
 
 未执行与风险：未据库存56确认SAFE；未确认完整阶段、全局调度唯一性或持续无人值守。
 Not executed / risks: inventory 56 does not confirm SAFE; full stage telemetry, global scheduler uniqueness and sustained unattended operation remain unverified.

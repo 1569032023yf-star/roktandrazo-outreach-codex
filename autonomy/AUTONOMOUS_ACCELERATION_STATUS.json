@@ -286,5 +286,32 @@
     ],
     "summary_zh": "原计划自然运行首次验证16条完整轨迹，Cooperstown正式结案；下一城与业务新增尚待后续原计划运行。",
     "summary_en": "Original scheduled run verifies16 complete trace events and Cooperstown closure; next-city progression and business growth await subsequent original runs."
+  },
+  "last_read_only_reconciliation": {
+    "task_id": "BD-FULL-HEARTBEAT-20261022T190123",
+    "source": "codex_heartbeat",
+    "heartbeat_trigger": "2026-10-22T19:01:23.497Z",
+    "observed_at": "2026-10-22T19:04:31.367064+00:00",
+    "branch": "codex/autonomous-bd-supervisor",
+    "input_commit": "a38defa3454e431b45eb4960f6b4807283bda01d",
+    "initial_dirty": false,
+    "tests": "PASS: official health/status/telemetry/runtime/city/safe reconciliation; unchanged16-event trace; SMTP0",
+    "reviewer": "Prior independent review retained for unchanged source and natural-run evidence; no new engineering change",
+    "operation_id": "op-20261022-231834-15aa6f",
+    "production_mutations": [],
+    "external_side_effects": [
+      "Git report commit/push"
+    ],
+    "counts_as_complete_unattended_cycle": false,
+    "full_unattended_cycles_added": 0,
+    "current_safe": "UNKNOWN",
+    "safe_net_growth": "UNKNOWN",
+    "latest_run": "inventory:2026-10-22:27b410bf",
+    "lake_placid": "pending",
+    "scheduler_global_unique": "UNKNOWN",
+    "lock_scope": "Today key absent does not prove previous business-day key released",
+    "next_action": "2026-10-23T06:54:25.136000+08:00",
+    "summary_zh": "正式只读复核无业务变化；等待原计划06:54运行，未手动采集、重发部署或启用SMTP。",
+    "summary_en": "Official read-only reconciliation finds no business change; await the original06:54 run. No manual discovery, repeated deployment or SMTP enablement."
   }
 }
