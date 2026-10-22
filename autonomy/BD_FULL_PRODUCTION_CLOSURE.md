@@ -14,3 +14,9 @@ Next: resume the existing queue, check bounded evidence, observe the original 11
 
 宿主首次OOM单列为基础设施故障，无结果不计测试失败；POSIX未测。证据见evidence/bd_full_20261022与同名JSON。敏感检查：仅固定聚合，无凭据或客户明细。
 Initial host OOM is separately recorded as infrastructure failure; no-result execution is excluded from test verdicts. POSIX untested. Evidence: evidence/bd_full_20261022 and matching JSON. Sensitive check: fixed aggregates only, no credentials or customer records.
+
+
+## 后续心跳对账 / Follow-up heartbeat reconciliation
+
+执行时间 2026-10-22T14:36:00+08:00；触发标记03:26 UTC，执行延迟，不能当作11:26现场观测。原11:58 +08计划时间已过，next_run现为2026-10-22T18:18:22+08:00，最近Inventory run未变；漏跑仍未证实，需既有受限交接提供触发/实际入口轨迹。无新回复、无重复申请，工程源码哈希保持独立审核版本，未重复81项测试。
+Execution time 2026-10-22T14:36:00+08:00; trigger timestamp03:26 UTC was delayed and is not an11:26 live observation. The prior11:58 +08 expectation passed; next_run is now 2026-10-22T18:18:22+08:00 with the latest Inventory run unchanged. A missed run is unconfirmed; the existing bounded handoff must provide expected/actual trigger and entry traces. No new reply or repeated request; source hashes match independent review, so the81 tests were not repeated.

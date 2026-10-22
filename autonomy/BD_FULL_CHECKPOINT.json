@@ -1,6 +1,6 @@
 {
   "task_id": "BD-FULL-PRODUCTION-20261022",
-  "updated_at": "2026-10-22T01:30:47.250662+00:00",
+  "updated_at": "2026-10-22T06:37:18.757422+00:00",
   "branch": "codex/autonomous-bd-supervisor",
   "start_commit": "371c299ca7b97e595f3dfe84f33f2cc5f32be74d",
   "workstreams": [
@@ -8,7 +8,7 @@
     "B_AUTHENTICATED_TELEMETRY_CONSUMER",
     "C_LOCK_OUTPUT_RELIABILITY"
   ],
-  "last_verified_action": "REVIEWED_ENGINEERING_AND_SIX_REPORTS_PUSHED_REMOTE_SHA_MATCH",
+  "last_verified_action": "AUTHENTICATED_RECONCILIATION_NO_NEW_RUN_OR_HANDOFF_REPLY",
   "production_operation_id": "op-20261022-011811-4925c1",
   "known_external_side_effects": [
     "Existing GitHub issue2 comment6330120094: minimal read-only handoff request; delivery to GitHub confirmed, operator acknowledgement not verified"
@@ -23,15 +23,30 @@
   },
   "reviewer_status": "APPROVED_SCOPED_ENGINEERING",
   "root_cause": "UNKNOWN_PENDING_ACTUAL_STAGE_TRACE_ACTIVE_STATE_AND_ENTRYPOINT",
-  "next_automatic_action": "Check existing bounded handoff; observe original scheduled Inventory at 11:58 +08; continue true-heartbeat reliability acceptance; never reapply.",
+  "next_automatic_action": "Reconcile expected/actual Inventory trigger through existing approved handoff; next schedule 2026-10-22T18:18:22+08:00",
   "summary_zh": "长期任务已持久化；正式城市运行停滞转根因调查，其他工程并行。",
   "summary_en": "Long-term task persisted; stalled production city moves to root-cause investigation while independent engineering continues.",
-  "heartbeat_trigger": "2026-10-22T01:25:06.394Z",
+  "heartbeat_trigger": "2026-10-22T03:26:13.340Z",
   "reports_written": true,
-  "commit": "7ed0a42f74e36be0e25492e2a02ec39a94ec11df",
+  "commit": "37fdbe7ed0a0d2c7fc977f90ec9f802386187cfe",
   "remote_verified_commit": "7ed0a42f74e36be0e25492e2a02ec39a94ec11df",
   "git_push_success": true,
   "external_side_effects_this_heartbeat": [
     "Git branch push only; authenticated read-only health/status/telemetry; no production mutations"
-  ]
+  ],
+  "followup": {
+    "trigger_at": "2026-10-22T03:26:13.340Z",
+    "execution_observed_at": "2026-10-22T14:36:00+08:00",
+    "delayed_trigger": true,
+    "prior_expected_inventory_at": "2026-10-22T11:58:01+08:00",
+    "current_next_inventory_at": "2026-10-22T18:18:22+08:00",
+    "new_inventory_run_observed": false,
+    "missed_trigger_confirmed": false,
+    "summary_zh": "实际执行晚于心跳标记；原预计时间已过、next_run已推进，但最近run未变。只证明调度与run需补证，不证明漏跑或业务入口原因。",
+    "summary_en": "Execution is later than the trigger timestamp; the prior expected time passed and next_run advanced, while the latest run is unchanged. Scheduler/run reconciliation is needed; this alone proves neither a missed trigger nor the business-entry cause.",
+    "handoff_reply": "NO_NEW_REPLY",
+    "production_mutations": 0,
+    "tests_rerun": false,
+    "reviewed_source_hashes_match": true
+  }
 }

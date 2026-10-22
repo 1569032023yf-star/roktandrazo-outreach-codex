@@ -1,6 +1,6 @@
 {
   "task_id": "BD-FULL-PRODUCTION-20261022",
-  "updated_at": "2026-10-22T01:29:26.575450+00:00",
+  "updated_at": "2026-10-22T06:37:18.757422+00:00",
   "branch": "codex/autonomous-bd-supervisor",
   "summary_zh": "限定工程审核通过，生产完整板块尚未验收；继续原队列。",
   "summary_en": "Scoped engineering approved; no complete production block accepted; continue the existing queue.",
@@ -19,5 +19,20 @@
   "real_heartbeat_trigger_receipts_this_continuation": 1,
   "limitations_zh": "真实Windows本地父子进程/崩溃锁验收通过；尚无多周期无人值守工程全链验收，POSIX未测。",
   "limitations_en": "Real local Windows child-process and crash-lock checks pass; no multi-cycle unattended engineering-chain acceptance, POSIX untested.",
-  "infrastructure_failure": "Initial PowerShell host Out of memory; no result generated; excluded from test verdict. 首次宿主内存不足无结果，不计代码结果。"
+  "infrastructure_failure": "Initial PowerShell host Out of memory; no result generated; excluded from test verdict. 首次宿主内存不足无结果，不计代码结果。",
+  "latest_followup": {
+    "trigger_at": "2026-10-22T03:26:13.340Z",
+    "execution_observed_at": "2026-10-22T14:36:00+08:00",
+    "delayed_trigger": true,
+    "prior_expected_inventory_at": "2026-10-22T11:58:01+08:00",
+    "current_next_inventory_at": "2026-10-22T18:18:22+08:00",
+    "new_inventory_run_observed": false,
+    "missed_trigger_confirmed": false,
+    "summary_zh": "实际执行晚于心跳标记；原预计时间已过、next_run已推进，但最近run未变。只证明调度与run需补证，不证明漏跑或业务入口原因。",
+    "summary_en": "Execution is later than the trigger timestamp; the prior expected time passed and next_run advanced, while the latest run is unchanged. Scheduler/run reconciliation is needed; this alone proves neither a missed trigger nor the business-entry cause.",
+    "handoff_reply": "NO_NEW_REPLY",
+    "production_mutations": 0,
+    "tests_rerun": false,
+    "reviewed_source_hashes_match": true
+  }
 }
