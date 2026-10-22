@@ -161,7 +161,7 @@ Cycle: ecc230f4-a4fc-4cc5-8737-1481a3643ba9; evidence: `autonomy/runtime/city_ob
 <!-- BD_LIVE_OBSERVATION_BEGIN -->
 ## 自动业务观察 / Automated business observation
 
-观测时间 / Observed at: 2026-10-22T19:18:02+08:00
+观测时间 / Observed at: 2026-10-22T20:53:43+08:00
 来源 / Source: authenticated rokt-deploy-channel v2 telemetry; freshness <= 1h
 
 历史累计、最近运行actual和当前SAFE不是同一指标；缺少阶段/资格合同的字段保持UNKNOWN。
@@ -187,7 +187,7 @@ Historical totals, the latest run actual and current SAFE are distinct. Missing 
 - A: 已部署；自然run completed但城市仍active，生产业务验收未通过。 / Deployed; a natural run completed but the city remains active, so business acceptance has not passed.
 - B: 品牌25文件已整合，177离线测试及独立静态审核通过；磁盘故障已恢复，生产验收仍未完成 / 25 brand files integrated, 177 offline tests and independent static review passed; disk failure recovered, production acceptance remains incomplete
 - C: 四套V6定向58项通过；可比全量563项560通过、3项与基线相同；整合后86项加4身份门禁测试通过；QA未登记未发送 / Four V6 variants passed 58 targeted tests; comparable full suite 563/560 passed with three baseline-identical issues; integrated 86 tests plus four identity-gate tests passed; QA unregistered and unsent
-- D: 未知结果及写入关闭补修限定审核通过；空间预检与双来源交接45项回归、21项独立审核通过；生产仍受通道及来源访问阻塞 / Scoped unknown-outcome and write-close review passed; storage admission and discovery handoff passed 45 regressions and 21 independent checks; production remains blocked by channel and source access
+- D: R2/R3/R4限定修复已审核；正式通道及SAFE快照接入，4A8V已部署，完整无人值守验收尚未完成。 / R2/R3/R4 scoped repairs reviewed; official channel and SAFE snapshot connected; 4A8V applied; full unattended acceptance remains incomplete.
 
 未执行与风险：未据库存56确认SAFE；未确认完整阶段、全局调度唯一性或持续无人值守。
 Not executed / risks: inventory 56 does not confirm SAFE; full stage telemetry, global scheduler uniqueness and sustained unattended operation remain unverified.
@@ -216,3 +216,14 @@ Bounded production evidence connected; two city blockers remain. Independently r
 - 验收 / Acceptance: A/B/C/D full blocks NOT ACCEPTED; full unattended engineering cycles 0; BD_FULL_PRODUCTION NOT COMPLETE.
 
 证据 / Evidence: `evidence/observability_20261022/release/`; handoff issue2 comment6336864328, pinned WorkBuddy commit `aded425cf863104d907f6b00def4331e2151d515`. The limited legacy summary route still reports SAFE UNKNOWN because it lacks the new authority contract; the separate verified snapshot above supplies that scoped authority.
+
+
+## 2026-10-22 20:53 +08 心跳对账 / Heartbeat reconciliation
+
+20:53正式只读对账无实质变化：4A8V仍applied、SHA匹配、锁释放、SMTP0；无部署后新Inventory，城市仍2条阻塞。原计划00:42+08尚未到。SAFE56仍同一15:49至15:56快照，约5.1小时，非独立新测量或净增。
+
+20:53 authenticated read-only reconciliation has no material change: 4A8V remains applied, hashes match, lock released, SMTP0; no post-deploy Inventory run, two city blockers remain. Original00:42+08 run is not due. SAFE56 is the same15:49-15:56 snapshot, about5.1 hours old, not an independent new measurement or net growth.
+
+未执行 / Not executed: new code, tests, release, manual collection, SMTP, V6 or dual-source experiment. 完整A/B/C/D及无人值守全链均未验收 / No complete A/B/C/D block or unattended engineering chain accepted.
+
+下一步 / Next: Observe original Inventory after 2026-10-23T00:42:26+08:00 through fixed read-only routes; do not reapply or manually collect. Revalidate SAFE age; after measured_at+6h retain only historical56 and mark current UNKNOWN unless a new authorized measurement exists.

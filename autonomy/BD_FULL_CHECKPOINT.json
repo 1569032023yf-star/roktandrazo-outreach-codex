@@ -1,6 +1,6 @@
 {
   "task_id": "BD-FULL-PRODUCTION-20261022",
-  "updated_at": "2026-10-22T11:19:55.047303+00:00",
+  "updated_at": "2026-10-22T12:55:11.147353+00:00",
   "branch": "codex/autonomous-bd-supervisor",
   "start_commit": "371c299ca7b97e595f3dfe84f33f2cc5f32be74d",
   "workstreams": [
@@ -8,46 +8,26 @@
     "B_AUTHENTICATED_TELEMETRY_CONSUMER",
     "C_LOCK_OUTPUT_RELIABILITY"
   ],
-  "last_verified_action": "4A8V_APPLIED_BACKUP_LOCK_POSTDEPLOY_SHA_VERIFIED",
+  "last_verified_action": "NO_MATERIAL_CHANGE_ORIGINAL_NATURAL_RUN_NOT_DUE",
   "production_operation_id": "op-20261022-191501-18edf5",
   "known_external_side_effects": [
     "Existing GitHub issue2 comment6330120094: minimal read-only handoff request; delivery to GitHub confirmed, operator acknowledgement not verified"
   ],
   "uncommitted_files": [
-    " M autonomy/AUTONOMY_RELIABILITY_ACCEPTANCE.json",
-    " M autonomy/BD_FULL_CHECKPOINT.json",
-    " M autonomy/BD_FULL_PRODUCTION_CLOSURE.json",
-    " M autonomy/BD_FULL_PRODUCTION_CLOSURE.md",
-    " M autonomy/BUSINESS_DAILY_REPORT.md",
-    " M autonomy/CITY_RUNTIME_ROOT_CAUSE.md",
-    " M autonomy/DUAL_SOURCE_LIVE_YIELD.json",
-    " M autonomy/PRODUCTION_TELEMETRY_ACCEPTANCE.json",
-    " M autonomy/WORKSTREAM_STATUS.json",
-    "?? autonomy/evidence/observability_20261022/heartbeat_cycle.json",
-    "?? autonomy/evidence/observability_20261022/release/acceptance.json",
-    "?? autonomy/evidence/observability_20261022/release/apply_stage_trace.json",
-    "?? autonomy/evidence/observability_20261022/release/postdeploy_business_observation.json",
-    "?? autonomy/evidence/observability_20261022/release/postdeploy_health.json",
-    "?? autonomy/evidence/observability_20261022/release/postdeploy_telemetry.json",
-    "?? autonomy/evidence/observability_20261022/release/preflight_stage_trace.json",
-    "?? autonomy/evidence/observability_20261022/release/register_stage_trace.json",
-    "?? autonomy/evidence/observability_20261022/release/status_stage_trace.json",
-    "?? patches/production/phase4a8v/manifest.json"
+    "autonomy/BUSINESS_DAILY_REPORT.md",
+    "autonomy/WORKSTREAM_STATUS.json"
   ],
   "reviewer_status": "4A8V_APPROVED_14_RELEASE_TESTS_CLIENT_AND_SAFE_APPROVED",
   "root_cause": "PARTIALLY_LOCALIZED_BLOCKER_DETAILS_AND_NEW_STAGE_TRACE_PENDING",
-  "next_automatic_action": "Observe the original Inventory scheduled 2026-10-23T00:42:26+08:00 via fixed runtime/city/provider/scheduler/SAFE routes; require a new run after apply and real stage events. Never manually trigger discovery or reapply either release.",
+  "next_automatic_action": "Observe original Inventory after 2026-10-23T00:42:26+08:00 through fixed read-only routes; do not reapply or manually collect. Revalidate SAFE age; after measured_at+6h retain only historical56 and mark current UNKNOWN unless a new authorized measurement exists.",
   "summary_zh": "4A8V已部署并复核；权威SAFE快照已接入，完整板块仍待原计划自然运行验收。",
   "summary_en": "4A8V applied and reconciled; authoritative SAFE snapshot connected; complete blocks still await the original natural run.",
-  "heartbeat_trigger": "2026-10-22T10:53:21.698Z",
+  "heartbeat_trigger": "2026-10-22T12:52:53.226Z",
   "reports_written": true,
-  "commit": "cab40e5fbfbdcf87eb78c59f9907c6be552f7762",
-  "remote_verified_commit": "cab40e5fbfbdcf87eb78c59f9907c6be552f7762",
+  "commit": "619ff8adcf61356b95ab3561eacb8b6b7bbd77bd",
+  "remote_verified_commit": "619ff8adcf61356b95ab3561eacb8b6b7bbd77bd",
   "git_push_success": true,
-  "external_side_effects_this_heartbeat": [
-    "Registered and applied one independently reviewed stage-trace release through formal channel",
-    "Git source commit pushed"
-  ],
+  "external_side_effects_this_heartbeat": [],
   "followup": {
     "summary_zh": "正式只读补证已接入；剩余2条城市阻塞。4A8V阶段轨迹独立审核、14项门禁及部署后SHA核验通过，已部署；城市推进与完整板块仍待原计划自然验收。",
     "summary_en": "Bounded production evidence connected; two city blockers remain. Independently reviewed 4A8V stage tracing passed 14 gates and post-deploy SHA checks and is applied; city progress and complete blocks still await the original natural run.",
@@ -56,7 +36,7 @@
     "handoff_reply": "RECEIVED_6336864328",
     "production_mutations": 1
   },
-  "current_task_id": "BD-FULL-OBSERVABILITY-RELEASE-20261022T105321",
+  "current_task_id": "BD-FULL-NATURAL-WAIT-20261022T125253",
   "current_source": "codex_heartbeat",
   "shared_report_repair": {
     "summary_zh": "共享报告竞态、逆序及半写发布保护补修已独立审核；Windows实际发布通过。",
@@ -71,51 +51,30 @@
   },
   "goal_status": "IN_PROGRESS_NATURAL_ACCEPTANCE_PENDING",
   "latest_heartbeat_cycle": {
-    "cycle_id": "114c018d-dabe-4e9b-b1c7-504584f7e88f",
-    "task_id": "BD-FULL-OBSERVABILITY-RELEASE-20261022T105321",
+    "cycle_id": "952bb97b-c9e4-4065-8c7d-ef12d669c192",
+    "task_id": "BD-FULL-NATURAL-WAIT-20261022T125253",
     "source": "codex_heartbeat",
-    "trigger_at": "2026-10-22T10:53:21.698Z",
-    "started_at": "2026-10-22T10:53:21.698Z",
-    "finished_at": "2026-10-22T11:19:55.047303+00:00",
+    "trigger_at": "2026-10-22T12:52:53.226Z",
+    "started_at": "2026-10-22T12:52:53.226Z",
+    "finished_at": "2026-10-22T12:55:11.147353+00:00",
     "status": "completed",
     "branch": "codex/autonomous-bd-supervisor",
-    "commit": "cab40e5fbfbdcf87eb78c59f9907c6be552f7762",
-    "commit_scope": "Reviewed engineering source commit; this report is committed separately.",
-    "uncommitted_files_scope": "Report/evidence publication pending final commit; no unreviewed production source changes.",
-    "tests": 31,
-    "reviewer": "independent_reviewer + city_reviewer + safe_consumer_developer",
-    "operation_id": "op-20261022-191501-18edf5",
-    "external_side_effects": [
-      "Registered and applied one independently reviewed stage-trace release through formal channel",
-      "Git source commit pushed"
-    ],
-    "qualifies_full_unattended_engineering_cycle": false,
-    "human_trigger_excluded": false,
-    "production_acceptance": false,
-    "next_action": "Observe the original Inventory scheduled 2026-10-23T00:42:26+08:00 via fixed runtime/city/provider/scheduler/SAFE routes; require a new run after apply and real stage events. Never manually trigger discovery or reapply either release.",
-    "summary_zh": "正式只读补证已接入；剩余2条城市阻塞。4A8V阶段轨迹独立审核、14项门禁及部署后SHA核验通过，已部署；城市推进与完整板块仍待原计划自然验收。",
-    "summary_en": "Bounded production evidence connected; two city blockers remain. Independently reviewed 4A8V stage tracing passed 14 gates and post-deploy SHA checks and is applied; city progress and complete blocks still await the original natural run.",
+    "commit": "619ff8adcf61356b95ab3561eacb8b6b7bbd77bd",
     "uncommitted_files": [
-      " M autonomy/AUTONOMY_RELIABILITY_ACCEPTANCE.json",
-      " M autonomy/BD_FULL_CHECKPOINT.json",
-      " M autonomy/BD_FULL_PRODUCTION_CLOSURE.json",
-      " M autonomy/BD_FULL_PRODUCTION_CLOSURE.md",
-      " M autonomy/BUSINESS_DAILY_REPORT.md",
-      " M autonomy/CITY_RUNTIME_ROOT_CAUSE.md",
-      " M autonomy/DUAL_SOURCE_LIVE_YIELD.json",
-      " M autonomy/PRODUCTION_TELEMETRY_ACCEPTANCE.json",
-      " M autonomy/WORKSTREAM_STATUS.json",
-      "?? autonomy/evidence/observability_20261022/heartbeat_cycle.json",
-      "?? autonomy/evidence/observability_20261022/release/acceptance.json",
-      "?? autonomy/evidence/observability_20261022/release/apply_stage_trace.json",
-      "?? autonomy/evidence/observability_20261022/release/postdeploy_business_observation.json",
-      "?? autonomy/evidence/observability_20261022/release/postdeploy_health.json",
-      "?? autonomy/evidence/observability_20261022/release/postdeploy_telemetry.json",
-      "?? autonomy/evidence/observability_20261022/release/preflight_stage_trace.json",
-      "?? autonomy/evidence/observability_20261022/release/register_stage_trace.json",
-      "?? autonomy/evidence/observability_20261022/release/status_stage_trace.json",
-      "?? patches/production/phase4a8v/manifest.json"
-    ]
+      "autonomy/BUSINESS_DAILY_REPORT.md",
+      "autonomy/WORKSTREAM_STATUS.json"
+    ],
+    "uncommitted_scope": "Local report publication only before this cycle evidence commit",
+    "tests": "NOT_RERUN_NO_SOURCE_CHANGE",
+    "reviewer": "Prior independent engineering and report consistency approvals retained; this cycle is read-only reconciliation",
+    "operation_id": "op-20261022-191501-18edf5",
+    "external_side_effects": [],
+    "production_mutations": 0,
+    "production_acceptance": false,
+    "qualifies_full_unattended_engineering_cycle": false,
+    "next_action": "Observe original Inventory after 2026-10-23T00:42:26+08:00 through fixed read-only routes; do not reapply or manually collect. Revalidate SAFE age; after measured_at+6h retain only historical56 and mark current UNKNOWN unless a new authorized measurement exists.",
+    "summary_zh": "20:53正式只读对账无实质变化：4A8V仍applied、SHA匹配、锁释放、SMTP0；无部署后新Inventory，城市仍2条阻塞。原计划00:42+08尚未到。SAFE56仍同一15:49至15:56快照，约5.1小时，非独立新测量或净增。",
+    "summary_en": "20:53 authenticated read-only reconciliation has no material change: 4A8V remains applied, hashes match, lock released, SMTP0; no post-deploy Inventory run, two city blockers remain. Original00:42+08 run is not due. SAFE56 is the same15:49-15:56 snapshot, about5.1 hours old, not an independent new measurement or net growth."
   },
   "stage_trace_deployment": {
     "release_id": "phase4a8v-inventory-stage-trace-20261022",
@@ -182,5 +141,63 @@
     "safe_consumer": 11,
     "stage_trace": 14,
     "scope": "THIS_HEARTBEAT_ENGINEERING_NOT_BUSINESS_ACCEPTANCE"
+  },
+  "latest_read_only_reconciliation": {
+    "observed_at": "2026-10-22T20:53:43+08:00",
+    "material_change": false,
+    "new_inventory_run": false,
+    "stage_trace_natural_acceptance": false,
+    "blockers": 2,
+    "smtp_disabled": true,
+    "production_sha_matches": {
+      "bd_orchestrator.py": true,
+      "discovery/discovery_service.py": true,
+      "retail_city_queue.py": true
+    },
+    "global_inventory_uniqueness": "UNKNOWN",
+    "workbuddy_active_inventory_drivers": 1,
+    "safe_snapshot": {
+      "schema": "rokt.safe-authority-observation.v1",
+      "source": "rokt-deploy-channel",
+      "observed_at": "2026-10-22T12:53:44.775764+00:00",
+      "measured_at": "2026-10-22T15:49:52+08:00",
+      "finished_at": "2026-10-22T15:56:46+08:00",
+      "safe_authority_connected": true,
+      "current_safe": 56,
+      "rule_sha256": {
+        "campaign_eligible_v2.py": "1143bedf563c0f76b883359362ffb2c2ea11c375fd923dc59768c5529cf3ad34",
+        "preflight_gate.py": "2cd286f201430fb9a48c68ead512671f398732e50e768c2fd69031f127f52622"
+      },
+      "db_sha256": "66509daab31eebe2bd39b27aa5be416179e7e96f40bddb1a5fa26f509a9b6f36",
+      "measurement_age_hours": 5.0886520425,
+      "rolling_24h": {
+        "merchant_records_discovered": 0,
+        "unique_organizations_discovered": 0,
+        "verified_official_sites": 0,
+        "new_leads": 0,
+        "new_leads_with_email": 0,
+        "new_first_party_official_emails": 0,
+        "new_distinct_organization_keys": 0
+      },
+      "rolling_7d": {
+        "merchant_records_discovered": 8,
+        "unique_organizations_discovered": 8,
+        "verified_official_sites": 4,
+        "new_leads": 6,
+        "new_leads_with_email": 5,
+        "new_first_party_official_emails": 4,
+        "new_distinct_organization_keys": 6
+      },
+      "new_verified_organizations_24h": "UNKNOWN",
+      "safe_net_growth_24h": "UNKNOWN",
+      "safe_net_growth_7d": "UNKNOWN",
+      "summary_zh": "双读与权威规则验证通过；发现不等于身份确认，无可比历史不计算净增。",
+      "summary_en": "Two readings and authority rules validated; discovery is not confirmed identity; no net growth without comparable history.",
+      "acceptance_scope": "SAFE_AUTHORITY_SNAPSHOT_ONLY_NOT_FULL_B_ACCEPTANCE"
+    },
+    "safe_independent_measurement": false,
+    "full_blocks_accepted": [],
+    "summary_zh": "20:53正式只读对账无实质变化：4A8V仍applied、SHA匹配、锁释放、SMTP0；无部署后新Inventory，城市仍2条阻塞。原计划00:42+08尚未到。SAFE56仍同一15:49至15:56快照，约5.1小时，非独立新测量或净增。",
+    "summary_en": "20:53 authenticated read-only reconciliation has no material change: 4A8V remains applied, hashes match, lock released, SMTP0; no post-deploy Inventory run, two city blockers remain. Original00:42+08 run is not due. SAFE56 is the same15:49-15:56 snapshot, about5.1 hours old, not an independent new measurement or net growth."
   }
 }

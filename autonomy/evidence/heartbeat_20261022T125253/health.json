@@ -1,0 +1,70 @@
+{
+  "http_status": 200,
+  "response": {
+    "ok": true,
+    "channel_id": "rokt-deploy-channel",
+    "bridge_version": "2.1",
+    "python": "3.13.14",
+    "pid": 43424,
+    "endpoint": "http://127.0.0.1:8791",
+    "test_mode": false,
+    "operations": [
+      "preflight",
+      "apply",
+      "status",
+      "rollback",
+      "register",
+      "releases",
+      "telemetry",
+      "health",
+      "runtime",
+      "city",
+      "provider-audit",
+      "scheduler",
+      "safe"
+    ],
+    "release_count": 3,
+    "registry_seal": {
+      "sealed": true,
+      "tampered": false,
+      "diffs": [],
+      "sealed_at": "2026-10-22T19:14:35+0800"
+    },
+    "supervisor": {
+      "ts": "2026-10-22T20:53:41+08:00",
+      "pid": 36032,
+      "child_pid": 43424,
+      "adopting": false,
+      "health_ok": true,
+      "health_fails": 0,
+      "restart_streak": 0,
+      "backoff_cap_s": 60.0,
+      "alert_present": false
+    },
+    "inflight": {
+      "count": 0,
+      "operations": [],
+      "since": null
+    },
+    "production_code_sha256": {
+      "bd_orchestrator.py": "0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8",
+      "bd_db.py": "c06fe7ebb3d6330bfccf078634c5ab6dc16563423e8e975e44da859aaa7ce0c7",
+      "preflight_gate.py": "2cd286f201430fb9a48c68ead512671f398732e50e768c2fd69031f127f52622",
+      "drafter.py": "f1c4356d23d59286d79bf5105a89d6241cab71d06dfe1d5296d9fe770254650d",
+      "retail_city_queue.py": "02d04313de82464f0f6933df9e7a72f8675ccb6e7ca63b14859751db3e80a6b2",
+      "history_crosscheck.py": "0ba0d0cc25fe3baa2404b31b8a01070ab02cb6d8cf8588cf3f68f527efd60631",
+      "bounce_pipeline.py": "6bd0fd52330af4efec8dc48ef99a9e91615c76030f08f97decd6c26421cded24",
+      "result_recovery_sync.py": "a607e345647b5e76e8ebac83a7a58ff57c5c26251fcebca3af213e35242b9f56",
+      "discovery/discovery_service.py": "415fbe0cc3323bf45b389f84719c2ee6b52b9ca3d481da6d2f7f70b1c396bd8c",
+      "discovery/website_resolver.py": "8945d43975e4f5750baa956adae0c8f3de5b6b9374741be4217b1b5289844f8f",
+      "discovery/models.py": "aa916b75df3b71c7c21c574d60a071f6e838991ef490558eed67df548c5f0638",
+      "discovery/normalizer.py": "8439b56a484a2a277a7d33aeca29f105f10c385e5fd9a099b8ef377a10e0260b",
+      "discovery/providers/browser_maps.py": "88e53fa9afb3142186f1708f140cc0588810e34fd0c1a6ebc48d9dbef2e061c4"
+    },
+    "token_fingerprint": "08f41aa2da0f",
+    "ts": "2026-10-22T20:53:43+08:00"
+  },
+  "observed_at": "2026-10-22T12:53:43.079052+00:00",
+  "summary_zh": "正式受限通道真实响应；传输失败不推断生产状态。",
+  "summary_en": "Live restricted-channel response; transport failures do not establish production state."
+}

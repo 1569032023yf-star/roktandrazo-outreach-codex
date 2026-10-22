@@ -48,3 +48,14 @@ Bounded production evidence connected; two city blockers remain. Independently r
 - 验收 / Acceptance: A/B/C/D full blocks NOT ACCEPTED; full unattended engineering cycles 0; BD_FULL_PRODUCTION NOT COMPLETE.
 
 证据 / Evidence: `evidence/observability_20261022/release/`; handoff issue2 comment6336864328, pinned WorkBuddy commit `aded425cf863104d907f6b00def4331e2151d515`. The limited legacy summary route still reports SAFE UNKNOWN because it lacks the new authority contract; the separate verified snapshot above supplies that scoped authority.
+
+
+## 2026-10-22 20:53 +08 心跳对账 / Heartbeat reconciliation
+
+20:53正式只读对账无实质变化：4A8V仍applied、SHA匹配、锁释放、SMTP0；无部署后新Inventory，城市仍2条阻塞。原计划00:42+08尚未到。SAFE56仍同一15:49至15:56快照，约5.1小时，非独立新测量或净增。
+
+20:53 authenticated read-only reconciliation has no material change: 4A8V remains applied, hashes match, lock released, SMTP0; no post-deploy Inventory run, two city blockers remain. Original00:42+08 run is not due. SAFE56 is the same15:49-15:56 snapshot, about5.1 hours old, not an independent new measurement or net growth.
+
+未执行 / Not executed: new code, tests, release, manual collection, SMTP, V6 or dual-source experiment. 完整A/B/C/D及无人值守全链均未验收 / No complete A/B/C/D block or unattended engineering chain accepted.
+
+下一步 / Next: Observe original Inventory after 2026-10-23T00:42:26+08:00 through fixed read-only routes; do not reapply or manually collect. Revalidate SAFE age; after measured_at+6h retain only historical56 and mark current UNKNOWN unless a new authorized measurement exists.

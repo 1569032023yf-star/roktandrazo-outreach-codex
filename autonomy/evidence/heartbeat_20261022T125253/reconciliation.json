@@ -1,0 +1,58 @@
+{
+  "observed_at": "2026-10-22T20:53:43+08:00",
+  "material_change": false,
+  "new_inventory_run": false,
+  "stage_trace_natural_acceptance": false,
+  "blockers": 2,
+  "smtp_disabled": true,
+  "production_sha_matches": {
+    "bd_orchestrator.py": true,
+    "discovery/discovery_service.py": true,
+    "retail_city_queue.py": true
+  },
+  "global_inventory_uniqueness": "UNKNOWN",
+  "workbuddy_active_inventory_drivers": 1,
+  "safe_snapshot": {
+    "schema": "rokt.safe-authority-observation.v1",
+    "source": "rokt-deploy-channel",
+    "observed_at": "2026-10-22T12:53:44.775764+00:00",
+    "measured_at": "2026-10-22T15:49:52+08:00",
+    "finished_at": "2026-10-22T15:56:46+08:00",
+    "safe_authority_connected": true,
+    "current_safe": 56,
+    "rule_sha256": {
+      "campaign_eligible_v2.py": "1143bedf563c0f76b883359362ffb2c2ea11c375fd923dc59768c5529cf3ad34",
+      "preflight_gate.py": "2cd286f201430fb9a48c68ead512671f398732e50e768c2fd69031f127f52622"
+    },
+    "db_sha256": "66509daab31eebe2bd39b27aa5be416179e7e96f40bddb1a5fa26f509a9b6f36",
+    "measurement_age_hours": 5.0886520425,
+    "rolling_24h": {
+      "merchant_records_discovered": 0,
+      "unique_organizations_discovered": 0,
+      "verified_official_sites": 0,
+      "new_leads": 0,
+      "new_leads_with_email": 0,
+      "new_first_party_official_emails": 0,
+      "new_distinct_organization_keys": 0
+    },
+    "rolling_7d": {
+      "merchant_records_discovered": 8,
+      "unique_organizations_discovered": 8,
+      "verified_official_sites": 4,
+      "new_leads": 6,
+      "new_leads_with_email": 5,
+      "new_first_party_official_emails": 4,
+      "new_distinct_organization_keys": 6
+    },
+    "new_verified_organizations_24h": "UNKNOWN",
+    "safe_net_growth_24h": "UNKNOWN",
+    "safe_net_growth_7d": "UNKNOWN",
+    "summary_zh": "双读与权威规则验证通过；发现不等于身份确认，无可比历史不计算净增。",
+    "summary_en": "Two readings and authority rules validated; discovery is not confirmed identity; no net growth without comparable history.",
+    "acceptance_scope": "SAFE_AUTHORITY_SNAPSHOT_ONLY_NOT_FULL_B_ACCEPTANCE"
+  },
+  "safe_independent_measurement": false,
+  "full_blocks_accepted": [],
+  "summary_zh": "20:53正式只读对账无实质变化：4A8V仍applied、SHA匹配、锁释放、SMTP0；无部署后新Inventory，城市仍2条阻塞。原计划00:42+08尚未到。SAFE56仍同一15:49至15:56快照，约5.1小时，非独立新测量或净增。",
+  "summary_en": "20:53 authenticated read-only reconciliation has no material change: 4A8V remains applied, hashes match, lock released, SMTP0; no post-deploy Inventory run, two city blockers remain. Original00:42+08 run is not due. SAFE56 is the same15:49-15:56 snapshot, about5.1 hours old, not an independent new measurement or net growth."
+}
