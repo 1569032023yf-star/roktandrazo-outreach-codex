@@ -1,0 +1,8 @@
+{
+  "test": "deterministic isolated competing report write between dashboard read/write",
+  "lost_concurrent_history": true,
+  "production_access": false,
+  "actual_shared_files_modified": false,
+  "summary_zh": "临时目录中，dashboard读取后发生的并发历史新增被其随后写入覆盖。",
+  "summary_en": "In a temporary directory, a concurrent history append after dashboard read is overwritten by its subsequent write."
+}

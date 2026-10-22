@@ -1,0 +1,38 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "summary_zh": "统一互斥和原子替换修复方向正确，39项通过；部分发布恢复及public调用顺序仍有缺口。",
+  "summary_en": "Shared locking and atomic replacement are correct improvements and 39 tests pass; partial-publication recovery and public-call ordering remain incomplete.",
+  "tests": {
+    "count": 39,
+    "passed": 39,
+    "elapsed_seconds": 9.755,
+    "exit_code": 0
+  },
+  "findings": [
+    {
+      "id": "PARTIAL_PUBLICATION_FRESHNESS_GUARD",
+      "severity": "P2",
+      "file": "autonomy/supervisor.py",
+      "summary_zh": "latest先发布，后续工作线/日报失败时，无回执CLI按latest新鲜直接返回，保留缺失或旧的认证段。",
+      "summary_en": "Publishing latest before derived files allows the no-receipt freshness guard to preserve missing or old authenticated report content after a partial failure.",
+      "fix_zh": "把保护绑定实际成功发布的段身份，缺失/不匹配时恢复或明确UNKNOWN；同回执重试仍须可恢复。",
+      "fix_en": "Bind freshness protection to the successfully published section identity; repair or mark UNKNOWN when absent/mismatched, and allow same-receipt retry."
+    },
+    {
+      "id": "DIRECT_DASHBOARD_ORDERING_BYPASS",
+      "severity": "P2",
+      "file": "autonomy/supervisor.py",
+      "summary_zh": "public dashboard(receipt)不保存latest，两次直接调用新后旧可绕过旧观测防护。",
+      "summary_en": "Public dashboard(receipt) does not persist latest, so newer-then-older direct calls bypass ordering protection.",
+      "fix_zh": "统一公开写入入口，或使dashboard回执模式参与同一观测顺序状态。",
+      "fix_en": "Unify the public write path or make receipt-bearing dashboard calls participate in the same observation-order state."
+    }
+  ],
+  "production_access": false,
+  "source_modified": false,
+  "sha256": {
+    "autonomy/supervisor.py": "041262702fd191f4a601d25b070cd153c4830331ead7e8e2bdab1fc18a22e483",
+    "autonomy/test_bridge_telemetry.py": "000e5b1b3215f8e96c398a1383e7dec2579159c454e34666f795bfef8e1f9166",
+    "tools/observe_bd_production.py": "46bf7ab946079b26da6526c864b4a86f58cc50e27d7ba07895719d727f0fe084"
+  }
+}

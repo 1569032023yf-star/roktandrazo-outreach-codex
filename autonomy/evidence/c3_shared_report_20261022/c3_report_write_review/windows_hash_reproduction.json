@@ -1,0 +1,7 @@
+{
+  "summary_zh": "Windows文本换行转换使publication hash与实际日报不同，无回执CLI仍降级新鲜段。",
+  "summary_en": "Windows newline translation makes the publication hash differ from report bytes, so no-receipt CLI still downgrades a fresh section.",
+  "marker_matches_actual": false,
+  "fresh_section_preserved": false,
+  "contains_crlf": true
+}

@@ -155,7 +155,7 @@ Cycle: ecc230f4-a4fc-4cc5-8737-1481a3643ba9; evidence: `autonomy/runtime/city_ob
 <!-- BD_LIVE_OBSERVATION_BEGIN -->
 ## 自动业务观察 / Automated business observation
 
-观测时间 / Observed at: 2026-10-22T14:36:00+08:00
+观测时间 / Observed at: 2026-10-22T14:49:32+08:00
 来源 / Source: authenticated rokt-deploy-channel v2 telemetry; freshness <= 1h
 
 历史累计、最近运行actual和当前SAFE不是同一指标；缺少阶段/资格合同的字段保持UNKNOWN。
@@ -178,7 +178,7 @@ Historical totals, the latest run actual and current SAFE are distinct. Missing 
 
 ## 工作线快照 / Workstream snapshot
 
-- A: 工程、审核、登记与正式部署完成；等待唯一原Inventory自然运行验收，业务增长未知。 / Engineering, review, registration and official deployment completed; awaiting the sole original Inventory natural run; business growth unknown.
+- A: 已部署；自然run completed但城市仍active，生产业务验收未通过。 / Deployed; a natural run completed but the city remains active, so business acceptance has not passed.
 - B: 品牌25文件已整合，177离线测试及独立静态审核通过；磁盘故障已恢复，生产验收仍未完成 / 25 brand files integrated, 177 offline tests and independent static review passed; disk failure recovered, production acceptance remains incomplete
 - C: 四套V6定向58项通过；可比全量563项560通过、3项与基线相同；整合后86项加4身份门禁测试通过；QA未登记未发送 / Four V6 variants passed 58 targeted tests; comparable full suite 563/560 passed with three baseline-identical issues; integrated 86 tests plus four identity-gate tests passed; QA unregistered and unsent
 - D: 未知结果及写入关闭补修限定审核通过；空间预检与双来源交接45项回归、21项独立审核通过；生产仍受通道及来源访问阻塞 / Scoped unknown-outcome and write-close review passed; storage admission and discovery handoff passed 45 regressions and 21 independent checks; production remains blocked by channel and source access

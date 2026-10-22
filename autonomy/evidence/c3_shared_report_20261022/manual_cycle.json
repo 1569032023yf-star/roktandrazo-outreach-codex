@@ -1,0 +1,17 @@
+{
+  "cycle_id": "d3a14401-fa66-4854-a638-8cf8f77c8239",
+  "source": "manual",
+  "started_at": "2026-10-22T06:45:11.692541+00:00",
+  "finished_at": "2026-10-22T06:50:25.920957+00:00",
+  "status": "completed",
+  "task_id": "C-shared-report-write-repair-20261022",
+  "human_trigger_excluded": true,
+  "outcome": {
+    "ok": true,
+    "tests": 42,
+    "review": "APPROVED_SCOPED_ENGINEERING",
+    "live_local_publication_verified": true,
+    "production_acceptance": false
+  },
+  "qualifies_full_unattended_engineering_cycle": false
+}

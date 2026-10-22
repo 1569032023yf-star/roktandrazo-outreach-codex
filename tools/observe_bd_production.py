@@ -13,7 +13,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from autonomy.telemetry import consume_bridge_receipt
-from autonomy.supervisor import atomic_json, dashboard, read
+from autonomy.supervisor import atomic_json, persist_business_observation, read
 
 EXPECTED = {
     'bd_orchestrator.py': 'e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903',
@@ -47,12 +47,7 @@ def main():
     clean['receipt_sha256'] = hashlib.sha256((folder / 'telemetry.json').read_bytes()).hexdigest()
     clean['receipt_path'] = str((folder / 'telemetry.json').relative_to(ROOT))
     atomic_json(folder / 'business_observation.json', clean)
-    atomic_json(ROOT / 'autonomy/runtime/telemetry/latest_business_observation.json', clean)
-    dashboard(ROOT, bridge_receipt=receipt)
-    # Do not replace workstream progress/acceptance with raw aggregate totals.
-    state = read(ROOT / 'autonomy/WORKSTREAM_STATUS.json', {})
-    state['production_observation'] = clean
-    atomic_json(ROOT / 'autonomy/WORKSTREAM_STATUS.json', state)
+    persist_business_observation(ROOT, bridge_receipt=receipt, observation=clean)
     print(json.dumps({'observed_at': clean['observed_at'], 'receipt_path': clean['receipt_path'],
                       'business_acceptance': False}, ensure_ascii=False))
 

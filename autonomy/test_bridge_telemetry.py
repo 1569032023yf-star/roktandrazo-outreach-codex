@@ -128,5 +128,106 @@ class BridgeTelemetryTests(unittest.TestCase):
             self.assertIn('UNKNOWN / NOT_VALIDATED', path.read_text(encoding='utf-8'))
 
 
+    def test_shared_lock_rejects_dashboard_and_observer_without_writes(self):
+        from autonomy import supervisor as s
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); path = root / 'autonomy/BUSINESS_DAILY_REPORT.md'
+            path.parent.mkdir(); path.write_text('HISTORY', encoding='utf-8')
+            with s.exclusive(root / 'autonomy/runtime'):
+                with self.assertRaises(FileExistsError):
+                    s.dashboard(root)
+                with self.assertRaises(FileExistsError):
+                    s.persist_business_observation(root, bridge_receipt=fixture(), observation={'observed_at': NOW.isoformat()})
+            self.assertEqual(path.read_text(), 'HISTORY')
+            self.assertFalse((root / 'autonomy/WORKSTREAM_STATUS.json').exists())
+
+    def test_atomic_report_replace_failure_preserves_complete_history(self):
+        from autonomy import supervisor as s
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'report.md'; path.write_text('HISTORY', encoding='utf-8')
+            with patch.object(s.os, 'replace', side_effect=OSError('synthetic replace')):
+                with self.assertRaises(OSError):
+                    s.atomic_text(path, 'NEW REPORT')
+            self.assertEqual(path.read_text(), 'HISTORY')
+            self.assertEqual(list(Path(tmp).glob('*.tmp')), [])
+
+    def test_older_observer_cannot_replace_newer_reports_or_metadata(self):
+        from autonomy import supervisor as s
+        with tempfile.TemporaryDirectory() as tmp, patch('autonomy.telemetry._now', return_value=NOW):
+            root = Path(tmp); (root / 'autonomy').mkdir()
+            s.atomic_json(root / 'autonomy/WORKSTREAM_STATUS.json', {'important_progress': 'KEEP'})
+            newer = self.consume(fixture())
+            s.persist_business_observation(root, bridge_receipt=fixture(), observation=newer)
+            path = root / 'autonomy/BUSINESS_DAILY_REPORT.md'; before = path.read_bytes()
+            old = deepcopy(newer); old['observed_at'] = '2026-10-22T09:00:00+08:00'
+            with self.assertRaisesRegex(ValueError, 'OLDER_OBSERVATION_REJECTED'):
+                s.persist_business_observation(root, bridge_receipt=fixture(), observation=old)
+            self.assertEqual(path.read_bytes(), before)
+            self.assertEqual(s.read(root / 'autonomy/WORKSTREAM_STATUS.json')['important_progress'], 'KEEP')
+            self.assertEqual(s.read(root / 'autonomy/runtime/telemetry/latest_business_observation.json'), newer)
+
+    def test_no_receipt_dashboard_does_not_downgrade_fresh_observation(self):
+        from autonomy import supervisor as s
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); (root / 'autonomy').mkdir()
+            path = root / 'autonomy/BUSINESS_DAILY_REPORT.md'; path.write_text('FRESH AUTHENTICATED HISTORY', encoding='utf-8')
+            from datetime import timedelta
+            timestamp = (datetime.now(timezone.utc) - timedelta(seconds=10)).isoformat()
+            s.atomic_json(root / 'autonomy/runtime/telemetry/latest_business_observation.json', {'observed_at': timestamp})
+            import hashlib
+            s.atomic_json(root / 'autonomy/runtime/telemetry/report_publication.json', {
+                'observed_at': timestamp, 'report_sha256': hashlib.sha256(path.read_bytes()).hexdigest()})
+            s.dashboard(root)
+            self.assertEqual(path.read_text(), 'FRESH AUTHENTICATED HISTORY')
+
+
+    def test_partial_publication_never_extends_old_authenticated_section(self):
+        from autonomy import supervisor as s
+        with tempfile.TemporaryDirectory() as tmp, patch('autonomy.telemetry._now', return_value=NOW):
+            root = Path(tmp); (root / 'autonomy').mkdir()
+            path = root / 'autonomy/BUSINESS_DAILY_REPORT.md'
+            path.write_text('HISTORY\nOLD AUTHENTICATED SECTION', encoding='utf-8')
+            original_atomic = s.atomic_json
+            def fail_state(path, value):
+                if path.name == 'WORKSTREAM_STATUS.json':
+                    raise OSError('injected state failure')
+                return original_atomic(path, value)
+            with patch.object(s, 'atomic_json', side_effect=fail_state):
+                with self.assertRaises(OSError):
+                    s.persist_business_observation(root, bridge_receipt=fixture(), observation=self.consume(fixture()))
+            s.dashboard(root)
+            self.assertIn('UNKNOWN / NOT_VALIDATED', path.read_text(encoding='utf-8'))
+            self.assertTrue(path.read_text(encoding='utf-8').startswith('HISTORY'))
+            # Explicit replay of the immutable authenticated receipt repairs local state.
+            s.dashboard(root, bridge_receipt=fixture())
+            self.assertEqual(s.read(root / 'autonomy/WORKSTREAM_STATUS.json')['production_observation']['observed_at'], fixture()['response']['generated_at'])
+
+    def test_public_dashboard_rejects_reverse_receipt_order(self):
+        from autonomy import supervisor as s
+        with tempfile.TemporaryDirectory() as tmp, patch('autonomy.telemetry._now', return_value=NOW):
+            root = Path(tmp)
+            s.dashboard(root, bridge_receipt=fixture())
+            path = root / 'autonomy/BUSINESS_DAILY_REPORT.md'; before = path.read_bytes()
+            old = fixture(); old['response']['generated_at'] = '2026-10-22T09:00:00+08:00'
+            with self.assertRaisesRegex(ValueError, 'OLDER_OBSERVATION_REJECTED'):
+                s.dashboard(root, bridge_receipt=old)
+            self.assertEqual(path.read_bytes(), before)
+
+
+    def test_real_publication_hash_and_no_receipt_cli_preserve_fresh_section(self):
+        from autonomy import supervisor as s
+        import hashlib
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); raw = fixture()
+            raw['response']['generated_at'] = datetime.now(timezone.utc).isoformat()
+            s.dashboard(root, bridge_receipt=raw)
+            path = root / 'autonomy/BUSINESS_DAILY_REPORT.md'
+            before = path.read_bytes()
+            marker = s.read(root / 'autonomy/runtime/telemetry/report_publication.json')
+            self.assertEqual(marker['report_sha256'], hashlib.sha256(before).hexdigest())
+            s.dashboard(root)
+            self.assertEqual(path.read_bytes(), before)
+
+
 if __name__ == '__main__':
     unittest.main()

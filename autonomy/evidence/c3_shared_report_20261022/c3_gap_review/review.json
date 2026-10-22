@@ -1,0 +1,15 @@
+{
+  "summary_zh": "存在共享报告竞态与C3证据验证缺口；完整C3未验收。",
+  "summary_en": "Shared-report race and C3 evidence-verification gaps exist; complete C3 is not accepted.",
+  "reviewed_commits": [
+    "37fdbe7",
+    "356393a"
+  ],
+  "production_acceptance": false,
+  "tests": "One isolated deterministic race reproduction; no repeated regression suite. 一次隔离竞态复现，未重复回归。",
+  "minimal_task": "LOCAL_REPORT_PUBLICATION_SERIALIZATION_AND_STALE_WRITE_REJECTION",
+  "race_reproduced": true,
+  "two_unattended_cycles": "FAIL_CLOSED_UNUSED_PLACEHOLDER",
+  "source_changes": false,
+  "production_access": false
+}

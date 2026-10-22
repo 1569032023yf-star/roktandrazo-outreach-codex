@@ -1,0 +1,34 @@
+{
+  "verdict": "APPROVED_SCOPED_ENGINEERING",
+  "summary_zh": "共享报告串行化、旧观测拒绝、部分发布保护和Windows实际字节hash修复通过独立审核。",
+  "summary_en": "Independent review approves shared-report serialization, stale-observation rejection, partial-publication protection and Windows actual-byte hashing.",
+  "tests": {
+    "tests": 42,
+    "passed": 42,
+    "success": true,
+    "elapsed_seconds": 8.856,
+    "source_stable": true,
+    "sha256_before": {
+      "autonomy/supervisor.py": "5ed6a757ef59cee1e3d841624f06a302d8e0f3906b695887b25d542d9b4140b3",
+      "autonomy/test_bridge_telemetry.py": "b832b5f2ae707e13c678b9b5a16af60f310aad0ecb49f5d73ab64f38bca08825",
+      "tools/observe_bd_production.py": "46bf7ab946079b26da6526c864b4a86f58cc50e27d7ba07895719d727f0fe084"
+    },
+    "sha256_after": {
+      "autonomy/supervisor.py": "5ed6a757ef59cee1e3d841624f06a302d8e0f3906b695887b25d542d9b4140b3",
+      "autonomy/test_bridge_telemetry.py": "b832b5f2ae707e13c678b9b5a16af60f310aad0ecb49f5d73ab64f38bca08825",
+      "tools/observe_bd_production.py": "46bf7ab946079b26da6526c864b4a86f58cc50e27d7ba07895719d727f0fe084"
+    }
+  },
+  "closed_findings": [
+    "PARTIAL_PUBLICATION_FRESHNESS_GUARD",
+    "DIRECT_DASHBOARD_ORDERING_BYPASS",
+    "WINDOWS_NEWLINE_PUBLICATION_HASH"
+  ],
+  "remaining_blocking_findings": [],
+  "limitations_zh": "跨文件不是事务；失败后以同一不可变且仍有效的认证回执显式重放恢复，或新有效回执恢复。无回执CLI对未完成发布明确UNKNOWN，不自动伪造认证。人工写者需同锁。未验证生产或真实多心跳C3。",
+  "limitations_en": "Publication is not a cross-file transaction. Explicit replay of the same still-valid immutable authenticated receipt, or a newer valid receipt, repairs partial publication. No-receipt CLI marks incomplete publication UNKNOWN without inventing authentication. Manual writers must cooperate with the lock. Production and real multi-heartbeat C3 were not validated.",
+  "source_modified_by_reviewer": false,
+  "production_access": false,
+  "production_acceptance": false,
+  "full_C3_acceptance": false
+}

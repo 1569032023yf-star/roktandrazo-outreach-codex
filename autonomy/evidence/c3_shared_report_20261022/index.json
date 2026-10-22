@@ -1,0 +1,21 @@
+{
+  "summary_zh": "独立审核与真实本地报告发布证据；非完整C3。",
+  "summary_en": "Independent review and real local publication evidence; not complete C3.",
+  "files": {
+    "live_publication.json": "2ea36611293fe8c98582027a4814530c09ae1eb40fb66aef573f410779cd3afc",
+    "manual_cycle.json": "9c36b55581037b16ba087ba7d41c4d29941477d3b62648190e4d9766877c535d",
+    "c3_gap_review\\race_reproduction.json": "8251ee08a58f083a2589cb53a1b9772b858813f0adb64f2ffa8f4c5929b8d38e",
+    "c3_gap_review\\review.json": "222ff367db99f025baa1f73ff2c402cdcf23d8a117f6dc07c864d83654e1dc72",
+    "c3_gap_review\\review.md": "afd11aa53d0dfc456b58a0c5daaf874e961378c2728339f1a23ce3ebef3872b1",
+    "c3_report_write_review\\final_review.json": "aaeb5c4de20009cc99cd576be5716f134cdf6f32ec2e872aad381244e7b33960",
+    "c3_report_write_review\\final_review.md": "7eefe9d67a0768e064ff04b3efc4ea21d53d5646a33eebc6389eba72f30acb3f",
+    "c3_report_write_review\\final_tests.json": "3f9276bd349a02ff0c0112fe87a62df4ecacc23e4b8b26c9a7fbdfde1d31608a",
+    "c3_report_write_review\\final_tests.log": "7e716061f3226cc8a361471fc523cdb9767fd1fdd6298908bdda8c97fbbe29c9",
+    "c3_report_write_review\\intermediate_41_tests.log": "0b9ee0ed3f3656e73db26402cc5ee721b82ab115c19d084e69c77e8e2b0ab6a3",
+    "c3_report_write_review\\partial_write.json": "f7d88e20e2b663e50a73ccc84aa0d259c578472235e25c321e1234a3b237d662",
+    "c3_report_write_review\\review.json": "3774e291bc3a374d68ae52dc336400dfcebab0fa031b17c5d9cd82e5a8f0b6eb",
+    "c3_report_write_review\\review.md": "7095a12558eda74393a7f06ff75bc1190e01cbc3f27f5d88d17ba247b29e544e",
+    "c3_report_write_review\\tests.log": "7f6a25a647b5086f370282ab967ad9e2e0fe277335c2a1d6d6185d51c43463bb",
+    "c3_report_write_review\\windows_hash_reproduction.json": "175e0c65011aec979fd487e87c62f894c44f5605a3b70060b2598f2d655d7214"
+  }
+}

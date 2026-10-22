@@ -72,6 +72,38 @@ def atomic_json(path, value):
             os.unlink(tmp)
 
 
+def atomic_text(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=path.parent, suffix='.tmp')
+    try:
+        handle = os.fdopen(fd, 'w', encoding='utf-8')
+        try:
+            handle.write(value)
+            handle.flush()
+            os.fsync(handle.fileno())
+        except BaseException as error:
+            # Capture the write failure before close can flush and fail again.
+            try:
+                handle.close()
+            except BaseException:
+                error.add_note('FILE_CLOSE_FAILED')
+            raise
+        else:
+            # With no write failure, close itself is the primary failure.
+            handle.close()
+        os.replace(tmp, path)
+    except BaseException as error:
+        try:
+            if os.path.exists(tmp):
+                os.unlink(tmp)
+        except OSError:
+            error.add_note('TEMP_CLEANUP_FAILED')
+        raise
+    else:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
+
+
 @contextmanager
 def exclusive(runtime):
     """Instance-token lock, serialized against explicit recovery / 实例令牌互斥锁。"""
@@ -412,7 +444,68 @@ def two_unattended_cycles(records):
     return False
 
 
+def _preserve_newer_observation(root, observed):
+    saved = read(root / 'autonomy/runtime/telemetry/latest_business_observation.json', {})
+    previous = saved.get('observed_at')
+    if previous is None:
+        return False
+    try:
+        previous = datetime.fromisoformat(previous)
+        if previous.tzinfo is None:
+            raise ValueError()
+        if observed == 'UNKNOWN':
+            age = (datetime.now(timezone.utc) - previous).total_seconds()
+            publication = read(root / 'autonomy/runtime/telemetry/report_publication.json', {})
+            report = root / 'autonomy/BUSINESS_DAILY_REPORT.md'
+            return (0 <= age <= 3600 and publication.get('observed_at') == saved.get('observed_at')
+                    and report.is_file() and publication.get('report_sha256')
+                    == hashlib.sha256(report.read_bytes()).hexdigest())
+        incoming = datetime.fromisoformat(observed)
+        if incoming.tzinfo is None:
+            raise ValueError()
+    except (ValueError, TypeError):
+        raise ValueError('REPORT_OBSERVATION_STATE_INVALID') from None
+    if incoming < previous:
+        raise ValueError('OLDER_OBSERVATION_REJECTED')
+    return False
+
+
+def persist_business_observation(root, *, bridge_receipt, observation):
+    """Serialize shared local reports; HTTP and immutable receipts stay outside.
+
+    共享报告使用同一互斥；HTTP与不可变回执在锁外。
+    """
+    root = Path(root)
+    with exclusive(root / 'autonomy/runtime'):
+        _preserve_newer_observation(root, observation['observed_at'])
+        state = read(root / 'autonomy/WORKSTREAM_STATUS.json', {})
+        state['production_observation'] = observation
+        # Queue/observation receipt remains authoritative if a later report fails.
+        atomic_json(root / 'autonomy/runtime/telemetry/latest_business_observation.json', observation)
+        atomic_json(root / 'autonomy/WORKSTREAM_STATUS.json', state)
+        return _dashboard_locked(root, bridge_receipt=bridge_receipt)
+
+
 def dashboard(root=ROOT, *, bridge_receipt=None):
+    root = Path(root)
+    if bridge_receipt is not None:
+        try:
+            from autonomy.telemetry import consume_bridge_receipt, InvalidSnapshot
+        except ModuleNotFoundError:
+            from telemetry import consume_bridge_receipt, InvalidSnapshot
+        try:
+            observation = consume_bridge_receipt(bridge_receipt,
+                approved_channel='rokt-deploy-channel')
+        except InvalidSnapshot:
+            pass
+        else:
+            return persist_business_observation(root, bridge_receipt=bridge_receipt,
+                observation=observation)
+    with exclusive(root / 'autonomy/runtime'):
+        return _dashboard_locked(root, bridge_receipt=bridge_receipt)
+
+
+def _dashboard_locked(root, *, bridge_receipt=None):
     """Preserve historical reports; render a fresh authenticated aggregate section.
 
     保留历史日报，固定回执来源由受控采集调用方负责认证；缺证不补零。
@@ -448,6 +541,8 @@ def dashboard(root=ROOT, *, bridge_receipt=None):
             metrics['ACTIVE_CITY'] = ', '.join(active) if active else 'UNKNOWN'
             last = live['last_inventory_run']
             metrics['LAST_INVENTORY_RUN'] = last['run_id'] if isinstance(last, dict) else 'UNKNOWN'
+    if _preserve_newer_observation(root, observed):
+        return metrics
     state = read(root / 'autonomy' / 'WORKSTREAM_STATUS.json', {})
     lines = ['## 自动业务观察 / Automated business observation', '',
              f'观测时间 / Observed at: {observed}',
@@ -475,7 +570,10 @@ def dashboard(root=ROOT, *, bridge_receipt=None):
     else:
         original += '\n\n' + section + '\n'
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(original, encoding='utf-8')
+    atomic_text(path, original)
+    atomic_json(root / 'autonomy/runtime/telemetry/report_publication.json', {
+        'observed_at': observed,
+        'report_sha256': hashlib.sha256(path.read_bytes()).hexdigest()})
     return metrics
 
 

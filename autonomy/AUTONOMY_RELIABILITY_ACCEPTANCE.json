@@ -1,6 +1,6 @@
 {
   "task_id": "BD-FULL-PRODUCTION-20261022",
-  "updated_at": "2026-10-22T06:37:18.757422+00:00",
+  "updated_at": "2026-10-22T06:50:25.920957+00:00",
   "branch": "codex/autonomous-bd-supervisor",
   "summary_zh": "限定工程审核通过，生产完整板块尚未验收；继续原队列。",
   "summary_en": "Scoped engineering approved; no complete production block accepted; continue the existing queue.",
@@ -34,5 +34,16 @@
     "production_mutations": 0,
     "tests_rerun": false,
     "reviewed_source_hashes_match": true
+  },
+  "shared_report_repair": {
+    "summary_zh": "共享报告竞态、逆序及半写发布保护补修已独立审核；Windows实际发布通过。",
+    "summary_en": "Shared-report race, ordering and partial-publication protection independently approved; real Windows publication verified.",
+    "review": "evidence/c3_shared_report_20261022/c3_report_write_review/final_review.json",
+    "targeted_tests": 42,
+    "review_verdict": "APPROVED_SCOPED_ENGINEERING",
+    "live_local_publication_verified": true,
+    "source": "manual",
+    "production_acceptance": false,
+    "full_C3_acceptance": false
   }
 }

@@ -1,6 +1,6 @@
 {
   "task_id": "BD-FULL-PRODUCTION-20261022",
-  "updated_at": "2026-10-22T06:37:18.757422+00:00",
+  "updated_at": "2026-10-22T06:50:25.920957+00:00",
   "branch": "codex/autonomous-bd-supervisor",
   "start_commit": "371c299ca7b97e595f3dfe84f33f2cc5f32be74d",
   "workstreams": [
@@ -8,12 +8,25 @@
     "B_AUTHENTICATED_TELEMETRY_CONSUMER",
     "C_LOCK_OUTPUT_RELIABILITY"
   ],
-  "last_verified_action": "AUTHENTICATED_RECONCILIATION_NO_NEW_RUN_OR_HANDOFF_REPLY",
+  "last_verified_action": "42_INDEPENDENT_TESTS_AND_REAL_LOCAL_PUBLICATION_VERIFIED",
   "production_operation_id": "op-20261022-011811-4925c1",
   "known_external_side_effects": [
     "Existing GitHub issue2 comment6330120094: minimal read-only handoff request; delivery to GitHub confirmed, operator acknowledgement not verified"
   ],
-  "uncommitted_files": [],
+  "uncommitted_files": [
+    " M autonomy/AUTONOMY_RELIABILITY_ACCEPTANCE.json",
+    " M autonomy/BD_FULL_CHECKPOINT.json",
+    " M autonomy/BD_FULL_PRODUCTION_CLOSURE.json",
+    " M autonomy/BUSINESS_DAILY_REPORT.md",
+    " M autonomy/DUAL_SOURCE_LIVE_YIELD.json",
+    " M autonomy/PRODUCTION_TELEMETRY_ACCEPTANCE.json",
+    " M autonomy/WORKSTREAM_STATUS.json",
+    " M autonomy/supervisor.py",
+    " M autonomy/test_bridge_telemetry.py",
+    " M tools/observe_bd_production.py",
+    "?? autonomy/evidence/c3_shared_report_20261022/",
+    "?? docs/AUTONOMY_SHARED_REPORT_WRITE_REPAIR.md"
+  ],
   "test_evidence": {
     "total": 81,
     "C": 46,
@@ -21,9 +34,9 @@
     "A": 7,
     "source_hashes_verified": true
   },
-  "reviewer_status": "APPROVED_SCOPED_ENGINEERING",
+  "reviewer_status": "SHARED_REPORT_REPAIR_APPROVED_SCOPED_ENGINEERING",
   "root_cause": "UNKNOWN_PENDING_ACTUAL_STAGE_TRACE_ACTIVE_STATE_AND_ENTRYPOINT",
-  "next_automatic_action": "Reconcile expected/actual Inventory trigger through existing approved handoff; next schedule 2026-10-22T18:18:22+08:00",
+  "next_automatic_action": "Resume bounded production handoff and original scheduled Inventory observation; no reapply; true multi-heartbeat full C3 remains unaccepted.",
   "summary_zh": "长期任务已持久化；正式城市运行停滞转根因调查，其他工程并行。",
   "summary_en": "Long-term task persisted; stalled production city moves to root-cause investigation while independent engineering continues.",
   "heartbeat_trigger": "2026-10-22T03:26:13.340Z",
@@ -48,5 +61,18 @@
     "production_mutations": 0,
     "tests_rerun": false,
     "reviewed_source_hashes_match": true
+  },
+  "current_task_id": "C-shared-report-write-repair-20261022",
+  "current_source": "manual",
+  "shared_report_repair": {
+    "summary_zh": "共享报告竞态、逆序及半写发布保护补修已独立审核；Windows实际发布通过。",
+    "summary_en": "Shared-report race, ordering and partial-publication protection independently approved; real Windows publication verified.",
+    "review": "evidence/c3_shared_report_20261022/c3_report_write_review/final_review.json",
+    "targeted_tests": 42,
+    "review_verdict": "APPROVED_SCOPED_ENGINEERING",
+    "live_local_publication_verified": true,
+    "source": "manual",
+    "production_acceptance": false,
+    "full_C3_acceptance": false
   }
 }

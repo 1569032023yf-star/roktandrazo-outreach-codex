@@ -1,0 +1,17 @@
+{
+  "tests": 42,
+  "passed": 42,
+  "success": true,
+  "elapsed_seconds": 8.856,
+  "source_stable": true,
+  "sha256_before": {
+    "autonomy/supervisor.py": "5ed6a757ef59cee1e3d841624f06a302d8e0f3906b695887b25d542d9b4140b3",
+    "autonomy/test_bridge_telemetry.py": "b832b5f2ae707e13c678b9b5a16af60f310aad0ecb49f5d73ab64f38bca08825",
+    "tools/observe_bd_production.py": "46bf7ab946079b26da6526c864b4a86f58cc50e27d7ba07895719d727f0fe084"
+  },
+  "sha256_after": {
+    "autonomy/supervisor.py": "5ed6a757ef59cee1e3d841624f06a302d8e0f3906b695887b25d542d9b4140b3",
+    "autonomy/test_bridge_telemetry.py": "b832b5f2ae707e13c678b9b5a16af60f310aad0ecb49f5d73ab64f38bca08825",
+    "tools/observe_bd_production.py": "46bf7ab946079b26da6526c864b4a86f58cc50e27d7ba07895719d727f0fe084"
+  }
+}

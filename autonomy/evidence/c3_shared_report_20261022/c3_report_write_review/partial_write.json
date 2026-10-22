@@ -1,0 +1,8 @@
+{
+  "summary_zh": "latest写入后工作线写失败，随后无回执CLI既不补工作线也不补日报，却按latest新鲜保护旧段。",
+  "summary_en": "After latest publication and failed workstream write, no-receipt CLI repairs neither workstream nor report and preserves the old section based on latest freshness.",
+  "latest_published": true,
+  "workstream_repaired": false,
+  "report_repaired": false,
+  "real_shared_files_modified": false
+}
