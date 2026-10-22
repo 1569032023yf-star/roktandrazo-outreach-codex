@@ -9,11 +9,14 @@
  from broad_outreach_gate import _gen_organization_key
  from timezone_resolver import resolve_timezone
  
-@@ -566,7 +566,15 @@
+@@ -566,7 +566,18 @@
                 ORDER BY discovered_at,id""",
              (int(city_row["id"]), int(unlinked_only)),
          ).fetchall()
 -        rows = [row for row in rows if network_recovery_due(dict(row), 'website_resolution_retry')][:max(1, int(max_results))]
++        requested_ids = {int(value) for value in staging_ids} if staging_ids is not None else None
++        if requested_ids is not None:
++            rows = [row for row in rows if int(row['id']) in requested_ids]
 +        prepared = []
 +        migrations = 0
 +        for raw_row in rows:
@@ -26,7 +29,7 @@
          if staging_ids is not None:
              rows = self._linked_retry_rows(city_row, staging_ids, require_website=False)
          rows = [row for row in rows if network_recovery_due(dict(row), 'website_resolution_retry')][:max(1, int(max_results))]
-@@ -625,6 +633,58 @@
+@@ -625,6 +636,58 @@
              summary.status = "website_resolution_empty"
          return summary
  
@@ -85,7 +88,7 @@
      def _record_network_failure(self, row, key, status, error):
          payload = _raw_payload(row)
          retry = dict(payload.get(key) or {})
-@@ -632,7 +692,7 @@
+@@ -632,7 +695,7 @@
          stamp = datetime.now(timezone.utc).isoformat()
          events.append({'at': stamp, 'status': status, 'error': str(error)})
          count_key = 'unavailable_attempts' if key == 'linked_backlog_retry' else 'attempts'
@@ -94,7 +97,7 @@
                        'next_retry_at': (datetime.fromisoformat(stamp) + timedelta(seconds=NETWORK_RECOVERY_RETRY_SECONDS)).isoformat(),
                        'original_validation_status': retry.get('original_validation_status', row.get('validation_status')),
                        'original_rejection_reason': retry.get('original_rejection_reason', row.get('rejection_reason'))})
-@@ -653,16 +713,16 @@
+@@ -653,16 +716,16 @@
                                   'urlerror', 'timeout', 'connectionreseterror', 'connectionrefusederror',
                                   'connecttimeout', 'readtimeout'))
  
@@ -115,7 +118,7 @@
              return False
          lead_row = self.conn.execute('SELECT * FROM leads WHERE id=?', (row.get('linked_lead_id'),)).fetchone()
          if not lead_row or self._row_outside_active_city(row, city_row):
-@@ -732,6 +792,19 @@
+@@ -732,6 +795,19 @@
              ORDER BY coalesce(json_extract(CASE WHEN json_valid(s.raw_payload_json) THEN s.raw_payload_json ELSE '{}' END,
                  '$.linked_backlog_retry.last_attempt_at'), ''), s.id""", (city_row['id'],)).fetchall()
          requested_ids = {int(value) for value in staging_ids} if staging_ids is not None else None
@@ -135,7 +138,7 @@
          eligible = [dict(r) for r in rows if self._linked_retry_allowed(dict(r), city_row)
                      and (requested_ids is None or int(r["id"]) in requested_ids)]
          selected = eligible[:limit]
-@@ -745,7 +818,7 @@
+@@ -745,7 +821,7 @@
          for row in selected:
              payload = json.loads(row.get('raw_payload_json') or '{}')
              previous = payload.get('linked_backlog_retry', {})
