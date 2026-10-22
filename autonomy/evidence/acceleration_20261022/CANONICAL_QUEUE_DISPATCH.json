@@ -1,0 +1,15 @@
+{
+  "schema": "rokt.dependency-dispatch.v1",
+  "observed_at": "2026-10-22T15:23:47.708187+00:00",
+  "changes": [
+    {
+      "task_id": "C-acceleration-reviewed-integration-20261022",
+      "from_status": "blocked_external",
+      "to_status": "queued"
+    }
+  ],
+  "summary_zh": "仅重评已验证依赖，不执行任务或生产副作用。",
+  "summary_en": "Reevaluate verified dependencies only; execute no task or production effect.",
+  "integration_zh": "调用方最初使用dependencies无状态变化，已改为合同depends_on；真实审核事件产生blocked_external到queued，随后集成完成。",
+  "integration_en": "Initial caller dependencies field caused no change; corrected to contract depends_on. Actual review event changed blocked_external to queued, then integration completed."
+}

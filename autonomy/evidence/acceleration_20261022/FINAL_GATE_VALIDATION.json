@@ -1,0 +1,16 @@
+{
+  "verified_at": "2026-10-22T15:25:02.797727+00:00",
+  "release_id": "phase4a8w-city-legacy-ledger-20261022",
+  "operation_id": "op-20261022-231834-15aa6f",
+  "applied": true,
+  "backup_before_match": true,
+  "preflight_passed": 14,
+  "patch_sha_match": true,
+  "test_artifact_sha_match": true,
+  "business_report_publication_sha_match": true,
+  "smtp_enabled": 0,
+  "emails_sent": 0,
+  "full_unattended_cycles_added": 0,
+  "summary_zh": "部署及持久化门禁核对通过；不代表自然业务验收。",
+  "summary_en": "Deployment and persistence checks pass; no natural business acceptance."
+}

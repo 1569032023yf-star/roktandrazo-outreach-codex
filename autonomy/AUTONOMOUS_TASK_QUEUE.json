@@ -1,0 +1,133 @@
+{
+  "schema": "rokt.canonical-queue-projection.v1",
+  "updated_at": "2026-10-22T15:25:56.899073+00:00",
+  "canonical_path": "autonomy/runtime/queue.json",
+  "read_only_projection": true,
+  "scheduler_created": false,
+  "tasks": [
+    {
+      "id": "A-city-exact-production-patch-rebase",
+      "workstream": "A",
+      "role": "developer",
+      "status": "superseded",
+      "attempts": 1,
+      "blocked_cycles": 0,
+      "instruction_zh": "最高优先：仅在开发副本以runtime/channel_takeover_20261021/production_snapshot生产代码快照重建两文件精确补丁，修复解析失败，保留门禁并完整回归；产物需独立审核后登记。不得直接生产写入、SMTP或自动重跑未知操作。",
+      "instruction_en": "Priority: rebuild exact two-file patch against pinned production snapshots in development only; preserve gates, fix parsing, run regressions and independently review before registration. No direct production writes, SMTP or unknown-operation retries.",
+      "lease_cycle_id": "27b7f19d-1e2b-4441-bb3a-18b4ec3b93d5",
+      "needs_reassessment": false,
+      "outcome_unknown": false,
+      "blocking_reason": "REQUIRES_SEMANTIC_RECONCILIATION_NOT_FUZZY_APPLY",
+      "superseded_by": "A-city-semantic-production-rebase-20261021",
+      "dependency_evidence": {},
+      "satisfied_dependencies": []
+    },
+    {
+      "id": "B-stage-qualification-authority-contract",
+      "workstream": "B",
+      "role": "app_heartbeat",
+      "status": "awaiting_independent_reconciliation",
+      "attempts": 0,
+      "execution_mode": "app_heartbeat",
+      "needs_reassessment": false,
+      "safe_authority_snapshot_connected": true,
+      "full_acceptance": false,
+      "dependency_evidence": {},
+      "satisfied_dependencies": []
+    },
+    {
+      "id": "C-unattended-heartbeat-acceptance",
+      "workstream": "C",
+      "role": "app_heartbeat",
+      "status": "awaiting_heartbeat",
+      "attempts": 0,
+      "execution_mode": "app_heartbeat",
+      "needs_reassessment": false,
+      "dependency_evidence": {},
+      "satisfied_dependencies": []
+    },
+    {
+      "id": "A-4a8v-natural-stage-trace-acceptance",
+      "workstream": "A",
+      "role": "app_heartbeat",
+      "status": "awaiting_natural_run",
+      "operation_id": "op-20261022-191501-18edf5",
+      "not_before": "2026-10-23T00:42:26+08:00",
+      "instruction_zh": "仅固定只读接口观察原计划新run；不手动采集，不重apply。",
+      "instruction_en": "Observe the original Inventory scheduled 2026-10-23T00:42:26+08:00 via fixed runtime/city/provider/scheduler/SAFE routes; require a new run after apply and real stage events. Never manually trigger discovery or reapply either release.",
+      "execution_mode": "app_heartbeat",
+      "dependency_evidence": {},
+      "satisfied_dependencies": []
+    },
+    {
+      "id": "A-4a8w-natural-city-acceptance",
+      "status": "awaiting_natural_run",
+      "workstream": "A",
+      "role": "app_heartbeat",
+      "attempts": 0,
+      "parent_goal": "BD_FULL_PRODUCTION",
+      "release_id": "phase4a8w-city-legacy-ledger-20261022",
+      "operation_id": "op-20261022-231834-15aa6f",
+      "next_retry_at": "2026-10-23T00:42:26+08:00",
+      "blocked_reason": "WAITING_ORIGINAL_NATURAL_INVENTORY",
+      "next_action": "Observe original Inventory after2026-10-23T00:42:26+08; validate real stage trace, legacy classification and city/provider progression; do not manually invoke collection.",
+      "branch": "codex/autonomous-bd-supervisor",
+      "current_commit": "7eb46c4f2399e368f8db3240a27fac7d9ceb46d5",
+      "known_side_effects": [
+        "4A8W applied"
+      ],
+      "task_id": "A-4a8w-natural-city-acceptance",
+      "worktree": null,
+      "input_commit": null,
+      "last_verified_step": null,
+      "test_receipt": null,
+      "review_receipt": null,
+      "completion_evidence": null,
+      "dependency_evidence": {},
+      "satisfied_dependencies": []
+    }
+  ],
+  "summary_zh": "唯一运行队列的只读投影，不是第二调度器。",
+  "summary_en": "Read-only projection of the sole runtime queue, not another scheduler.",
+  "filter": "tasks excludes completed; recent_completed includes this acceleration integration",
+  "recent_completed": [
+    {
+      "id": "C-acceleration-reviewed-integration-20261022",
+      "status": "completed",
+      "attempts": 0,
+      "parent_goal": "BD_FULL_PRODUCTION",
+      "branch": "codex/autonomous-bd-supervisor",
+      "current_commit": "7eb46c4f2399e368f8db3240a27fac7d9ceb46d5",
+      "next_action": "Integrate reviewed modules and run targeted regressions",
+      "known_side_effects": [],
+      "task_id": "C-acceleration-reviewed-integration-20261022",
+      "worktree": null,
+      "input_commit": null,
+      "last_verified_step": "REVIEW_EVENT_REACTIVATED_AND_27_INTEGRATION_TESTS_PASS",
+      "test_receipt": null,
+      "review_receipt": null,
+      "release_id": null,
+      "operation_id": null,
+      "next_retry_at": null,
+      "blocked_reason": null,
+      "dependency_evidence": {
+        "ACCELERATION_REVIEW_APPROVED": {
+          "type": "REVIEW_APPROVED",
+          "evidence_sha256": "af0495d1674582b98bb7240382741cdf7a9551ba95b1a26217454885a26e8083",
+          "observed_at": "2026-10-22T15:23:47.708187+00:00",
+          "satisfies": [
+            "ACCELERATION_REVIEW_APPROVED"
+          ]
+        }
+      },
+      "satisfied_dependencies": [
+        "ACCELERATION_REVIEW_APPROVED"
+      ],
+      "depends_on": [
+        "ACCELERATION_REVIEW_APPROVED"
+      ],
+      "needs_reassessment": false,
+      "completion_evidence": "evidence/acceleration_20261022/CANONICAL_QUEUE_DISPATCH.json"
+    }
+  ]
+}
