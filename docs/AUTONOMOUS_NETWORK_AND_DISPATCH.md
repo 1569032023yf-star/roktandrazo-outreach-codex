@@ -47,3 +47,11 @@ Authentication failures do not retry automatically; only a new verified authoriz
 定向测试覆盖错误分类、Retry-After、预算保持、未知副作用、Git证据、依赖事件、防缓存重复、真实本地队列持久化及写入失败不覆盖原队列。没有生产、联网、SMTP或全量测试。独立审核和下一真实heartbeat调用仍需分别留存真实回执。
 
 Focused tests cover classification, Retry-After, budget preservation, unknown effects, Git evidence, dependency events, cached-event replay prevention, real local queue persistence, and original-queue preservation on write failure. No production, network, SMTP or full-suite execution. Independent review and a future genuine heartbeat invocation each require separate actual receipts.
+
+## 独审修复 / Independent review corrections
+
+有 lease_cycle_id 却缺失对应 cycles 凭证时保持阻塞，记录只读对账下一动作；依赖事件不能解除该阻塞，即使已有同 ID reconciliation 字段。总控必须先恢复可核验周期凭证。
+A lease with no matching cycle receipt stays blocked with an explicit read-only reconciliation action. Dependency events cannot clear it, even with a matching reconciliation ID; the supervisor must first restore a verifiable cycle receipt.
+
+GITHUB_CONFLICT 仅允许新核验 CONFLICT_RESOLVED 事件解除只读恢复计划的 BLOCKED 状态；网络恢复或授权更新不能替代冲突解除。register/apply/rollback/github-push 仍要求 status 对账，不自动重放。
+Only newly verified CONFLICT_RESOLVED evidence can clear BLOCKED read-only recovery for GITHUB_CONFLICT. Network or authorization updates cannot substitute. Mutations still require status reconciliation and never replay automatically.

@@ -115,6 +115,26 @@ class QueuePolicyTests(unittest.TestCase):
         t=task();t['depends_on'].append('REVIEW_APPROVED')
         self.assertEqual(plan_queue({'tasks':[t]},events=[event()],now=NOW)['tasks'][0]['status'],'blocked_external')
 
+    def test_missing_lease_receipt_requires_read_only_reconciliation(self):
+        for cycles in [[], [{'cycle_id':'different','status':'completed'}]]:
+            t=task(lease_cycle_id='missing',reconciliation={'lease_cycle_id':'missing'})
+            original={'tasks':[t],'cycles':cycles}
+            result=plan_queue(original,events=[event()],now=NOW)['tasks'][0]
+            self.assertEqual(result['status'],'blocked_external')
+            self.assertEqual(result['dispatch_blocked_reason'],'LEASE_RECEIPT_MISSING_RECONCILIATION_REQUIRED')
+            self.assertIn('Read-only',result['next_action'])
+            self.assertNotIn('dispatch_blocked_reason',original['tasks'][0])
+
+    def test_conflict_resolution_only_reactivates_matching_read_only_recovery(self):
+        for operation in ['github-fetch','apply','github-push']:
+            retry=recovery_plan(operation=operation,error_code='GITHUB_CONFLICT',attempt_count=1,now=NOW)
+            state={'tasks':[task(blocked_reason='GITHUB_CONFLICT',network_recovery=retry)]}
+            for kind in ['NETWORK_RESTORED','AUTHORIZATION_UPDATED']:
+                self.assertEqual(plan_queue(state,events=[event(kind)],now=NOW)['tasks'][0]['status'],'blocked_external')
+            result=plan_queue(state,events=[event('CONFLICT_RESOLVED')],now=NOW)['tasks'][0]
+            self.assertEqual(result['status'],'queued' if operation=='github-fetch' else 'blocked_external')
+            self.assertFalse(result['network_recovery']['automatic_replay'])
+
     def test_due_retry_preserves_budget_and_exhaustion_needs_new_event(self):
         retry=recovery_plan(operation='runtime',error_code='DNS_FAILURE',attempt_count=2,now=NOW-timedelta(minutes=2),jitter=0)
         t=task(network_recovery=retry,satisfied_dependencies=['WB_NEW_EVIDENCE'])

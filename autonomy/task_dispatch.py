@@ -71,6 +71,11 @@ def plan_queue(state, *, events=(), now):
     for task in result['tasks']:
         lease = task.get('lease_cycle_id')
         prior = next((cycle for cycle in result.get('cycles', []) if cycle.get('cycle_id') == lease), None) if lease else None
+        if lease and prior is None:
+            task.update(needs_reassessment=True,
+                dispatch_blocked_reason='LEASE_RECEIPT_MISSING_RECONCILIATION_REQUIRED',
+                next_action='Read-only reconcile missing cycle receipt before dependency reactivation / 先只读对账缺失周期凭证，再重评依赖。')
+            continue
         unreconciled_lease = (prior and prior.get('status') in {'running', 'failed', 'interrupted', 'unknown'}
                              and task.get('reconciliation', {}).get('lease_cycle_id') != lease)
         if task.get('outcome_unknown') or task.get('blocked_reason') in {
@@ -109,7 +114,8 @@ def plan_queue(state, *, events=(), now):
             if retry.get('operation') not in READ_ONLY_OPERATIONS or retry.get('action') == 'RECONCILE_STATUS':
                 continue
             if retry.get('action') == 'BLOCKED' and not (
-                reason == 'AUTH_FAILED' and 'AUTHORIZATION_UPDATED' in new_types):
+                (reason == 'AUTH_FAILED' and 'AUTHORIZATION_UPDATED' in new_types) or
+                (reason == 'GITHUB_CONFLICT' and 'CONFLICT_RESOLVED' in new_types)):
                 continue
             due = task.get('next_retry_at') or retry.get('next_retry_at')
             if due and _stamp(due) > now:
