@@ -1,0 +1,234 @@
+{
+  "http_status": 200,
+  "response": {
+    "schema": "rokt.city.v1",
+    "generated_at": "2026-10-23T00:58:00+08:00",
+    "business_timezone": "Asia/Shanghai (+08)",
+    "source": "bd_leads.db:retail_city_queue + lead_discovery_query_state + lead_discovery_results + provider_request_audit + system_config; completion rules from production retail_city_queue.city_completion_checks",
+    "ruleset": {
+      "provider": "browser_maps",
+      "module": "retail_city_queue.py",
+      "module_fingerprint": {
+        "sha256": "27d60fa77644f15b786bfc61390d3671d4a3ee50cc8ae6e9e0fa42b19e820146",
+        "bytes": 20548,
+        "mtime": "2026-10-22T23:18:34.830170+08:00"
+      },
+      "discovery_fingerprint": {
+        "sha256": "abc2f682cbff4a8b6781997bc2a08ac00f5e41289d67ce02b1c7afa519ad6770",
+        "bytes": 113803,
+        "mtime": "2026-10-22T23:18:34.806701+08:00"
+      },
+      "import_error": null,
+      "evaluation_error": null
+    },
+    "city": {
+      "city_id": 23,
+      "city": "Lake Placid",
+      "state": "NY",
+      "city_status": "pending",
+      "priority": 4,
+      "started_at": null,
+      "completed_at": null,
+      "completion_reason": null,
+      "pages_processed": 0,
+      "results_seen": 0,
+      "consecutive_pages_without_new_place": 0,
+      "resume_state": null,
+      "web_directory_status": null,
+      "last_success_at": null,
+      "last_error_class": "none"
+    },
+    "active_discovery_state": "NY",
+    "active_city_state_config": "TN",
+    "query_families": {
+      "total": 20,
+      "completed": 0,
+      "remaining": 20,
+      "detail": [
+        {
+          "query_family": "toy store",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "board game store",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "game store",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "tabletop game store",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "gift shop",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "independent gift store",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "museum gift shop",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "bookstore",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "independent bookstore",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "comic book store",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "hobby store",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "educational supply store",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "teacher supply store",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "children's store",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "family game store",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "visitor center gift shop",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "tourist gift shop",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "specialty retailer",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "puzzle store",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        },
+        {
+          "query_family": "card game store",
+          "status": "NOT_STARTED",
+          "pages_processed": null,
+          "completed_at": null
+        }
+      ]
+    },
+    "records": {
+      "by_validation_status": {},
+      "total": 0,
+      "pending_states_total": 0,
+      "website_lookup_pending": 0,
+      "network_retry_pending": 0,
+      "retry_exhausted": 0,
+      "next_retry_due_at": null
+    },
+    "pending_items": [],
+    "blocking_attribution": {
+      "staged_pending_refs": [],
+      "retryable_manual_review_refs": [],
+      "linked_backlog_retry_refs": [],
+      "auto_recovery_deferred_refs": [],
+      "candidate_rows_scanned": 0,
+      "evaluator": "production retail_city_queue helpers (_manual_review_retryable / _linked_backlog_retryable / automatic_recovery_deferred)",
+      "available": true,
+      "retryable_manual_review_refs_count": 0,
+      "linked_backlog_retry_refs_count": 0,
+      "auto_recovery_deferred_refs_count": 0,
+      "staged_pending_refs_count": 0
+    },
+    "completion_checks": {
+      "all_candidates_classified": true,
+      "all_query_families": false,
+      "all_sources_or_reasons": false,
+      "last_three_batches_empty": false,
+      "no_unprocessed_candidates": true,
+      "official_site_recheck": true,
+      "pagination_complete": false,
+      "review_recovery": true,
+      "two_empty_pages": false
+    },
+    "completion_checks_all_met": false,
+    "next_city": {
+      "city_id": 24,
+      "city": "Oneonta",
+      "status": "pending",
+      "priority": 5,
+      "activatable": true
+    },
+    "provider_audit": {
+      "requests": 0,
+      "last_requested_at": null
+    },
+    "stage_events": {
+      "available": false,
+      "reason": "NOT_RECORDED: the orchestrator persists no per-run stage event log. Durable proxies only: lead_discovery_query_state (discovery), provider_request_audit (provider calls), retail_city_queue counters. No stage trace is reconstructed from source code.",
+      "observable_proxies": {
+        "entered_stage_inventory": "job_runs.stage='inventory'",
+        "resolved_active_discovery_state": "NY",
+        "activate_next_city": "retail_city_queue.started_at of the active row",
+        "run_places_batch": "provider_request_audit rows dated inside the run window",
+        "run_staging_postprocess": "lead_discovery_results.validation_status transitions (not timestamped per run)",
+        "city_completion_check": "completion_checks (current truth, not historical)"
+      }
+    },
+    "operation": "city",
+    "verdict": "ok"
+  },
+  "observed_at": "2026-10-22T16:58:00.511414+00:00",
+  "summary_zh": "正式受限通道真实响应；传输失败不推断生产状态。",
+  "summary_en": "Live restricted-channel response; transport failures do not establish production state."
+}

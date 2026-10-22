@@ -1,0 +1,13 @@
+{
+  "schema": "rokt.dependency-dispatch.v1",
+  "observed_at": "2026-10-22T17:00:50.480489+00:00",
+  "changes": [
+    {
+      "task_id": "B-natural-stage-evidence-consume-27b410bf",
+      "from_status": "blocked_external",
+      "to_status": "queued"
+    }
+  ],
+  "summary_zh": "仅重评已验证依赖，不执行任务或生产副作用。",
+  "summary_en": "Reevaluate verified dependencies only; execute no task or production effect."
+}

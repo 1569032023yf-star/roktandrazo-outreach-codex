@@ -1,0 +1,179 @@
+{
+  "task_id": "A-NATURAL-RUN-20261023-27b410bf",
+  "observed_at": "2026-10-23T00:57:37+08:00",
+  "run_id": "inventory:2026-10-22:27b410bf",
+  "trigger_id": "automation-1784775229336",
+  "process_started_at": "2026-10-23T00:45:34+08:00",
+  "process_finished_at": "2026-10-23T00:52:24+08:00",
+  "business_date": "2026-10-22",
+  "status": "completed",
+  "stage_trace_verified": true,
+  "event_count": 16,
+  "trace": {
+    "schema": "rokt.inventory_stage_trace.v1",
+    "events": [
+      {
+        "seq": 1,
+        "phase": "inventory",
+        "outcome": "enter",
+        "at": "2026-10-22T16:45:34.271439+00:00"
+      },
+      {
+        "seq": 2,
+        "phase": "state",
+        "outcome": "enter",
+        "at": "2026-10-22T16:45:34.342078+00:00"
+      },
+      {
+        "seq": 3,
+        "phase": "state",
+        "outcome": "complete",
+        "at": "2026-10-22T16:45:34.356008+00:00"
+      },
+      {
+        "seq": 4,
+        "phase": "city",
+        "outcome": "enter",
+        "at": "2026-10-22T16:48:24.126138+00:00"
+      },
+      {
+        "seq": 5,
+        "phase": "city",
+        "outcome": "complete",
+        "at": "2026-10-22T16:48:24.162902+00:00",
+        "city_id": 22
+      },
+      {
+        "seq": 6,
+        "phase": "places",
+        "outcome": "enter",
+        "at": "2026-10-22T16:48:24.174756+00:00",
+        "city_id": 22
+      },
+      {
+        "seq": 7,
+        "phase": "places",
+        "outcome": "complete",
+        "at": "2026-10-22T16:48:24.182423+00:00",
+        "city_id": 22,
+        "count": 0
+      },
+      {
+        "seq": 8,
+        "phase": "website",
+        "outcome": "enter",
+        "at": "2026-10-22T16:48:24.190117+00:00",
+        "city_id": 22
+      },
+      {
+        "seq": 9,
+        "phase": "website",
+        "outcome": "complete",
+        "at": "2026-10-22T16:49:09.228976+00:00",
+        "city_id": 22,
+        "count": 1
+      },
+      {
+        "seq": 10,
+        "phase": "postprocess",
+        "outcome": "enter",
+        "at": "2026-10-22T16:49:09.237427+00:00",
+        "city_id": 22
+      },
+      {
+        "seq": 11,
+        "phase": "postprocess",
+        "outcome": "complete",
+        "at": "2026-10-22T16:49:09.245859+00:00",
+        "city_id": 22,
+        "count": 0
+      },
+      {
+        "seq": 12,
+        "phase": "linked",
+        "outcome": "enter",
+        "at": "2026-10-22T16:49:09.253051+00:00",
+        "city_id": 22
+      },
+      {
+        "seq": 13,
+        "phase": "linked",
+        "outcome": "complete",
+        "at": "2026-10-22T16:49:34.984100+00:00",
+        "city_id": 22,
+        "count": 1
+      },
+      {
+        "seq": 14,
+        "phase": "completion",
+        "outcome": "enter",
+        "at": "2026-10-22T16:49:34.995347+00:00",
+        "city_id": 22
+      },
+      {
+        "seq": 15,
+        "phase": "completion",
+        "outcome": "complete",
+        "at": "2026-10-22T16:49:35.013103+00:00",
+        "city_id": 22
+      },
+      {
+        "seq": 16,
+        "phase": "inventory",
+        "outcome": "complete",
+        "at": "2026-10-22T16:52:24.841628+00:00",
+        "count": 56
+      }
+    ]
+  },
+  "cooperstown_closed": true,
+  "cooperstown_completed_at": "2026-10-22T16:49:35.010203+00:00",
+  "completion_checks": {
+    "all_candidates_classified": true,
+    "all_query_families": true,
+    "all_sources_or_reasons": true,
+    "last_three_batches_empty": true,
+    "no_unprocessed_candidates": true,
+    "official_site_recheck": true,
+    "pagination_complete": true,
+    "review_recovery": true,
+    "two_empty_pages": true
+  },
+  "auto_recovery_deferred_refs": [
+    "ldr:571",
+    "ldr:556"
+  ],
+  "lake_placid_active": false,
+  "lake_placid_provider_requests": "UNKNOWN_NO_RECORD",
+  "next_original_inventory_at": "2026-10-23T06:54:25.136000+08:00",
+  "safe": {
+    "current_safe": "UNKNOWN",
+    "validation_error": "SAFE_NOT_AVAILABLE",
+    "raw_readings": [
+      55,
+      56
+    ],
+    "safe_net_growth_24h": "UNKNOWN",
+    "safe_net_growth_7d": "UNKNOWN"
+  },
+  "global_inventory_uniqueness": "UNKNOWN",
+  "full_city_business_acceptance": false,
+  "full_workstreams_accepted": [],
+  "source_order_evidence": "bd_orchestrator: completion at end of this run; activation at beginning of next canonical run.",
+  "limitations_zh": [
+    "桥接旧current_step说明与stage_events=false已过时；直接读取真实JSON轨迹，不改bridge。",
+    "run business_date保持2026-10-22；实际本地启动2026-10-23，不改写原记录。",
+    "runtime running_inventory_now=6是未完成历史行；正式2小时运行中为0，不能当6个活跃进程。",
+    "今日锁键不存在不能证明昨日业务键已释放；不宣称全局锁验收。",
+    "延后记录按生产完成判定可隔离，但受限路由不暴露归档原文与SHA，不能断言精确归档内容。"
+  ],
+  "limitations_en": [
+    "Bridge current_step prose and stage_events=false are stale; consume actual JSON trace without changing bridge.",
+    "Preserve recorded business_date2026-10-22 despite local start on2026-10-23.",
+    "Runtime running_inventory_now6 counts unfinished historical rows; formal2h running count0 is not six live processes.",
+    "Absent current-day lock key does not prove prior-business-day lock release; no global lock acceptance.",
+    "Deferred rows satisfy production completion rules but restricted routes do not expose raw archives/hashes; exact archive content is unproven."
+  ],
+  "summary_zh": "原计划自然运行首次验证16条完整轨迹，Cooperstown正式结案；下一城与业务新增尚待后续原计划运行。",
+  "summary_en": "Original scheduled run verifies16 complete trace events and Cooperstown closure; next-city progression and business growth await subsequent original runs."
+}

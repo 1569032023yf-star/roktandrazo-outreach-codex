@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-22T15:25:56.899073+00:00",
+  "updated_at": "2026-10-22T17:00:12.284277+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -47,19 +47,6 @@
       "satisfied_dependencies": []
     },
     {
-      "id": "A-4a8v-natural-stage-trace-acceptance",
-      "workstream": "A",
-      "role": "app_heartbeat",
-      "status": "awaiting_natural_run",
-      "operation_id": "op-20261022-191501-18edf5",
-      "not_before": "2026-10-23T00:42:26+08:00",
-      "instruction_zh": "仅固定只读接口观察原计划新run；不手动采集，不重apply。",
-      "instruction_en": "Observe the original Inventory scheduled 2026-10-23T00:42:26+08:00 via fixed runtime/city/provider/scheduler/SAFE routes; require a new run after apply and real stage events. Never manually trigger discovery or reapply either release.",
-      "execution_mode": "app_heartbeat",
-      "dependency_evidence": {},
-      "satisfied_dependencies": []
-    },
-    {
       "id": "A-4a8w-natural-city-acceptance",
       "status": "awaiting_natural_run",
       "workstream": "A",
@@ -68,9 +55,9 @@
       "parent_goal": "BD_FULL_PRODUCTION",
       "release_id": "phase4a8w-city-legacy-ledger-20261022",
       "operation_id": "op-20261022-231834-15aa6f",
-      "next_retry_at": "2026-10-23T00:42:26+08:00",
+      "next_retry_at": "2026-10-23T06:54:25.136000+08:00",
       "blocked_reason": "WAITING_ORIGINAL_NATURAL_INVENTORY",
-      "next_action": "Observe original Inventory after2026-10-23T00:42:26+08; validate real stage trace, legacy classification and city/provider progression; do not manually invoke collection.",
+      "next_action": "Observe next original Inventory2026-10-23T06:54:25+08 for Lake Placid activation and provider requests; no manual collection or reapply.",
       "branch": "codex/autonomous-bd-supervisor",
       "current_commit": "7eb46c4f2399e368f8db3240a27fac7d9ceb46d5",
       "known_side_effects": [
@@ -79,7 +66,7 @@
       "task_id": "A-4a8w-natural-city-acceptance",
       "worktree": null,
       "input_commit": null,
-      "last_verified_step": null,
+      "last_verified_step": "COOPERSTOWN_CLOSED_NEXT_CITY_PENDING",
       "test_receipt": null,
       "review_receipt": null,
       "completion_evidence": null,
@@ -92,42 +79,57 @@
   "filter": "tasks excludes completed; recent_completed includes this acceleration integration",
   "recent_completed": [
     {
-      "id": "C-acceleration-reviewed-integration-20261022",
+      "id": "A-4a8v-natural-stage-trace-acceptance",
+      "workstream": "A",
+      "role": "app_heartbeat",
       "status": "completed",
+      "operation_id": "op-20261022-191501-18edf5",
+      "not_before": "2026-10-23T00:42:26+08:00",
+      "instruction_zh": "仅固定只读接口观察原计划新run；不手动采集，不重apply。",
+      "instruction_en": "Observe the original Inventory scheduled 2026-10-23T00:42:26+08:00 via fixed runtime/city/provider/scheduler/SAFE routes; require a new run after apply and real stage events. Never manually trigger discovery or reapply either release.",
+      "execution_mode": "app_heartbeat",
+      "dependency_evidence": {},
+      "satisfied_dependencies": [],
+      "completion_evidence": "evidence/natural_20261023/NATURAL_ACCEPTANCE.json"
+    },
+    {
+      "id": "A-natural-run-consume-27b410bf",
+      "role": "app_heartbeat",
+      "status": "completed",
+      "depends_on": [
+        "ORIGINAL_INVENTORY_RUN_RECORDED"
+      ],
+      "completion_evidence": "evidence/natural_20261023/NATURAL_ACCEPTANCE.json",
+      "attempts": 1,
+      "dependency_evidence": {},
+      "satisfied_dependencies": []
+    },
+    {
+      "id": "B-natural-stage-evidence-consume-27b410bf",
+      "status": "completed",
+      "role": "app_heartbeat",
+      "depends_on": [
+        "ORIGINAL_NATURAL_STAGE_EVIDENCE"
+      ],
       "attempts": 0,
-      "parent_goal": "BD_FULL_PRODUCTION",
-      "branch": "codex/autonomous-bd-supervisor",
-      "current_commit": "7eb46c4f2399e368f8db3240a27fac7d9ceb46d5",
-      "next_action": "Integrate reviewed modules and run targeted regressions",
-      "known_side_effects": [],
-      "task_id": "C-acceleration-reviewed-integration-20261022",
-      "worktree": null,
-      "input_commit": null,
-      "last_verified_step": "REVIEW_EVENT_REACTIVATED_AND_27_INTEGRATION_TESTS_PASS",
-      "test_receipt": null,
-      "review_receipt": null,
-      "release_id": null,
-      "operation_id": null,
-      "next_retry_at": null,
-      "blocked_reason": null,
       "dependency_evidence": {
-        "ACCELERATION_REVIEW_APPROVED": {
-          "type": "REVIEW_APPROVED",
-          "evidence_sha256": "af0495d1674582b98bb7240382741cdf7a9551ba95b1a26217454885a26e8083",
-          "observed_at": "2026-10-22T15:23:47.708187+00:00",
+        "ORIGINAL_NATURAL_STAGE_EVIDENCE": {
+          "type": "INVENTORY_RUN_RECORDED",
+          "evidence_sha256": "2098ff41201a241fd4352feb4b4dec3beda543a0251ec0b10f5ae7dece636478",
+          "observed_at": "2026-10-22T17:00:50.480489+00:00",
           "satisfies": [
-            "ACCELERATION_REVIEW_APPROVED"
+            "ORIGINAL_NATURAL_STAGE_EVIDENCE"
           ]
         }
       },
       "satisfied_dependencies": [
-        "ACCELERATION_REVIEW_APPROVED"
-      ],
-      "depends_on": [
-        "ACCELERATION_REVIEW_APPROVED"
+        "ORIGINAL_NATURAL_STAGE_EVIDENCE"
       ],
       "needs_reassessment": false,
-      "completion_evidence": "evidence/acceleration_20261022/CANONICAL_QUEUE_DISPATCH.json"
+      "blocked_reason": null,
+      "next_retry_at": null,
+      "last_verified_step": "NATURAL_STAGE_EVIDENCE_CONSUMED",
+      "completion_evidence": "evidence/natural_20261023/INDEPENDENT_REVIEW.json"
     }
   ]
 }

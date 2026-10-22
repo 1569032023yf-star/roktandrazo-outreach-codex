@@ -1,3 +1,20 @@
+# 自然运行核验 / Natural run verification
+
+原计划自然运行首次验证16条完整轨迹，Cooperstown正式结案；下一城与业务新增尚待后续原计划运行。
+
+Original scheduled run verifies16 complete trace events and Cooperstown closure; next-city progression and business growth await subsequent original runs.
+
+Run: inventory:2026-10-22:27b410bf; 00:45:34–00:52:24+08; event_count=16. Cooperstown completed00:49:35+08. Lake Placid=pending; provider=UNKNOWN_NO_RECORD; SAFE=UNKNOWN(55/56 disagree); SMTP=0.
+
+下一动作 / Next: Observe next original Inventory2026-10-23T06:54:25+08 for Lake Placid activation and provider requests; no manual collection or reapply.
+
+中文：桥接旧说明不覆盖真实JSON事件；今日无锁键不证明昨日业务键已释放，不计完整无人值守周期。
+
+English: Stale bridge prose does not override actual JSON events. No current-day lock key does not prove prior-business-day lock release. No full unattended cycle credited.
+
+---
+历史记录 / Historical record
+
 <!-- ACCELERATION_CURRENT_20261022 -->
 # 自主加速状态 / Autonomous acceleration status
 
@@ -187,7 +204,7 @@ Cycle: ecc230f4-a4fc-4cc5-8737-1481a3643ba9; evidence: `autonomy/runtime/city_ob
 <!-- BD_LIVE_OBSERVATION_BEGIN -->
 ## 自动业务观察 / Automated business observation
 
-观测时间 / Observed at: 2026-10-22T23:19:12+08:00
+观测时间 / Observed at: 2026-10-23T00:57:37+08:00
 来源 / Source: authenticated rokt-deploy-channel v2 telemetry; freshness <= 1h
 
 历史累计、最近运行actual和当前SAFE不是同一指标；缺少阶段/资格合同的字段保持UNKNOWN。
@@ -199,13 +216,13 @@ Historical totals, the latest run actual and current SAFE are distinct. Missing 
 | NEW_FIRST_PARTY_EMAILS_24H | UNKNOWN |
 | SAFE_TOTAL_LATEST | UNKNOWN |
 | SAFE_NET_GROWTH_7D | UNKNOWN |
-| ACTIVE_CITY | Cooperstown |
+| ACTIVE_CITY | UNKNOWN |
 | HISTORICAL_LEADS | 1213 |
 | HISTORICAL_LEADS_WITH_EMAIL | 652 |
 | PROVIDER_REQUESTS_24H | 0 |
 | SENDS_TODAY | 0 |
 | SMTP_OBSERVED | 0 |
-| LAST_INVENTORY_RUN | inventory:2026-10-22:bc1c588b |
+| LAST_INVENTORY_RUN | inventory:2026-10-22:27b410bf |
 | GLOBAL_INVENTORY_UNIQUENESS | UNKNOWN |
 
 ## 工作线快照 / Workstream snapshot
@@ -213,7 +230,7 @@ Historical totals, the latest run actual and current SAFE are distinct. Missing 
 - A: 已部署；自然run completed但城市仍active，生产业务验收未通过。 / Deployed; a natural run completed but the city remains active, so business acceptance has not passed.
 - B: 品牌25文件已整合，177离线测试及独立静态审核通过；磁盘故障已恢复，生产验收仍未完成 / 25 brand files integrated, 177 offline tests and independent static review passed; disk failure recovered, production acceptance remains incomplete
 - C: 四套V6定向58项通过；可比全量563项560通过、3项与基线相同；整合后86项加4身份门禁测试通过；QA未登记未发送 / Four V6 variants passed 58 targeted tests; comparable full suite 563/560 passed with three baseline-identical issues; integrated 86 tests plus four identity-gate tests passed; QA unregistered and unsent
-- D: R2/R3/R4限定修复已审核；正式通道及SAFE快照接入，4A8V已部署，完整无人值守验收尚未完成。 / R2/R3/R4 scoped repairs reviewed; official channel and SAFE snapshot connected; 4A8V applied; full unattended acceptance remains incomplete.
+- D: 网络恢复及事件依赖模块已独审集成；4A8W已受控部署，SAFE双读不一致保持UNKNOWN，完整无人值守验收尚未完成。 / Reviewed network/dependency modules integrated;4A8W deployed through gates; inconsistent SAFE readings remain UNKNOWN; full unattended acceptance pending.
 
 未执行与风险：未据库存56确认SAFE；未确认完整阶段、全局调度唯一性或持续无人值守。
 Not executed / risks: inventory 56 does not confirm SAFE; full stage telemetry, global scheduler uniqueness and sustained unattended operation remain unverified.

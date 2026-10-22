@@ -1,3 +1,20 @@
+# 自然运行核验 / Natural run verification
+
+原计划自然运行首次验证16条完整轨迹，Cooperstown正式结案；下一城与业务新增尚待后续原计划运行。
+
+Original scheduled run verifies16 complete trace events and Cooperstown closure; next-city progression and business growth await subsequent original runs.
+
+Run: inventory:2026-10-22:27b410bf; 00:45:34–00:52:24+08; event_count=16. Cooperstown completed00:49:35+08. Lake Placid=pending; provider=UNKNOWN_NO_RECORD; SAFE=UNKNOWN(55/56 disagree); SMTP=0.
+
+下一动作 / Next: Observe next original Inventory2026-10-23T06:54:25+08 for Lake Placid activation and provider requests; no manual collection or reapply.
+
+中文：桥接旧说明不覆盖真实JSON事件；今日无锁键不证明昨日业务键已释放，不计完整无人值守周期。
+
+English: Stale bridge prose does not override actual JSON events. No current-day lock key does not prove prior-business-day lock release. No full unattended cycle credited.
+
+---
+历史记录 / Historical record
+
 <!-- ACCELERATION_CURRENT_20261022 -->
 # 自主加速状态 / Autonomous acceleration status
 
