@@ -1,23 +1,23 @@
 {
   "schema": "rokt.acceleration-pipeline-tests.v1",
   "task_id": "AUTONOMY-NETWORK-DEPENDENCY-RECOVERY",
-  "generated_at": "2026-10-22T15:06:27.469033+00:00",
+  "generated_at": "2026-10-22T15:12:31.635965+00:00",
   "input_commit": "de11beb",
   "branch": "codex/acceleration-pipeline-20261022",
-  "tests": 19,
+  "tests": 21,
   "passed": true,
-  "elapsed_seconds": 0.267,
+  "elapsed_seconds": 0.25,
   "source_sha256": {
     "autonomy/network_recovery.py": "7197b7b8cfa6fd3a54d5462bd4f38eab50900e0d5a6d1b3ab6acb62db8161ae8",
-    "autonomy/task_dispatch.py": "e1ec2731cbc8d44c894adace37f76b841b8b6008ed81e60e35c2f4fb0592d2aa",
-    "tests/test_acceleration_pipeline.py": "1e6050fd875e64700c52c6c2ab9ef9f5bfb4288dae002c9593097ec11c7cf21a",
-    "docs/AUTONOMOUS_NETWORK_AND_DISPATCH.md": "7182c7bd2826a9c3510f3d4556c53517401b1e156e93186ba88cc789ee120057"
+    "autonomy/task_dispatch.py": "1e9b0d4b6e8f9aab189074b2bdbab48bec982f7c47877476d039d76d0ff343d7",
+    "tests/test_acceleration_pipeline.py": "4fdd54d8fca1bc3314235626a1b0dc016dbdc9d5a913983ab800d75f90221bf5",
+    "docs/AUTONOMOUS_NETWORK_AND_DISPATCH.md": "8c8600c7e4eb38f5da77c050928a2a19cc9aa45329a71594084f8ea7ba7ab193"
   },
   "production_mutations": 0,
   "network_requests": 0,
   "smtp_calls": 0,
   "full_unattended_cycle_acceptance": false,
-  "independent_review": "PENDING",
-  "summary_zh": "19项离线定向测试通过；真实本地canonical队列持久化通过，无联网或生产副作用；独立审核及无人值守验收待执行。",
-  "summary_en": "19 focused offline tests pass, including actual local canonical queue persistence. No network or production effects; independent review and unattended acceptance remain pending."
+  "independent_review": "RECHECK_PENDING",
+  "summary_zh": "21项离线定向测试通过，包括缺失lease凭证闭锁及只读冲突恢复；无联网或生产副作用；独立复核和无人值守验收待执行。",
+  "summary_en": "21 focused offline tests pass, including missing lease receipt fail-closed behavior and read-only conflict recovery. No network or production effects; independent recheck and unattended acceptance pending."
 }

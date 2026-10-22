@@ -6,11 +6,13 @@ test_git_success_requires_exact_remote_target (tests.test_acceleration_pipeline.
 test_invalid_inputs_fail_closed (tests.test_acceleration_pipeline.NetworkPolicyTests.test_invalid_inputs_fail_closed) ... ok
 test_retry_after_seconds_and_http_date_not_shortened (tests.test_acceleration_pipeline.NetworkPolicyTests.test_retry_after_seconds_and_http_date_not_shortened) ... ok
 test_checkpoint_shape_and_unknowns (tests.test_acceleration_pipeline.QueuePolicyTests.test_checkpoint_shape_and_unknowns) ... ok
+test_conflict_resolution_only_reactivates_matching_read_only_recovery (tests.test_acceleration_pipeline.QueuePolicyTests.test_conflict_resolution_only_reactivates_matching_read_only_recovery) ... ok
 test_due_retry_preserves_budget_and_exhaustion_needs_new_event (tests.test_acceleration_pipeline.QueuePolicyTests.test_due_retry_preserves_budget_and_exhaustion_needs_new_event) ... ok
 test_event_validation_and_out_of_order (tests.test_acceleration_pipeline.QueuePolicyTests.test_event_validation_and_out_of_order) ... ok
 test_failed_atomic_write_keeps_original_queue (tests.test_acceleration_pipeline.QueuePolicyTests.test_failed_atomic_write_keeps_original_queue) ... ok
 test_future_retry_not_eligible_and_mutation_never_scheduled (tests.test_acceleration_pipeline.QueuePolicyTests.test_future_retry_not_eligible_and_mutation_never_scheduled) ... ok
 test_legacy_interrupted_lease_without_flag_not_reactivated (tests.test_acceleration_pipeline.QueuePolicyTests.test_legacy_interrupted_lease_without_flag_not_reactivated) ... ok
+test_missing_lease_receipt_requires_read_only_reconciliation (tests.test_acceleration_pipeline.QueuePolicyTests.test_missing_lease_receipt_requires_read_only_reconciliation) ... ok
 test_no_event_and_cached_event_do_not_reactivate (tests.test_acceleration_pipeline.QueuePolicyTests.test_no_event_and_cached_event_do_not_reactivate) ... ok
 test_partial_dependencies_not_runnable (tests.test_acceleration_pipeline.QueuePolicyTests.test_partial_dependencies_not_runnable) ... ok
 test_policy_cannot_be_cleared_by_network_or_auth_event (tests.test_acceleration_pipeline.QueuePolicyTests.test_policy_cannot_be_cleared_by_network_or_auth_event) ... ok
@@ -19,6 +21,6 @@ test_unknown_side_effect_never_reactivated (tests.test_acceleration_pipeline.Que
 test_verified_event_reactivates_stale_blocked (tests.test_acceleration_pipeline.QueuePolicyTests.test_verified_event_reactivates_stale_blocked) ... ok
 
 ----------------------------------------------------------------------
-Ran 19 tests in 0.065s
+Ran 21 tests in 0.050s
 
 OK
