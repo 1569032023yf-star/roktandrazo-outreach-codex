@@ -204,7 +204,7 @@ Cycle: ecc230f4-a4fc-4cc5-8737-1481a3643ba9; evidence: `autonomy/runtime/city_ob
 <!-- BD_LIVE_OBSERVATION_BEGIN -->
 ## 自动业务观察 / Automated business observation
 
-观测时间 / Observed at: 2026-10-23T03:01:36+08:00
+观测时间 / Observed at: 2026-10-23T05:05:14+08:00
 来源 / Source: authenticated rokt-deploy-channel v2 telemetry; freshness <= 1h
 
 历史累计、最近运行actual和当前SAFE不是同一指标；缺少阶段/资格合同的字段保持UNKNOWN。

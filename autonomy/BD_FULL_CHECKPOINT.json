@@ -675,12 +675,12 @@
     "summary_en": "Original scheduled run verifies16 complete trace events and Cooperstown closure; next-city progression and business growth await subsequent original runs."
   },
   "last_read_only_reconciliation": {
-    "task_id": "BD-FULL-HEARTBEAT-20261022T190123",
+    "task_id": "BD-FULL-HEARTBEAT-20261022T210455",
     "source": "codex_heartbeat",
-    "heartbeat_trigger": "2026-10-22T19:01:23.497Z",
-    "observed_at": "2026-10-22T19:04:31.367064+00:00",
+    "heartbeat_trigger": "2026-10-22T21:04:55.022Z",
+    "observed_at": "2026-10-22T21:06:32.632415+00:00",
     "branch": "codex/autonomous-bd-supervisor",
-    "input_commit": "a38defa3454e431b45eb4960f6b4807283bda01d",
+    "input_commit": "bf206ce1c16a19e60bc9bee871b33911b4ec0b5f",
     "initial_dirty": false,
     "tests": "PASS: official health/status/telemetry/runtime/city/safe reconciliation; unchanged16-event trace; SMTP0",
     "reviewer": "Prior independent review retained for unchanged source and natural-run evidence; no new engineering change",
@@ -698,7 +698,18 @@
     "scheduler_global_unique": "UNKNOWN",
     "lock_scope": "Today key absent does not prove previous business-day key released",
     "next_action": "2026-10-23T06:54:25.136000+08:00",
-    "summary_zh": "正式只读复核无业务变化；等待原计划06:54运行，未手动采集、重发部署或启用SMTP。",
-    "summary_en": "Official read-only reconciliation finds no business change; await the original06:54 run. No manual discovery, repeated deployment or SMTP enablement."
+    "summary_zh": "05:05正式只读对账无业务变化；WB无更新，等待06:54原计划。SAFE仍UNKNOWN，未新增完整无人值守验收。",
+    "summary_en": "05:05 official read-only reconciliation finds no business change or WB update. Await the original06:54 run; SAFE remains UNKNOWN; no complete unattended acceptance added.",
+    "workbuddy_main_commit": "cee2844a1ff2fa2ad03cc5e7490766053092f410",
+    "handoff_change": false,
+    "missing_historical_startup_files": [
+      "CURRENT_STATUS.md"
+    ],
+    "evidence_sha256": {
+      "lake.json": "49ec120aef52716eaf65fbb8a9ad7487ffc068d49cbefc146a5870491a322fb1",
+      "runtime.json": "e3bb6f6e25a343d66a37502dab7e429448cee831fa44bd8bc89f55857cf247d8",
+      "safe.json": "17d11843686e0ed23f2fbe16c4ed38d7446678857ead29da3abb1b0aa020f90b",
+      "status.json": "8b4eddd7e9b5d7bc3ebdd2c9ae534fd84885d0a6f42a17d3ee66845026de9076"
+    }
   }
 }
