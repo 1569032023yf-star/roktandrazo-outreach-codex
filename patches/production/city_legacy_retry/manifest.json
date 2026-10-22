@@ -1,11 +1,28 @@
 {
-  "discovery/discovery_service.py": {
-    "before_sha256": "415fbe0cc3323bf45b389f84719c2ee6b52b9ca3d481da6d2f7f70b1c396bd8c",
-    "after_sha256": "abc2f682cbff4a8b6781997bc2a08ac00f5e41289d67ce02b1c7afa519ad6770"
-  },
-  "retail_city_queue.py": {
-    "before_sha256": "02d04313de82464f0f6933df9e7a72f8675ccb6e7ca63b14859751db3e80a6b2",
-    "after_sha256": "27d60fa77644f15b786bfc61390d3671d4a3ee50cc8ae6e9e0fa42b19e820146"
-  },
-  "patch_sha256": "f15887a0356b0f7e3617e939ae2efbaee5f99cceebd327eef6da2d29e0ffa55a"
+  "schema_version": 2,
+  "release_id": "phase4a8w-city-legacy-ledger-20261022",
+  "source_commit": "e9a008bb922ff1e284afa01e1c646c5bd98b84a5",
+  "generated_at": "2026-10-22T15:17:34.417327+00:00",
+  "author_identity": "codex:/root/legacy_retry_investigation",
+  "target_files": [
+    {
+      "path": "discovery/discovery_service.py",
+      "before_sha256": "415fbe0cc3323bf45b389f84719c2ee6b52b9ca3d481da6d2f7f70b1c396bd8c",
+      "after_sha256": "abc2f682cbff4a8b6781997bc2a08ac00f5e41289d67ce02b1c7afa519ad6770",
+      "before_bytes": 109153,
+      "after_bytes": 113803
+    },
+    {
+      "path": "retail_city_queue.py",
+      "before_sha256": "02d04313de82464f0f6933df9e7a72f8675ccb6e7ca63b14859751db3e80a6b2",
+      "after_sha256": "27d60fa77644f15b786bfc61390d3671d4a3ee50cc8ae6e9e0fa42b19e820146",
+      "before_bytes": 18373,
+      "after_bytes": 20548
+    }
+  ],
+  "patch_sha256": "f15887a0356b0f7e3617e939ae2efbaee5f99cceebd327eef6da2d29e0ffa55a",
+  "independent_review_passed": true,
+  "production_acceptance": false,
+  "summary_zh": "保留有效失败历史；严格归档不兼容旧账本并隔离人工复核，不升级SAFE或绕过身份门禁。",
+  "summary_en": "Preserve valid failure history; archive incompatible legacy ledgers for guarded manual review without SAFE promotion or identity bypass."
 }

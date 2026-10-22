@@ -1,0 +1,115 @@
+{
+  "schema": "rokt.pinned-handoff-consumption.v1",
+  "task_id": "B-pinned-handoff-20261022",
+  "generated_at": "2026-10-22T15:13:50.996470+00:00",
+  "producer_commit": "cee2844a1ff2fa2ad03cc5e7490766053092f410",
+  "validator_commit": "690f1d1",
+  "source": "authenticated_github_connector_pinned_ref",
+  "files": {
+    "WORKBUDDY_LONG_TERM_OPERATIONS.json": {
+      "git_blob_sha": "7469055574c3e4e61e22ba745ff09c42f28b8bb7",
+      "git_blob_verified": true,
+      "payload_verified": null,
+      "production_accepted": false,
+      "generated_at": "2026-10-22T22:50:45+08:00"
+    },
+    "WORKBUDDY_LONG_TERM_OPERATIONS.md": {
+      "git_blob_verified": true,
+      "git_blob_sha": "7eec2ff505882fd0dbf8bb146125a41f3591688c",
+      "payload_verified": null
+    },
+    "OBSERVABILITY_CONTRACT.md": {
+      "git_blob_verified": true,
+      "git_blob_sha": "066628e57317ca0819bd94f6a517c015d969b1e3",
+      "payload_verified": null
+    },
+    "CITY_STAGE_TRACE.json": {
+      "git_blob_sha": "148fb271ce4ed751d8ed444a396a75328d9689d0",
+      "git_blob_verified": true,
+      "payload_verified": true,
+      "production_accepted": false,
+      "generated_at": "2026-10-22T22:50:45+08:00",
+      "payload_sha256": "9d8a38a93f1c4fd03f49259181d50cadd7d5a2c4559dacdad6f3a8537cd98a1d"
+    },
+    "SAFE_AUTHORITY_SNAPSHOT.json": {
+      "git_blob_sha": "af4cf3419f9ac1386098a9dc840aad8dff85dba2",
+      "git_blob_verified": true,
+      "payload_verified": true,
+      "production_accepted": false,
+      "generated_at": "2026-10-22T22:50:45+08:00",
+      "payload_sha256": "157352ee6d92c0c2aabcaa3d6068075336ece38f97a0698bdc7ed6b32a0b0e4d"
+    },
+    "INVENTORY_SCHEDULER_RECONCILIATION.json": {
+      "git_blob_sha": "32eac93bc277aef88d42822daba38388ef5b6229",
+      "git_blob_verified": true,
+      "payload_verified": true,
+      "production_accepted": false,
+      "generated_at": "2026-10-22T22:50:45+08:00",
+      "payload_sha256": "4dbb60a0b3d1ed28f267a25d1d3d3e7c7061f0f838b6a6d08b3f5a407d8b99b5"
+    },
+    "PROVIDER_REQUEST_AUDIT_24H.json": {
+      "git_blob_sha": "8b609d3cc43e33ad63c50dec561ea4fa1b389a6c",
+      "git_blob_verified": true,
+      "payload_verified": true,
+      "production_accepted": false,
+      "generated_at": "2026-10-22T22:50:45+08:00",
+      "payload_sha256": "237dce7d1a0f16628b51f9a1de136dbcb6dd8d7f4c3fd5cb8338948d9603157b"
+    },
+    "PRODUCTION_RUNTIME_LATEST.json": {
+      "git_blob_sha": "52e9e4f5bc2d9697795a0a83a14b7220a9af59a3",
+      "git_blob_verified": true,
+      "payload_verified": true,
+      "production_accepted": false,
+      "generated_at": "2026-10-22T22:50:45+08:00",
+      "payload_sha256": "284796a2f5b2f58743b3508726cc54d944746eda7e13a011c919e13658815e5c",
+      "recovered_original_generated_at": "2026-10-22T22:50:44+08:00",
+      "envelope_overwrote_original_timestamp": true
+    },
+    "RELEASE_REGISTRY_SNAPSHOT.json": {
+      "git_blob_sha": "9fc1f5a4ec1b18a15699dd4f8edf524c6cb01525",
+      "git_blob_verified": true,
+      "payload_verified": true,
+      "production_accepted": false,
+      "generated_at": "2026-10-22T22:50:45+08:00",
+      "payload_sha256": "ec51c3fae6b93bf91c0ea18e5abd34d1a047e3724f16230c412e31f689699508"
+    }
+  },
+  "git_blobs_verified": 9,
+  "payloads_verified": 6,
+  "contract_consumed": true,
+  "official_v2_live_connected": true,
+  "safe_authority": {
+    "current_safe": "UNKNOWN",
+    "validation_error": "SAFE_NOT_AVAILABLE",
+    "measured_at": "2026-10-22T22:41:52+08:00",
+    "finished_at": "2026-10-22T22:50:11+08:00",
+    "raw_readings": [
+      55,
+      56
+    ],
+    "reading_agreement": false,
+    "safe_net_growth_24h": "UNKNOWN",
+    "safe_net_growth_7d": "UNKNOWN"
+  },
+  "natural_stage_verified": false,
+  "global_inventory_uniqueness": "UNKNOWN",
+  "business_growth": "UNKNOWN",
+  "full_workstream_accepted": false,
+  "external_side_effects": [],
+  "limitations_zh": [
+    "runtime原生成时间被包装覆盖；显式恢复22:50:44后摘要匹配。",
+    "文本声称全局唯一，但结构化调度字段仍UNKNOWN。",
+    "565未在最新阻塞列表中，退出原因UNKNOWN。",
+    "旧run先于4A8V部署；现有文件指纹不能证明旧run代码。",
+    "最新SAFE读数55/56不一致，严格消费拒绝56为当前SAFE。"
+  ],
+  "limitations_en": [
+    "Runtime timestamp overwritten; explicit original22:50:44 matches digest.",
+    "Narrative uniqueness conflicts with structured UNKNOWN.",
+    "565 absent; exit reason UNKNOWN.",
+    "Old run predates4A8V; current file fingerprint cannot prove old code.",
+    "Latest SAFE readings55/56 disagree; strict consumer rejects56 as current SAFE."
+  ],
+  "summary_zh": "九份固定交接已消费，9个Git对象与6个payload验证；不代表城市或业务验收。",
+  "summary_en": "Nine pinned files consumed; nine Git objects and six payloads verified; no city or business acceptance."
+}

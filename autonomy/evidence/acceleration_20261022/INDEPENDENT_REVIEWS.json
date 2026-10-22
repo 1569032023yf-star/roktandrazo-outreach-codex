@@ -1,0 +1,12 @@
+{
+  "reviewer_identity": "codex:/root/independent_reviewer",
+  "summary_zh": "最终固定源码独立审核；先前发现均已修复。不是生产业务验收。",
+  "summary_en": "Independent final pinned-source review; earlier findings fixed. Not production business acceptance.",
+  "reviews": [
+    {"source_commit": "ecb99f8c878494dd28bf7ba59e18751ee859a197", "verdict": "APPROVED_SCOPED_ENGINEERING", "independent_tests": 21, "findings": []},
+    {"source_commit": "690f1d1", "verdict": "APPROVED_SCOPED_INTEGRITY_VALIDATOR", "independent_tests": 6, "additional_checks": 4, "findings": []},
+    {"source_commit": "e9a008bb922ff1e284afa01e1c646c5bd98b84a5", "verdict": "APPROVED_SCOPED_ENGINEERING", "independent_tests": 23, "patch_sha256": "f15887a0356b0f7e3617e939ae2efbaee5f99cceebd327eef6da2d29e0ffa55a", "forward_reverse_patch_byte_exact": true, "findings": []}
+  ],
+  "closed_findings": ["ORPHAN_LEASE_REACTIVATED", "READ_ONLY_CONFLICT_NOT_RECOVERED", "MIGRATION_PRECEDES_STAGING_ALLOWLIST"],
+  "production_acceptance": false
+}

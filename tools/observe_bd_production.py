@@ -17,8 +17,8 @@ from autonomy.supervisor import atomic_json, persist_business_observation, read
 
 EXPECTED = {
     'bd_orchestrator.py': '0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8',
-    'discovery/discovery_service.py': '415fbe0cc3323bf45b389f84719c2ee6b52b9ca3d481da6d2f7f70b1c396bd8c',
-    'retail_city_queue.py': '02d04313de82464f0f6933df9e7a72f8675ccb6e7ca63b14859751db3e80a6b2',
+    'discovery/discovery_service.py': 'abc2f682cbff4a8b6781997bc2a08ac00f5e41289d67ce02b1c7afa519ad6770',
+    'retail_city_queue.py': '27d60fa77644f15b786bfc61390d3671d4a3ee50cc8ae6e9e0fa42b19e820146',
 }
 
 

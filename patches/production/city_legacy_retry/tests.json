@@ -1,0 +1,13 @@
+{
+  "total": 23,
+  "failed": 0,
+  "exit_code": 0,
+  "ran_at": "2026-10-22T15:17:34.417327+00:00",
+  "artifact": "tests.log",
+  "artifact_sha256": "8330cf74552267e23f0b9e99690bb87ca890a81c5c81a0cba9787d16b8b24ead",
+  "suite": [
+    "tests.test_city_legacy_retry"
+  ],
+  "summary_zh": "最终源码定向回归，不是生产验收。",
+  "summary_en": "Final source targeted regression; not production acceptance."
+}
