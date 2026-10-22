@@ -6,3 +6,9 @@ patches/production/phase5a/proposed-v6.patch -text
 patches/production/phase5a/internal-qa.patch -text
 patches/autonomy_city_recovery.patch -text
 patches/production/phase4a8u/** -text
+# Stable reviewed pipeline source/test bytes / 固定已审核流水线源码与测试字节
+autonomy/network_recovery.py -text
+autonomy/task_dispatch.py -text
+tests/test_acceleration_pipeline.py -text
+docs/AUTONOMOUS_NETWORK_AND_DISPATCH.md -text
+autonomy/evidence/acceleration_pipeline_20261022/** -text
