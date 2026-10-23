@@ -627,12 +627,12 @@
     "summary_en": "Original scheduled run verifies16 complete trace events and Cooperstown closure; next-city progression and business growth await subsequent original runs."
   },
   "last_read_only_reconciliation": {
-    "task_id": "BD-FULL-HEARTBEAT-20261023T030850",
+    "task_id": "BD-FULL-HEARTBEAT-20261023T050757",
     "source": "codex_heartbeat",
-    "trigger": "2026-10-23T03:08:50.196Z",
-    "observed_at": "2026-10-23T03:09:49.080822+00:00",
+    "trigger": "2026-10-23T05:07:57.860Z",
+    "observed_at": "2026-10-23T05:08:48.448466+00:00",
     "branch": "codex/autonomous-bd-supervisor",
-    "input_commit": "2ccc1e9ba86fe3cb5a863bf883b6f266b202cf86",
+    "input_commit": "a2c414541c023f531e8ee989b185a5e270c45001",
     "initial_dirty": false,
     "tests": "PASS official health/status/telemetry/runtime/city/provider reconciliation and publication hash",
     "reviewer": "Prior independent diagnosis review retained; no source or business-evidence change",
@@ -643,15 +643,15 @@
     ],
     "counts_as_complete_unattended_cycle": false,
     "next_action": "Await approved sanitized exception evidence; observe original Inventory13:16:07+08",
-    "summary_zh": "11:09正式对账无变化，WB与Issue2无新补证；等待13:16原计划运行，异常根因未证，SAFE UNKNOWN、SMTP0。",
-    "summary_en": "11:09 official reconciliation unchanged, with no new WB or Issue2 evidence. Await original13:16 run; exception attribution unproven, SAFE UNKNOWN, SMTP0.",
+    "summary_zh": "13:08正式对账无变化，WB与Issue2无新错误补证；下一原运行13:16尚未到。SAFE UNKNOWN，SMTP0，无新增完整无人值守验收。",
+    "summary_en": "13:08 official reconciliation unchanged, with no new WB or Issue2 error evidence. Next original13:16 run is not due yet. SAFE UNKNOWN, SMTP0; no complete unattended acceptance added.",
     "workbuddy_commit": "cee2844a1ff2fa2ad03cc5e7490766053092f410",
     "latest_issue_comment": 6344368601,
     "evidence_sha256": {
-      "city.json": "e29c800cc305703dcf911077bc8dd680f18812586b0b5911db064d1763acb97e",
-      "provider.json": "c25d131f1b0b5830ac5e101ff9d8aaa1b0a8340eb77d99584a4f48aec98c2055",
-      "runtime.json": "a3a8997481f929de4cae34c3ae65c277789c90da5bd2ccb42788a69bbf4fbefd",
-      "status.json": "47f26b5462772267948428c4f77af0163eb5be1e79e6497cb7f130fd88a5eda7"
+      "city.json": "12849cce6cc004c8c13ef0ce9204af15742749fb1ef0c6fb5fa09a543251e103",
+      "provider.json": "59e11c6251296d2b7251e1f281faaa03f94aa3cf3e2bce41583105b15f4b2efd",
+      "runtime.json": "037564d859fd37c623bc0bbe6d0e831312be5abcbead03072d500999f53fed69",
+      "status.json": "db7c55ff68f7cc92ce11a100a2505aa7e74a5bcc5c7ab923fbb3f5c6ec59b04a"
     }
   },
   "latest_inventory_acceptance": {
