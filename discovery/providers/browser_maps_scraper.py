@@ -41,7 +41,7 @@ from urllib.parse import urlparse, parse_qs
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_DIR))
-from discovery.providers.provider_diagnostics import classify, ProviderFailure, ErrorCode
+from discovery.models import classify, ProviderFailure, ErrorCode
 
 
 def utc_now() -> str:

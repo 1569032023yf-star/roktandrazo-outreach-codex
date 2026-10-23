@@ -30,7 +30,7 @@ sys.path.insert(0, str(PROJECT_DIR))
 
 from discovery.models import PlaceSearchResult, ProviderPage, utc_now
 from discovery.providers.base import SearchProvider
-from discovery.providers.provider_diagnostics import classify, safe_error, ProviderFailure, ErrorCode
+from discovery.models import classify, safe_error, ProviderFailure, ErrorCode
 
 
 CACHE_DIR = Path(os.getenv("BROWSER_MAPS_CACHE_DIR", str(PROJECT_DIR / "data" / "browser_maps_cache")))
