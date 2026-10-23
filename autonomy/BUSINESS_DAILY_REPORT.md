@@ -204,7 +204,7 @@ Cycle: ecc230f4-a4fc-4cc5-8737-1481a3643ba9; evidence: `autonomy/runtime/city_ob
 <!-- BD_LIVE_OBSERVATION_BEGIN -->
 ## 自动业务观察 / Automated business observation
 
-观测时间 / Observed at: 2026-10-23T07:03:39+08:00
+观测时间 / Observed at: 2026-10-23T08:46:28+08:00
 来源 / Source: authenticated rokt-deploy-channel v2 telemetry; freshness <= 1h
 
 历史累计、最近运行actual和当前SAFE不是同一指标；缺少阶段/资格合同的字段保持UNKNOWN。
@@ -219,10 +219,10 @@ Historical totals, the latest run actual and current SAFE are distinct. Missing 
 | ACTIVE_CITY | Lake Placid |
 | HISTORICAL_LEADS | 1213 |
 | HISTORICAL_LEADS_WITH_EMAIL | 652 |
-| PROVIDER_REQUESTS_24H | 2 |
+| PROVIDER_REQUESTS_24H | 5 |
 | SENDS_TODAY | 0 |
 | SMTP_OBSERVED | 0 |
-| LAST_INVENTORY_RUN | inventory:2026-10-23:3eca4eae |
+| LAST_INVENTORY_RUN | inventory:2026-10-23:b628c7c8 |
 | GLOBAL_INVENTORY_UNIQUENESS | UNKNOWN |
 
 ## 工作线快照 / Workstream snapshot
@@ -277,3 +277,10 @@ Bounded production evidence connected; two city blockers remain. Independently r
 Lake Placid已激活，但07:00–07:02原Inventory因scrape_error停止。两条失败审计不等于两次HTTP请求；尚未证明有效获客。精确Provider源码已匹配，异常细因未暴露，不猜测修复。 当前SAFE/净增UNKNOWN，SMTP0；本轮不计完整无人值守验收。下一步只读核对触发终态和获准脱敏异常，未重跑采集或重apply。
 
 Lake Placid activated, but the07:00–07:02 canonical Inventory stopped on scrape_error. Two failed audit rows do not prove two HTTP requests or effective acquisition. Exact Provider source is matched; the underlying exception remains unavailable, so no speculative fix is applied. Current SAFE/net growth UNKNOWN, SMTP0. This cycle does not count as complete unattended acceptance. Reconcile the firing final state and approved sanitized exception evidence; no manual discovery or repeated apply.
+
+
+## Lake Placid异常定位复核 / Error diagnosis reconciliation
+
+已自动读取正式受限运行/城市/来源、核查Issue2和固定WB交接。失败run的scrape_error是通用状态，异常细节未暴露，不能区分代理/地图/解析器。随后原Inventory完成且城市推进，不将此当根因修复或业务成功。 最新3页/9条结果、查询族1/20；24h成功3/失败2。下一原运行13:16:07+08。客户SMTP0，SAFE与净增UNKNOWN。
+
+Automatically consumed official bounded runtime/city/provider observations and checked Issue2 and pinned WB handoff. The failed run exposes only generic scrape_error, so proxy/map/parser attribution is unproven. A later canonical run completed and advanced the city; this is not a root-cause fix or business acceptance. Latest progress:3 pages,9 results,1/20 query families;24h reported success3/failure2. Next original run13:16:07+08. SMTP0; SAFE/net growth UNKNOWN.

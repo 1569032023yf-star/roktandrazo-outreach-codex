@@ -1,0 +1,33 @@
+{
+  "schema": "rokt.sanitized-provider-error-evidence-request.v1",
+  "scope_run_id": "inventory:2026-10-23:3eca4eae",
+  "city_id": 23,
+  "read_only": true,
+  "requested_fields": [
+    "observed_at",
+    "run_id",
+    "stage",
+    "exception_class",
+    "sanitized_error_code",
+    "stack_module_function_line_only",
+    "proxy_configured_boolean",
+    "proxy_connect_outcome_enum",
+    "map_navigation_http_status_if_recorded",
+    "parser_entered_if_recorded",
+    "transport_attempt_count_if_recorded",
+    "production_module_sha256"
+  ],
+  "missing_policy": "NOT_RECORDED; never replay collection to reconstruct history",
+  "excluded": [
+    "credentials",
+    "proxy URLs",
+    "full URLs",
+    "customer fields",
+    "raw HTML",
+    "arbitrary SQL",
+    "arbitrary file paths",
+    "arbitrary commands"
+  ],
+  "summary_zh": "固定最小补证合同，仅准备本地审查；未向外发消息、未扩大权限。",
+  "summary_en": "Fixed minimal evidence contract prepared locally for review; no external message or permission expansion."
+}
