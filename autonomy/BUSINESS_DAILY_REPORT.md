@@ -204,7 +204,7 @@ Cycle: ecc230f4-a4fc-4cc5-8737-1481a3643ba9; evidence: `autonomy/runtime/city_ob
 <!-- BD_LIVE_OBSERVATION_BEGIN -->
 ## 自动业务观察 / Automated business observation
 
-观测时间 / Observed at: 2026-10-23T13:08:12+08:00
+观测时间 / Observed at: 2026-10-24T01:52:51+08:00
 来源 / Source: authenticated rokt-deploy-channel v2 telemetry; freshness <= 1h
 
 历史累计、最近运行actual和当前SAFE不是同一指标；缺少阶段/资格合同的字段保持UNKNOWN。
@@ -219,10 +219,10 @@ Historical totals, the latest run actual and current SAFE are distinct. Missing 
 | ACTIVE_CITY | Lake Placid |
 | HISTORICAL_LEADS | 1213 |
 | HISTORICAL_LEADS_WITH_EMAIL | 652 |
-| PROVIDER_REQUESTS_24H | 5 |
+| PROVIDER_REQUESTS_24H | 8 |
 | SENDS_TODAY | 0 |
 | SMTP_OBSERVED | 0 |
-| LAST_INVENTORY_RUN | inventory:2026-10-23:b628c7c8 |
+| LAST_INVENTORY_RUN | inventory:2026-10-23:267cfcbc |
 | GLOBAL_INVENTORY_UNIQUENESS | UNKNOWN |
 
 ## 工作线快照 / Workstream snapshot

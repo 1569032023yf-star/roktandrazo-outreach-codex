@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-22T23:05:32.565648+00:00",
+  "updated_at": "2026-10-23T17:52:44.536131+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -72,6 +72,34 @@
       "completion_evidence": "evidence/lake_failure_20261023/ACCEPTANCE.json",
       "dependency_evidence": {},
       "satisfied_dependencies": []
+    },
+    {
+      "id": "A-lake-provider-release-20261023",
+      "role": "developer",
+      "workstream": "A",
+      "status": "blocked_external",
+      "attempts": 0,
+      "blocked_cycles": 0,
+      "scope_zh": "审核后固定SHA及生产兼容清单，经既有正式register/preflight/apply/status；禁止重复旧发布。",
+      "scope_en": "After review pin SHA and compatible manifest, use official register/preflight/apply/status; never repeat old releases.",
+      "executor": "current_authorized_chat",
+      "created_at": "2026-10-23T11:30:44.675984+00:00",
+      "outcome_unknown": false,
+      "blocked_reason": "APPROVED_PRODUCTION_SNAPSHOTS_AND_SCOPE_PENDING",
+      "next_action": "Consume existing Issue2 reply when available; rebase reviewed diagnostics against approved exact production bytes, re-review package, then official register/preflight/backup/lock/apply/status and original natural acceptance. No manual run."
+    },
+    {
+      "id": "A-lake-natural-acceptance-20261023",
+      "role": "reviewer",
+      "workstream": "A",
+      "status": "queued",
+      "attempts": 0,
+      "blocked_cycles": 0,
+      "scope_zh": "仅原Inventory自然运行验收稳定性、唯一组织、官网、第一方邮箱、SAFE净增。",
+      "scope_en": "Accept stability and unique organizations, official sites, first-party emails and SAFE growth only from original natural Inventory.",
+      "executor": "current_authorized_chat",
+      "created_at": "2026-10-23T11:30:44.675989+00:00",
+      "outcome_unknown": false
     }
   ],
   "summary_zh": "唯一运行队列的只读投影，不是第二调度器。",

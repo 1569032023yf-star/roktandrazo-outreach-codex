@@ -109,3 +109,24 @@ Bounded production evidence connected; two city blockers remain. Independently r
 Lake Placid已激活，但07:00–07:02原Inventory因scrape_error停止。两条失败审计不等于两次HTTP请求；尚未证明有效获客。精确Provider源码已匹配，异常细因未暴露，不猜测修复。 当前SAFE/净增UNKNOWN，SMTP0；本轮不计完整无人值守验收。下一步只读核对触发终态和获准脱敏异常，未重跑采集或重apply。
 
 Lake Placid activated, but the07:00–07:02 canonical Inventory stopped on scrape_error. Two failed audit rows do not prove two HTTP requests or effective acquisition. Exact Provider source is matched; the underlying exception remains unavailable, so no speculative fix is applied. Current SAFE/net growth UNKNOWN, SMTP0. This cycle does not count as complete unattended acceptance. Reconcile the firing final state and approved sanitized exception evidence; no manual discovery or repeated apply.
+
+
+# Lake Placid P0 诊断工程 / Diagnostic engineering
+
+诊断增强完成并通过独立工程审核；固定枚举与阶段、资源释放、空与失败区分、冲突缓存拒绝及脱敏已离线验证。生产兼容与发布门禁未齐，未部署，不宣称历史根因修复。
+
+Diagnostic enhancement completed with independent scoped engineering approval. Offline checks cover fixed enums/stages, resource cleanup, empty/failure distinction, conflicting-cache rejection and redaction. Production compatibility and release gates remain incomplete; not deployed and no historical root-cause fix claimed.
+
+固定工程提交 / Pinned engineering commit: `6609fe6260be0b32919f37e5065f62b74724bbad`.
+
+验证 / Validation: 22 diagnostic tests; 39 reliability/pipeline/SAFE tests; reviewer reran 22+2 tests. Conflict-cache finding fixed and re-reviewed.
+
+未执行 / Not executed: production release, manual collection, new Inventory, SMTP, historical failure reconstruction.
+
+风险 / Risks: historical proxy/source/parser attribution UNKNOWN; approved four-file production snapshots and release scope remain incomplete. Scope approval cannot be inferred from local tests.
+
+正式观测 / Official observation: Lake 6 pages,12 results,2/20 query families; Provider reports success6/failure2, not HTTP counts or SAFE growth. Latest20:24 firing ACCEPTED with NO_RUN_ROW_IN_TRIGGER_WINDOW; do not replay. Next original run 2026-10-24T02:34:59.236000+08:00. Today NO_LOCK_KEY does not prove prior-day release.
+
+下一步 / Next: Consume existing Issue2 reply when available; rebase reviewed diagnostics against approved exact production bytes, re-review package, then official register/preflight/backup/lock/apply/status and original natural acceptance. No manual run.
+
+自查 / Self-check: bilingual; no secrets/customer contents; development/review/release/live/growth separated; no full unattended acceptance counted.
