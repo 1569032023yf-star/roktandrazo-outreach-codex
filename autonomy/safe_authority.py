@@ -38,6 +38,53 @@ def _is_count(value):
     return type(value) is int and 0 <= value <= 2**63 - 1
 
 
+def diagnose_safe_readings(receipt, *, approved_channel=None):
+    """Aggregate diagnostic only; never acceptance / 仅聚合诊断，不确认 SAFE。
+
+    A count delta cannot distinguish database mutation, MX volatility or rule
+    evaluation changes. Never echo raw failure text or customer identifiers.
+    数量差异不能区分数据库变更、MX 波动或规则变化；根因保留 UNKNOWN。
+    """
+    _require(approved_channel == CHANNEL, 'UNAPPROVED_SOURCE')
+    _require(type(receipt) is dict and type(receipt.get('http_status')) is int
+             and receipt['http_status'] == 200, 'TRANSPORT_NOT_VERIFIED')
+    raw = receipt.get('response')
+    _require(type(raw) is dict and raw.get('schema') == 'rokt.safe_authority.v1'
+             and raw.get('operation') == 'safe'
+             and raw.get('authoritative_route') == '/v1/safe', 'INVALID_SAFE_ENVELOPE')
+    readings = raw.get('readings')
+    _require(type(readings) is list and len(readings) == 2, 'INVALID_SAFE_READINGS')
+    counts = []
+    for index, reading in enumerate(readings, 1):
+        _require(type(reading) is dict and type(reading.get('reading')) is int
+                 and reading['reading'] == index, 'INVALID_SAFE_READINGS')
+        rows, orgs = reading.get('candidate_rows'), reading.get('unique_organizations')
+        _require(_is_count(rows) and _is_count(orgs) and rows >= orgs, 'INVALID_SAFE_READINGS')
+        counts.append((rows, orgs, _timestamp(reading.get('sampling_time'))))
+    _require(counts[0][2] < counts[1][2], 'INVALID_READINGS_ORDER')
+    row_delta = counts[1][0] - counts[0][0]
+    org_delta = counts[1][1] - counts[0][1]
+    duplicates_delta = row_delta - org_delta
+    signals = []
+    if row_delta:
+        signals.append('CANDIDATE_ROW_COUNT_CHANGED')
+    if org_delta:
+        signals.append('UNIQUE_ORGANIZATION_COUNT_CHANGED')
+    if duplicates_delta:
+        signals.append('DUPLICATE_ROW_EXCESS_CHANGED')
+    if type(raw.get('reading_agreement')) is bool and raw['reading_agreement'] != (org_delta == 0):
+        signals.append('DECLARED_AGREEMENT_CONFLICT')
+    return {'schema': 'rokt.safe-reading-diagnostics.v1',
+            'acceptance_scope': 'DIAGNOSTIC_ONLY', 'current_safe': 'UNKNOWN',
+            'safe_net_growth': 'UNKNOWN', 'root_cause': 'UNKNOWN',
+            'signals': signals, 'candidate_rows_delta': row_delta,
+            'unique_organizations_delta': org_delta,
+            'duplicate_row_excess_delta': duplicates_delta,
+            'sampling_gap_seconds': (counts[1][2] - counts[0][2]).total_seconds(),
+            'summary_zh': '仅比较双读聚合差异；缺少同快照资格原因证据，不能归因或确认净增。',
+            'summary_en': 'Aggregate reading differences only; without same-snapshot eligibility reasons, causation and net growth remain unknown.'}
+
+
 def consume_safe_authority(receipt, *, approved_channel=None, now=None):
     """Validate authenticated evidence and return only allowlisted aggregates.
 

@@ -98,7 +98,8 @@ def recovery_plan(*, operation, error_code, attempt_count, now,
         delay = min(max_seconds, base_seconds * 2 ** min(attempt_count - 1, 8))
         # Add positive jitter so neither the exponential delay nor Retry-After
         # can be shortened by a negative random draw.
-        delay = max(delay, _retry_after(retry_after, now)) + delay * 0.25 * jitter
+        delay = max(min(max_seconds, delay * (1 + 0.25 * jitter)),
+                    _retry_after(retry_after, now))
         if delay > 366 * 86400:
             raise ValueError('RETRY_AFTER_OUT_OF_RANGE')
         result.update(action='READ_ONLY_RETRY' if attempt_count < max_attempts else 'DEFERRED',
