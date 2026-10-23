@@ -76,7 +76,7 @@ def plan_queue(state, *, events=(), now):
                 dispatch_blocked_reason='LEASE_RECEIPT_MISSING_RECONCILIATION_REQUIRED',
                 next_action='Read-only reconcile missing cycle receipt before dependency reactivation / 先只读对账缺失周期凭证，再重评依赖。')
             continue
-        unreconciled_lease = (prior and prior.get('status') in {'running', 'failed', 'interrupted', 'unknown'}
+        unreconciled_lease = (prior and prior.get('status') != 'completed'
                              and task.get('reconciliation', {}).get('lease_cycle_id') != lease)
         if task.get('outcome_unknown') or task.get('blocked_reason') in {
             'UNKNOWN_SIDE_EFFECT', 'UNKNOWN_OUTCOME', 'NEEDS_RECONCILIATION'} or unreconciled_lease:
