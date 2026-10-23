@@ -183,8 +183,7 @@ def extract_place_data_from_card(card_element) -> dict | None:
         }
 
     except Exception as e:
-        print("RESULT_PARSE_ERROR:PARSE")
-        return None
+        raise ProviderFailure(ErrorCode.RESULT_PARSE_ERROR, "PARSE") from None
 
 
 def _is_external_link(href: str) -> bool:
@@ -222,15 +221,17 @@ def extract_detail_fields(page, maps_url: str) -> dict:
         return result
 
     try:
-        page.goto(maps_url, wait_until='domcontentloaded', timeout=15000)
-    except Exception:
-        return result
+        response = page.goto(maps_url, wait_until='domcontentloaded', timeout=15000)
+        _check_source(page, response)
+    except Exception as exc:
+        raise classify(exc, 'DETAIL') from None
 
     # Give the panel a moment to render the authority (website) link.
     try:
         page.wait_for_selector('a[data-item-id="authority"]', timeout=6000)
-    except Exception:
-        pass
+    except Exception as exc:
+        if classify(exc, 'DETAIL').code != ErrorCode.NETWORK_TIMEOUT:
+            raise classify(exc, 'DETAIL') from None
     time.sleep(1.0)
 
     # Website — authority link preferred (clean business domain)
@@ -240,8 +241,8 @@ def extract_detail_fields(page, maps_url: str) -> dict:
             href = wa.get_attribute('href') or ''
             if _is_external_link(href):
                 result['website'] = href.split('?')[0].rstrip('/')
-    except Exception:
-        pass
+    except Exception as exc:
+        raise classify(exc, 'DETAIL') from None
 
     # Fallback: any external-looking link on the page
     if not result['website']:
@@ -251,14 +252,14 @@ def extract_detail_fields(page, maps_url: str) -> dict:
                 if _is_external_link(href):
                     result['website'] = href.split('?')[0].rstrip('/')
                     break
-        except Exception:
-            pass
+        except Exception as exc:
+            raise classify(exc, 'DETAIL') from None
 
     # Full page text for address / phone fallback.
     try:
         body = page.inner_text('body') if hasattr(page, 'inner_text') else page.content()
-    except Exception:
-        body = ''
+    except Exception as exc:
+        raise classify(exc, 'DETAIL') from None
 
     if body:
         # "40 Catherwood Rd, Ithaca, NY 14850" (suite/unit + newline safe)
@@ -282,8 +283,8 @@ def extract_detail_fields(page, maps_url: str) -> dict:
             if len(digits) == 10:
                 result['phone'] = f"({digits[0:3]}) {digits[3:6]}-{digits[6:10]}"
                 break
-    except Exception:
-        pass
+    except Exception as exc:
+        raise classify(exc, 'DETAIL') from None
 
     return result
 
@@ -311,280 +312,177 @@ def extract_direct_place_data(page, maps_url: str) -> dict | None:
             'website': website, 'google_maps_url': maps_url, 'rating': '',
             'category': 'store', 'raw_text': title[:500],
         }
-    except Exception:
-        return None
+    except Exception as exc:
+        raise classify(exc, 'PARSE') from None
 
 
-def scrape_google_maps(
-    query: str,
-    city: str = '',
-    state: str = '',
-    max_results: int = 20,
-    headless: bool = True,
-    output_file: str | None = None,
-) -> dict:
-    """Scrape Google Maps search results using Playwright.
+def _check_source(page, response=None):
+    status = getattr(response, 'status', None)
+    if status == 429:
+        raise ProviderFailure(ErrorCode.SOURCE_RATE_LIMITED, "SOURCE_CHECK")
+    if status in (401, 403):
+        raise ProviderFailure(ErrorCode.SOURCE_ACCESS_RESTRICTED, "SOURCE_CHECK")
+    text = page.inner_text('body') if hasattr(page, 'inner_text') else page.content()
+    # Explicit challenge markup or provider challenge phrase, not generic words
+    # like "robot"/"verify" which may legitimately appear in merchant names.
+    challenge = page.query_selector('iframe[src*="recaptcha"], form[action*="/sorry/"]')
+    if challenge or 'our systems have detected unusual traffic' in text.lower():
+        raise ProviderFailure(ErrorCode.SOURCE_VERIFICATION_REQUIRED, "SOURCE_CHECK")
+    if status is not None and status >= 400:
+        raise ProviderFailure(ErrorCode.UNKNOWN_PROVIDER_ERROR, "SOURCE_CHECK")
+    return text
 
-    Returns a dict with ProviderPage-compatible structure.
+
+def _enrich(results, query, city, state, search_url):
+    enriched = []
+    for i, r in enumerate(results):
+        result_city, result_state = city, state
+        addr = r.get('formatted_address', '')
+        if addr:
+            match = re.search(r'\b(TN|Tennessee|NY|New York)\b', addr, re.IGNORECASE)
+            if match:
+                result_state = match.group(1).upper() if len(match.group(1)) == 2 else 'TN'
+            match = re.match(r'^[^,]+,\s*([A-Za-z .]+),', addr)
+            if match:
+                result_city = match.group(1).strip()
+        enriched.append({
+            'provider': 'browser_maps',
+            'provider_result_id': f"browser_maps_{query.replace(' ','_')}_{i}",
+            'place_id': f"gmaps_{r['business_name'].lower().replace(' ','_').replace('-','_')}",
+            'business_name': r['business_name'], 'formatted_address': addr,
+            'city': result_city, 'state': result_state, 'country': 'US',
+            'postal_code': '', 'phone': r.get('phone', ''), 'website': r.get('website', ''),
+            'business_status': 'OPERATIONAL', 'primary_type': r.get('category') or 'store',
+            'types': [r['category'].lower()] if r.get('category') else [],
+            'source_query': query, 'source_url': r.get('google_maps_url', search_url),
+            'raw_payload': {'raw_text': r.get('raw_text', ''), 'rating': r.get('rating', '')},
+            'next_page_cursor': '', 'fetched_at': utc_now(),
+            'location_lat': None, 'location_lng': None,
+        })
+    return enriched
+
+
+def scrape_google_maps(query: str, city: str = '', state: str = '',
+                       max_results: int = 20, headless: bool = True,
+                       output_file: str | None = None, *, playwright_factory=None,
+                       sleep=None) -> dict:
+    """Bounded scrape with injected offline browser and allowlisted diagnostics.
+
+    Failure results are observational only: DiscoveryService never consumes a
+    non-ok page or advances its cursor. No challenge bypass or automatic retry.
     """
-    from playwright.sync_api import sync_playwright
-
-    results_data = []
-    errors = []
-    stage = "LAUNCH"
+    results_data, errors = [], []
+    browser = context = page = None
+    stage = 'IMPORT'
     search_url = GMAPS_SEARCH_URL.format(query=query.replace(' ', '+'))
-
-    print(f"\n{'='*60}")
-    print(f"Google Maps Browser Scraper")
-    print(f"  Max:     {max_results}")
-    print(f"  Headless:{headless}")
-    print(f"{'='*60}\n")
-
-    proxy = _resolve_scraper_proxy()
-    launch_kwargs = dict(
-        headless=headless,
-        args=[
-            '--disable-blink-features=AutomationControlled',
-            '--no-sandbox',
-            '--disable-dev-shm-usage',
-        ],
-    )
-    if proxy:
-        launch_kwargs["proxy"] = {"server": proxy}
-
-    with sync_playwright() as pw:
-        browser = pw.chromium.launch(**launch_kwargs)
-        context = browser.new_context(
-            user_agent=USER_AGENT,
-            viewport={'width': 1280, 'height': 900},
-            locale='en-US',
-            timezone_id='America/Chicago',
-        )
-
-        # Normal browser — no stealth, no anti-detection, no webdriver hiding
-        page = context.new_page()
-
-        try:
-            print("[1/4] Navigating to Google Maps...")
-            stage = "NAVIGATION"
-            page.goto(search_url, wait_until='domcontentloaded', timeout=30000)
-            time.sleep(PAGE_LOAD_WAIT)
-
-            stage = "SOURCE_CHECK"
-            # Check for captcha / verification
-            page_text = page.inner_text('body') if hasattr(page, 'inner_text') else page.content()
-            if 'verify' in page_text.lower() or 'captcha' in page_text.lower() or 'robot' in page_text.lower():
-                errors.append("CAPTCHA_OR_VERIFICATION_DETECTED")
-                print("  ⚠️  CAPTCHA or verification detected!")
-
-            # Check for "no results"
-            if 'No results found' in page_text:
-                print("  📭 No results found for this query.")
-                return {
-                    'provider': 'browser_maps',
-                    'query': query,
-                    'city': city,
-                    'state': state,
-                    'page_cursor': '',
-                    'next_page_cursor': '',
-                    'status': 'ok',
-                    'error': '',
-                    'results': [],
-                    'request_count': 1,
-                    'cost_units': 0,
-                    'errors': errors,
-                    'collected_at': utc_now(),
-                }
-
-            # A precise search can render the target's place panel directly
-            # while the address bar remains a `/maps/search/` URL.  Avoid the
-            # list-only 15-second wait and empty scrolling in that case.
-            direct_place = extract_direct_place_data(page, page.url)
-            if direct_place:
-                results_data.append(direct_place)
-                print("  Direct Maps place panel detected; returning one candidate.")
-                return {
-                    'provider': 'browser_maps', 'query': query, 'city': city, 'state': state,
-                    'page_cursor': '', 'next_page_cursor': '', 'status': 'ok', 'error': '',
-                    'results': results_data, 'request_count': 1, 'cost_units': 0,
-                    'errors': errors, 'collected_at': utc_now(),
-                }
-
-            stage = "DOM"
-            print("[2/4] Reading search results...")
-            # Modern Google Maps lists each business as a div[role="article"]
-            # (class Nv2PK ...). The [role="feed"] also contains the filter
-            # carousel and a "Results" header, so target the articles directly.
+    sleep = sleep or time.sleep
+    try:
+        if playwright_factory is None:
+            from playwright.sync_api import sync_playwright
+            playwright_factory = sync_playwright
+        with playwright_factory() as pw:
             try:
-                page.wait_for_selector('div[role="article"]', timeout=15000)
-            except Exception:
-                pass
-
-            seen_names = set()
-            scroll_attempts = 0
-            last_count = 0
-
-            while len(results_data) < max_results and scroll_attempts <= MAX_SCROLLS:
-                cards = page.query_selector_all('div[role="article"]')
-                for card in cards:
-                    if len(results_data) >= max_results:
-                        break
-                    stage = "PARSE"
-                    data = extract_place_data_from_card(card)
-                    if not data or not data['business_name']:
-                        continue
-                    name_key = data['business_name'].lower().strip()
-                    if name_key in seen_names:
-                        continue
-                    seen_names.add(name_key)
-                    results_data.append(data)
-
-                if len(results_data) >= max_results:
-                    break
-
-                # Scroll the results feed to lazy-load more cards
-                if len(results_data) > last_count:
-                    last_count = len(results_data)
-                    scroll_attempts = 0
-                else:
-                    scroll_attempts += 1
-
-                try:
-                    panel = page.query_selector('[role="feed"]') or \
-                        page.query_selector('.m6QErb.DxyBCb.kA9KIf.dS8AEf')
-                    if panel:
-                        panel.evaluate('el => el.scrollTop = el.scrollHeight')
-                    time.sleep(SCROLL_WAIT)
-                except Exception:
-                    break
-
-            print(f"  Collected {len(results_data)} result articles from list")
-
-            # ── Phase 2: open each place DETAIL page for website/address/phone ──
-            print(f"[2b] Opening {len(results_data)} place details for website/address/phone...")
-            for i, r in enumerate(results_data):
-                url = r.get('google_maps_url', '')
-                if not url:
-                    continue
-                stage = "DETAIL"
-                det = extract_detail_fields(page, url)
-                if det.get('website'):
-                    r['website'] = det['website']
-                if det.get('formatted_address'):
-                    r['formatted_address'] = det['formatted_address']
-                if det.get('phone'):
-                    r['phone'] = det['phone']
-                if (i + 1) % 5 == 0 or i + 1 == len(results_data):
-                    print(f"  detail {i+1}/{len(results_data)}")
-
-            print(f"\n[3/4] Extracted {len(results_data)} unique business results")
-
-            # Enrich results with city/state from query if not detected
-            enriched = []
-            for i, r in enumerate(results_data):
-                result_city = city
-                result_state = state
-
-                # Try to detect city/state from address
-                addr = r.get('formatted_address', '')
-                if addr:
-                    tn_match = re.search(r'\b(TN|Tennessee|NY|New York)\b', addr, re.IGNORECASE)
-                    if tn_match:
-                        result_state = tn_match.group(1).upper() if len(tn_match.group(1)) == 2 else 'TN'
-                    # crude city extraction: text before first comma
-                    city_match = re.match(r'^[^,]+,\s*([A-Za-z .]+),', addr)
-                    if city_match:
-                        result_city = city_match.group(1).strip()
-
-                enriched.append({
-                    'provider': 'browser_maps',
-                    'provider_result_id': f"browser_maps_{query.replace(' ','_')}_{i}",
-                    'place_id': f"gmaps_{r['business_name'].lower().replace(' ','_').replace('-','_')}",
-                    'business_name': r['business_name'],
-                    'formatted_address': r.get('formatted_address', ''),
-                    'city': result_city,
-                    'state': result_state,
-                    'country': 'US',
-                    'postal_code': '',
-                    'phone': r.get('phone', ''),
-                    'website': r.get('website', ''),
-                    'business_status': 'OPERATIONAL',
-                    'primary_type': (r.get('category') or 'store'),
-                    'types': [r.get('category').lower()] if r.get('category') else [],
-                    'source_query': query,
-                    'source_url': r.get('google_maps_url', search_url),
-                    'raw_payload': {'raw_text': r.get('raw_text', ''), 'rating': r.get('rating', '')},
-                    'next_page_cursor': '',
-                    'fetched_at': utc_now(),
-                    'location_lat': None,
-                    'location_lng': None,
-                })
-
-            print(f"[4/4] Saving {len(enriched)} results...")
-
-        except Exception as e:
-            errors.append(str(classify(e, stage)))
-            print(errors[-1])
-            # Build enriched from whatever we collected so far (no website phase)
-            enriched = []
-            for i, r in enumerate(results_data):
-                enriched.append({
-                    'provider': 'browser_maps',
-                    'provider_result_id': f"browser_maps_{query.replace(' ','_')}_{i}",
-                    'place_id': f"gmaps_{r['business_name'].lower().replace(' ','_').replace('-','_')}",
-                    'business_name': r['business_name'],
-                    'formatted_address': r.get('formatted_address', ''),
-                    'city': city,
-                    'state': state,
-                    'country': 'US',
-                    'postal_code': '',
-                    'phone': r.get('phone', ''),
-                    'website': r.get('website', ''),
-                    'business_status': 'OPERATIONAL',
-                    'primary_type': (r.get('category') or 'store'),
-                    'types': [r.get('category').lower()] if r.get('category') else [],
-                    'source_query': query,
-                    'source_url': r.get('google_maps_url', search_url),
-                    'raw_payload': {'raw_text': r.get('raw_text', ''), 'rating': r.get('rating', '')},
-                    'next_page_cursor': '',
-                    'fetched_at': utc_now(),
-                    'location_lat': None,
-                    'location_lng': None,
-                })
-
-        finally:
-            context.close()
-            browser.close()
-
+                stage = 'LAUNCH'
+                launch_kwargs = dict(headless=headless, args=['--no-sandbox', '--disable-dev-shm-usage'])
+                proxy = _resolve_scraper_proxy()
+                if proxy:
+                    launch_kwargs['proxy'] = {'server': proxy}
+                browser = pw.chromium.launch(**launch_kwargs)
+                stage = 'CONTEXT'
+                context = browser.new_context(user_agent=USER_AGENT,
+                    viewport={'width': 1280, 'height': 900}, locale='en-US',
+                    timezone_id='America/Chicago')
+                page = context.new_page()
+                stage = 'NAVIGATION'
+                response = page.goto(search_url, wait_until='domcontentloaded', timeout=30000)
+                sleep(PAGE_LOAD_WAIT)
+                stage = 'SOURCE_CHECK'
+                text = _check_source(page, response)
+                if 'No results found' not in text:
+                    stage = 'PARSE'
+                    direct = extract_direct_place_data(page, page.url)
+                    if direct:
+                        results_data.append(direct)
+                    else:
+                        stage = 'DOM'
+                        try:
+                            page.wait_for_selector('div[role="article"]', timeout=15000)
+                        except Exception as exc:
+                            # A timeout alone does not prove a layout change.
+                            # The known Results feed with no expected cards does.
+                            if page.query_selector('[role="feed"]'):
+                                raise ProviderFailure(ErrorCode.DOM_LAYOUT_CHANGED, 'DOM') from None
+                            raise classify(exc, 'DOM') from None
+                        seen, scroll_attempts, last_count = set(), 0, 0
+                        while len(results_data) < max_results and scroll_attempts <= MAX_SCROLLS:
+                            stage = 'DOM'
+                            cards = page.query_selector_all('div[role="article"]')
+                            if not cards and not results_data:
+                                raise ProviderFailure(ErrorCode.DOM_LAYOUT_CHANGED, 'DOM')
+                            for card in cards:
+                                if len(results_data) >= max_results:
+                                    break
+                                stage = 'PARSE'
+                                data = extract_place_data_from_card(card)
+                                if not data or not data['business_name']:
+                                    raise ProviderFailure(ErrorCode.DOM_LAYOUT_CHANGED, 'PARSE')
+                                key = data['business_name'].lower().strip()
+                                if key not in seen:
+                                    seen.add(key)
+                                    results_data.append(data)
+                            if len(results_data) >= max_results:
+                                break
+                            if len(results_data) > last_count:
+                                last_count, scroll_attempts = len(results_data), 0
+                            else:
+                                scroll_attempts += 1
+                            stage = 'SCROLL'
+                            panel = page.query_selector('[role="feed"]') or page.query_selector('.m6QErb.DxyBCb.kA9KIf.dS8AEf')
+                            if panel:
+                                panel.evaluate('el => el.scrollTop = el.scrollHeight')
+                            sleep(SCROLL_WAIT)
+                        for result in results_data:
+                            url = result.get('google_maps_url', '')
+                            if url:
+                                stage = 'DETAIL'
+                                details = extract_detail_fields(page, url)
+                                _check_source(page)
+                                for field in ('website', 'formatted_address', 'phone'):
+                                    if details.get(field):
+                                        result[field] = details[field]
+            finally:
+                # Attempt every close even if an earlier close fails. Keep the
+                # primary error if one exists; never log exception contents.
+                for resource in (page, context, browser):
+                    if resource is not None:
+                        try:
+                            resource.close()
+                        except Exception as exc:
+                            errors.append(str(classify(exc, 'CLEANUP')))
+    except Exception as exc:
+        errors.insert(0, str(classify(exc, stage)))
+    try:
+        enriched = _enrich(results_data, query, city, state, search_url)
+    except Exception:
+        errors.insert(0, str(ProviderFailure(ErrorCode.RESULT_PARSE_ERROR, 'PARSE')))
+        enriched = []
     output = {
-        'provider': 'browser_maps',
-        'query': query,
-        'city': city,
-        'state': state,
-        'page_cursor': '',
-        'next_page_cursor': str(len(enriched)),
-        'status': 'ok' if not errors else 'partial',
-        'error': '; '.join(errors) if errors else '',
-        'results': enriched,
-        'request_count': 1,
-        'cost_units': 0,
-        'errors': errors,
-        'collected_at': utc_now(),
+        'provider': 'browser_maps', 'query': query, 'city': city, 'state': state,
+        'page_cursor': '', 'next_page_cursor': str(len(enriched)) if not errors and enriched else '',
+        'status': ('partial' if enriched else 'scrape_error') if errors else 'ok',
+        'error': errors[0] if errors else '', 'results': enriched,
+        'request_count': 1, 'cost_units': 0, 'errors': errors, 'collected_at': utc_now(),
     }
-
     if output_file:
-        out_path = Path(output_file)
-        if not out_path.is_absolute():
-            out_path = PROJECT_DIR / output_file
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(out_path, 'w', encoding='utf-8') as f:
-            json.dump(output, f, indent=2, ensure_ascii=False)
-        print(f"  Results: {len(enriched)} businesses")
-        print(f"  Status: {output['status']}")
-        if errors:
-            print(f"  Errors: {errors}")
-        return output
-
+        try:
+            out_path = Path(output_file)
+            if not out_path.is_absolute():
+                out_path = PROJECT_DIR / output_file
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            with out_path.open('w', encoding='utf-8') as handle:
+                json.dump(output, handle, indent=2, ensure_ascii=False)
+        except Exception as exc:
+            output.update(status='scrape_error', error=str(classify(exc, 'CACHE_WRITE')), next_page_cursor='')
     return output
 
 

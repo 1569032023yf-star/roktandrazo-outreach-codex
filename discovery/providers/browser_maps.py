@@ -30,7 +30,7 @@ sys.path.insert(0, str(PROJECT_DIR))
 
 from discovery.models import PlaceSearchResult, ProviderPage, utc_now
 from discovery.providers.base import SearchProvider
-from discovery.providers.provider_diagnostics import classify, safe_error
+from discovery.providers.provider_diagnostics import classify, safe_error, ProviderFailure, ErrorCode
 
 
 CACHE_DIR = Path(os.getenv("BROWSER_MAPS_CACHE_DIR", str(PROJECT_DIR / "data" / "browser_maps_cache")))
@@ -65,52 +65,65 @@ def _cache_key(query: str, city: str, state: str, page: str) -> str:
     return safe + '.json'
 
 
-def _load_cache(query: str, city: str, state: str, page: str) -> ProviderPage | None:
-    """Try to load cached results from a JSON file."""
-    cache_path = CACHE_DIR / _cache_key(query, city, state, page)
-    if not cache_path.exists():
-        return None
+def _page_from_raw(raw, query, city, state, page='', *, cache=False):
+    stage = 'CACHE_READ' if cache else 'PARSE'
+    code = ErrorCode.CACHE_READ_ERROR if cache else ErrorCode.RESULT_PARSE_ERROR
+    def invalid():
+        raise ProviderFailure(code, stage)
+    if not isinstance(raw, dict) or not isinstance(raw.get('results'), list):
+        invalid()
+    if not isinstance(raw.get('status', 'ok'), str) or not isinstance(raw.get('next_page_cursor', ''), str):
+        invalid()
+    for numeric in ('request_count', 'cost_units'):
+        if not isinstance(raw.get(numeric, 1 if numeric == 'request_count' else 0), int) or isinstance(raw.get(numeric), bool) or raw.get(numeric, 0) < 0:
+            invalid()
+    # Conflicting failure evidence cannot become successful cached data.
+    if raw.get('status', 'ok') == 'ok' and (raw.get('error') or raw.get('errors')):
+        invalid()
+    results = []
+    for row in raw['results']:
+        if not isinstance(row, dict) or not isinstance(row.get('business_name'), str) or not row['business_name'].strip():
+            invalid()
+        if any(key in row and not isinstance(row[key], str) for key in _RESULT_TEXT_FIELDS):
+            invalid()
+        if not isinstance(row.get('types', []), list) or any(not isinstance(x, str) for x in row.get('types', [])) or not isinstance(row.get('raw_payload', {}), dict):
+            invalid()
+        for key in ('location_lat', 'location_lng'):
+            if row.get(key) is not None and (not isinstance(row[key], (int, float)) or isinstance(row[key], bool)):
+                invalid()
+        values = {key: (_sanitize_provider_text(value) if key in _RESULT_TEXT_FIELDS else value)
+                  for key, value in row.items() if key in PlaceSearchResult.__dataclass_fields__}
+        for key, default in {'provider': 'browser_maps', 'provider_result_id': '', 'place_id': '',
+                             'formatted_address': '', 'city': city, 'state': state}.items():
+            values.setdefault(key, default)
+        results.append(PlaceSearchResult(**values))
+    status = raw.get('status', 'ok')
+    if status not in {'ok', 'partial', 'scrape_error'}:
+        status = 'scrape_error'
+    return ProviderPage(provider='browser_maps', query=query, city=city, state=state,
+        page_cursor=page, results=results, next_page_cursor=raw.get('next_page_cursor', '') if status == 'ok' else '',
+        status=status, error=safe_error(raw.get('error', ''), stage) if status != 'ok' else '',
+        request_count=raw.get('request_count', 1), cost_units=raw.get('cost_units', 0),
+        fetched_at=utc_now())
 
+
+def _load_cache(query, city, state, page, cache_dir=None):
+    cache_path = (Path(cache_dir) if cache_dir is not None else CACHE_DIR) / _cache_key(query, city, state, page)
     try:
-        with open(cache_path, 'r', encoding='utf-8') as f:
-            raw = json.load(f)
-
-        results = []
-        for r in raw.get('results', []):
-            results.append(PlaceSearchResult(**{
-                k: _sanitize_provider_text(r.get(k, '')) if k in _RESULT_TEXT_FIELDS else r.get(k, [])
-                for k in PlaceSearchResult.__dataclass_fields__
-                if k in r
-            }))
-
-        return ProviderPage(
-            provider='browser_maps',
-            query=query,
-            city=city,
-            state=state,
-            page_cursor=page,
-            results=results,
-            next_page_cursor=raw.get('next_page_cursor', ''),
-            status=raw.get('status', 'ok'),
-            error=safe_error(raw.get('error', '')) if raw.get('status', 'ok') != 'ok' else '',
-            request_count=raw.get('request_count', 1),
-            cost_units=raw.get('cost_units', 0),
-            fetched_at=raw.get('collected_at', utc_now()),
-        )
-    except Exception as e:
-        return ProviderPage(
-            provider='browser_maps',
-            query=query, city=city, state=state,
-            page_cursor=page,
-            status='cache_read_error',
-            error=str(classify(e, 'CACHE_READ')),
-        )
+        if not cache_path.exists():
+            return None
+        with cache_path.open('r', encoding='utf-8') as handle:
+            return _page_from_raw(json.load(handle), query, city, state, page, cache=True)
+    except Exception as exc:
+        return ProviderPage(provider='browser_maps', query=query, city=city, state=state,
+            page_cursor=page, status='cache_read_error', error=str(classify(exc, 'CACHE_READ')))
 
 
-def _save_cache(page: ProviderPage) -> None:
+def _save_cache(page: ProviderPage, cache_dir=None) -> None:
     """Save scraper results to cache JSON."""
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    cache_path = CACHE_DIR / _cache_key(page.query, page.city, page.state, page.page_cursor)
+    cache_root = Path(cache_dir) if cache_dir is not None else CACHE_DIR
+    cache_root.mkdir(parents=True, exist_ok=True)
+    cache_path = cache_root / _cache_key(page.query, page.city, page.state, page.page_cursor)
 
     output = {
         'provider': page.provider,
@@ -157,74 +170,17 @@ def _save_cache(page: ProviderPage) -> None:
         json.dump(output, f, indent=2, ensure_ascii=False)
 
 
-def _scrape_direct(query: str, city: str, state: str, max_results: int, headless: bool = True) -> ProviderPage:
-    """Direct browser scraping (called inline from discovery pipeline)."""
+def _scrape_direct(query, city, state, max_results, headless=True):
+    stage = 'IMPORT'
     try:
         from discovery.providers.browser_maps_scraper import scrape_google_maps
-
-        raw = scrape_google_maps(
-            query=query,
-            city=city,
-            state=state,
-            max_results=max_results,
-            headless=headless,
-        )
-
-        results = []
-        for r in raw.get('results', []):
-            try:
-                results.append(PlaceSearchResult(
-                    provider=r.get('provider', 'browser_maps'),
-                    provider_result_id=r.get('provider_result_id', ''),
-                    place_id=r.get('place_id', ''),
-                    business_name=_sanitize_provider_text(r.get('business_name', '')),
-                    formatted_address=_sanitize_provider_text(r.get('formatted_address', '')),
-                    city=_sanitize_provider_text(r.get('city', city)),
-                    state=_sanitize_provider_text(r.get('state', state)),
-                    country=_sanitize_provider_text(r.get('country', 'US')),
-                    postal_code=_sanitize_provider_text(r.get('postal_code', '')),
-                    phone=_sanitize_provider_text(r.get('phone', '')),
-                    website=_sanitize_provider_text(r.get('website', '')),
-                    business_status=_sanitize_provider_text(r.get('business_status', '')),
-                    primary_type=_sanitize_provider_text(r.get('primary_type', '')),
-                    types=r.get('types', []),
-                    source_query=_sanitize_provider_text(r.get('source_query', query)),
-                    source_url=_sanitize_provider_text(r.get('source_url', '')),
-                    raw_payload=r.get('raw_payload', {}),
-                    next_page_cursor='',
-                    fetched_at=r.get('fetched_at', utc_now()),
-                    location_lat=r.get('location_lat'),
-                    location_lng=r.get('location_lng'),
-                ))
-            except Exception:
-                continue
-
-        return ProviderPage(
-            provider='browser_maps',
-            query=query, city=city, state=state,
-            page_cursor='',
-            results=results,
-            next_page_cursor=str(len(results)),
-            status=raw.get('status', 'ok'),
-            error=safe_error(raw.get('error', '')) if raw.get('status', 'ok') != 'ok' else '',
-            request_count=1, cost_units=0,
-            fetched_at=utc_now(),
-        )
-
-    except ImportError as e:
-        return ProviderPage(
-            provider='browser_maps', query=query, city=city, state=state,
-            page_cursor='',
-            status='playwright_not_installed',
-            error=str(classify(e, 'IMPORT')),
-        )
-    except Exception as e:
-        return ProviderPage(
-            provider='browser_maps', query=query, city=city, state=state,
-            page_cursor='',
-            status='scrape_error',
-            error=str(classify(e, 'UNKNOWN')),
-        )
+        stage = 'UNKNOWN'
+        raw = scrape_google_maps(query=query, city=city, state=state,
+                                 max_results=max_results, headless=headless)
+        return _page_from_raw(raw, query, city, state)
+    except Exception as exc:
+        return ProviderPage(provider='browser_maps', query=query, city=city, state=state,
+            page_cursor='', status='scrape_error', error=str(classify(exc, stage)), request_count=1)
 
 
 class BrowserMapsProvider(SearchProvider):
@@ -263,68 +219,16 @@ class BrowserMapsProvider(SearchProvider):
             # Check if we have any cached data as fallback
             return bool(list(self._cache_dir.glob('*.json')))
 
-    def _load_from_json_file(self, json_path: str, query: str, city: str, state: str) -> ProviderPage:
-        """Load results from a specific JSON output file."""
+    def _load_from_json_file(self, json_path, query, city, state, page_cursor=''):
         path = Path(json_path)
         if not path.is_absolute():
-            path = PROJECT_DIR / json_path
-
-        if not path.exists():
-            return ProviderPage(
-                provider=self.provider_name, query=query, city=city, state=state,
-                page_cursor='',
-                status='json_file_not_found',
-                error='CACHE_READ_ERROR:CACHE_READ',
-            )
-
+            path = PROJECT_DIR / path
         try:
-            with open(path, 'r', encoding='utf-8') as f:
-                raw = json.load(f)
-
-            results = []
-            for r in raw.get('results', []):
-                try:
-                    results.append(PlaceSearchResult(
-                        provider=r.get('provider', 'browser_maps'),
-                        provider_result_id=r.get('provider_result_id', ''),
-                        place_id=r.get('place_id', ''),
-                        business_name=r.get('business_name', ''),
-                        formatted_address=r.get('formatted_address', ''),
-                        city=r.get('city', city),
-                        state=r.get('state', state),
-                        country=r.get('country', 'US'),
-                        postal_code=r.get('postal_code', ''),
-                        phone=r.get('phone', ''),
-                        website=r.get('website', ''),
-                        business_status=r.get('business_status', 'OPERATIONAL'),
-                        primary_type=r.get('primary_type', ''),
-                        types=r.get('types', []),
-                        source_query=r.get('source_query', query),
-                        source_url=r.get('source_url', ''),
-                        raw_payload=r.get('raw_payload', {}),
-                        next_page_cursor='',
-                        fetched_at=r.get('fetched_at', utc_now()),
-                        location_lat=r.get('location_lat'),
-                        location_lng=r.get('location_lng'),
-                    ))
-                except Exception:
-                    continue
-
-            return ProviderPage(
-                provider=self.provider_name, query=query, city=city, state=state,
-                page_cursor='', results=results,
-                next_page_cursor=raw.get('next_page_cursor', ''),
-                status=raw.get('status', 'ok'), error=safe_error(raw.get('error', '')) if raw.get('status', 'ok') != 'ok' else '',
-                request_count=1, cost_units=0, fetched_at=utc_now(),
-            )
-
-        except Exception as e:
-            return ProviderPage(
-                provider=self.provider_name, query=query, city=city, state=state,
-                page_cursor='',
-                status='json_read_error',
-                error=str(classify(e, 'CACHE_READ')),
-            )
+            with path.open('r', encoding='utf-8') as handle:
+                return _page_from_raw(json.load(handle), query, city, state, page_cursor, cache=True)
+        except Exception as exc:
+            return ProviderPage(provider=self.provider_name, query=query, city=city, state=state,
+                page_cursor=page_cursor, status='cache_read_error', error=str(classify(exc, 'CACHE_READ')))
 
     def search_places(
         self,
@@ -348,14 +252,14 @@ class BrowserMapsProvider(SearchProvider):
         """
         # Try cache first
         cache_key_page = page_cursor or '0'
-        cached = _load_cache(query, city, state, cache_key_page)
-        if cached and cached.ok and cached.results:
+        cached = _load_cache(query, city, state, cache_key_page, self._cache_dir)
+        if cached is not None:
             return cached
 
         # Check for specific JSON file path
         json_file_env = os.getenv("BROWSER_MAPS_JSON_FILE", "")
         if json_file_env:
-            return self._load_from_json_file(json_file_env, query, city, state)
+            return self._load_from_json_file(json_file_env, query, city, state, page_cursor)
 
         # Check cache directory for any matching file
         for cache_file in sorted(self._cache_dir.glob('*.json')):
@@ -364,16 +268,27 @@ class BrowserMapsProvider(SearchProvider):
                     raw = json.load(f)
                 if (raw.get('query') == query and
                     raw.get('city', '').lower() == city.lower() and
-                    raw.get('state', '').upper() == state.upper()):
-                    return self._load_from_json_file(str(cache_file), query, city, state)
+                    raw.get('state', '').upper() == state.upper() and
+                    str(raw.get('page_cursor', '') or '0') == cache_key_page):
+                    return self._load_from_json_file(str(cache_file), query, city, state, page_cursor)
             except Exception:
                 continue
 
         # Direct mode: scrape now
         if self._mode in ('direct', 'auto'):
             page = _scrape_direct(query, city, state, page_size, headless=self._headless)
+            page.page_cursor = page_cursor
             if page.ok:
-                _save_cache(page)
+                try:
+                    # Exact cursor key; use instance-isolated cache, never module global.
+                    page.page_cursor = cache_key_page
+                    _save_cache(page, self._cache_dir)
+                except Exception as exc:
+                    page.status = 'cache_write_error'
+                    page.error = str(classify(exc, 'CACHE_WRITE'))
+                    page.next_page_cursor = ''
+                finally:
+                    page.page_cursor = page_cursor
             return page
 
         # No data available
