@@ -41,6 +41,7 @@ from urllib.parse import urlparse, parse_qs
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_DIR))
+from discovery.providers.provider_diagnostics import classify, ProviderFailure, ErrorCode
 
 
 def utc_now() -> str:
@@ -182,7 +183,7 @@ def extract_place_data_from_card(card_element) -> dict | None:
         }
 
     except Exception as e:
-        print(f"      [WARN] Failed to extract card: {e}")
+        print("RESULT_PARSE_ERROR:PARSE")
         return None
 
 
@@ -330,16 +331,13 @@ def scrape_google_maps(
 
     results_data = []
     errors = []
+    stage = "LAUNCH"
     search_url = GMAPS_SEARCH_URL.format(query=query.replace(' ', '+'))
 
     print(f"\n{'='*60}")
     print(f"Google Maps Browser Scraper")
-    print(f"  Query:   {query}")
-    print(f"  City:    {city}")
-    print(f"  State:   {state}")
     print(f"  Max:     {max_results}")
     print(f"  Headless:{headless}")
-    print(f"  URL:     {search_url}")
     print(f"{'='*60}\n")
 
     proxy = _resolve_scraper_proxy()
@@ -368,9 +366,11 @@ def scrape_google_maps(
 
         try:
             print("[1/4] Navigating to Google Maps...")
+            stage = "NAVIGATION"
             page.goto(search_url, wait_until='domcontentloaded', timeout=30000)
             time.sleep(PAGE_LOAD_WAIT)
 
+            stage = "SOURCE_CHECK"
             # Check for captcha / verification
             page_text = page.inner_text('body') if hasattr(page, 'inner_text') else page.content()
             if 'verify' in page_text.lower() or 'captcha' in page_text.lower() or 'robot' in page_text.lower():
@@ -410,6 +410,7 @@ def scrape_google_maps(
                     'errors': errors, 'collected_at': utc_now(),
                 }
 
+            stage = "DOM"
             print("[2/4] Reading search results...")
             # Modern Google Maps lists each business as a div[role="article"]
             # (class Nv2PK ...). The [role="feed"] also contains the filter
@@ -428,6 +429,7 @@ def scrape_google_maps(
                 for card in cards:
                     if len(results_data) >= max_results:
                         break
+                    stage = "PARSE"
                     data = extract_place_data_from_card(card)
                     if not data or not data['business_name']:
                         continue
@@ -464,6 +466,7 @@ def scrape_google_maps(
                 url = r.get('google_maps_url', '')
                 if not url:
                     continue
+                stage = "DETAIL"
                 det = extract_detail_fields(page, url)
                 if det.get('website'):
                     r['website'] = det['website']
@@ -473,8 +476,6 @@ def scrape_google_maps(
                     r['phone'] = det['phone']
                 if (i + 1) % 5 == 0 or i + 1 == len(results_data):
                     print(f"  detail {i+1}/{len(results_data)}")
-                    if det.get('website'):
-                        print(f"    ↳ {r['business_name']}: {det['website']}")
 
             print(f"\n[3/4] Extracted {len(results_data)} unique business results")
 
@@ -522,8 +523,8 @@ def scrape_google_maps(
             print(f"[4/4] Saving {len(enriched)} results...")
 
         except Exception as e:
-            errors.append(f"BROWSER_ERROR: {str(e)[:200]}")
-            print(f"  ❌ Error: {e}")
+            errors.append(str(classify(e, stage)))
+            print(errors[-1])
             # Build enriched from whatever we collected so far (no website phase)
             enriched = []
             for i, r in enumerate(results_data):
@@ -578,7 +579,6 @@ def scrape_google_maps(
         out_path.parent.mkdir(parents=True, exist_ok=True)
         with open(out_path, 'w', encoding='utf-8') as f:
             json.dump(output, f, indent=2, ensure_ascii=False)
-        print(f"\n  ✅ Saved to: {out_path}")
         print(f"  Results: {len(enriched)} businesses")
         print(f"  Status: {output['status']}")
         if errors:

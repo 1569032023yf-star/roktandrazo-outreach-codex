@@ -30,6 +30,7 @@ sys.path.insert(0, str(PROJECT_DIR))
 
 from discovery.models import PlaceSearchResult, ProviderPage, utc_now
 from discovery.providers.base import SearchProvider
+from discovery.providers.provider_diagnostics import classify, safe_error
 
 
 CACHE_DIR = Path(os.getenv("BROWSER_MAPS_CACHE_DIR", str(PROJECT_DIR / "data" / "browser_maps_cache")))
@@ -91,7 +92,7 @@ def _load_cache(query: str, city: str, state: str, page: str) -> ProviderPage | 
             results=results,
             next_page_cursor=raw.get('next_page_cursor', ''),
             status=raw.get('status', 'ok'),
-            error=raw.get('error', ''),
+            error=safe_error(raw.get('error', '')) if raw.get('status', 'ok') != 'ok' else '',
             request_count=raw.get('request_count', 1),
             cost_units=raw.get('cost_units', 0),
             fetched_at=raw.get('collected_at', utc_now()),
@@ -102,7 +103,7 @@ def _load_cache(query: str, city: str, state: str, page: str) -> ProviderPage | 
             query=query, city=city, state=state,
             page_cursor=page,
             status='cache_read_error',
-            error=f'failed to read cache: {e}',
+            error=str(classify(e, 'CACHE_READ')),
         )
 
 
@@ -205,7 +206,7 @@ def _scrape_direct(query: str, city: str, state: str, max_results: int, headless
             results=results,
             next_page_cursor=str(len(results)),
             status=raw.get('status', 'ok'),
-            error=raw.get('error', ''),
+            error=safe_error(raw.get('error', '')) if raw.get('status', 'ok') != 'ok' else '',
             request_count=1, cost_units=0,
             fetched_at=utc_now(),
         )
@@ -215,14 +216,14 @@ def _scrape_direct(query: str, city: str, state: str, max_results: int, headless
             provider='browser_maps', query=query, city=city, state=state,
             page_cursor='',
             status='playwright_not_installed',
-            error=f'Playwright not available: {e}. Run: pip install playwright && playwright install chromium',
+            error=str(classify(e, 'IMPORT')),
         )
     except Exception as e:
         return ProviderPage(
             provider='browser_maps', query=query, city=city, state=state,
             page_cursor='',
             status='scrape_error',
-            error=f'Scrape failed: {e}',
+            error=str(classify(e, 'UNKNOWN')),
         )
 
 
@@ -273,7 +274,7 @@ class BrowserMapsProvider(SearchProvider):
                 provider=self.provider_name, query=query, city=city, state=state,
                 page_cursor='',
                 status='json_file_not_found',
-                error=f'Scraper output not found: {path}. Run browser_maps_scraper.py first.',
+                error='CACHE_READ_ERROR:CACHE_READ',
             )
 
         try:
@@ -313,7 +314,7 @@ class BrowserMapsProvider(SearchProvider):
                 provider=self.provider_name, query=query, city=city, state=state,
                 page_cursor='', results=results,
                 next_page_cursor=raw.get('next_page_cursor', ''),
-                status=raw.get('status', 'ok'), error=raw.get('error', ''),
+                status=raw.get('status', 'ok'), error=safe_error(raw.get('error', '')) if raw.get('status', 'ok') != 'ok' else '',
                 request_count=1, cost_units=0, fetched_at=utc_now(),
             )
 
@@ -322,7 +323,7 @@ class BrowserMapsProvider(SearchProvider):
                 provider=self.provider_name, query=query, city=city, state=state,
                 page_cursor='',
                 status='json_read_error',
-                error=f'Failed to read JSON: {e}',
+                error=str(classify(e, 'CACHE_READ')),
             )
 
     def search_places(
@@ -382,10 +383,6 @@ class BrowserMapsProvider(SearchProvider):
             page_cursor=page_cursor,
             status='no_data_available',
             error=(
-                f'No cached results found. '
-                f'Run: python discovery/providers/browser_maps_scraper.py '
-                f'--query "{query}" --city {city} --state {state} '
-                f'--output data/browser_maps_cache/{_cache_key(query, city, state, "0")} '
-                f'Or set BROWSER_MAPS_MODE=direct or BROWSER_MAPS_JSON_FILE=/path/to/output.json'
+                'CACHE_READ_ERROR:CACHE_READ'
             ),
         )
