@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "release_id": "provider-diagnostics-20261024",
+  "source_commit": "8d63d2d45393509589261a1ddd0bbcf650a0d1b2",
+  "development_base_commit": "eceb019b70a3b24a1d90a4efeebd3692c446dd2c",
+  "author_identity": "codex-provider-engineering",
+  "target_files": [
+    {
+      "path": "discovery/providers/browser_maps.py",
+      "before_sha256": "88e53fa9afb3142186f1708f140cc0588810e34fd0c1a6ebc48d9dbef2e061c4",
+      "after_sha256": "ccc3615709d7a8d66c6b83e4fd04ab4436b5e8e34a44101f7006136edf1358c8",
+      "before_bytes": 15195,
+      "after_bytes": 12612,
+      "exact_forward_reverse": true,
+      "production_before_attestation": "PENDING"
+    },
+    {
+      "path": "discovery/providers/browser_maps_scraper.py",
+      "before_sha256": "18d1c79da73ef5e8c8673f538b83af0d493cc433d732a04c32a54c6277eecd49",
+      "after_sha256": "31f40b8a600f563e56f4ea2138c71d2596a38d31fdb14912363b6b263e569664",
+      "before_bytes": 25357,
+      "after_bytes": 23452,
+      "exact_forward_reverse": true,
+      "production_before_attestation": "PENDING"
+    },
+    {
+      "path": "discovery/models.py",
+      "before_sha256": "aa916b75df3b71c7c21c574d60a071f6e838991ef490558eed67df548c5f0638",
+      "after_sha256": "41b800ab2c47af55887a7111e0d05f683c6721ac933b3718feafbdcb9b15478c",
+      "before_bytes": 1425,
+      "after_bytes": 4358,
+      "exact_forward_reverse": true,
+      "production_before_attestation": "PENDING"
+    }
+  ],
+  "patch_sha256": "d342a4cbb96967ef601679ba00b77310e2c52b3cabcc950f84e2031052dcf7d8",
+  "release_ready": false,
+  "production_compatible": "UNVERIFIED",
+  "summary_zh": "开发基线精确正反补丁已验证；必须取得生产字节及scraper 路径许可后重验登记。",
+  "summary_en": "Exact forward/reverse development patch verified; production bytes and scraper scope approval are required before registration."
+}

@@ -1,0 +1,64 @@
+{
+  "mode": "OFFLINE_FIXED_CACHE",
+  "live_requests": 0,
+  "production_db_access": false,
+  "formal_safe_contribution": 0,
+  "observed": [
+    {
+      "case": "empty_success",
+      "attempt": 1,
+      "status": "ok",
+      "error": "",
+      "result_count": 0,
+      "ok": true,
+      "next_page_cursor": ""
+    },
+    {
+      "case": "empty_success",
+      "attempt": 2,
+      "status": "ok",
+      "error": "",
+      "result_count": 0,
+      "ok": true,
+      "next_page_cursor": ""
+    },
+    {
+      "case": "partial_failure",
+      "attempt": 1,
+      "status": "partial",
+      "error": "NETWORK_TIMEOUT:NAVIGATION",
+      "result_count": 1,
+      "ok": false,
+      "next_page_cursor": ""
+    },
+    {
+      "case": "partial_failure",
+      "attempt": 2,
+      "status": "partial",
+      "error": "NETWORK_TIMEOUT:NAVIGATION",
+      "result_count": 1,
+      "ok": false,
+      "next_page_cursor": ""
+    },
+    {
+      "case": "invalid_shape",
+      "attempt": 1,
+      "status": "cache_read_error",
+      "error": "CACHE_READ_ERROR:CACHE_READ",
+      "result_count": 0,
+      "ok": false,
+      "next_page_cursor": ""
+    },
+    {
+      "case": "invalid_shape",
+      "attempt": 2,
+      "status": "cache_read_error",
+      "error": "CACHE_READ_ERROR:CACHE_READ",
+      "result_count": 0,
+      "ok": false,
+      "next_page_cursor": ""
+    }
+  ],
+  "summary_zh": "隔离固定缓存单次有界验证及重放，不计生产业务。",
+  "summary_en": "Bounded isolated fixed-cache verification and replay; no production business contribution."
+}
