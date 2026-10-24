@@ -182,8 +182,8 @@ def extract_place_data_from_card(card_element) -> dict | None:
             'raw_text': card_text[:500],
         }
 
-    except Exception as e:
-        raise ProviderFailure(ErrorCode.RESULT_PARSE_ERROR, "PARSE") from None
+    except Exception as exc:
+        raise classify(exc, "PARSE") from None
 
 
 def _is_external_link(href: str) -> bool:
@@ -214,7 +214,7 @@ def extract_detail_fields(page, maps_url: str) -> dict:
     """Open a place DETAIL page and read website / full address / phone.
 
     Returns dict with keys website, formatted_address, phone ('' when missing).
-    Fail-soft: any error returns empty strings so the scrape never hangs.
+    Missing optional fields remain empty; operation failures retain diagnostics.
     """
     result = {'website': '', 'formatted_address': '', 'phone': ''}
     if not maps_url:
@@ -372,6 +372,7 @@ def scrape_google_maps(query: str, city: str = '', state: str = '',
     non-ok page or advances its cursor. No challenge bypass or automatic retry.
     """
     results_data, errors = [], []
+    direct_place = False
     browser = context = page = None
     stage = 'IMPORT'
     search_url = GMAPS_SEARCH_URL.format(query=query.replace(' ', '+'))
@@ -402,16 +403,15 @@ def scrape_google_maps(query: str, city: str = '', state: str = '',
                     stage = 'PARSE'
                     direct = extract_direct_place_data(page, page.url)
                     if direct:
+                        direct_place = True
                         results_data.append(direct)
                     else:
                         stage = 'DOM'
                         try:
                             page.wait_for_selector('div[role="article"]', timeout=15000)
                         except Exception as exc:
-                            # A timeout alone does not prove a layout change.
-                            # The known Results feed with no expected cards does.
-                            if page.query_selector('[role="feed"]'):
-                                raise ProviderFailure(ErrorCode.DOM_LAYOUT_CHANGED, 'DOM') from None
+                            # Feed presence cannot distinguish slow loading from
+                            # a layout change; preserve the actual exception.
                             raise classify(exc, 'DOM') from None
                         seen, scroll_attempts, last_count = set(), 0, 0
                         while len(results_data) < max_results and scroll_attempts <= MAX_SCROLLS:
@@ -468,7 +468,7 @@ def scrape_google_maps(query: str, city: str = '', state: str = '',
         enriched = []
     output = {
         'provider': 'browser_maps', 'query': query, 'city': city, 'state': state,
-        'page_cursor': '', 'next_page_cursor': str(len(enriched)) if not errors and enriched else '',
+        'page_cursor': '', 'next_page_cursor': str(len(enriched)) if not errors and enriched and not direct_place else '',
         'status': ('partial' if enriched else 'scrape_error') if errors else 'ok',
         'error': errors[0] if errors else '', 'results': enriched,
         'request_count': 1, 'cost_units': 0, 'errors': errors, 'collected_at': utc_now(),

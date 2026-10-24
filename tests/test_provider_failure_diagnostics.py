@@ -150,7 +150,7 @@ class DiagnosticsTests(unittest.TestCase):
         self.assertEqual([h.page.closed,h.context.closed,h.browser.closed,h.stopped],[1]*4)
 
     def test_no_unproven_empty_result(self):
-        for feed, code in [(True, 'DOM_LAYOUT_CHANGED'),(False,'NETWORK_TIMEOUT')]:
+        for feed, code in [(True, 'NETWORK_TIMEOUT'),(False,'NETWORK_TIMEOUT')]:
             h = Harness(FakePage(text='fixture',feed=feed,wait_failure=TimeoutError(SECRET)))
             result = h.run()
             self.assertEqual(result['error'], code+':DOM')
@@ -171,14 +171,30 @@ class DiagnosticsTests(unittest.TestCase):
         with patch.object(scraper,'extract_direct_place_data',return_value={'business_name':'Fixture Store','website':'https://fixture.test','google_maps_url':'https://maps.invalid/place'}):
             result = h.run()
         self.assertEqual(result['status'],'ok')
+        self.assertEqual(result['next_page_cursor'], '')
         self.assertTrue(result['results'][0]['place_id'])
         self.assertEqual(result['results'][0]['city'],'Fixture City')
 
-    def test_card_exception_is_explicit_parse_failure(self):
-        card = SimpleNamespace(query_selector=lambda _: (_ for _ in ()).throw(ValueError(SECRET)))
-        with self.assertRaises(ProviderFailure) as caught:
-            scraper.extract_place_data_from_card(card)
-        self.assertEqual(str(caught.exception),'RESULT_PARSE_ERROR:PARSE')
+    def test_card_exception_preserves_evidence_and_unknown(self):
+        closed = type('TargetClosedError', (Exception,), {'__module__':'playwright._impl._errors'})
+        for exc, code in [(ValueError(SECRET), 'UNKNOWN_PROVIDER_ERROR'),
+                          (RuntimeError(SECRET), 'UNKNOWN_PROVIDER_ERROR'),
+                          (TimeoutError(SECRET), 'NETWORK_TIMEOUT'),
+                          (closed(SECRET), 'BROWSER_PROCESS_EXITED'),
+                          (RuntimeError('net::ERR_PROXY_CONNECTION_FAILED '+SECRET), 'PROXY_CONNECTION_ERROR'),
+                          (socket.gaierror(1, SECRET), 'DNS_RESOLUTION_ERROR')]:
+            with self.subTest(code=code):
+                card = SimpleNamespace(query_selector=lambda _, exc=exc: (_ for _ in ()).throw(exc))
+                with self.assertRaises(ProviderFailure) as caught:
+                    scraper.extract_place_data_from_card(card)
+                self.assertEqual(str(caught.exception),code+':PARSE')
+
+    def test_feed_does_not_override_browser_exit_or_unknown(self):
+        closed = type('TargetClosedError', (Exception,), {'__module__':'playwright._impl._errors'})
+        for exc, code in [(closed(SECRET), 'BROWSER_PROCESS_EXITED'),
+                          (RuntimeError(SECRET), 'UNKNOWN_PROVIDER_ERROR')]:
+            h = Harness(FakePage(text='fixture', feed=True, wait_failure=exc))
+            self.assertEqual(h.run()['error'], code+':DOM')
 
     def test_cleanup_failure_does_not_skip_other_cleanup_or_primary_error(self):
         h = Harness(FakePage(goto_failure=TimeoutError(SECRET)))
@@ -270,6 +286,44 @@ class CacheContractTests(unittest.TestCase):
             for _ in range(3): self.assertTrue(p.search_places('q','c','s').ok)
             self.assertEqual(live.call_count,1)
             self.assertEqual(len(list(Path(td).glob('*.json'))),1)
+
+
+class ServiceFailureBoundaryTests(unittest.TestCase):
+    def test_success_then_partial_failure_restart_never_consumes_unknown_rows(self):
+        import sqlite3
+        from tests.test_discovery_service import DiscoveryDb, result
+        from discovery.discovery_service import DiscoveryService
+        from discovery.models import ProviderPage
+        from retail_city_queue import activate_next_city
+        calls = []
+        class Pages:
+            provider_name = 'mock'
+            configured = True
+            def search_places(self, query, city, state, page_cursor='', page_size=20):
+                calls.append(page_cursor)
+                failed = bool(page_cursor)
+                return ProviderPage('mock', query, city, state, page_cursor,
+                    [result('Unconsumed' if failed else 'Fixture', result_id='bad' if failed else 'good', email='', website='')],
+                    next_page_cursor='untrusted' if failed else 'page2',
+                    status='partial' if failed else 'ok',
+                    error='UNKNOWN_PROVIDER_ERROR:PARSE' if failed else '')
+        fixture = DiscoveryDb()
+        with fixture as conn:
+            city = activate_next_city(conn)
+            first = DiscoveryService(conn, provider=Pages()).run_places_batch(city, max_pages=2)
+            self.assertEqual(first.status, 'partial')
+            conn.commit()  # Simulate the orchestrator's transaction boundary.
+            for _ in range(3):
+                with contextlib.closing(sqlite3.connect(fixture.db_path)) as reopened:
+                    reopened.row_factory = sqlite3.Row
+                    observed = DiscoveryService(reopened, provider=Pages()).run_places_batch(activate_next_city(reopened), max_pages=2)
+                    self.assertEqual(observed.status, 'partial')
+                    self.assertEqual(reopened.execute('SELECT COUNT(*) FROM lead_discovery_results').fetchone()[0], 1)
+                    self.assertEqual(reopened.execute('SELECT page_cursor FROM retail_city_queue WHERE id=?', (city['id'],)).fetchone()[0], 'page2')
+                    self.assertEqual(reopened.execute("SELECT COUNT(*) FROM lead_discovery_results WHERE provider_result_id='bad'").fetchone()[0], 0)
+                    self.assertEqual(reopened.execute('SELECT COUNT(*) FROM leads').fetchone()[0], 0)
+                    reopened.commit()
+            self.assertEqual(calls, ['', 'page2', 'page2', 'page2', 'page2'])
 
 
 if __name__ == '__main__': unittest.main()
