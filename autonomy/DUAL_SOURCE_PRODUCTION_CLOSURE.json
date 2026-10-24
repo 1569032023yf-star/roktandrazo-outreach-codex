@@ -278,31 +278,36 @@
   "latest_cycle_summary_zh": "已按生产快照逐函数重建城市补丁，两文件精确正反向校验通过，14项恢复测试通过；扩展回归95项中94通过、1项静态扫描失败，原开发副本同项复现。独立审核、登记、部署与真实城市验收待完成。",
   "latest_cycle_summary_en": "Rebuilt the city patch function by function against pinned production snapshots. Both files pass exact forward/reverse checks and all 14 recovery tests pass. Expanded regression: 94/95 passed; the static-scan failure also reproduces on the original development tree. Independent review, registration, deployment and production city acceptance remain pending.",
   "last_read_only_reconciliation": {
-    "task_id": "BD-FULL-HEARTBEAT-20261023T050757",
+    "task_id": "BD-FULL-HEARTBEAT-20261024T185627",
     "source": "codex_heartbeat",
-    "trigger": "2026-10-23T05:07:57.860Z",
-    "observed_at": "2026-10-23T05:08:48.448466+00:00",
+    "trigger": "2026-10-24T18:56:27.379Z",
+    "observed_at": "2026-10-24T18:57:13.773321+00:00",
     "branch": "codex/autonomous-bd-supervisor",
-    "input_commit": "a2c414541c023f531e8ee989b185a5e270c45001",
-    "initial_dirty": false,
-    "tests": "PASS official health/status/telemetry/runtime/city/provider reconciliation and publication hash",
-    "reviewer": "Prior independent diagnosis review retained; no source or business-evidence change",
+    "input_commit": "e201fd52b22203a5238a1303de8c5e622745bc2d",
+    "initial_dirty": [
+      "patches/production/provider_diagnostics_20261024/",
+      "tools/package_provider_diagnostics.py"
+    ],
+    "tests": "Official health/status/telemetry each returned UNKNOWN_TRANSPORT_FAILURE; no mutation attempted",
+    "reviewer": "Prior scoped engineering reviews retained; untracked package not executed or approved",
     "operation_id": "op-20261022-231834-15aa6f",
     "production_side_effects": [],
     "external_side_effects": [
       "Git report push"
     ],
     "counts_as_complete_unattended_cycle": false,
-    "next_action": "Await approved sanitized exception evidence; observe original Inventory13:16:07+08",
-    "summary_zh": "13:08正式对账无变化，WB与Issue2无新错误补证；下一原运行13:16尚未到。SAFE UNKNOWN，SMTP0，无新增完整无人值守验收。",
-    "summary_en": "13:08 official reconciliation unchanged, with no new WB or Issue2 error evidence. Next original13:16 run is not due yet. SAFE UNKNOWN, SMTP0; no complete unattended acceptance added.",
+    "current_safe": "UNKNOWN",
+    "production_runtime": "UNKNOWN_TRANSPORT_FAILURE",
     "workbuddy_commit": "cee2844a1ff2fa2ad03cc5e7490766053092f410",
-    "latest_issue_comment": 6344368601,
+    "latest_issue_comment": 6363896182,
+    "new_reply": false,
+    "next_action": "Use persisted bounded network recovery before next read-only reconciliation; retain existing release blockers. Review untracked offline package without importing production executor. No replay, apply, bridge restart or scope modification.",
+    "summary_zh": "正式health/status/telemetry均传输失败，当前生产状态不能核验。WB固定提交与Issue2无新交接。保留两个未提交发布准备产物，未执行其导入生产executor的脚本；不重试生产副作用、不重启bridge。",
+    "summary_en": "Official health/status/telemetry all failed in transport; current production state is unverified. WB and Issue2 have no new handoff. Preserved two untracked packaging artifacts; did not execute the script importing the production executor. No side-effect replay or bridge restart.",
     "evidence_sha256": {
-      "city.json": "12849cce6cc004c8c13ef0ce9204af15742749fb1ef0c6fb5fa09a543251e103",
-      "provider.json": "59e11c6251296d2b7251e1f281faaa03f94aa3cf3e2bce41583105b15f4b2efd",
-      "runtime.json": "037564d859fd37c623bc0bbe6d0e831312be5abcbead03072d500999f53fed69",
-      "status.json": "db7c55ff68f7cc92ce11a100a2505aa7e74a5bcc5c7ab923fbb3f5c6ec59b04a"
+      "health.json": "d3d7597eb517c68406eab7861b9a1b62eda82b4f81494f1c598d3f1723125ad4",
+      "status.json": "0d7196a2c2bd6bcc0f5d925c0425ddf672ffd403672180a08a29ee7967373313",
+      "telemetry.json": "c4d0cb9a2a3c0ea4f80aac407770f55200cd11aa1244947470885639b6a444dc"
     }
   },
   "latest_inventory_acceptance": {
