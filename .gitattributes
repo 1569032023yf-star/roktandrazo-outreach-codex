@@ -12,3 +12,8 @@ autonomy/task_dispatch.py -text
 tests/test_acceleration_pipeline.py -text
 docs/AUTONOMOUS_NETWORK_AND_DISPATCH.md -text
 autonomy/evidence/acceleration_pipeline_20261022/** -text
+
+# Preserve provider release and reviewed report bytes / 保留诊断发布与审核报告字节
+patches/production/provider_diagnostics_20261024/** -text
+autonomy/evidence/lake_p0_20261023/*20261025* -text
+tools/package_provider_diagnostics.py -text
