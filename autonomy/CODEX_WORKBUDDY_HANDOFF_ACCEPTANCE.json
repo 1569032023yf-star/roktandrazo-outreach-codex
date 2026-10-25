@@ -73,12 +73,12 @@
     "WorkBuddy owns cross-session lifecycle; only normal hidden startup used, without breakaway or security-policy changes"
   ],
   "last_read_only_reconciliation": {
-    "task_id": "BD-FULL-HEARTBEAT-20261025T025500",
+    "task_id": "BD-FULL-HEARTBEAT-20261025T045932",
     "source": "codex_heartbeat",
-    "trigger": "2026-10-25T02:55:00.410Z",
-    "observed_at": "2026-10-25T02:55:35.490972+00:00",
+    "trigger": "2026-10-25T04:59:32.218Z",
+    "observed_at": "2026-10-25T05:00:04.674872+00:00",
     "branch": "codex/autonomous-bd-supervisor",
-    "input_commit": "a84ff0d2d3de2484d55cefb0fdc399ca1b3debb0",
+    "input_commit": "acbedaa06e736546b27000fee49c347609e4ef59",
     "initial_dirty": false,
     "tests": "Three official read-only transport attempts failed; no source changes or repeated tests",
     "reviewer": "Prior source and package scoped reviews retained",
@@ -98,9 +98,9 @@
     "summary_zh": "正式三路仍传输失败；WB与Issue2无新回复。原认证恢复及生产源码范围阻塞未变，最新审核候选保留；无生产副作用及新增完整无人值守验收。",
     "summary_en": "All three official routes still fail in transport; WB and Issue2 are unchanged. Original auth recovery and approved production scope/source remain blocked. Retain the reviewed candidate; no production side effects or full unattended acceptance added.",
     "evidence_sha256": {
-      "health.json": "2d99b7d40d070656fb97ed270b2e5caba0164ffe3db7db0984db95d9538510ef",
-      "status.json": "d7eb3c222db2b373507d45fdaa5838baa3982a70d9a1f7ca297c7e6f1cb5abc6",
-      "telemetry.json": "b3f76d29fffd80eb46aec528eafd6e159ebced14c67a5545afb3461da055dfb0"
+      "health.json": "5dc6efa66786b1c458b502a5a0f58cc853f7613d5d9e043c0532b40829c02b83",
+      "status.json": "716f9d4a39c8a3c1862b16b7fd16657a3367ad3e3b778366cbd806a45c6d838a",
+      "telemetry.json": "050c9bf4fe9ef892c2a4a84938e67eea1f9941a8ca8a85354205a645e44bc72c"
     }
   },
   "latest_inventory_acceptance": {
