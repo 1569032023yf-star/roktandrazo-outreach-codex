@@ -278,36 +278,69 @@
   "latest_cycle_summary_zh": "已按生产快照逐函数重建城市补丁，两文件精确正反向校验通过，14项恢复测试通过；扩展回归95项中94通过、1项静态扫描失败，原开发副本同项复现。独立审核、登记、部署与真实城市验收待完成。",
   "latest_cycle_summary_en": "Rebuilt the city patch function by function against pinned production snapshots. Both files pass exact forward/reverse checks and all 14 recovery tests pass. Expanded regression: 94/95 passed; the static-scan failure also reproduces on the original development tree. Independent review, registration, deployment and production city acceptance remain pending.",
   "last_read_only_reconciliation": {
-    "task_id": "BD-FULL-HEARTBEAT-20261024T185627",
+    "task_id": "BD-FULL-HEARTBEAT-20261025T005558",
     "source": "codex_heartbeat",
-    "trigger": "2026-10-24T18:56:27.379Z",
-    "observed_at": "2026-10-24T18:57:13.773321+00:00",
+    "trigger": "2026-10-25T00:55:58.567Z",
+    "observed_at": "2026-10-25T00:56:41.748898+00:00",
     "branch": "codex/autonomous-bd-supervisor",
-    "input_commit": "e201fd52b22203a5238a1303de8c5e622745bc2d",
-    "initial_dirty": [
-      "patches/production/provider_diagnostics_20261024/",
-      "tools/package_provider_diagnostics.py"
-    ],
-    "tests": "Official health/status/telemetry each returned UNKNOWN_TRANSPORT_FAILURE; no mutation attempted",
-    "reviewer": "Prior scoped engineering reviews retained; untracked package not executed or approved",
+    "input_commit": "30fccc9574074df07280fe89d2f88f4cbf2589af",
+    "initial_dirty": false,
+    "tests": "Three official read-only transport attempts failed; no source changes or repeated tests",
+    "reviewer": "Prior source and package scoped reviews retained",
     "operation_id": "op-20261022-231834-15aa6f",
     "production_side_effects": [],
     "external_side_effects": [
       "Git report push"
     ],
     "counts_as_complete_unattended_cycle": false,
+    "latest_issue_comment": 6388364866,
+    "new_operations_reply": false,
+    "workbuddy_commit": "f33f50d1408d560991d7c9eca850e70678e9c2c9",
+    "workbuddy_evidence_scope": "Commit diff confirms previously recorded automation-auth-unavailable; no recovery evidence or new approved scraper bytes. Historical target_met-short-circuit prose is not accepted as source-proven behavior.",
     "current_safe": "UNKNOWN",
     "production_runtime": "UNKNOWN_TRANSPORT_FAILURE",
-    "workbuddy_commit": "cee2844a1ff2fa2ad03cc5e7490766053092f410",
-    "latest_issue_comment": 6363896182,
-    "new_reply": false,
-    "next_action": "Use persisted bounded network recovery before next read-only reconciliation; retain existing release blockers. Review untracked offline package without importing production executor. No replay, apply, bridge restart or scope modification.",
-    "summary_zh": "正式health/status/telemetry均传输失败，当前生产状态不能核验。WB固定提交与Issue2无新交接。保留两个未提交发布准备产物，未执行其导入生产executor的脚本；不重试生产副作用、不重启bridge。",
-    "summary_en": "Official health/status/telemetry all failed in transport; current production state is unverified. WB and Issue2 have no new handoff. Preserved two untracked packaging artifacts; did not execute the script importing the production executor. No side-effect replay or bridge restart.",
+    "next_action": "Consume existing auth-restoration and approved production snapshots/scope reply; read-only channel reconciliation under bounded policy. No bridge changes, forced Inventory, replay or reapply.",
+    "summary_zh": "正式health/status/telemetry仍传输失败。WB新提交仅确认已知调度认证故障，未提供恢复或批准源码；Issue2新增仅候选交付说明，无运维回复。保留最新8d63d2d候选及既有发布阻塞，未重跑或回退。",
+    "summary_en": "Official health/status/telemetry remain unavailable. New WB commit confirms the known scheduler-auth failure without recovery or approved source evidence; new Issue2 comment is candidate delivery only, not an operations reply. Retain8d63d2d and existing release blockers without replay or rollback.",
     "evidence_sha256": {
-      "health.json": "d3d7597eb517c68406eab7861b9a1b62eda82b4f81494f1c598d3f1723125ad4",
-      "status.json": "0d7196a2c2bd6bcc0f5d925c0425ddf672ffd403672180a08a29ee7967373313",
-      "telemetry.json": "c4d0cb9a2a3c0ea4f80aac407770f55200cd11aa1244947470885639b6a444dc"
+      "health.json": "23bdfcf7ba8c505911d236cfa8d98fb000d325b7fb255aab4f588ab219503db0",
+      "status.json": "72c7db3665d25f91062683a6d587f4c8cb27a58f3ff26745ca1c0f2e9d3a32a9",
+      "telemetry.json": "ec595eea5dadb3fc5f45c1694d56c02c6a0925d4204ff445d77cb15e91049600"
+    },
+    "network_recovery": {
+      "health": {
+        "operation": "health",
+        "last_error": "UNKNOWN_NETWORK_FAILURE",
+        "attempt_count": 1,
+        "next_retry_at": null,
+        "automatic_replay": false,
+        "budget_exhausted": false,
+        "action": "BLOCKED",
+        "blocked_reason": "UNKNOWN_NETWORK_FAILURE",
+        "next_action": "Await a verified authorization, policy or conflict resolution; do not rotate credentials or bypass policy."
+      },
+      "status": {
+        "operation": "status",
+        "last_error": "UNKNOWN_NETWORK_FAILURE",
+        "attempt_count": 1,
+        "next_retry_at": null,
+        "automatic_replay": false,
+        "budget_exhausted": false,
+        "action": "BLOCKED",
+        "blocked_reason": "UNKNOWN_NETWORK_FAILURE",
+        "next_action": "Await a verified authorization, policy or conflict resolution; do not rotate credentials or bypass policy."
+      },
+      "telemetry": {
+        "operation": "telemetry",
+        "last_error": "UNKNOWN_NETWORK_FAILURE",
+        "attempt_count": 1,
+        "next_retry_at": null,
+        "automatic_replay": false,
+        "budget_exhausted": false,
+        "action": "BLOCKED",
+        "blocked_reason": "UNKNOWN_NETWORK_FAILURE",
+        "next_action": "Await a verified authorization, policy or conflict resolution; do not rotate credentials or bypass policy."
+      }
     }
   },
   "latest_inventory_acceptance": {

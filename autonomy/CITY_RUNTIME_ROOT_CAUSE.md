@@ -198,3 +198,12 @@ Diagnostic enhancement completed with independent scoped engineering approval. O
 Official health/status/telemetry all failed in transport; current production state is unverified. WB and Issue2 have no new handoff. Preserved two untracked packaging artifacts; did not execute the script importing the production executor. No side-effect replay or bridge restart.
 
 下一步 / Next: Use persisted bounded network recovery before next read-only reconciliation; retain existing release blockers. Review untracked offline package without importing production executor. No replay, apply, bridge restart or scope modification.
+
+
+## 2026-10-25 心跳对账 / Heartbeat reconciliation
+
+正式health/status/telemetry仍传输失败。WB新提交仅确认已知调度认证故障，未提供恢复或批准源码；Issue2新增仅候选交付说明，无运维回复。保留最新8d63d2d候选及既有发布阻塞，未重跑或回退。
+
+Official health/status/telemetry remain unavailable. New WB commit confirms the known scheduler-auth failure without recovery or approved source evidence; new Issue2 comment is candidate delivery only, not an operations reply. Retain8d63d2d and existing release blockers without replay or rollback.
+
+下一步 / Next: Consume existing auth-restoration and approved production snapshots/scope reply; read-only channel reconciliation under bounded policy. No bridge changes, forced Inventory, replay or reapply.
