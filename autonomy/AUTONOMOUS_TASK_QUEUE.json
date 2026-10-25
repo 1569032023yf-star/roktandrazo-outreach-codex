@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-24T19:07:43.237092+00:00",
+  "updated_at": "2026-10-25T21:30:26.383472+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -570,6 +570,16 @@
       "blocked_reason": "ORIGINAL_AUTOMATION_AUTH_UNAVAILABLE",
       "next_action": "Consume WorkBuddy original scheduler auth recovery and natural receipts; do not force execution.",
       "evidence_comment": 6388324879
+    },
+    {
+      "id": "A-unattended-architecture-20261026",
+      "workstream": "A",
+      "role": "developer",
+      "attempts": 0,
+      "status": "in_progress",
+      "executor": "current_authorized_chat",
+      "checkpoint": "autonomy/evidence/unattended_20261026/POLICY_PROGRESS.md",
+      "next_action": "offline bridge evidence and transactional recovery tests; no production dispatch"
     }
   ]
 }
