@@ -1217,12 +1217,12 @@
     "summary_en": "Original scheduled run verifies16 complete trace events and Cooperstown closure; next-city progression and business growth await subsequent original runs."
   },
   "last_read_only_reconciliation": {
-    "task_id": "BD-FULL-HEARTBEAT-20261025T110137",
+    "task_id": "BD-FULL-HEARTBEAT-20261025T130509",
     "source": "codex_heartbeat",
-    "trigger": "2026-10-25T11:01:37.807Z",
-    "observed_at": "2026-10-25T11:02:09.957868+00:00",
+    "trigger": "2026-10-25T13:05:09.892Z",
+    "observed_at": "2026-10-25T13:05:41.723198+00:00",
     "branch": "codex/autonomous-bd-supervisor",
-    "input_commit": "81eb5ff54333c7f7cef8db11d9edc4f661bd00ce",
+    "input_commit": "e644ed25d88a5e88fa1bace38b80c8198014bce6",
     "initial_dirty": false,
     "tests": "Three official read-only transport attempts failed; no source changes or repeated tests",
     "reviewer": "Prior source and package scoped reviews retained",
@@ -1242,9 +1242,9 @@
     "summary_zh": "正式三路仍传输失败；WB与Issue2无新回复。原认证恢复及生产源码范围阻塞未变，最新审核候选保留；无生产副作用及新增完整无人值守验收。",
     "summary_en": "All three official routes still fail in transport; WB and Issue2 are unchanged. Original auth recovery and approved production scope/source remain blocked. Retain the reviewed candidate; no production side effects or full unattended acceptance added.",
     "evidence_sha256": {
-      "health.json": "a8c207787f92865021c076e07bf1903956eb13424cf3507d18f8cbf2010567c2",
-      "status.json": "bf5e36e89de1182d605c76b0251ebc7b783f9b10ea3e4b04132d084ce55e3855",
-      "telemetry.json": "aac7fc2306468fbf012090afb516aa5b8d10d7a88b4b268e9e11cc03eea5f5a3"
+      "health.json": "e9e92cefec2436f206375d3fc0a97a99936d0b59c2112aff36703b8fe78f4a11",
+      "status.json": "5f1cf7a47571b647c984a709d532cd5c3bb81fea399d2812d288d8e7366f2e16",
+      "telemetry.json": "e43ae5cac66414f72a1fb6c645ca0c536155228497723b30d1b056da642a062c"
     }
   },
   "latest_inventory_acceptance": {
