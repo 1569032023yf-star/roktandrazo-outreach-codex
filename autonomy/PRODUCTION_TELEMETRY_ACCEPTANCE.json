@@ -724,12 +724,12 @@
     "summary_en": "Original scheduled run verifies16 complete trace events and Cooperstown closure; next-city progression and business growth await subsequent original runs."
   },
   "last_read_only_reconciliation": {
-    "task_id": "BD-FULL-HEARTBEAT-20261025T005558",
+    "task_id": "BD-FULL-HEARTBEAT-20261025T025500",
     "source": "codex_heartbeat",
-    "trigger": "2026-10-25T00:55:58.567Z",
-    "observed_at": "2026-10-25T00:56:41.748898+00:00",
+    "trigger": "2026-10-25T02:55:00.410Z",
+    "observed_at": "2026-10-25T02:55:35.490972+00:00",
     "branch": "codex/autonomous-bd-supervisor",
-    "input_commit": "30fccc9574074df07280fe89d2f88f4cbf2589af",
+    "input_commit": "a84ff0d2d3de2484d55cefb0fdc399ca1b3debb0",
     "initial_dirty": false,
     "tests": "Three official read-only transport attempts failed; no source changes or repeated tests",
     "reviewer": "Prior source and package scoped reviews retained",
@@ -746,47 +746,12 @@
     "current_safe": "UNKNOWN",
     "production_runtime": "UNKNOWN_TRANSPORT_FAILURE",
     "next_action": "Consume existing auth-restoration and approved production snapshots/scope reply; read-only channel reconciliation under bounded policy. No bridge changes, forced Inventory, replay or reapply.",
-    "summary_zh": "正式health/status/telemetry仍传输失败。WB新提交仅确认已知调度认证故障，未提供恢复或批准源码；Issue2新增仅候选交付说明，无运维回复。保留最新8d63d2d候选及既有发布阻塞，未重跑或回退。",
-    "summary_en": "Official health/status/telemetry remain unavailable. New WB commit confirms the known scheduler-auth failure without recovery or approved source evidence; new Issue2 comment is candidate delivery only, not an operations reply. Retain8d63d2d and existing release blockers without replay or rollback.",
+    "summary_zh": "正式三路仍传输失败；WB与Issue2无新回复。原认证恢复及生产源码范围阻塞未变，最新审核候选保留；无生产副作用及新增完整无人值守验收。",
+    "summary_en": "All three official routes still fail in transport; WB and Issue2 are unchanged. Original auth recovery and approved production scope/source remain blocked. Retain the reviewed candidate; no production side effects or full unattended acceptance added.",
     "evidence_sha256": {
-      "health.json": "23bdfcf7ba8c505911d236cfa8d98fb000d325b7fb255aab4f588ab219503db0",
-      "status.json": "72c7db3665d25f91062683a6d587f4c8cb27a58f3ff26745ca1c0f2e9d3a32a9",
-      "telemetry.json": "ec595eea5dadb3fc5f45c1694d56c02c6a0925d4204ff445d77cb15e91049600"
-    },
-    "network_recovery": {
-      "health": {
-        "operation": "health",
-        "last_error": "UNKNOWN_NETWORK_FAILURE",
-        "attempt_count": 1,
-        "next_retry_at": null,
-        "automatic_replay": false,
-        "budget_exhausted": false,
-        "action": "BLOCKED",
-        "blocked_reason": "UNKNOWN_NETWORK_FAILURE",
-        "next_action": "Await a verified authorization, policy or conflict resolution; do not rotate credentials or bypass policy."
-      },
-      "status": {
-        "operation": "status",
-        "last_error": "UNKNOWN_NETWORK_FAILURE",
-        "attempt_count": 1,
-        "next_retry_at": null,
-        "automatic_replay": false,
-        "budget_exhausted": false,
-        "action": "BLOCKED",
-        "blocked_reason": "UNKNOWN_NETWORK_FAILURE",
-        "next_action": "Await a verified authorization, policy or conflict resolution; do not rotate credentials or bypass policy."
-      },
-      "telemetry": {
-        "operation": "telemetry",
-        "last_error": "UNKNOWN_NETWORK_FAILURE",
-        "attempt_count": 1,
-        "next_retry_at": null,
-        "automatic_replay": false,
-        "budget_exhausted": false,
-        "action": "BLOCKED",
-        "blocked_reason": "UNKNOWN_NETWORK_FAILURE",
-        "next_action": "Await a verified authorization, policy or conflict resolution; do not rotate credentials or bypass policy."
-      }
+      "health.json": "2d99b7d40d070656fb97ed270b2e5caba0164ffe3db7db0984db95d9538510ef",
+      "status.json": "d7eb3c222db2b373507d45fdaa5838baa3982a70d9a1f7ca297c7e6f1cb5abc6",
+      "telemetry.json": "b3f76d29fffd80eb46aec528eafd6e159ebced14c67a5545afb3461da055dfb0"
     }
   },
   "latest_inventory_acceptance": {
