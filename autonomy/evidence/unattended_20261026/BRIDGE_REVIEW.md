@@ -43,3 +43,9 @@ English: Inputs such as authenticated=True are not self-authenticating and must 
 中文：本轮仅读源码、跑离线测试及写本报告；无生产写入、登录/注销、重启、任务注册、网络采集或SMTP，不修改源码、不提交。下一步固定文件提交，在正式只读观测消费端保留这些限定；如未来要验收持续存活，需单独完整事件链与实际自然无人值守周期凭证。报告中英双语、数量、风险、未执行与下一步自检通过，无秘密或客户资料。
 
 English: Only source reading, offline tests and this report occurred. No production write, login/logout, reboot, task registration, collection or SMTP; source was unchanged and no commit created. Next pin the files in a commit and preserve these limitations in formal read-only consumers. Future continuous-availability acceptance requires a separate complete event history and actual natural unattended-cycle receipts. Bilingual, count, risk, unperformed-action and next-step checks passed without secrets or customer data.
+
+## 固定提交复核 / Pinned commit verification
+
+2026-10-26：独立逐字节比对 Git 提交 18ef7582c9714ad16fe853804689635172bc7d89 的两个文件与上述审核输入，完全一致；此前未提交状态已由该提交固定。原有限范围结论不变。
+
+On 2026-10-26, both Git blobs at 18ef7582c9714ad16fe853804689635172bc7d89 were independently compared byte-for-byte against the reviewed files and matched exactly. This pins the previously uncommitted inputs; the limited verdict remains unchanged.
