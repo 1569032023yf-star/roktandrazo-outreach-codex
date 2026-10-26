@@ -1,17 +1,17 @@
-# U1当前恢复点 / U1 current recovery checkpoint
+# U1当前恢复点 / U1 current checkpoint
 
-2026-10-26：A/B及签名适配固定66680a2通过独立35项离线测试审核，已随8b031e4推送。增长/预算模块已实际落盘，本周期重跑13项定向测试通过，但仍为待审核开发候选，不构成完整U1验收。
+源码候选 / Source candidate: `1eca7e7f361f48dccdd7cca7b80c1ef7cb3ae0ac`。
 
-A/B and signed adapter at66680a2 passed independent35-test offline review and were pushed with8b031e4. The growth/budget implementation exists and13 targeted tests passed this cycle, but remains a development candidate pending review, not complete U1 acceptance.
+D五项阻断与两项边界已在c17dfca修复并通过独立复审。最新组合测试已直接使用LedgerEvidenceVerifier及签名有效期；独立22项单进程测试通过（1.153秒）。详见D_REREVIEW.md与ADAPTER_INTEGRATION_REVIEW.md。 / Five D blockers and two boundary findings were fixed at c17dfca and independently re-reviewed. The latest composition tests directly use LedgerEvidenceVerifier and signed expiry; all22 independent single-process tests passed in1.153 seconds. See the two review reports.
 
-全量基线运行因内存压力中断，未产生完整result.json；失败/错误ID集合未知，NO_NEW_REGRESSION=UNKNOWN。当前宿主可用内存约419MiB，继续仅轻量定向测试。实现与审核代理此前均遇账户用量限制；本周期恢复D静态独审。
+宿主可用内存459276KB，本周期未启动多进程或完整suite。完整基线/候选失败ID比较仍未完成，NO_NEW_REGRESSION=UNKNOWN。 / Available host memory was459276KB; no multiprocessing or full suite was launched. Complete baseline/candidate failure-ID comparison remains pending; NO_NEW_REGRESSION=UNKNOWN.
 
-Full baseline regression was interrupted by memory pressure without a complete result.json. Failure/error ID sets are unavailable and NO_NEW_REGRESSION=UNKNOWN. Available host memory is approximately419MiB; only lightweight targeted testing continues. Implementation and review agents previously hit account limits; D static review was resumed this cycle.
+新增SOURCE_CANDIDATE_MANIFEST.json按固定Git blob记录五个候选文件SHA；生产目标均UNAPPROVED，不能作为安装清单执行。回滚遵循U1_RELEASE_GATES.md，保留未知结果与预算账本，不恢复陈旧数据库覆盖已发生副作用。 / The source manifest pins five Git-blob hashes with all production targets UNAPPROVED; it is not an executable installation manifest. Rollback preserves unknown outcomes and budget history under U1_RELEASE_GATES.md.
 
-重点待审：不完整首测是否抢占冻结baseline、SAFE时间与规则可比性、跨规则变化及预算request到slot身份绑定。13项测试通过不证明上述边界已满足。需补回归并完成独立审查后才能宣称增长账本ready。
+Issue2本周期核对最新仍6402130583，无新补证；未重复回执。canonical及投影已移除过期的认证故障阻塞，改为等待新自然运行证据。 / Issue2 still ends at6402130583 with no new evidence; no duplicate receipt was sent. Canonical queue and projection replace the obsolete authentication blocker with fresh natural-run evidence pending.
 
-Review priorities include incomplete observations freezing baselines, SAFE time/rule comparability, rule transitions and budget-request binding to slot identity. Passing13 tests does not establish these boundaries. Add regressions and finish independent review before claiming growth-ledger readiness.
+DEVELOPMENT_COMPLETE=false; SCOPED_REVIEW_PASSED=true; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false; BUSINESS_GROWTH=UNKNOWN.
 
-DEVELOPMENT_COMPLETE=false；RELEASE_READY=false；PRODUCTION_DEPLOYED=false；PRODUCTION_ACCEPTED=false。原Inventory保留，未创建第二Inventory，无生产DB写入、采集或邮件发送。正式health最近一次为UNKNOWN_TRANSPORT_FAILURE，当前SAFE/新增企业/新增邮箱/无人登录周期均UNKNOWN。下一自动动作：闭环D审查问题、复测、签名与预算组合验收、在资源允许时完成基线候选回归，随后生成最终受控包。
+下一自动动作：资源允许时重跑多进程与完整基线候选回归；继续正式执行适配、可信身份与唯一锁合同的受控接入准备。生产安装/身份/ACL/出口/窗口授权尚未请求，不执行生产变更。 / Next: rerun multiprocessing and complete comparable regression when resources permit; continue controlled preparation of the execution adapter, trusted identity and sole-lock contracts. Installation, identity, ACL, egress and window approval have not been requested; no production changes are performed.
 
-Development/release/deployment/production acceptance remain false. Original Inventory preserved; no second Inventory, production DB writes, collection or mail. Latest formal health attempt was UNKNOWN_TRANSPORT_FAILURE. Current SAFE, new organizations/emails and unattended cycles are UNKNOWN. Next: resolve D findings, rerun tests, validate signed budget integration, complete regression comparison when resources permit, then prepare the final controlled package.
+本周期生产副作用为零，保留原Inventory，未采集、写生产数据库、发信或调整配额。 / This cycle had no production effects: original Inventory preserved, no collection, production database writes, mail or quota changes.

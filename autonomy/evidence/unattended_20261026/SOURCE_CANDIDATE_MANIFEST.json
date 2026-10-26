@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "description_zh": "仅开发候选源文件清单，不是生产安装授权。",
+  "description_en": "Development source inventory only; not production installation authority.",
+  "source_commit": "1eca7e7f361f48dccdd7cca7b80c1ef7cb3ae0ac",
+  "hash_basis": "git blob bytes",
+  "files": [
+    {
+      "path": "autonomy/durable_slots.py",
+      "sha256": "f39ecb66701d934bc342d415709dad96bc6be31778e61e7e92d7be133b5f80a9",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/growth_ledger.py",
+      "sha256": "a8b7d5bb3f26fc55cdd0376240797cea175010c8a47643341ef86f9ffefeb166",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/host_preparation.py",
+      "sha256": "ba3bf2edf4f39c130a1f56d8246a92476758ac53e223a3d067c02a987cd011d2",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/ledger_evidence.py",
+      "sha256": "ba5c0ecaaf7bb6e4909d85a81eb112721162a35e6e406246d337c0c0d43058f9",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/config/u1_host_disabled.xml",
+      "sha256": "571bac0b08270bd4c7031c39f56b530eeb6007570699b55bce71966820c67908",
+      "production_target": "UNAPPROVED"
+    }
+  ],
+  "RELEASE_READY": false,
+  "PRODUCTION_DEPLOYED": false,
+  "blockers": [
+    "FULL_BASELINE_CANDIDATE_REGRESSION_PENDING",
+    "PRODUCTION_ENTRYPOINT_AND_SOLE_LOCK_INTEGRATION_PENDING",
+    "TRUST_ROOT_AND_NONINTERACTIVE_IDENTITY_PENDING",
+    "SCHEMA_MIGRATION_AND_PUBLISHER_COMPATIBILITY_PENDING"
+  ],
+  "rollback_document": "U1_RELEASE_GATES.md"
+}
