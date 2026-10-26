@@ -1,6 +1,7 @@
 import hashlib
 import hmac
 import multiprocessing as mp
+import sqlite3
 from pathlib import Path
 import tempfile
 import unittest
@@ -79,7 +80,7 @@ class GrowthTests(unittest.TestCase):
     def test_safe_conflict_rule_change_incomplete_history(self):
         self.observe(0);self.observe(10,[('new',True)],safe=(2,3))
         r=self.l.report('2026-10-26',now=T+10)
-        self.assertEqual(r['SAFE_LATEST'],'UNKNOWN');self.assertEqual(r['SAFE_NET_CHANGE'],'UNKNOWN');self.assertEqual(r['NEW_UNIQUE_ORGANIZATIONS'],'UNKNOWN')
+        self.assertEqual(r['reason'],'BASELINE_MISSING')
 
     def test_rule_change_no_false_requalification(self):
         self.history();self.observe(0);self.observe(10,[('prior',True)],rule='changed')
@@ -135,16 +136,132 @@ class GrowthTests(unittest.TestCase):
         with self.assertRaisesRegex(GrowthError,'ACTUAL_COST_OVERRUN'):self.l.reserve(request('b'),now=T+10)
         with self.assertRaises(GrowthError):self.settle('a',now=T+21,actual=amounts(0))
 
-    def test_reserve_before_claim_failure_keeps_budget(self):
-        class ClaimFailure:
-            calls=0
-            def claim(self,*a,**kw):self.calls+=1;raise RuntimeError('synthetic-claim-failure')
-        fake=ClaimFailure();self.caps(n=1)
-        with self.assertRaises(RuntimeError):self.l.reserve_then_claim(request('a'),fake,'slot',{},now=T+10,epoch=1,owner='o')
-        with self.assertRaises(GrowthError):self.l.reserve_then_claim(request('a'),fake,'slot',{},now=T+10,epoch=1,owner='o')
-        self.assertEqual(fake.calls,1)
-        with self.assertRaises(GrowthError):self.l.reserve_then_claim(request('b'),fake,'slot',{},now=T+10,epoch=1,owner='o')
-        self.assertEqual(fake.calls,1)
+    def slot_fixture(self,slot='slot',name='a'):
+        from autonomy.durable_slots import DurableSlots
+        from autonomy.growth_ledger import digest
+        def verify(e):
+            # Real B signature verification; A receives only authenticated data.
+            p=consumer().verify(e,kind=e['payload']['kind'],now=T+10)
+            return dict(p,inventory=p['inventory_id'],observed=p['observed_at_epoch'],expires=T+100)
+        ledger=DurableSlots(str(Path(self.temp.name)/'slots.sqlite'),verify=verify)
+        ledger.initialize()
+        ledger.switch_authority(0,'owner',signed('authority',T+10,previous_epoch=0,owner='owner',drained=True,old_disabled=True),now=T+10)
+        ledger.admit_due(slot,T+10,signed('schedule',T+10,slot=slot,next_due=T+10,epoch=1,owner='owner',latest_due=True),now=T+10,epoch=1,owner='owner')
+        binding=dict(inventory_id=INVENTORY,slot=slot,epoch=1,owner='owner')
+        run=digest(binding);binding.update(run_id=run,request_id=oid(name))
+        e=signed('budget_request',T+10,request_id=oid(name),run_id=run,day=business_day(T+10),amount=amounts(),cache_hit=False,claim_binding=binding)
+        se=signed('idle',T+10,slot=slot,epoch=1,owner='owner',run_id=run,request_id=oid(name),external_state='idle',existing_lock_held=True)
+        return ledger,e,se
+
+    def test_real_slot_bound_reserve_before_claim(self):
+        from autonomy.lock_recovery import exclusive_lock
+        from autonomy.growth_ledger import digest
+        self.caps(n=1);ledger,e,se=self.slot_fixture()
+        with self.assertRaisesRegex(GrowthError,'EXISTING_LOCK_REQUIRED'):
+            self.l.reserve_then_claim(e,ledger,'slot',se,now=T+10,epoch=1,owner='owner')
+        with exclusive_lock(Path(self.temp.name)/'lock'):
+            for field,value in [('slot','different'),('owner','other'),('epoch',2),('run_id',oid('unrelated'))]:
+                payload=dict(e['payload']);payload['claim_binding']=dict(payload['claim_binding'],**{field:value})
+                bad=dict(payload=payload,mac=hmac.new(KEY,canonical(payload),hashlib.sha256).hexdigest())
+                with self.assertRaisesRegex(GrowthError,'CLAIM_BINDING_MISMATCH'):
+                    self.l.reserve_then_claim(bad,ledger,'slot',se,now=T+10,epoch=1,owner='owner')
+            from autonomy.durable_slots import LedgerError
+            for field,value in [('run_id',oid('wrong')),('request_id',oid('wrong-request'))]:
+                payload=dict(se['payload'],**{field:value})
+                bad=dict(payload=payload,mac=hmac.new(KEY,canonical(payload),hashlib.sha256).hexdigest())
+                with self.assertRaises(LedgerError):self.l.reserve_then_claim(e,ledger,'slot',bad,now=T+10,epoch=1,owner='owner')
+            token=self.l.reserve_then_claim(e,ledger,'slot',se,now=T+10,epoch=1,owner='owner')
+            self.assertEqual(ledger.snapshot()[0][2],'claimed')
+            with self.l.tx() as c:
+                row=c.execute('SELECT claim_hash,binding FROM reservations').fetchone()
+                self.assertEqual(row['claim_hash'],digest(token));self.assertIn('slot',row['binding'])
+            with self.assertRaises(GrowthError):self.l.reserve_then_claim(e,ledger,'slot',se,now=T+10,epoch=1,owner='owner')
+
+    def test_real_claim_failure_keeps_budget(self):
+        from autonomy.lock_recovery import exclusive_lock
+        from autonomy.durable_slots import LedgerError
+        self.caps(n=1);ledger,e,se=self.slot_fixture()
+        # A preexisting claim conflicts with the new preparation; D reserves
+        # first and cannot refund automatically after the conflict.
+        with exclusive_lock(Path(self.temp.name)/'lock'):
+            ledger.claim('slot',se,now=T+10,epoch=1,owner='owner')
+            with self.assertRaises(LedgerError):self.l.reserve_then_claim(e,ledger,'slot',se,now=T+10,epoch=1,owner='owner')
+            with self.assertRaises(GrowthError):self.l.reserve_then_claim(e,ledger,'slot',se,now=T+10,epoch=1,owner='owner')
+            with self.assertRaisesRegex(GrowthError,'CAP_REACHED'):self.l.reserve(request('b'),now=T+10)
+
+    def test_incomplete_interval_cannot_be_repaired_by_next_sample(self):
+        self.history();self.observe(0)
+        self.observe(10,[('partial',True)],complete=False)
+        for n in (10,20):
+            if n==20:self.observe(n)
+            r=self.l.report('2026-10-26',now=T+n)
+            self.assertEqual(r['NEW_UNIQUE_ORGANIZATIONS'],'UNKNOWN')
+            self.assertEqual(r['SAFE_NET_CHANGE'],'UNKNOWN')
+        with self.l.tx() as c:self.assertEqual([r[0] for r in c.execute('SELECT complete FROM measurements ORDER BY observed')],[1,0,1])
+
+    def test_incomplete_first_does_not_freeze_or_block_history(self):
+        self.observe(0,[('untrusted-prefix',True)],complete=False)
+        self.assertEqual(self.l.report('2026-10-26',now=T)['reason'],'BASELINE_MISSING')
+        self.history();self.observe(10,[('verified',False)])
+        first=self.l.report('2026-10-26',now=T+10)
+        self.assertEqual(first['baseline_id'],oid('event10'));self.assertTrue(first['partial_day'])
+        self.observe(20,[('new',True)])
+        self.assertEqual(self.l.report('2026-10-26',now=T+20)['NEW_UNIQUE_ORGANIZATIONS'],1)
+
+    def test_freshness_and_baseline_lower_bound(self):
+        self.history();self.observe(5)
+        r=self.l.report('2026-10-26',now=T+21605)
+        self.assertEqual(r['SAFE_LATEST'],'UNKNOWN');self.assertEqual(r['SAFE_NET_CHANGE'],'UNKNOWN')
+        self.assertEqual(r['SAFE_HISTORICAL_VALUE'],2)
+        r=self.l.report('2026-10-26',now=T+4)
+        self.assertEqual(r['SAFE_LATEST'],'UNKNOWN');self.assertEqual(r['SAFE_NET_CHANGE'],'UNKNOWN')
+        with self.assertRaises(GrowthError):self.l.report('2026-10-26',now=T+5,max_age_seconds=21600)
+
+    def test_rule_aba_stays_incomparable(self):
+        self.history();self.observe(0);self.observe(10,rule='B');self.observe(20,safe=(3,3))
+        r=self.l.report('2026-10-26',now=T+20)
+        self.assertEqual(r['SAFE_NET_CHANGE'],'UNKNOWN');self.assertEqual(r['NEW_UNIQUE_ORGANIZATIONS'],'UNKNOWN')
+
+    def test_merge_events_persist_across_days(self):
+        self.history();self.observe(0);self.observe(10,[('alias',True),('alias2',False)])
+        self.l.merge(signed('growth_merge',T+11,event_id=oid('m1'),source=oid('alias'),target=oid('prior')),now=T+11)
+        self.l.merge(signed('growth_merge',T+86411,event_id=oid('m2'),source=oid('alias2'),target=oid('old')),now=T+86411)
+        r=self.l.report('2026-10-26',now=T+20)
+        self.assertEqual(r['reason'],'IDENTITY_MERGE_REQUIRES_REBASELINE')
+        with self.l.tx() as c:self.assertEqual(c.execute('SELECT count(*) FROM merge_events').fetchone()[0],2)
+
+    def test_current_qualification_digest_excludes_exited(self):
+        from autonomy.growth_ledger import digest
+        self.history();self.observe(0,[('prior',False)])
+        with self.l.tx() as c:
+            self.assertEqual(c.execute('SELECT qualified_hash FROM baselines').fetchone()[0],digest([]))
+            row=c.execute('SELECT qualified_at,current_qualified FROM organizations WHERE id=?',(oid('prior'),)).fetchone()
+            self.assertIsNotNone(row[0]);self.assertEqual(row[1],0)
+        self.observe(10,[('prior',True)])
+        self.assertEqual(self.l.report('2026-10-26',now=T+10)['EXISTING_ORGANIZATIONS_NEWLY_QUALIFIED'],0)
+
+    def test_schema_rejects_legacy_tampered_and_overflow_time(self):
+        self.l.initialize()
+        legacy=str(Path(self.temp.name)/'legacy.sqlite')
+        c=sqlite3.connect(legacy);c.execute('CREATE TABLE organizations(id TEXT)');c.commit();c.close()
+        with self.assertRaisesRegex(GrowthError,'INCOMPATIBLE_SCHEMA'):GrowthLedger(legacy).initialize()
+        c=sqlite3.connect(self.path);c.execute('ALTER TABLE measurements ADD COLUMN unexpected TEXT');c.commit();c.close()
+        with self.assertRaisesRegex(GrowthError,'INCOMPATIBLE_SCHEMA'):self.l.report('2026-10-26',now=T)
+        with self.assertRaisesRegex(GrowthError,'INVALID_TIMESTAMP'):business_day(2**53)
+
+    def test_real_slot_not_claimed_when_budget_denied(self):
+        from autonomy.lock_recovery import exclusive_lock
+        ledger,e,se=self.slot_fixture()
+        with exclusive_lock(Path(self.temp.name)/'lock'):
+            with self.assertRaisesRegex(GrowthError,'APPROVED_CAP_MISSING'):
+                self.l.reserve_then_claim(e,ledger,'slot',se,now=T+10,epoch=1,owner='owner')
+        self.assertEqual(ledger.snapshot()[0][2],'pending')
+
+    def test_rejected_safe_first_measurement_defers_baseline(self):
+        self.history();self.observe(0,safe=(2,3));self.observe(10)
+        r=self.l.report('2026-10-26',now=T+10)
+        self.assertEqual(r['baseline_id'],oid('event10'))
+        self.assertTrue(r['partial_day'])
 
     def test_commit_ack_lost_no_repeated_charge(self):
         self.caps()

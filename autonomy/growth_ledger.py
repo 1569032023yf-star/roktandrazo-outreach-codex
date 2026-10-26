@@ -14,6 +14,21 @@ from zoneinfo import ZoneInfo
 
 from autonomy.unattended_policy import INVENTORY
 
+SCHEMA_VERSION = 2
+SCHEMA = (
+                'CREATE TABLE growth_meta (key TEXT PRIMARY KEY,value TEXT NOT NULL)',
+                'CREATE TABLE organizations (id TEXT PRIMARY KEY,first_seen INTEGER NOT NULL,historical INTEGER NOT NULL,qualified_at INTEGER,rule TEXT,current_qualified INTEGER NOT NULL,current_rule TEXT NOT NULL)',
+                'CREATE TABLE aliases (id TEXT PRIMARY KEY,canonical TEXT NOT NULL)',
+                'CREATE TABLE assets (kind TEXT NOT NULL,id TEXT NOT NULL,first_seen INTEGER NOT NULL,historical INTEGER NOT NULL,PRIMARY KEY(kind,id))',
+                'CREATE TABLE baselines (day TEXT PRIMARY KEY,baseline TEXT NOT NULL,observed INTEGER NOT NULL,rule TEXT NOT NULL,snapshot TEXT NOT NULL,known_hash TEXT NOT NULL,qualified_hash TEXT NOT NULL,partial INTEGER NOT NULL,complete INTEGER NOT NULL,safe INTEGER)',
+                'CREATE TABLE measurements (id TEXT PRIMARY KEY,observed INTEGER NOT NULL,rule TEXT NOT NULL,safe INTEGER,reason TEXT NOT NULL,complete INTEGER NOT NULL)',
+                'CREATE TABLE growth_receipts (id TEXT PRIMARY KEY,hash TEXT NOT NULL)',
+                'CREATE TABLE caps (day TEXT PRIMARY KEY,limits TEXT NOT NULL,run_wall INTEGER NOT NULL,proof TEXT NOT NULL)',
+                'CREATE TABLE reservations (id TEXT PRIMARY KEY,day TEXT NOT NULL,run TEXT NOT NULL,amount TEXT NOT NULL,charged TEXT NOT NULL,state TEXT NOT NULL,request_hash TEXT NOT NULL,receipt_hash TEXT,binding TEXT,claim_hash TEXT)',
+                'CREATE TABLE merge_events (id TEXT PRIMARY KEY,observed INTEGER NOT NULL)',
+                'CREATE TABLE runs (id TEXT PRIMARY KEY,wall_limit INTEGER NOT NULL)',
+                'CREATE TABLE budget_hold (singleton INTEGER PRIMARY KEY CHECK(singleton=1),until_epoch INTEGER NOT NULL)')
+
 DIMENSIONS = ('provider_operations','http_navigations','official_pages','browser_seconds','paid_units','wall_seconds')
 
 
@@ -42,8 +57,11 @@ def digest(v):
 
 
 def business_day(stamp):
-    local=datetime.fromtimestamp(integer(stamp),timezone.utc).astimezone(ZoneInfo('Asia/Shanghai'))
-    return (local-timedelta(hours=1)).date().isoformat()
+    try:
+        local=datetime.fromtimestamp(integer(stamp),timezone.utc).astimezone(ZoneInfo('Asia/Shanghai'))
+        return (local-timedelta(hours=1)).date().isoformat()
+    except (OverflowError,OSError,ValueError):
+        raise GrowthError('INVALID_TIMESTAMP') from None
 
 
 def day_start(day):
@@ -52,7 +70,7 @@ def day_start(day):
         if d.strftime('%Y-%m-%d') != day:
             raise ValueError()
         return int(d.replace(hour=1,tzinfo=ZoneInfo('Asia/Shanghai')).timestamp())
-    except (ValueError,TypeError):
+    except (ValueError,TypeError,OverflowError,OSError):
         raise GrowthError('INVALID_DAY') from None
 
 
@@ -79,13 +97,20 @@ class GrowthLedger:
         return p
 
     @contextmanager
-    def tx(self):
+    def tx(self, *, initialize=False):
         c=None
         try:
             c=sqlite3.connect(self.path,timeout=5,isolation_level=None)
             c.row_factory=sqlite3.Row
             c.execute('PRAGMA synchronous=FULL')
             c.execute('BEGIN IMMEDIATE')
+            tables=c.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'").fetchall()
+            expected={sql.lower() for sql in SCHEMA}
+            actual={r[0].lower() for r in tables}
+            version=c.execute('PRAGMA user_version').fetchone()[0]
+            if not (initialize and not tables and version==0):
+                if version!=SCHEMA_VERSION or actual!=expected:
+                    raise GrowthError('INCOMPATIBLE_SCHEMA')
             yield c
             self.fault('before_commit'); c.commit(); self.fault('after_commit')
         except (sqlite3.Error,OSError):
@@ -98,19 +123,11 @@ class GrowthLedger:
             if c is not None:c.close()
 
     def initialize(self):
-        with self.tx() as c:
-            for sql in (
-                'CREATE TABLE IF NOT EXISTS growth_meta (key TEXT PRIMARY KEY,value TEXT NOT NULL)',
-                'CREATE TABLE IF NOT EXISTS organizations (id TEXT PRIMARY KEY,first_seen INTEGER NOT NULL,historical INTEGER NOT NULL,qualified_at INTEGER,rule TEXT)',
-                'CREATE TABLE IF NOT EXISTS aliases (id TEXT PRIMARY KEY,canonical TEXT NOT NULL)',
-                'CREATE TABLE IF NOT EXISTS assets (kind TEXT NOT NULL,id TEXT NOT NULL,first_seen INTEGER NOT NULL,historical INTEGER NOT NULL,PRIMARY KEY(kind,id))',
-                'CREATE TABLE IF NOT EXISTS baselines (day TEXT PRIMARY KEY,baseline TEXT NOT NULL,observed INTEGER NOT NULL,rule TEXT NOT NULL,snapshot TEXT NOT NULL,known_hash TEXT NOT NULL,qualified_hash TEXT NOT NULL,partial INTEGER NOT NULL,complete INTEGER NOT NULL,safe INTEGER)',
-                'CREATE TABLE IF NOT EXISTS measurements (id TEXT PRIMARY KEY,observed INTEGER NOT NULL,rule TEXT NOT NULL,safe INTEGER,reason TEXT NOT NULL)',
-                'CREATE TABLE IF NOT EXISTS growth_receipts (id TEXT PRIMARY KEY,hash TEXT NOT NULL)',
-                'CREATE TABLE IF NOT EXISTS caps (day TEXT PRIMARY KEY,limits TEXT NOT NULL,run_wall INTEGER NOT NULL,proof TEXT NOT NULL)',
-                'CREATE TABLE IF NOT EXISTS reservations (id TEXT PRIMARY KEY,day TEXT NOT NULL,run TEXT NOT NULL,amount TEXT NOT NULL,charged TEXT NOT NULL,state TEXT NOT NULL,request_hash TEXT NOT NULL,receipt_hash TEXT)',
-                'CREATE TABLE IF NOT EXISTS budget_hold (singleton INTEGER PRIMARY KEY CHECK(singleton=1),until_epoch INTEGER NOT NULL)'):
+        with self.tx(initialize=True) as c:
+            if c.execute('PRAGMA user_version').fetchone()[0]==SCHEMA_VERSION:return
+            for sql in SCHEMA:
                 c.execute(sql)
+            c.execute('PRAGMA user_version=2')
             c.execute('INSERT OR IGNORE INTO budget_hold VALUES(1,0)')
 
     def _receipt(self,c,p):
@@ -144,7 +161,7 @@ class GrowthLedger:
             for row in p['organizations']:
                 oid=opaque(row['id'])
                 if type(row.get('qualified')) is not bool:raise GrowthError('INVALID_QUALIFICATION')
-                c.execute('INSERT INTO organizations VALUES (?,?,?,?,?)',(oid,stamp,1,stamp if row['qualified'] else None,rule if row['qualified'] else None))
+                c.execute('INSERT INTO organizations VALUES (?,?,?,?,?,?,?)',(oid,stamp,1,stamp if row['qualified'] else None,rule if row['qualified'] else None,int(row['qualified']),rule))
             for kind in ('site','email'):
                 for oid in p.get(kind+'s',[]):
                     c.execute('INSERT INTO assets VALUES (?,?,?,1)',(kind,opaque(oid),stamp))
@@ -163,19 +180,31 @@ class GrowthLedger:
         count=safe[0] if p['complete'] and safe[0] is not None and safe[0]==safe[1] else None
         reason='COMPARABLE' if count is not None else 'SAFE_READINGS_CONFLICT_OR_INCOMPLETE'
         day=business_day(stamp)
+        if type(p.get('organizations')) is not list:raise GrowthError('INVALID_OBSERVATION')
+        for row in p['organizations']:
+            if type(row) is not dict or type(row.get('qualified')) is not bool:raise GrowthError('INVALID_QUALIFICATION')
+            opaque(row.get('id'))
+        for kind in ('sites','emails'):
+            if type(p.get(kind,[])) is not list:raise GrowthError('INVALID_OBSERVATION')
+            for identifier in p.get(kind,[]):opaque(identifier)
         with self.tx() as c:
             if not self._receipt(c,p):return 'DUPLICATE'
             last=c.execute('SELECT max(observed) FROM measurements').fetchone()[0]
             if last is not None and stamp<last:raise GrowthError('OUT_OF_ORDER')
             complete=p['complete'] and c.execute("SELECT 1 FROM growth_meta WHERE key='history_complete'").fetchone() is not None
+            history_ready=c.execute("SELECT 1 FROM growth_meta WHERE key='history_complete'").fetchone() is not None
+            if not history_ready:
+                c.execute('INSERT INTO measurements VALUES (?,?,?,?,?,?)',(p['event_id'],stamp,rule,count,'HISTORY_INCOMPLETE',0))
+                return 'QUARANTINED_NO_HISTORY'
             for row in p['organizations']:
                 oid=self._root(c,row['id'])
                 if type(row.get('qualified')) is not bool:raise GrowthError('INVALID_QUALIFICATION')
                 old=c.execute('SELECT * FROM organizations WHERE id=?',(oid,)).fetchone()
                 historical=int(p['historical_import'])
                 if not old:
-                    c.execute('INSERT INTO organizations VALUES (?,?,?,?,?)',(oid,stamp,historical,(0 if historical else stamp) if row['qualified'] else None,rule if row['qualified'] else None))
+                    c.execute('INSERT INTO organizations VALUES (?,?,?,?,?,?,?)',(oid,stamp,historical,(0 if historical else stamp) if row['qualified'] else None,rule if row['qualified'] else None,int(row['qualified']),rule))
                 else:
+                    c.execute('UPDATE organizations SET current_qualified=?,current_rule=? WHERE id=?',(int(row['qualified']),rule,oid))
                     if historical:c.execute('UPDATE organizations SET historical=1 WHERE id=?',(oid,))
                     if row['qualified'] and old['qualified_at'] is None:
                         c.execute('UPDATE organizations SET qualified_at=?,rule=? WHERE id=?',(0 if historical else stamp,rule,oid))
@@ -184,9 +213,10 @@ class GrowthLedger:
                     c.execute('INSERT OR IGNORE INTO assets VALUES (?,?,?,?)',(kind,opaque(oid),stamp,int(p['historical_import'])))
                     if p['historical_import']:c.execute('UPDATE assets SET historical=1 WHERE kind=? AND id=?',(kind,oid))
             known=[r[0] for r in c.execute('SELECT id FROM organizations ORDER BY id')]
-            qualified=[r[0] for r in c.execute('SELECT id FROM organizations WHERE qualified_at IS NOT NULL ORDER BY id')]
-            c.execute('INSERT OR IGNORE INTO baselines VALUES (?,?,?,?,?,?,?,?,?,?)',(day,opaque(p['event_id']),stamp,rule,p['snapshot'],digest(known),digest(qualified),int(stamp!=day_start(day)),int(complete),count))
-            c.execute('INSERT INTO measurements VALUES (?,?,?,?,?)',(p['event_id'],stamp,rule,count,reason))
+            qualified=[r[0] for r in c.execute('SELECT id FROM organizations WHERE current_qualified=1 AND current_rule=? ORDER BY id',(rule,))]
+            if complete and count is not None and not p['historical_import']:
+                c.execute('INSERT OR IGNORE INTO baselines VALUES (?,?,?,?,?,?,?,?,?,?)',(day,opaque(p['event_id']),stamp,rule,p['snapshot'],digest(known),digest(qualified),int(stamp!=day_start(day)),int(complete),count))
+            c.execute('INSERT INTO measurements VALUES (?,?,?,?,?,?)',(p['event_id'],stamp,rule,count,reason,int(complete)))
         return 'RECORDED'
 
     def merge(self,envelope,*,now):
@@ -202,24 +232,29 @@ class GrowthLedger:
             c.execute('UPDATE organizations SET first_seen=?,historical=?,qualified_at=?,rule=? WHERE id=?',(min(a['first_seen'],b['first_seen']),max(a['historical'],b['historical']),q,rule,target))
             c.execute('DELETE FROM organizations WHERE id=?',(source,))
             c.execute('INSERT INTO aliases VALUES (?,?)',(source,target))
-            c.execute("INSERT OR REPLACE INTO growth_meta VALUES ('last_merge',?)",(str(now),))
+            c.execute('INSERT INTO merge_events VALUES (?,?)',(p['event_id'],now))
+            c.execute('UPDATE organizations SET current_qualified=0 WHERE id=?',(target,))
         return 'MERGED'
 
-    def report(self,day,*,now):
+    def report(self,day,*,now,max_age_seconds=300):
         day_start(day);integer(now)
+        if type(max_age_seconds) is not int or not 0<max_age_seconds<=3600:raise GrowthError('INVALID_FRESHNESS_POLICY')
         with self.tx() as c:
             b=c.execute('SELECT * FROM baselines WHERE day=?',(day,)).fetchone()
             if b is None:return {'status':'UNKNOWN','reason':'BASELINE_MISSING'}
             latest=c.execute('SELECT * FROM measurements WHERE observed<=? ORDER BY observed DESC,rowid DESC LIMIT 1',(now,)).fetchone()
             end=day_start(day)+86400
             rows=c.execute('SELECT * FROM organizations').fetchall()
-            merge=c.execute("SELECT value FROM growth_meta WHERE key='last_merge'").fetchone()
-            merged=merge is not None and b['observed']<=int(merge[0])<end
-            complete=bool(b['complete']) and latest is not None and latest['rule']==b['rule'] and not merged and b['observed']<=latest['observed']<end
-            result={'baseline_id':b['baseline'],'partial_day':bool(b['partial']),'business_day':day,'SAFE_LATEST':latest['safe'] if latest and latest['safe'] is not None else 'UNKNOWN','SAFE_NET_CHANGE':'UNKNOWN'}
+            merged=c.execute('SELECT 1 FROM merge_events WHERE observed>=? AND observed<?',(b['observed'],end)).fetchone() is not None
+            interval=c.execute('SELECT * FROM measurements WHERE observed>=? AND observed<=?',(b['observed'],min(now,end-1))).fetchall()
+            bad_interval=any(not r['complete'] or r['rule']!=b['rule'] for r in interval)
+            fresh=latest is not None and b['observed']<=latest['observed']<end and 0<=now-latest['observed']<=max_age_seconds
+            complete=bool(b['complete']) and fresh and not bad_interval and not merged
+            result={'baseline_id':b['baseline'],'partial_day':bool(b['partial']),'business_day':day,'SAFE_LATEST':'UNKNOWN','SAFE_NET_CHANGE':'UNKNOWN'}
             result['SAFE_OBSERVED_AT']=latest['observed'] if latest else None
-            if latest and business_day(latest['observed'])!=day:result['SAFE_LATEST']='UNKNOWN'
-            if b['complete'] and not merged and latest and latest['rule']==b['rule'] and latest['safe'] is not None and b['safe'] is not None and latest['observed']<end:
+            result['SAFE_HISTORICAL_VALUE']=latest['safe'] if latest else None
+            if fresh and latest['complete'] and latest['safe'] is not None:result['SAFE_LATEST']=latest['safe']
+            if complete and latest['safe'] is not None and b['safe'] is not None:
                 result['SAFE_NET_CHANGE']=latest['safe']-b['safe']
             within=lambda t:t is not None and b['observed']<t<=min(now,end-1)
             result['NEW_UNIQUE_ORGANIZATIONS']=sum(not r['historical'] and within(r['first_seen']) for r in rows) if complete else 'UNKNOWN'
@@ -227,7 +262,7 @@ class GrowthLedger:
             result['EXISTING_ORGANIZATIONS_NEWLY_QUALIFIED']=sum((r['historical'] or r['first_seen']<=b['observed']) and within(r['qualified_at']) and r['rule']==b['rule'] for r in rows) if complete else 'UNKNOWN'
             for kind,field in [('site','NEW_VERIFIED_OFFICIAL_SITES'),('email','NEW_FIRST_PARTY_EMAILS')]:
                 result[field]=sum(not r['historical'] and within(r['first_seen']) for r in c.execute('SELECT * FROM assets WHERE kind=?',(kind,))) if complete else 'UNKNOWN'
-            result['reason']='COMPARABLE' if complete else ('IDENTITY_MERGE_REQUIRES_REBASELINE' if merged else 'HISTORY_OR_RULE_INCOMPARABLE')
+            result['reason']='COMPARABLE' if complete else ('IDENTITY_MERGE_REQUIRES_REBASELINE' if merged else ('STALE_OR_OUTSIDE_BASELINE' if not fresh else 'INCOMPLETE_INTERVAL_OR_RULE_CHANGE'))
             result['safe_reason']=latest['reason'] if latest else 'NO_MEASUREMENT'
             return result
 
@@ -249,7 +284,9 @@ class GrowthLedger:
         if day!=business_day(now):raise GrowthError('BUDGET_DAY_MISMATCH')
         if type(p.get('cache_hit')) is not bool:raise GrowthError('INVALID_CACHE_FLAG')
         if p['cache_hit'] and any(amount[k] for k in DIMENSIONS if k!='wall_seconds'):raise GrowthError('CACHE_NETWORK_CONFLICT')
-        request_hash=digest({'day':day,'run':run,'amount':amount,'cache_hit':p['cache_hit']})
+        binding=p.get('claim_binding')
+        if binding is not None and type(binding) is not dict:raise GrowthError('INVALID_BINDING')
+        request_hash=digest({'day':day,'run':run,'amount':amount,'cache_hit':p['cache_hit'],'binding':binding})
         with self.tx() as c:
             old=c.execute('SELECT * FROM reservations WHERE id=?',(rid,)).fetchone()
             if old:
@@ -263,9 +300,11 @@ class GrowthLedger:
             total={k:sum(json.loads(r['charged'])[k] for r in rows) for k in DIMENSIONS}
             limits=json.loads(cap['limits'])
             if any(total[k]+amount[k]>limits[k] for k in DIMENSIONS):raise GrowthError('CAP_REACHED')
+            c.execute('INSERT OR IGNORE INTO runs VALUES (?,?)',(run,cap['run_wall']))
+            run_cap=min(cap['run_wall'],c.execute('SELECT wall_limit FROM runs WHERE id=?',(run,)).fetchone()[0])
             run_wall=sum(json.loads(r['charged'])['wall_seconds'] for r in c.execute('SELECT * FROM reservations WHERE run=?',(run,)))
-            if run_wall+amount['wall_seconds']>cap['run_wall']:raise GrowthError('RUN_WALL_CAP_REACHED')
-            c.execute('INSERT INTO reservations VALUES (?,?,?,?,?,?,?,NULL)',(rid,day,run,canonical(amount),canonical(amount),'reserved',request_hash))
+            if run_wall+amount['wall_seconds']>run_cap:raise GrowthError('RUN_WALL_CAP_REACHED')
+            c.execute('INSERT INTO reservations VALUES (?,?,?,?,?,?,?,NULL,?,NULL)',(rid,day,run,canonical(amount),canonical(amount),'reserved',request_hash,canonical(binding) if binding is not None else None))
         return 'RESERVED_NOT_DISPATCHED'
 
     def settle(self,envelope,*,now):
@@ -300,6 +339,28 @@ class GrowthLedger:
         duplicate request never retries claim. Only signed reconciliation can
         settle unused reservation. The caller still holds the existing run lock.
         """
+        from autonomy.lock_recovery import _ACTIVE_LEASE
+        if _ACTIVE_LEASE.get() is None:raise GrowthError('EXISTING_LOCK_REQUIRED')
+        p=self.evidence(envelope,'budget_request',now)
+        expected={'inventory_id':INVENTORY,'slot':slot,'epoch':epoch,'owner':owner}
+        if type(epoch) is not int or epoch<1 or type(slot) is not str or type(owner) is not str:
+            raise GrowthError('CLAIM_BINDING_MISMATCH')
+        run=digest(expected)
+        expected['run_id']=run
+        expected['request_id']=opaque(p['request_id'])
+        if p.get('run_id')!=run or p.get('claim_binding')!=expected:
+            raise GrowthError('CLAIM_BINDING_MISMATCH')
+        if any(type(p['claim_binding'].get(k)) is not type(v) for k,v in expected.items()):
+            raise GrowthError('CLAIM_BINDING_MISMATCH')
+        # Reverify the slot envelope through its own trust boundary; no untrusted
+        # outer fields can substitute for the signed common operation identity.
+        slot_ledger._evidence(slot_evidence,kind='idle',now=now,slot=slot,epoch=epoch,owner=owner,
+                              run_id=run,request_id=p['request_id'],external_state='idle',existing_lock_held=True)
         result=self.reserve(envelope,now=now)
         if result!='RESERVED_NOT_DISPATCHED':raise GrowthError('RESERVATION_RECONCILIATION_REQUIRED')
-        return slot_ledger.claim(slot,slot_evidence,now=now,epoch=epoch,owner=owner)
+        token=slot_ledger.claim(slot,slot_evidence,now=now,epoch=epoch,owner=owner)
+        # If this acknowledgement write fails, both sides retain uncertain state
+        # and the reservation cannot authorize another claim.
+        with self.tx() as c:
+            c.execute('UPDATE reservations SET claim_hash=? WHERE id=?',(digest(token),p['request_id']))
+        return token

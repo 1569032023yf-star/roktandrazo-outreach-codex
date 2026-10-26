@@ -1,0 +1,30 @@
+{
+  "baseline": "9a4b99fc34072afa4c2c74968e2e6ba8c36911ca",
+  "schema_version": 2,
+  "test_scope": "selected single-process tests / 单进程定向测试",
+  "tests_passed": 22,
+  "duration_seconds": 1.156,
+  "multiprocess_test": "NOT_RERUN_MEMORY_CONSTRAINT",
+  "full_regression": "NOT_RUN",
+  "independent_review": "PENDING",
+  "release_ready": false,
+  "production_deployed": false,
+  "production_db_writes": 0,
+  "smtp_calls": 0,
+  "fixes": [
+    "interval_completeness",
+    "qualified_first_baseline",
+    "freshness_and_lower_bound",
+    "rule_ABA",
+    "signed_claim_budget_binding",
+    "per_event_merges",
+    "current_qualification_digest",
+    "schema_failclosed"
+  ],
+  "hashes": {
+    "autonomy/growth_ledger.py": "464bc915150943132034231affab9556853c9d0de5a5e5c9ad33ab259998a570",
+    "test_growth_ledger.py": "acb07e50dc7cd6f100e089c6517dbd1f21dc792a08ffb072ee61e3ee6db71f96"
+  },
+  "note_zh": "实现者修复自检，不等于独立审核；未重跑多进程。",
+  "note_en": "Implementer repair validation, not independent review; multiprocessing was not rerun."
+}
