@@ -17,7 +17,7 @@ def oid(x):return hashlib.sha256(x.encode()).hexdigest()
 def consumer():return EvidenceConsumer({'fixture':TrustedSource('fixture','fixture-user',KEY)})
 
 def signed(kind,now,**data):
-    p=dict(schema='rokt.host-evidence.v1',source_id='fixture',principal_id='fixture-user',inventory_id=INVENTORY,kind=kind,observed_at_epoch=now,receipt_id='fixture-receipt',**data)
+    p=dict(schema='rokt.host-evidence.v1',source_id='fixture',principal_id='fixture-user',inventory_id=INVENTORY,kind=kind,observed_at_epoch=now,expires_at_epoch=now+100,receipt_id='fixture-receipt',**data)
     return dict(payload=p,mac=hmac.new(KEY,canonical(p),hashlib.sha256).hexdigest())
 
 def amounts(n=1):return dict.fromkeys(DIMENSIONS,n)
@@ -139,10 +139,8 @@ class GrowthTests(unittest.TestCase):
     def slot_fixture(self,slot='slot',name='a'):
         from autonomy.durable_slots import DurableSlots
         from autonomy.growth_ledger import digest
-        def verify(e):
-            # Real B signature verification; A receives only authenticated data.
-            p=consumer().verify(e,kind=e['payload']['kind'],now=T+10)
-            return dict(p,inventory=p['inventory_id'],observed=p['observed_at_epoch'],expires=T+100)
+        from autonomy.ledger_evidence import LedgerEvidenceVerifier
+        verify = LedgerEvidenceVerifier(consumer(), lambda: T+10)
         ledger=DurableSlots(str(Path(self.temp.name)/'slots.sqlite'),verify=verify)
         ledger.initialize()
         ledger.switch_authority(0,'owner',signed('authority',T+10,previous_epoch=0,owner='owner',drained=True,old_disabled=True),now=T+10)
