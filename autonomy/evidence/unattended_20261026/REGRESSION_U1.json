@@ -1,0 +1,18 @@
+{
+  "schema": "rokt.u1-regression.v1",
+  "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
+  "candidate_commit": null,
+  "status": "BASELINE_INTERRUPTED_MEMORY_PRESSURE",
+  "baseline_complete": false,
+  "candidate_complete": false,
+  "baseline_failure_ids": null,
+  "baseline_error_ids": null,
+  "candidate_failure_ids": null,
+  "candidate_error_ids": null,
+  "NO_NEW_REGRESSION": "UNKNOWN",
+  "FULL_SUITE_PASSED": "UNKNOWN",
+  "development_marker_present": true,
+  "raw_log": "roktandrazo-u1-regression-baseline/autonomy/runtime/u1-regression-baseline/raw.txt",
+  "summary_zh": "基线受内存压力中止，无完整集合；候选未启动。",
+  "summary_en": "Baseline interrupted due to memory pressure; complete ID sets unavailable and candidate not started."
+}
