@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-26T06:06:37.865533+00:00",
+  "updated_at": "2026-10-26T14:19:56.089489+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -578,12 +578,13 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/unattended_20261026/POLICY_PROGRESS.md",
-      "next_action": "durable_slots process fault tests; host preparation separate tree; growth ledger follows",
+      "checkpoint": "autonomy/evidence/unattended_20261026/D_REVIEW.md",
+      "next_action": "fix five D findings and regression cases; independent rereview; no production deployment",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
-      "review_status": "PENDING_FINAL_U1",
-      "production_deployed": false
+      "review_status": "D_CHANGES_REQUIRED",
+      "production_deployed": false,
+      "release_ready": false
     }
   ]
 }
