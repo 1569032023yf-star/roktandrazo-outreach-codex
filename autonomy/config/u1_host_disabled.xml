@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo><Description>OFFLINE CANDIDATE ONLY; Inventory 1784775229336; never register without approved cutover.</Description></RegistrationInfo>
+  <Triggers />
+  <Principals><Principal id="U1DedicatedIdentity">
+    <UserId>REQUIRES_APPROVED_DEDICATED_ACCOUNT</UserId>
+    <LogonType>Password</LogonType><RunLevel>LeastPrivilege</RunLevel>
+  </Principal></Principals>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <AllowStartOnDemand>false</AllowStartOnDemand>
+    <StartWhenAvailable>false</StartWhenAvailable>
+    <Enabled>false</Enabled>
+    <ExecutionTimeLimit>PT1M</ExecutionTimeLimit>
+  </Settings>
+  <Actions Context="U1DedicatedIdentity"><Exec>
+    <Command>REQUIRES_APPROVED_MACHINE_PYTHON_PATH</Command>
+    <Arguments>-B -m autonomy.host_preparation</Arguments>
+    <WorkingDirectory>REQUIRES_APPROVED_READ_ONLY_CODE_DIRECTORY</WorkingDirectory>
+  </Exec></Actions>
+</Task>
