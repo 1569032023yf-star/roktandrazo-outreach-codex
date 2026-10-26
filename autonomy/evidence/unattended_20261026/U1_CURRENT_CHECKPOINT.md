@@ -15,3 +15,7 @@ DEVELOPMENT_COMPLETE=false; SCOPED_REVIEW_PASSED=true; RELEASE_READY=false; PROD
 下一自动动作：资源允许时重跑多进程与完整基线候选回归；继续正式执行适配、可信身份与唯一锁合同的受控接入准备。生产安装/身份/ACL/出口/窗口授权尚未请求，不执行生产变更。 / Next: rerun multiprocessing and complete comparable regression when resources permit; continue controlled preparation of the execution adapter, trusted identity and sole-lock contracts. Installation, identity, ACL, egress and window approval have not been requested; no production changes are performed.
 
 本周期生产副作用为零，保留原Inventory，未采集、写生产数据库、发信或调整配额。 / This cycle had no production effects: original Inventory preserved, no collection, production database writes, mail or quota changes.
+
+## 后续信任边界验证 / Subsequent trust-boundary validation
+
+7f848aa补充真实签名的过期、未来时间、缺失有效期、别名注入、错误身份与来源拒绝用例；独立2项测试通过（0.049秒），见TRUST_BOUNDARY_REVIEW.md。本轮可用内存538856KB，继续不运行重型测试。源码实现未改变，原Git blob清单仍有效，发布与生产状态保持false。 / 7f848aa adds signed expiry, future timestamp, missing lifetime, alias injection and identity/source rejection cases. Two independent tests passed in0.049 seconds; see TRUST_BOUNDARY_REVIEW.md. Free memory was538856KB, so heavy testing remains deferred. Implementation bytes did not change; the prior source manifest remains valid and release/production states remain false.

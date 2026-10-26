@@ -579,13 +579,14 @@
       "status": "in_progress",
       "executor": "current_authorized_chat",
       "checkpoint": "autonomy/evidence/unattended_20261026/U1_CURRENT_CHECKPOINT.md",
-      "next_action": "Review actual signed adapter integration; full regression and multiprocessing remain memory-gated; production integration not accepted",
+      "next_action": "Complete full regression and multiprocessing when free memory >=1GB; prepare formal execution adapter and sole-lock integration without production changes",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "D_AND_ACTUAL_ADAPTER_SCOPED_PASS",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "1eca7e7f361f48dccdd7cca7b80c1ef7cb3ae0ac"
+      "candidate_commit": "7f848aa2dc642a61f3cd242142c88a802881ed3d",
+      "trust_boundary_review": "SCOPED_PASS"
     }
   ]
 }
