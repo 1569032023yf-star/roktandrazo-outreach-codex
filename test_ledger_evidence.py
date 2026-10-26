@@ -9,6 +9,36 @@ from autonomy.durable_slots import DurableSlots, LedgerError, INVENTORY
 
 
 class SignedLedgerIntegrationTests(unittest.TestCase):
+    def test_signed_lifetime_and_aliases_fail_closed(self):
+        key = b'synthetic-test-key-only-not-production' * 2
+        consumer = EvidenceConsumer({'fixture': TrustedSource('fixture', 'test', key)})
+        clock = [110]
+        verify = LedgerEvidenceVerifier(consumer, lambda: clock[0])
+        base = dict(schema='rokt.host-evidence.v1', source_id='fixture',
+                    principal_id='test', inventory_id=INVENTORY, kind='idle',
+                    observed_at_epoch=100, expires_at_epoch=200, receipt_id='r')
+        def envelope(payload):
+            return {'payload': payload, 'mac': hmac.new(key, canonical(payload), hashlib.sha256).hexdigest()}
+        self.assertIsNotNone(verify(envelope(base)))
+        for field in ('inventory', 'observed', 'expires'):
+            with self.subTest(alias=field):
+                self.assertIsNone(verify(envelope(dict(base, **{field: 1}))))
+        missing = dict(base)
+        del missing['expires_at_epoch']
+        self.assertIsNone(verify(envelope(missing)))
+        for expiry in (True, 99, 401):
+            with self.subTest(expiry=expiry):
+                self.assertIsNone(verify(envelope(dict(base, expires_at_epoch=expiry))))
+        for stamp in (99, 201):
+            clock[0] = stamp
+            with self.subTest(now=stamp):
+                self.assertIsNone(verify(envelope(base)))
+        clock[0] = 110
+        for fields in ({'principal_id': 'other'}, {'source_id': 'other'},
+                       {'kind': 'budget_request'}, {'inventory_id': 'other'}):
+            with self.subTest(fields=fields):
+                self.assertIsNone(verify(envelope(dict(base, **fields))))
+
     def test_signed_claim_and_tamper_rejection(self):
         key = b'synthetic-test-key-only-not-production' * 2
         consumer = EvidenceConsumer({'fixture': TrustedSource('fixture', 'test', key)})
