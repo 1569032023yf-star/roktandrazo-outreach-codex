@@ -1,0 +1,28 @@
+{
+  "scope": "isolated durable slot protocol / 隔离持久槽位协议",
+  "baseline": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
+  "tests": {
+    "durable": 12,
+    "combined": 25,
+    "passed": true,
+    "seconds": 1.644,
+    "command": "python -B -m unittest test_durable_slots test_unattended_policy test_bridge_acceptance test_unattended_ledger_model -q"
+  },
+  "atomic_claim_processes": 2,
+  "earlier_four_process_trial_passed": true,
+  "process_exit_before_after_commit": true,
+  "unknown_no_replay": true,
+  "readonly_database_test": true,
+  "disk_failure": "injected OSError before commit; not physical ENOSPC",
+  "budget_tests": "separate model only; durable multidimensional budgets pending workflow D",
+  "independent_review": "PENDING",
+  "production_deployed": false,
+  "production_db_writes": 0,
+  "smtp_calls": 0,
+  "hashes": {
+    "autonomy/durable_slots.py": "434a874c5bfdb31476251aa1f583546a3db5f5256a734a01b5436ff140c3c722",
+    "test_durable_slots.py": "49240f2cdc450725dbcccfed96b3ac98d91be817af6e522321dc18f12fdba568"
+  },
+  "notes_zh": "仅临时数据库和合成外部副作用文件；不执行采集或生产调度。",
+  "notes_en": "Temporary databases and synthetic effect files only; no collection or production scheduling."
+}
