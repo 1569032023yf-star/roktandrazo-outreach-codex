@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-27T19:21:48.935078+00:00",
+  "updated_at": "2026-10-27T21:21:06.876632+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -579,7 +579,7 @@
       "status": "in_progress",
       "executor": "current_authorized_chat",
       "checkpoint": "autonomy/evidence/unattended_20261026/U1_CURRENT_CHECKPOINT.md",
-      "next_action": "Formal dependency closure and approved export-contract compatibility; offline preparation only until formal contract is available",
+      "next_action": "Consume formal runtime/publisher contract and verify Python/SQLite/timezone resources and approved dependency fingerprints; production disabled",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "D_AND_ACTUAL_ADAPTER_SCOPED_PASS",
@@ -594,9 +594,10 @@
       "bridge_candidate": "68802d5",
       "bridge_review": "SCOPED_PASS_68802D5",
       "handoff_comment": 6435605069,
-      "targeted_tests": 87,
+      "targeted_tests": 89,
       "snapshot_review": "SCOPED_PASS_DA443FD",
-      "history_import_review": "SCOPED_PASS_DBDC424"
+      "history_import_review": "SCOPED_PASS_DBDC424",
+      "manifest_closure_review": "SCOPED_PASS_TEST621D3E4_PACKAGE_DBDC424"
     }
   ]
 }

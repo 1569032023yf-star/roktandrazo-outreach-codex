@@ -2,6 +2,10 @@
 
 ## 最新覆盖记录 / Latest superseding checkpoint
 
+固定包导入闭包冒烟测试已完成：测试代码621d3e4，对manifest指定dbdc424的Git字节逐一校验SHA后导出到临时目录，使用-I隔离子进程导入；删除本地依赖负例确认不会回退主树。独立2项通过（0.933秒），主线组合89项通过（6.212秒）。见MANIFEST_CLOSURE_REVIEW.md。 / Pinned-package import smoke test completed: test621d3e4 verifies manifest dbdc424 Git-byte hashes, stages a temporary package and imports through an isolated -I subprocess. A missing-dependency negative case confirms no checkout fallback. Independent2 tests passed in0.933 seconds; combined89 passed in6.212 seconds. See MANIFEST_CLOSURE_REVIEW.md.
+
+仅开发宿主Python3.13.0、SQLite3.45.3、tzdata2026.3得到实测；正式Windows运行时、时区资源、SQLite deserialize能力及发布器目标依赖指纹仍未获证，不能称生产依赖闭包完成。Issue2最新仍6435605069，未重复申请。下一步消费正式runtime/发布合同并核对精确兼容；生产保持禁用，整体完成和发布标记仍false，增长UNKNOWN。 / Measurements apply only to development Python3.13.0, SQLite3.45.3 and tzdata2026.3. Production runtime, timezone resources, SQLite deserialize capability and publisher dependency fingerprints remain unverified, so production dependency closure is not complete. Issue2 still ends at6435605069, without duplicate requests. Next: consume formal runtime/publisher contracts and verify exact compatibility. Production remains disabled, overall completion/release flags false and growth UNKNOWN.
+
 历史导入合同已固定 dbdc424ca9e83ccc8b7ff7d598f4a0f3b577f0b4：空历史初始化标记、已有资产拒绝、畸形列表及重复ID分类已修复。独立26项通过（1.419秒），主线87项通过（5.402秒）；见HISTORY_IMPORT_REVIEW.md。 / History import contract pinned at dbdc424ca9e83ccc8b7ff7d598f4a0f3b577f0b4 fixes empty-history initialization, existing-asset rejection and malformed/duplicate-input classification. Independent26 tests passed in1.419 seconds; combined87 passed in5.402 seconds. See HISTORY_IMPORT_REVIEW.md.
 
 Issue2已核对最新仍6435605069；未重复请求。下一自动动作是正式依赖闭包与导出合同兼容核验；未收到正式合同前仅推进离线准备。整体开发、发布、部署和生产验收均未完成，增长UNKNOWN，无生产副作用。 / Issue2 still ends at6435605069; no duplicate request. Next: formal dependency closure and export-contract compatibility checks, with offline preparation until the formal contract arrives. Overall development, release, deployment and production acceptance remain incomplete; growth UNKNOWN and no production effects.
