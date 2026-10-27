@@ -6,14 +6,14 @@ import sys
 import unittest
 
 class ProgressResult(unittest.TextTestResult):
-    """Flush completed IDs without treating a partial run as acceptance."""
+    """Flush stopped IDs; interruption may leave the outcome unknown."""
     def __init__(self, *args, journal, **kwargs):
         super().__init__(*args, **kwargs)
         self.journal = journal
 
     def stopTest(self, test):
         super().stopTest(test)
-        self.journal.write(json.dumps({'completed_test': test.id(),
+        self.journal.write(json.dumps({'stopped_test': test.id(),
                                       'run': self.testsRun}) + '\n')
         self.journal.flush()
 

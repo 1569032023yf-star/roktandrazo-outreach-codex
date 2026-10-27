@@ -10,6 +10,18 @@ from tools.run_comparable_suite import ProgressResult
 
 
 class ProgressTests(unittest.TestCase):
+    def test_interrupted_case_is_only_a_stopped_record(self):
+        class Interrupted(unittest.TestCase):
+            def runTest(self):
+                raise KeyboardInterrupt
+        journal = io.StringIO()
+        with self.assertRaises(KeyboardInterrupt):
+            unittest.TextTestRunner(stream=io.StringIO(), resultclass=
+                lambda *a, **kw: ProgressResult(*a, journal=journal, **kw)).run(Interrupted())
+        row = json.loads(journal.getvalue())
+        self.assertIn('stopped_test', row)
+        self.assertNotIn('completed_test', row)
+
     def test_interrupted_discovery_cannot_leave_old_success(self):
         with tempfile.TemporaryDirectory() as directory:
             dest = Path(directory)
@@ -22,7 +34,7 @@ class ProgressTests(unittest.TestCase):
             self.assertFalse((dest / 'result.json').exists())
             self.assertEqual((dest / 'progress.jsonl').read_text(), '')
 
-    def test_completed_ids_are_flushed_without_tracebacks(self):
+    def test_stopped_ids_are_flushed_without_tracebacks(self):
         class Journal(io.StringIO):
             flushes = 0
             def flush(self):
