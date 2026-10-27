@@ -52,6 +52,18 @@ class DurableTests(unittest.TestCase):
     def claim(self):
         return self.l.claim('s1',idle(),now=10,epoch=1,owner='owner')
 
+    def test_signed_missed_slots_cannot_be_omitted(self):
+        e=evidence('schedule',slot='s3',next_due=30,epoch=1,owner='owner',latest_due=True,missed=[['s2',20]])
+        before=self.l.snapshot()
+        with self.assertRaisesRegex(LedgerError,'EVIDENCE_CONFLICT'):
+            self.l.admit_due('s3',30,e,now=30,epoch=1,owner='owner')
+        self.assertEqual(self.l.snapshot(),before)
+        for bad in ((('s2',),), (None,), ('s2',)):
+            with self.assertRaisesRegex(LedgerError,'INVALID_MISSED_SLOTS'):
+                self.l.admit_due('s3',30,e,now=30,epoch=1,owner='owner',missed=bad)
+        self.l.admit_due('s3',30,e,now=30,epoch=1,owner='owner',missed=(('s2',20),))
+        self.assertEqual([r[:3] for r in self.l.snapshot()],[('s1',10,'deferred'),('s2',20,'deferred'),('s3',30,'pending')])
+
     def receipt(self,token,state):
         return evidence('receipt',slot='s1',state=state,epoch=1,owner='owner',external_drained=True,token=token,receipt='receipt1')
 

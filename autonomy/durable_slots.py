@@ -112,12 +112,19 @@ class DurableSlots:
         evidence = self._evidence(evidence, kind='schedule', now=now, slot=slot, next_due=next_due, epoch=epoch, owner=owner, latest_due=True)
         if type(missed) is not tuple or len(missed) > 100:
             raise LedgerError('INVALID_MISSED_SLOTS')
-        for old_slot, old_due in missed:
+        for item in missed:
+            if type(item) is not tuple or len(item) != 2:
+                raise LedgerError('INVALID_MISSED_SLOTS')
+            old_slot, old_due = item
             _key(old_slot)
             _integer(old_due)
             if old_due >= next_due or old_slot == slot:
                 raise LedgerError('INVALID_MISSED_SLOTS')
-        if missed and evidence.get('missed') != [list(x) for x in missed]:
+        signed_missed = evidence.get('missed', [])
+        if (type(signed_missed) is not list or
+                any(type(x) is not list or len(x) != 2 or
+                    type(x[0]) is not str or type(x[1]) is not int for x in signed_missed) or
+                signed_missed != [list(x) for x in missed]):
             raise LedgerError('EVIDENCE_CONFLICT')
         if next_due > now:
             raise LedgerError('NOT_DUE')
