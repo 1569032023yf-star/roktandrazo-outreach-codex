@@ -2,12 +2,12 @@
   "schema": 1,
   "description_zh": "仅开发候选源文件清单，不是生产安装授权。",
   "description_en": "Development source inventory only; not production installation authority.",
-  "source_commit": "1eca7e7f361f48dccdd7cca7b80c1ef7cb3ae0ac",
+  "source_commit": "41a5516370766464fa5a2a501203f5b406bfcf92",
   "hash_basis": "git blob bytes",
   "files": [
     {
       "path": "autonomy/durable_slots.py",
-      "sha256": "f39ecb66701d934bc342d415709dad96bc6be31778e61e7e92d7be133b5f80a9",
+      "sha256": "f715f988e24d784fb3633f9be06665f4c42a9ae2803ad1315deae9548a0dc5c5",
       "production_target": "UNAPPROVED"
     },
     {
