@@ -2,6 +2,10 @@
 
 ## 最新覆盖记录 / Latest superseding checkpoint
 
+历史导入合同已固定 dbdc424ca9e83ccc8b7ff7d598f4a0f3b577f0b4：空历史初始化标记、已有资产拒绝、畸形列表及重复ID分类已修复。独立26项通过（1.419秒），主线87项通过（5.402秒）；见HISTORY_IMPORT_REVIEW.md。 / History import contract pinned at dbdc424ca9e83ccc8b7ff7d598f4a0f3b577f0b4 fixes empty-history initialization, existing-asset rejection and malformed/duplicate-input classification. Independent26 tests passed in1.419 seconds; combined87 passed in5.402 seconds. See HISTORY_IMPORT_REVIEW.md.
+
+Issue2已核对最新仍6435605069；未重复请求。下一自动动作是正式依赖闭包与导出合同兼容核验；未收到正式合同前仅推进离线准备。整体开发、发布、部署和生产验收均未完成，增长UNKNOWN，无生产副作用。 / Issue2 still ends at6435605069; no duplicate request. Next: formal dependency closure and export-contract compatibility checks, with offline preparation until the formal contract arrives. Overall development, release, deployment and production acceptance remain incomplete; growth UNKNOWN and no production effects.
+
 2026-10-27 最新断点：只读增长账本快照检查器固定 da443fde93bf41d222b93ae5dff9610a3d4b11d5，独立8项测试及限定范围审核通过；主线组合84项通过（5.518秒）。模块只接收获准导出的bytes和SHA，内存检查精确schema、完整映像及未结算状态；拒绝WAL依赖、未知状态和预算超限。见 SNAPSHOT_COMPATIBILITY_REVIEW.md。 / Latest checkpoint: read-only growth snapshot inspector pinned at da443fde93bf41d222b93ae5dff9610a3d4b11d5 passed independent8-test scoped review; combined84 tests passed in5.518 seconds. Approved exported bytes and SHA are inspected in memory for exact schema, complete image and unresolved states; WAL dependence, unknown states and exhausted budgets are rejected.
 
 这不是迁移实现或生产导入验收。未结算预留不退款、不重放；2秒是软时限。下一自动动作：结合既有Issue2合同回复核对正式依赖与导出兼容；无回复时继续离线导入合同和业务语义校验，不能用正确SHA替代来源授权。整体 DEVELOPMENT_COMPLETE=false、RELEASE_READY=false、PRODUCTION_DEPLOYED=false、PRODUCTION_ACCEPTED=false，增长UNKNOWN。 / This is neither migration nor production import acceptance. Unresolved reservations are not refunded or replayed; the2-second deadline is soft. Next: reconcile formal dependencies/export compatibility with the existing Issue2 response, or continue offline import-contract and business-semantic validation while it is pending. A matching SHA is not source authorization. All overall development/release/production flags remain false; growth UNKNOWN.

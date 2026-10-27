@@ -2,7 +2,7 @@
   "schema": 1,
   "description_zh": "仅开发候选源文件清单，不是生产安装授权。",
   "description_en": "Development source inventory only; not production installation authority.",
-  "source_commit": "da443fde93bf41d222b93ae5dff9610a3d4b11d5",
+  "source_commit": "dbdc424ca9e83ccc8b7ff7d598f4a0f3b577f0b4",
   "hash_basis": "git blob bytes",
   "files": [
     {
@@ -12,7 +12,7 @@
     },
     {
       "path": "autonomy/growth_ledger.py",
-      "sha256": "a8b7d5bb3f26fc55cdd0376240797cea175010c8a47643341ef86f9ffefeb166",
+      "sha256": "12d0fd418c914e4d7a7b75f6cc58584abef8c04f523a738f2b6afb72a5ddf32f",
       "production_target": "UNAPPROVED"
     },
     {
@@ -71,5 +71,5 @@
     "FORMAL_BACKEND_AND_TRUSTED_OS_COLLECTOR_PENDING"
   ],
   "rollback_document": "U1_RELEASE_GATES.md",
-  "regression_scope": "b69214d full833 identical37failures17errors; da443fd combined84 pass; snapshot independent8 scoped pass"
+  "regression_scope": "b69214d full833 identical37failures17errors; dbdc424 combined87 pass; history independent26 scoped pass"
 }

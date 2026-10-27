@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-27T15:22:41.141093+00:00",
+  "updated_at": "2026-10-27T19:21:48.935078+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -579,13 +579,13 @@
       "status": "in_progress",
       "executor": "current_authorized_chat",
       "checkpoint": "autonomy/evidence/unattended_20261026/U1_CURRENT_CHECKPOINT.md",
-      "next_action": "Continue offline import-contract semantic validation and formal dependency closure; consume existing Issue2 response without duplicate request; production disabled",
+      "next_action": "Formal dependency closure and approved export-contract compatibility; offline preparation only until formal contract is available",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "D_AND_ACTUAL_ADAPTER_SCOPED_PASS",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "da443fde93bf41d222b93ae5dff9610a3d4b11d5",
+      "candidate_commit": "dbdc424ca9e83ccc8b7ff7d598f4a0f3b577f0b4",
       "trust_boundary_review": "SCOPED_PASS",
       "schedule_contract_review": "SCOPED_PASS",
       "regression_runner_candidate": "b69214d",
@@ -594,8 +594,9 @@
       "bridge_candidate": "68802d5",
       "bridge_review": "SCOPED_PASS_68802D5",
       "handoff_comment": 6435605069,
-      "targeted_tests": 84,
-      "snapshot_review": "SCOPED_PASS_DA443FD"
+      "targeted_tests": 87,
+      "snapshot_review": "SCOPED_PASS_DA443FD",
+      "history_import_review": "SCOPED_PASS_DBDC424"
     }
   ]
 }
