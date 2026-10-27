@@ -1,5 +1,23 @@
 # U1当前恢复点 / U1 current checkpoint
 
+## 最新覆盖记录 / Latest superseding checkpoint
+
+桥接聚合固定68802d5通过独立13项审核；最终组合76项通过（5.032秒）。实现完整签名事件窗口、跨登录生命周期与同秒歧义拒绝、无人登录证据门禁、稳定acceptance_id，重签同事实不新增验收周期。进程端点相同不声称连续存活。见BRIDGE_SESSION_REVIEW.md。 / Bridge aggregation68802d5 passed13 independent tests; the76-test combined suite passed in5.032 seconds. Signed event coverage, lifecycle and timestamp ambiguity checks, login-free gates and stable acceptance IDs are implemented. Re-signing facts does not create a new cycle; matching process endpoints do not prove continuity.
+
+正式接口最小只读合同已通过Issue2 comment6435605069发出，本周期检查无后续回复，不重复发请求。下一工程断点为只读导入/迁移兼容准备；真实OS证据生产端、正式后端及安装权限仍待受控接入。 / The minimum read-only interface contract was requested through Issue2 comment6435605069; no subsequent reply was found and no duplicate request was sent. Next engineering checkpoint: read-only import/migration preparation. Real OS collectors, formal backend and installation permissions remain gated.
+
+2026-10-27：此前内存阻塞已解除并实际完成全量比较。b3a0d3a基线与b69214d候选均833项，37失败17错误，ID完全相同，新增回归0（不是全绿）。详见REGRESSION_COMPLETED.md及机器JSON。旧段落关于“全量未运行”的状态仅为历史。
+
+The earlier memory blocker was overcome and full comparison completed: baseline b3a0d3a and candidate b69214d each ran833 tests with identical37 failure/17 error IDs, zero new regressions, not all green. See REGRESSION_COMPLETED.md and its JSON. Older statements that full regression has not run are historical.
+
+e3f3220离线单槽执行适配器已获独立13项定向审核；主线63项组合测试通过。包含指定锁身份、签名缺槽传递、未知不重放、旧回执不能清除新UNKNOWN树。详见EXECUTION_ADAPTER_RESULT.md和ADAPTER_REVIEW.md。当前继续实现跨登录/无人登录可信证据聚合；不得把离线adapter当正式后端。
+
+Offline adapter e3f3220 passed13 independently run tests and a63-test combined suite. It binds the designated lock, preserves signed missed slots, prevents unknown replay and rejects old receipts clearing newer UNKNOWN trees. Cross-logon/login-free evidence aggregation is next. The offline adapter is not a formal production backend.
+
+DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false. Issue2仍无6402130583之后的新补证，未重复回执。生产身份、出口、唯一权威切换及管理员安装均未执行。
+
+All overall development/release/production states remain false. Issue2 has no new evidence after6402130583; no duplicate acknowledgement or identity, egress, authority cutover or administrator installation occurred.
+
 源码候选 / Source candidate: `1eca7e7f361f48dccdd7cca7b80c1ef7cb3ae0ac`。
 
 D五项阻断与两项边界已在c17dfca修复并通过独立复审。最新组合测试已直接使用LedgerEvidenceVerifier及签名有效期；独立22项单进程测试通过（1.153秒）。详见D_REREVIEW.md与ADAPTER_INTEGRATION_REVIEW.md。 / Five D blockers and two boundary findings were fixed at c17dfca and independently re-reviewed. The latest composition tests directly use LedgerEvidenceVerifier and signed expiry; all22 independent single-process tests passed in1.153 seconds. See the two review reports.

@@ -579,18 +579,22 @@
       "status": "in_progress",
       "executor": "current_authorized_chat",
       "checkpoint": "autonomy/evidence/unattended_20261026/U1_CURRENT_CHECKPOINT.md",
-      "next_action": "Finalize adapter independent review, migration/read-only import preparation and cross-logon evidence aggregation; production entrypoint remains disabled",
+      "next_action": "Implement read-only migration/import preparation; consume existing production interface contract; do not enable production execution",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "D_AND_ACTUAL_ADAPTER_SCOPED_PASS",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "e3f3220318be0ae8d9368229aac432438913c5f4",
+      "candidate_commit": "68802d52970861b52668251795fdbde16e17b44b",
       "trust_boundary_review": "SCOPED_PASS",
       "schedule_contract_review": "SCOPED_PASS",
       "regression_runner_candidate": "b69214d",
       "full_regression": "b69214d_833_IDENTICAL_37_FAILURES_17_ERRORS",
-      "adapter_review": "PENDING"
+      "adapter_review": "SCOPED_PASS_E3F3220",
+      "bridge_candidate": "68802d5",
+      "bridge_review": "SCOPED_PASS_68802D5",
+      "handoff_comment": 6435605069,
+      "targeted_tests": 76
     }
   ]
 }

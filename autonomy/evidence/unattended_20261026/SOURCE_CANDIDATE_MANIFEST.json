@@ -2,7 +2,7 @@
   "schema": 1,
   "description_zh": "仅开发候选源文件清单，不是生产安装授权。",
   "description_en": "Development source inventory only; not production installation authority.",
-  "source_commit": "e3f3220318be0ae8d9368229aac432438913c5f4",
+  "source_commit": "68802d52970861b52668251795fdbde16e17b44b",
   "hash_basis": "git blob bytes",
   "files": [
     {
@@ -49,6 +49,11 @@
       "path": "autonomy/lock_recovery.py",
       "sha256": "1f60366901e71300da03cf477c67a136acfcee645370c40e2a2a7fc6102edf80",
       "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/bridge_session_evidence.py",
+      "sha256": "658751dc918a14e95c6631d33f7d2a808add11b962a6ab54bf01b806ffb91bd1",
+      "production_target": "UNAPPROVED"
     }
   ],
   "RELEASE_READY": false,
@@ -57,8 +62,8 @@
     "PRODUCTION_ENTRYPOINT_AND_SOLE_LOCK_INTEGRATION_PENDING",
     "TRUST_ROOT_AND_NONINTERACTIVE_IDENTITY_PENDING",
     "SCHEMA_MIGRATION_AND_PUBLISHER_COMPATIBILITY_PENDING",
-    "FINAL_ADAPTER_ACCEPTANCE_PENDING",
-    "PRODUCTION_DEPENDENCY_HASHES_UNAPPROVED"
+    "PRODUCTION_DEPENDENCY_HASHES_UNAPPROVED",
+    "FORMAL_BACKEND_AND_TRUSTED_OS_COLLECTOR_PENDING"
   ],
   "rollback_document": "U1_RELEASE_GATES.md",
   "regression_scope": "b69214d: full 833 baseline/candidate identical failures; adapter e3f3220 separately tested"
