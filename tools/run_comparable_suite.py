@@ -5,15 +5,32 @@ from pathlib import Path
 import sys
 import unittest
 
+class ProgressResult(unittest.TextTestResult):
+    """Flush completed IDs without treating a partial run as acceptance."""
+    def __init__(self, *args, journal, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.journal = journal
+
+    def stopTest(self, test):
+        super().stopTest(test)
+        self.journal.write(json.dumps({'completed_test': test.id(),
+                                      'run': self.testsRun}) + '\n')
+        self.journal.flush()
+
 def main():
     root = Path.cwd()
     sys.path.insert(0, str(root))
     dest = Path(sys.argv[1]).resolve()
     dest.mkdir(parents=True, exist_ok=True)
-    with (dest / 'raw.txt').open('w', encoding='utf-8') as output:
+    # A previous complete result must not survive a new interrupted attempt.
+    (dest / 'result.json').unlink(missing_ok=True)
+    with (dest / 'raw.txt').open('w', encoding='utf-8') as output, \
+            (dest / 'progress.jsonl').open('w', encoding='utf-8') as journal:
         with contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
             suite = unittest.defaultTestLoader.discover(str(root / 'tests'))
-            result = unittest.TextTestRunner(stream=output, verbosity=2).run(suite)
+            factory = lambda *a, **kw: ProgressResult(*a, journal=journal, **kw)
+            result = unittest.TextTestRunner(stream=output, verbosity=2,
+                                            resultclass=factory).run(suite)
     data = {'run': result.testsRun, 'failures': [t.id() for t, _ in result.failures],
         'errors': [t.id() for t, _ in result.errors], 'skipped': [t.id() for t, _ in result.skipped],
         'python': sys.version, 'startup': 'tools/run_comparable_suite.py; sys.path.insert(0,cwd)',
