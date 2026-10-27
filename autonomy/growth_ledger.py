@@ -153,8 +153,28 @@ class GrowthLedger:
         if p.get('all_history_complete') is not True:raise GrowthError('HISTORY_INCOMPLETE')
         stamp=integer(p['as_of']);rule=opaque(p['rule'])
         if stamp>now:raise GrowthError('FUTURE_OBSERVATION')
+        organizations=p.get('organizations')
+        if type(organizations) is not list:raise GrowthError('INVALID_HISTORY_SHAPE')
+        seen=set()
+        for row in organizations:
+            if type(row) is not dict:raise GrowthError('INVALID_HISTORY_SHAPE')
+            oid=opaque(row.get('id'))
+            if type(row.get('qualified')) is not bool:raise GrowthError('INVALID_QUALIFICATION')
+            if oid in seen:raise GrowthError('DUPLICATE_HISTORY_ID')
+            seen.add(oid)
+        for kind in ('sites','emails'):
+            values=p.get(kind,[])
+            if type(values) is not list:raise GrowthError('INVALID_HISTORY_SHAPE')
+            seen=set()
+            for value in values:
+                oid=opaque(value)
+                if oid in seen:raise GrowthError('DUPLICATE_HISTORY_ID')
+                seen.add(oid)
         with self.tx() as c:
-            if c.execute('SELECT 1 FROM baselines').fetchone() or c.execute('SELECT 1 FROM organizations').fetchone():
+            if (c.execute('SELECT 1 FROM baselines').fetchone()
+                    or c.execute('SELECT 1 FROM organizations').fetchone()
+                    or c.execute("SELECT 1 FROM growth_meta WHERE key='history_complete'").fetchone()
+                    or c.execute('SELECT 1 FROM assets').fetchone()):
                 if not self._receipt(c,p):return 'DUPLICATE'
                 raise GrowthError('HISTORY_ALREADY_INITIALIZED')
             if not self._receipt(c,p):return 'DUPLICATE'
