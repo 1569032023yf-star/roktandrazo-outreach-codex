@@ -2,7 +2,7 @@
   "schema": 1,
   "description_zh": "仅开发候选源文件清单，不是生产安装授权。",
   "description_en": "Development source inventory only; not production installation authority.",
-  "source_commit": "68802d52970861b52668251795fdbde16e17b44b",
+  "source_commit": "da443fde93bf41d222b93ae5dff9610a3d4b11d5",
   "hash_basis": "git blob bytes",
   "files": [
     {
@@ -54,6 +54,11 @@
       "path": "autonomy/bridge_session_evidence.py",
       "sha256": "658751dc918a14e95c6631d33f7d2a808add11b962a6ab54bf01b806ffb91bd1",
       "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/growth_snapshot.py",
+      "sha256": "ca861b99ea9335fe4b6c8842875d037b24da9ce28802f9fcece30cef2c5d0d5c",
+      "production_target": "UNAPPROVED"
     }
   ],
   "RELEASE_READY": false,
@@ -66,5 +71,5 @@
     "FORMAL_BACKEND_AND_TRUSTED_OS_COLLECTOR_PENDING"
   ],
   "rollback_document": "U1_RELEASE_GATES.md",
-  "regression_scope": "b69214d: full 833 baseline/candidate identical failures; adapter e3f3220 separately tested"
+  "regression_scope": "b69214d full833 identical37failures17errors; da443fd combined84 pass; snapshot independent8 scoped pass"
 }

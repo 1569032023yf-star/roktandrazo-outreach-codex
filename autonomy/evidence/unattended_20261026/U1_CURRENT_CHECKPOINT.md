@@ -2,6 +2,12 @@
 
 ## 最新覆盖记录 / Latest superseding checkpoint
 
+2026-10-27 最新断点：只读增长账本快照检查器固定 da443fde93bf41d222b93ae5dff9610a3d4b11d5，独立8项测试及限定范围审核通过；主线组合84项通过（5.518秒）。模块只接收获准导出的bytes和SHA，内存检查精确schema、完整映像及未结算状态；拒绝WAL依赖、未知状态和预算超限。见 SNAPSHOT_COMPATIBILITY_REVIEW.md。 / Latest checkpoint: read-only growth snapshot inspector pinned at da443fde93bf41d222b93ae5dff9610a3d4b11d5 passed independent8-test scoped review; combined84 tests passed in5.518 seconds. Approved exported bytes and SHA are inspected in memory for exact schema, complete image and unresolved states; WAL dependence, unknown states and exhausted budgets are rejected.
+
+这不是迁移实现或生产导入验收。未结算预留不退款、不重放；2秒是软时限。下一自动动作：结合既有Issue2合同回复核对正式依赖与导出兼容；无回复时继续离线导入合同和业务语义校验，不能用正确SHA替代来源授权。整体 DEVELOPMENT_COMPLETE=false、RELEASE_READY=false、PRODUCTION_DEPLOYED=false、PRODUCTION_ACCEPTED=false，增长UNKNOWN。 / This is neither migration nor production import acceptance. Unresolved reservations are not refunded or replayed; the2-second deadline is soft. Next: reconcile formal dependencies/export compatibility with the existing Issue2 response, or continue offline import-contract and business-semantic validation while it is pending. A matching SHA is not source authorization. All overall development/release/production flags remain false; growth UNKNOWN.
+
+本断点生产副作用为零，未创建Inventory、访问生产数据库、发信或修改配额。旧833项全量比较仍仅适用于b69214d，不扩展为新模块全量验收。 / No production effects, Inventory creation, production database access, mail or quota changes occurred. The earlier833-test comparison remains scoped to b69214d, not full-suite acceptance of the new module.
+
 桥接聚合固定68802d5通过独立13项审核；最终组合76项通过（5.032秒）。实现完整签名事件窗口、跨登录生命周期与同秒歧义拒绝、无人登录证据门禁、稳定acceptance_id，重签同事实不新增验收周期。进程端点相同不声称连续存活。见BRIDGE_SESSION_REVIEW.md。 / Bridge aggregation68802d5 passed13 independent tests; the76-test combined suite passed in5.032 seconds. Signed event coverage, lifecycle and timestamp ambiguity checks, login-free gates and stable acceptance IDs are implemented. Re-signing facts does not create a new cycle; matching process endpoints do not prove continuity.
 
 正式接口最小只读合同已通过Issue2 comment6435605069发出，本周期检查无后续回复，不重复发请求。下一工程断点为只读导入/迁移兼容准备；真实OS证据生产端、正式后端及安装权限仍待受控接入。 / The minimum read-only interface contract was requested through Issue2 comment6435605069; no subsequent reply was found and no duplicate request was sent. Next engineering checkpoint: read-only import/migration preparation. Real OS collectors, formal backend and installation permissions remain gated.
