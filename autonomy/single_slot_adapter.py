@@ -10,6 +10,8 @@ import json
 import os
 from pathlib import Path
 import time
+import sqlite3
+from contextlib import closing
 
 from autonomy import lock_recovery
 from autonomy.growth_ledger import digest
@@ -28,6 +30,55 @@ def path_id(path):
     return hashlib.sha256(os.path.normcase(str(Path(path).resolve(strict=True))).encode()).hexdigest()
 
 
+CANCEL_PROTOCOL = 'rokt.offline-cancel-journal.v1'
+CANCEL_SCHEMA = "CREATE TABLE cancellations (identity TEXT PRIMARY KEY, binding TEXT NOT NULL, state TEXT NOT NULL CHECK(state='RESERVED_RECONCILE_ONLY'))"
+
+
+class CancellationJournal:
+    """Reservation only: no cancellation dispatcher, expiry, refund or replay."""
+    def __init__(self, path, *, fault=None):
+        self.path=Path(path)
+        self.fault=fault or (lambda stage: None)
+
+    def checked_path(self, protected):
+        path=self.path.resolve(strict=False)
+        if not path.parent.is_dir():raise AdapterError('CANCEL_JOURNAL_PATH_REJECTED')
+        for item in protected:
+            other=Path(item).resolve(strict=True)
+            if path==other or (path.exists() and os.path.samefile(path,other)):
+                raise AdapterError('CANCEL_JOURNAL_ALIAS_REJECTED')
+        return path
+
+    def reserve(self, identity, binding, *, protected):
+        path=self.checked_path(protected)
+        try:
+            with closing(sqlite3.connect(str(path),timeout=5,isolation_level=None)) as c:
+                c.execute('PRAGMA synchronous=FULL')
+                c.execute('BEGIN IMMEDIATE')
+                try:
+                    objects=c.execute("SELECT type,sql FROM sqlite_master WHERE name NOT GLOB 'sqlite_*'").fetchall()
+                    version=c.execute('PRAGMA user_version').fetchone()[0]
+                    if not objects and version==0:
+                        c.execute(CANCEL_SCHEMA);c.execute('PRAGMA user_version=1')
+                    elif objects!=[('table',CANCEL_SCHEMA)] or version!=1:
+                        raise AdapterError('CANCEL_JOURNAL_SCHEMA_REJECTED')
+                    row=c.execute('SELECT binding,state FROM cancellations WHERE identity=?',(identity,)).fetchone()
+                    encoded=json.dumps(binding,sort_keys=True,separators=(',',':'))
+                    if row is not None:
+                        if row!=(encoded,'RESERVED_RECONCILE_ONLY'):
+                            raise AdapterError('CANCEL_REQUEST_CONFLICT')
+                        outcome='DUPLICATE_RESERVED'
+                    else:
+                        c.execute('INSERT INTO cancellations VALUES (?,?,?)',(identity,encoded,'RESERVED_RECONCILE_ONLY'))
+                        outcome='RESERVED_RECONCILE_ONLY'
+                    self.fault('before_commit');c.commit();self.fault('after_commit')
+                except BaseException:
+                    c.rollback();raise
+            return dict(outcome=outcome,allow_cancel_dispatch=False,production_execution=False)
+        except (sqlite3.Error,OSError):
+            return dict(outcome='UNKNOWN_RECONCILE_ONLY',allow_cancel_dispatch=False,production_execution=False)
+
+
 @dataclass(frozen=True)
 class OfflineTarget:
     runtime: str
@@ -38,7 +89,8 @@ class OfflineTarget:
 
 class SingleSlotAdapter:
     def __init__(self, slots, budget, *, target=None, consumer=None, backend=None,
-                 wall_clock=time.time, monotonic=time.monotonic):
+                 wall_clock=time.time, monotonic=time.monotonic, cancellation_journal=None):
+        self.cancellation_journal=cancellation_journal
         self.slots=slots
         self.budget=budget
         self.target=target
@@ -176,6 +228,35 @@ class SingleSlotAdapter:
             return self.reconcile(admission,result['slot_receipt'],result['budget_receipt'])
         except Exception:
             return self._unknown(p,token)
+
+    def reserve_cancellation(self,admission,cancel_request):
+        """Persist intent only. Signed cancellation facts do not authorize dispatch."""
+        if type(self.cancellation_journal) is not CancellationJournal:
+            raise AdapterError('CANCEL_JOURNAL_NOT_CONFIGURED')
+        p,common=self._admission(admission,require_backend=False)
+        journal=self.cancellation_journal
+        protected=(self.slots.path,self.budget.path,self.runtime/'supervisor.lock')
+        path=journal.checked_path(protected)
+        journal_id=hashlib.sha256(os.path.normcase(str(path)).encode()).hexdigest()
+        request=self._verify(cancel_request,'offline_cancel_request')
+        expected=dict(self.ids,**self._lock(),**common,inventory_id=INVENTORY,
+            journal_id=journal_id,cancel_protocol=CANCEL_PROTOCOL,scope='isolated_offline',production_execution=False)
+        self._bound(request,expected)
+        with closing(sqlite3.connect(Path(self.slots.path).resolve().as_uri()+'?mode=ro',uri=True)) as c:
+            row=c.execute('SELECT state,epoch,owner,token FROM slots WHERE slot=?',(common['slot'],)).fetchone()
+        if row is None or row[0] not in ('claimed','running','unknown') or row[1:3]!=(common['epoch'],common['owner']) or type(row[3]) is not str:
+            raise AdapterError('CANCEL_CLAIM_NOT_UNRESOLVED')
+        claim_hash=digest(row[3])
+        self._bound(request,{'claim_token_hash':claim_hash})
+        with self.budget.tx() as c:
+            reservation=c.execute('SELECT state,claim_hash,binding FROM reservations WHERE id=?',(common['request_id'],)).fetchone()
+            if reservation is None or reservation['state'] not in ('reserved','unknown','overrun') or reservation['claim_hash']!=claim_hash or json.loads(reservation['binding'])!=dict(inventory_id=INVENTORY,**common):
+                raise AdapterError('CANCEL_BUDGET_BINDING_MISMATCH')
+        # No cross-ledger atomic dispatch claim: only intent is persisted.
+        self._lock()
+        binding=dict(expected,claim_token_hash=claim_hash)
+        identity=digest(dict(inventory_id=INVENTORY,**common,claim_token_hash=claim_hash))
+        return journal.reserve(identity,binding,protected=protected)
 
     def reconcile(self,admission,slot_receipt,budget_receipt):
         """Reconcile authenticated receipts without calling the execution backend."""

@@ -1,7 +1,7 @@
 import tempfile
 import unittest
 from pathlib import Path
-from autonomy.single_slot_adapter import SingleSlotAdapter,OfflineTarget,AdapterError,BACKEND_PROTOCOL,OPERATION_SCHEMA
+from autonomy.single_slot_adapter import SingleSlotAdapter,OfflineTarget,AdapterError,BACKEND_PROTOCOL,OPERATION_SCHEMA,CancellationJournal,CANCEL_PROTOCOL
 from autonomy.durable_slots import DurableSlots
 from autonomy.ledger_evidence import LedgerEvidenceVerifier
 from autonomy.growth_ledger import GrowthLedger,digest,business_day
@@ -116,6 +116,84 @@ class SingleSlotTests(unittest.TestCase):
                     # Only independently signed terminal receipts clear the fence.
                     case.adapter.reconcile(e,**case.backend.receipts)
             finally:case.doCleanups()
+
+    def cancellation_fixture(self):
+        import hashlib,os
+        journal=CancellationJournal(self.root/'cancel.sqlite')
+        self.adapter.cancellation_journal=journal
+        journal_id=hashlib.sha256(os.path.normcase(str(journal.path.resolve())).encode()).hexdigest()
+        with self.budget.tx() as c:
+            claim=c.execute('SELECT claim_hash FROM reservations').fetchone()[0]
+        fields=dict(self.adapter.ids,**self.adapter._lock(),**self.common,claim_token_hash=claim,
+            journal_id=journal_id,cancel_protocol=CANCEL_PROTOCOL,scope='isolated_offline',production_execution=False)
+        return journal,fields
+
+    def test_cancel_intent_reopen_duplicate_and_commit_ack_lost(self):
+        self.backend.mode='lost'
+        with exclusive_lock(self.runtime):
+            e=self.admission();self.run_one(e)
+            journal,fields=self.cancellation_fixture()
+            def fail(stage):
+                if stage=='after_commit':raise OSError('secret-ack-lost')
+            journal.fault=fail
+            request=signed('offline_cancel_request',T+10,**fields)
+            result=self.adapter.reserve_cancellation(e,request)
+            self.assertEqual(result['outcome'],'UNKNOWN_RECONCILE_ONLY')
+            self.assertFalse(result['allow_cancel_dispatch'])
+            self.adapter.cancellation_journal=CancellationJournal(journal.path)
+            result=self.adapter.reserve_cancellation(e,request)
+            self.assertEqual(result['outcome'],'DUPLICATE_RESERVED')
+            self.assertEqual(self.backend.calls,1)
+            self.assertEqual(self.slots.snapshot()[0][2],'unknown')
+            with self.budget.tx() as c:
+                self.assertEqual(c.execute('SELECT state FROM reservations').fetchone()[0],'reserved')
+            self.adapter.reconcile(e,**self.backend.receipts)
+
+    def test_cancel_intent_invalid_signature_version_binding_and_alias(self):
+        self.backend.mode='lost'
+        with exclusive_lock(self.runtime):
+            e=self.admission();self.run_one(e)
+            with self.assertRaisesRegex(AdapterError,'NOT_CONFIGURED'):
+                self.adapter.reserve_cancellation(e,{})
+            journal,fields=self.cancellation_fixture()
+            for field in ('cancel_protocol','claim_token_hash','journal_id','request_id','lock_token_hash'):
+                bad=dict(fields);bad[field]='wrong'
+                with self.assertRaises(AdapterError):
+                    self.adapter.reserve_cancellation(e,signed('offline_cancel_request',T+10,**bad))
+            bad=signed('offline_cancel_request',T+10,**fields);bad['mac']='0'*64
+            with self.assertRaisesRegex(AdapterError,'EVIDENCE_REJECTED'):
+                self.adapter.reserve_cancellation(e,bad)
+            self.adapter.cancellation_journal=CancellationJournal(self.budget.path)
+            with self.assertRaisesRegex(AdapterError,'ALIAS'):
+                self.adapter.reserve_cancellation(e,signed('offline_cancel_request',T+10,**fields))
+            self.assertFalse(journal.path.exists())
+            self.adapter.reconcile(e,**self.backend.receipts)
+
+    def test_cancel_intent_before_commit_failure_remains_unknown(self):
+        from contextlib import closing
+        import sqlite3
+        journal=CancellationJournal(self.root/'failed-intent.sqlite',fault=lambda stage: (_ for _ in ()).throw(OSError('secret')) if stage=='before_commit' else None)
+        result=journal.reserve('identity',{},protected=(self.slots.path,self.budget.path))
+        self.assertEqual(result['outcome'],'UNKNOWN_RECONCILE_ONLY')
+        self.assertFalse(result['allow_cancel_dispatch'])
+        with closing(sqlite3.connect(journal.path)) as c:
+            self.assertEqual(c.execute("SELECT count(*) FROM sqlite_master WHERE name='cancellations'").fetchone()[0],0)
+
+    def test_cancel_journal_conflict_schema_and_hardlink(self):
+        import sqlite3,os
+        journal=CancellationJournal(self.root/'intent.sqlite')
+        protected=(self.slots.path,self.budget.path)
+        self.assertEqual(journal.reserve('identity',{'a':1},protected=protected)['outcome'],'RESERVED_RECONCILE_ONLY')
+        with self.assertRaisesRegex(AdapterError,'CONFLICT'):
+            journal.reserve('identity',{'a':2},protected=protected)
+        from contextlib import closing
+        with closing(sqlite3.connect(journal.path)) as c:
+            c.execute('PRAGMA user_version=2');c.commit()
+        with self.assertRaisesRegex(AdapterError,'SCHEMA'):
+            journal.reserve('other',{},protected=protected)
+        alias=self.root/'alias.sqlite';os.link(self.budget.path,alias)
+        with self.assertRaisesRegex(AdapterError,'ALIAS'):
+            CancellationJournal(alias).reserve('other',{},protected=protected)
 
     def test_default_deny_and_missing_lock(self):
         empty=SingleSlotAdapter(self.slots,self.budget)
