@@ -137,6 +137,40 @@ class SingleSlotTests(unittest.TestCase):
         with exclusive_lock(self.runtime):self.assertEqual(self.run_one(self.admission())['outcome'],'UNKNOWN_RECONCILE_ONLY')
         self.assertEqual(self.backend.calls,0);self.assertEqual(self.slots.snapshot()[0][2],'pending')
 
+    def test_late_receipt_survives_adapter_restart_without_replay(self):
+        times=iter((1,4));self.adapter.monotonic=lambda:next(times)
+        with exclusive_lock(self.runtime):
+            e=self.admission()
+            self.assertEqual(self.run_one(e)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+            # Reopen both durable stores and reconstruct the adapter: no in-memory
+            # replay guard or cached receipt may be required for safety.
+            slots=DurableSlots(self.slots.path,verify=LedgerEvidenceVerifier(self.trust,lambda:T+10))
+            budget=GrowthLedger(self.budget.path,consumer=self.trust)
+            restarted=SingleSlotAdapter(slots,budget,target=self.target,consumer=self.trust,
+                backend=self.backend,wall_clock=lambda:T+10,monotonic=lambda:1)
+            self.assertEqual(restarted.execute(e,self.plan,self.idle,self.request)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+            self.assertEqual(self.backend.calls,1)
+            with budget.tx() as c:
+                self.assertEqual(c.execute('SELECT state FROM reservations').fetchone()[0],'reserved')
+            self.assertEqual(restarted.reconcile(e,**self.backend.receipts)['outcome'],'COMPLETED')
+            self.assertEqual(restarted.reconcile(e,**self.backend.receipts)['budget_result'],'DUPLICATE')
+        self.assertEqual(len(self.backend.effects),1)
+
+    def test_invalid_completion_clock_requires_explicit_reconciliation(self):
+        for ended in (float('nan'),float('inf'),0,True):
+            with self.subTest(ended=ended):
+                # Each fault needs an independent persistent claim and reservation.
+                case=SingleSlotTests();case.setUp()
+                try:
+                    times=iter((1,ended));case.adapter.monotonic=lambda:next(times)
+                    with exclusive_lock(case.runtime):
+                        e=case.admission()
+                        self.assertEqual(case.run_one(e)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+                        self.assertEqual(case.slots.snapshot()[0][2],'unknown')
+                        self.assertEqual(case.backend.calls,1)
+                        case.adapter.reconcile(e,**case.backend.receipts)
+                finally:case.doCleanups()
+
     def test_start_ack_failure_no_external_effect_no_retry(self):
         old=self.slots.start
         def failed_ack(*a,**kw):
