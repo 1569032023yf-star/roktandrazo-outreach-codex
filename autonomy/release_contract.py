@@ -55,6 +55,13 @@ def _valid_context(expected):
             return False
         if path.casefold() in paths:
             return False
+        for part in path.split('/'):
+            stem = part.split('.')[0].upper()
+            if stem in {'CON', 'PRN', 'AUX', 'NUL'} or re.fullmatch('(COM|LPT)[1-9]', stem):
+                return False
+        folded = path.casefold()
+        if any(folded.startswith(old + '/') or old.startswith(folded + '/') for old in paths):
+            return False
         paths.add(path.casefold())
         if not _hex(entry['source_sha256'], 64):
             return False

@@ -82,6 +82,17 @@ class ReleaseContractTests(unittest.TestCase):
             self.assertFalse(inspect_release_contract(self.consumer, self.envelope(),
                 now=1001, expected=bad)['compatible'])
 
+    def test_windows_devices_and_file_ancestor_collisions(self):
+        for path in ('CON', 'a/NUL.py', 'COM1.txt', 'a/AUX', 'lpt9.json', 'a/PRN.log'):
+            self.expected['files'][0]['path'] = path
+            self.payload['files'] = copy.deepcopy(self.expected['files'])
+            self.assertFalse(self.check(), path)
+        for parent, child in (('a', 'a/b.py'), ('A/b.py', 'a')):
+            entry = dict(source_sha256='e'*64, target_sha256='ABSENT')
+            self.expected['files'] = [dict(entry,path=parent),dict(entry,path=child)]
+            self.payload['files'] = copy.deepcopy(self.expected['files'])
+            self.assertFalse(self.check())
+
 
 if __name__ == '__main__':
     unittest.main()
