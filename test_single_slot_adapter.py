@@ -170,6 +170,40 @@ class SingleSlotTests(unittest.TestCase):
             self.assertEqual(restarted.reconcile(e,**self.backend.receipts)['budget_result'],'DUPLICATE')
         self.assertEqual(len(self.backend.effects),1)
 
+    def test_real_settlement_transaction_fault_preserves_reservation(self):
+        execute=self.backend.execute_once
+        def dispatch(*args,**kwargs):
+            result=execute(*args,**kwargs)
+            def fail(stage):
+                if stage=='before_commit':raise OSError('synthetic-settlement-commit-failure')
+            self.budget.fault=fail
+            return result
+        self.backend.execute_once=dispatch
+        with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'):
+            with exclusive_lock(self.runtime):
+                self.assertEqual(self.run_one(self.admission())['outcome'],'UNKNOWN_RECONCILE_ONLY')
+                self.budget.fault=lambda stage:None
+                with self.budget.tx() as c:
+                    self.assertEqual(c.execute('SELECT state FROM reservations').fetchone()[0],'reserved')
+                self.assertEqual(self.slots.snapshot()[0][2],'completed')
+        self.assertTrue((self.runtime/'supervisor.lock').exists())
+        self.assertEqual(self.backend.calls,1)
+
+    def test_settlement_commit_ack_lost_keeps_fence_without_replay(self):
+        settle=self.budget.settle
+        def lost_ack(*args,**kwargs):
+            settle(*args,**kwargs)
+            raise OSError('synthetic-settlement-ack-lost')
+        self.budget.settle=lost_ack
+        with exclusive_lock(self.runtime):
+            e=self.admission()
+            self.assertEqual(self.run_one(e)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+            self.assertEqual(self.run_one(e)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+            self.assertEqual(self.backend.calls,1)
+            self.budget.settle=settle
+            self.assertEqual(self.adapter.reconcile(e,**self.backend.receipts)['budget_result'],'DUPLICATE')
+        self.assertEqual(self.slots.snapshot()[0][2],'completed')
+
     def test_invalid_completion_clock_requires_explicit_reconciliation(self):
         for ended in (float('nan'),float('inf'),0,True):
             with self.subTest(ended=ended):
