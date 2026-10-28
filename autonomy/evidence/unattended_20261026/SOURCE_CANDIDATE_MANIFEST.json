@@ -2,7 +2,7 @@
   "schema": 1,
   "description_zh": "仅开发候选源文件清单，不是生产安装授权。",
   "description_en": "Development source inventory only; not production installation authority.",
-  "source_commit": "d548552038468209317423fe88277934f42cb4c3",
+  "source_commit": "650df4b953cad38e2da93f18694fabb918572e60",
   "hash_basis": "git blob bytes",
   "files": [
     {
@@ -32,7 +32,7 @@
     },
     {
       "path": "autonomy/single_slot_adapter.py",
-      "sha256": "fe2cfcfe1eb4070b880da59f8dce50c67bd7eec721d205fad424d77144f38b1b",
+      "sha256": "41c91c51fe9f7ed5f1be6aadfbac2b5db9c9ccdd7192a307326541f5b66cda21",
       "production_target": "UNAPPROVED"
     },
     {
@@ -86,5 +86,5 @@
     "FORMAL_BACKEND_AND_TRUSTED_OS_COLLECTOR_PENDING"
   ],
   "rollback_document": "U1_RELEASE_GATES.md",
-  "regression_scope": "Current backend-v1 candidate: 87 scoped tests passed; prior full regression does not cover current candidate; full comparison UNKNOWN"
+  "regression_scope": "Current cancellation-intent candidate: 91 scoped tests passed; prior full regression does not cover current candidate; full comparison UNKNOWN"
 }
