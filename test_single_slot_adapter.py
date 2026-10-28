@@ -137,6 +137,20 @@ class SingleSlotTests(unittest.TestCase):
         with exclusive_lock(self.runtime):self.assertEqual(self.run_one(self.admission())['outcome'],'UNKNOWN_RECONCILE_ONLY')
         self.assertEqual(self.backend.calls,0);self.assertEqual(self.slots.snapshot()[0][2],'pending')
 
+    def test_settlement_storage_failure_keeps_recovery_fence(self):
+        original=self.budget.settle
+        def fail(*args,**kwargs):raise OSError('synthetic-settlement-storage-failure')
+        self.budget.settle=fail
+        with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'):
+            with exclusive_lock(self.runtime):
+                self.assertEqual(self.run_one(self.admission())['outcome'],'UNKNOWN_RECONCILE_ONLY')
+                self.assertEqual(self.slots.snapshot()[0][2],'completed')
+                with self.budget.tx() as c:
+                    self.assertEqual(c.execute('SELECT state FROM reservations').fetchone()[0],'reserved')
+        self.assertTrue((self.runtime/'supervisor.lock').exists())
+        self.assertEqual(self.backend.calls,1)
+        self.budget.settle=original
+
     def test_late_receipt_survives_adapter_restart_without_replay(self):
         times=iter((1,4));self.adapter.monotonic=lambda:next(times)
         with exclusive_lock(self.runtime):

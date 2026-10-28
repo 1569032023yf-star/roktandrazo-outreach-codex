@@ -183,6 +183,8 @@ class SingleSlotAdapter:
         if any(row[2] in ('claimed','running','unknown') for row in self.slots.snapshot()):
             raise AdapterError('OTHER_EXECUTION_UNRESOLVED')
         # A trusted drained receipt, not normal function return, proves cleanup.
-        lock_recovery.mark_tree('verified_closed')
         settled=self.budget.settle(budget_receipt,now=self._now())
+        # Keep the recovery fence until both durable ledgers acknowledge the
+        # receipt. A storage failure must not release an unresolved reservation.
+        lock_recovery.mark_tree('verified_closed')
         return {'outcome':sr['state'].upper(),'slot_result':state,'budget_result':settled,'production_execution':False}
