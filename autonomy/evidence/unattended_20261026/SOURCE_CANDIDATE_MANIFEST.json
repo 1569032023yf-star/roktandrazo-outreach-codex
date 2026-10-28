@@ -2,7 +2,7 @@
   "schema": 1,
   "description_zh": "仅开发候选源文件清单，不是生产安装授权。",
   "description_en": "Development source inventory only; not production installation authority.",
-  "source_commit": "dbdc424ca9e83ccc8b7ff7d598f4a0f3b577f0b4",
+  "source_commit": "15b52672ddd03f94ead05d4db932ca6c07601ec0",
   "hash_basis": "git blob bytes",
   "files": [
     {
@@ -59,6 +59,11 @@
       "path": "autonomy/growth_snapshot.py",
       "sha256": "ca861b99ea9335fe4b6c8842875d037b24da9ce28802f9fcece30cef2c5d0d5c",
       "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/rollback_admission.py",
+      "production_target": "UNAPPROVED",
+      "sha256": "1e703faa3df531756d365e58385ec830d990770219caeccf7bd2d91acf0a1aed"
     }
   ],
   "RELEASE_READY": false,
@@ -71,5 +76,5 @@
     "FORMAL_BACKEND_AND_TRUSTED_OS_COLLECTOR_PENDING"
   ],
   "rollback_document": "U1_RELEASE_GATES.md",
-  "regression_scope": "b69214d full833 identical37failures17errors; dbdc424 combined87 pass; history independent26 scoped pass"
+  "regression_scope": "b69214d full833 identical37failures17errors; 15b5267 combined98 pass; rollback independent9 pass; updated package import2 pass"
 }
