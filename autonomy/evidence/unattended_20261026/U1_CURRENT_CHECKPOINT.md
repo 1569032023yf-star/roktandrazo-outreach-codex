@@ -2,6 +2,8 @@
 
 ## 最新覆盖记录 / Latest superseding checkpoint
 
+最新恢复入口为U1_DELIVERY_STATUS.md：回滚计划准入固定15b5267，独立9项通过，组合98项通过，源码与审核报告d141f93已推送核对。canonical已指向新报告。 / Latest recovery entry: U1_DELIVERY_STATUS.md. Rollback-plan admission15b5267 passed9 independent and98 combined tests; source/review report d141f93 was pushed and verified. Canonical queue points to that report. Production and overall completion remain gated.
+
 固定包导入闭包冒烟测试已完成：测试代码621d3e4，对manifest指定dbdc424的Git字节逐一校验SHA后导出到临时目录，使用-I隔离子进程导入；删除本地依赖负例确认不会回退主树。独立2项通过（0.933秒），主线组合89项通过（6.212秒）。见MANIFEST_CLOSURE_REVIEW.md。 / Pinned-package import smoke test completed: test621d3e4 verifies manifest dbdc424 Git-byte hashes, stages a temporary package and imports through an isolated -I subprocess. A missing-dependency negative case confirms no checkout fallback. Independent2 tests passed in0.933 seconds; combined89 passed in6.212 seconds. See MANIFEST_CLOSURE_REVIEW.md.
 
 仅开发宿主Python3.13.0、SQLite3.45.3、tzdata2026.3得到实测；正式Windows运行时、时区资源、SQLite deserialize能力及发布器目标依赖指纹仍未获证，不能称生产依赖闭包完成。Issue2最新仍6435605069，未重复申请。下一步消费正式runtime/发布合同并核对精确兼容；生产保持禁用，整体完成和发布标记仍false，增长UNKNOWN。 / Measurements apply only to development Python3.13.0, SQLite3.45.3 and tzdata2026.3. Production runtime, timezone resources, SQLite deserialize capability and publisher dependency fingerprints remain unverified, so production dependency closure is not complete. Issue2 still ends at6435605069, without duplicate requests. Next: consume formal runtime/publisher contracts and verify exact compatibility. Production remains disabled, overall completion/release flags false and growth UNKNOWN.
