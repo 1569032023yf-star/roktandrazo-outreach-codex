@@ -1,5 +1,9 @@
 # U1当前恢复点 / U1 current checkpoint
 
+2026-10-28增量：新增迟到回执重建适配器/重开SQLite不重放、预算保留及幂等对账测试；新增完成时钟NaN、无穷、倒退和布尔值故障注入。定向15项、slot/预算/签名组合55项通过。独立审核见LATE_RECEIPT_RESTART_REVIEW.md；未完成前保持PENDING。下一项是版本化离线后端取消/硬时限合同，不等待外部回复，生产入口仍禁用。既有自动化提示已更新，实际状态PAUSED，未擅自更改暂停状态。 / Increment: restart/reopened-SQLite late-receipt tests verify no replay, retained budget and idempotent reconciliation; completion-clock NaN, infinity, regression and boolean faults are injected.15 targeted and55 combined tests passed. Independent review is recorded in LATE_RECEIPT_RESTART_REVIEW.md and remains PENDING until completed. Next: versioned offline backend cancellation/deadline contract, without waiting for external replies. Production remains disabled. Existing automation instructions were updated while preserving its observed PAUSED state.
+
+本增量仅增加测试，运行源码及生产包字节未改变，不扩大旧全量回归结论。整体开发、发布、部署和生产验收仍false，增长UNKNOWN，无生产副作用。 / This test-only increment changes no runtime or production package bytes and extends no earlier full-suite claim. Overall development, release, deployment and production acceptance remain false; growth UNKNOWN, no production effects.
+
 最新增量为WINDOWS_OBSERVATION_RESULT.md：源码9ff81dc经独立7项审核，模块组合114项通过；本机只读canary成功，但不构成生产或无人登录验收。旧U1_REFRESH_DELIVERY.md仍保留整体门禁。 / Latest increment: WINDOWS_OBSERVATION_RESULT.md. Source9ff81dc passed7 independent tests and114 combined tests; a real local read-only canary succeeded without production or login-free acceptance. U1_REFRESH_DELIVERY.md retains overall gates.
 
 2026-10-28恢复入口：U1_REFRESH_DELIVERY.md；源码3f03417修复预算错run/claim回执结算，新增离线发布合同检查及Windows路径拒绝。113项主线、111项独立通过。Issue2最新6435605069无新合同，不重复请求；正式backend/runtime/发布器接入仍待证。 / Current entry: U1_REFRESH_DELIVERY.md. Source3f03417 repairs run/claim settlement and adds offline release-contract/Windows-path validation.113 main and111 independent tests passed. Issue2 still ends at6435605069; formal backend/runtime/publisher evidence remains pending without duplicate requests.
