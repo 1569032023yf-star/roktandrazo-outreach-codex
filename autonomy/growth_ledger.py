@@ -336,6 +336,19 @@ class GrowthLedger:
         with self.tx() as c:
             row=c.execute('SELECT * FROM reservations WHERE id=?',(rid,)).fetchone()
             if not row:raise GrowthError('RESERVATION_MISSING')
+            if type(p.get('run_id')) is not str or p['run_id'] != row['run']:
+                raise GrowthError('RECEIPT_RUN_MISMATCH')
+            if row['binding'] is not None:
+                binding=json.loads(row['binding'])
+                if any(key not in p or type(p[key]) is not type(value) or p[key]!=value
+                       for key,value in binding.items()):
+                    raise GrowthError('CLAIM_RECEIPT_CONFLICT')
+                # A lost claim acknowledgement cannot be refunded by a receipt
+                # that merely repeats the request identity. Reconcile the claim
+                # through the formal channel before releasing its reservation.
+                if (row['claim_hash'] is None or type(p.get('claim_token_hash')) is not str
+                        or p['claim_token_hash']!=row['claim_hash']):
+                    raise GrowthError('CLAIM_RECEIPT_CONFLICT')
             if row['receipt_hash']==h:return 'DUPLICATE'
             if row['state'] in ('settled','overrun'):raise GrowthError('RECEIPT_CONFLICT')
             if actual is None:

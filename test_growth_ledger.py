@@ -46,7 +46,50 @@ class GrowthTests(unittest.TestCase):
         return self.l.approve_budget(signed('budget_approval',T,day=day,limits=amounts(n),run_wall_limit=wall),now=T)
 
     def settle(self,name,now=T+20,outcome='known',actual=None):
-        return self.l.settle(signed('budget_receipt',now,request_id=oid(name),outcome=outcome,actual=amounts() if actual is None else actual,externally_reconciled=True),now=now)
+        return self.l.settle(signed('budget_receipt',now,request_id=oid(name),run_id=oid('run'),outcome=outcome,actual=amounts() if actual is None else actual,externally_reconciled=True),now=now)
+
+    def test_wrong_run_cannot_release_budget_after_reopen(self):
+        self.caps(n=6)
+        self.l.reserve(request('a',amount=amounts(6)),now=T+10)
+        for run in (None,oid('wrong-run'),True):
+            receipt=signed('budget_receipt',T+20,request_id=oid('a'),run_id=run,
+                outcome='known',actual=amounts(0),externally_reconciled=True)
+            with self.assertRaisesRegex(GrowthError,'RECEIPT_RUN_MISMATCH'):
+                self.l.settle(receipt,now=T+20)
+        self.l=GrowthLedger(self.path,consumer=consumer())
+        with self.assertRaisesRegex(GrowthError,'CAP_REACHED'):
+            self.l.reserve(request('b',amount=amounts(6)),now=T+20)
+        with self.l.tx() as c:
+            row=c.execute('SELECT state,charged FROM reservations').fetchone()
+            self.assertEqual(row['state'],'reserved')
+            self.assertEqual(__import__('json').loads(row['charged']),amounts(6))
+        self.assertEqual(self.settle('a',actual=amounts(0)),'SETTLED')
+        self.assertEqual(self.l.reserve(request('b',amount=amounts(6)),now=T+20),'RESERVED_NOT_DISPATCHED')
+
+    def test_bound_settlement_requires_exact_claim_and_operation(self):
+        from autonomy.growth_ledger import digest
+        from autonomy.lock_recovery import exclusive_lock
+        self.caps();ledger,e,se=self.slot_fixture()
+        with exclusive_lock(Path(self.temp.name)/'lock'):
+            token=self.l.reserve_then_claim(e,ledger,'slot',se,now=T+10,epoch=1,owner='owner')
+        binding=dict(e['payload']['claim_binding'])
+        binding.pop('inventory_id') # signed() supplies the fixed Inventory.
+        good=dict(binding,claim_token_hash=digest(token),outcome='known',actual=amounts(0),externally_reconciled=True)
+        for field in ('slot','epoch','owner','claim_token_hash'):
+            for value in (None,'wrong'):
+                bad=dict(good,**{field:value})
+                with self.assertRaisesRegex(GrowthError,'CLAIM_RECEIPT_CONFLICT'):
+                    self.l.settle(signed('budget_receipt',T+20,**bad),now=T+20)
+        # Missing claim acknowledgement also preserves the entire reservation.
+        with self.l.tx() as c:c.execute('UPDATE reservations SET claim_hash=NULL')
+        with self.assertRaisesRegex(GrowthError,'CLAIM_RECEIPT_CONFLICT'):
+            self.l.settle(signed('budget_receipt',T+20,**good),now=T+20)
+        with self.l.tx() as c:
+            self.assertEqual(c.execute('SELECT state FROM reservations').fetchone()[0],'reserved')
+            c.execute('UPDATE reservations SET claim_hash=?',(digest(token),))
+        receipt=signed('budget_receipt',T+20,**good)
+        self.assertEqual(self.l.settle(receipt,now=T+20),'SETTLED')
+        self.assertEqual(self.l.settle(receipt,now=T+20),'DUPLICATE')
 
     def test_business_day_baseline_freeze_restart(self):
         self.assertEqual(business_day(T-1),'2026-10-25');self.assertEqual(business_day(T),'2026-10-26')
