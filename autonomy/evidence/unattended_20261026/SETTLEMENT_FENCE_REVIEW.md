@@ -1,6 +1,6 @@
 # 结算失败恢复栅栏独立审核 / Independent settlement recovery fence review
 
-主控封签状态：Reviewer最终turn为用量限制失败，以下产物待确认，不作为已完成独审门禁。 / Supervisor sealing status: reviewer turn ended with a usage-limit failure; the artifact below awaits confirmation and does not satisfy the completed-review gate.
+独审封签状态：CONFIRMED。Reviewer 已恢复、复核源码与测试哈希未变，并重新执行16项测试通过（2.451秒）。前次执行记录真实有效，本次正式确认限定结论。 / Review seal: CONFIRMED. Reviewer resumed, verified unchanged source/test hashes and reran all 16 tests successfully (2.451 seconds). Prior execution records are valid; the scoped verdict is now confirmed.
 
 结论 / Verdict: PASS_FOR_OFFLINE_SETTLEMENT_FENCE_FIX
 
@@ -29,3 +29,7 @@ Windows 文件 SHA256 / Windows file SHA256:
 ## 边界 / Limits
 
 仅在临时隔离 SQLite 与 synthetic backend 验证，未操作生产数据库或真实采集。不是跨库原子事务、硬取消协议、真实进程重启、生产恢复流程或生产验收的完成证明；未升级总体 U1 或发布/部署/业务增长状态。 / Verified only with temporary isolated SQLite and a synthetic backend, with no production database or collection. This does not establish cross-database atomicity, hard cancellation, real process restart, production recovery procedure or production acceptance, and does not upgrade overall U1 or release/deployment/business-growth status.
+
+## 旧实现反证 / Prior implementation negative control
+
+Reviewer 已从 `ec62af0^:autonomy/single_slot_adapter.py` 读取 Git 字节，在独立 Python 进程内替换测试引用的类（未修改磁盘源码），运行新增结算失败测试。结果准确出现一项预期失败 `RuntimeError not raised`、零 errors；新实现16项通过。因此新测试实际识别旧版提前释放恢复栅栏的行为。 / Reviewer loaded Git bytes from ec62af0^:autonomy/single_slot_adapter.py and substituted the test class reference inside a separate Python process without modifying source files. The new test produced exactly one expected failure, RuntimeError not raised, and zero errors. The new implementation passes all 16 tests, demonstrating that the test detects the previous premature fence release.

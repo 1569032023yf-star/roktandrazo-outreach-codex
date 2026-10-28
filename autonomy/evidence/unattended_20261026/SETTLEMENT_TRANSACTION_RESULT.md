@@ -1,0 +1,9 @@
+# 真实结算事务故障集成 / Real settlement transaction fault integration
+
+新增两项隔离SQLite集成测试：真实GrowthLedger.settle的before_commit失败保留reserved及恢复锁；结算已提交但回执丢失时不再次派发，恢复正常结算后显式对账返回DUPLICATE。后端仅调用一次。 / Two isolated SQLite integration tests cover actual GrowthLedger.settle before_commit failure retaining the reservation/recovery fence, and successful settlement followed by lost acknowledgement preventing dispatch replay and permitting explicit duplicate reconciliation. The backend is called once.
+
+实际组合58项通过（6.936秒）。开发过程中两次故障注入位置/清理问题导致测试失败：fault=None不可调用；过早启用fault击中了前置读事务。均已修复，最终将注入限定在settle调用中。此前失败不作为通过证据。 / The final58-test combined suite passed in6.936 seconds. Two development test failures exposed an invalid fault=None cleanup and premature injection into the prevalidation read transaction; both were corrected by scoping injection to settle. Failed runs are not pass evidence.
+
+前一源码ec62af0的独审已成功确认，16项重跑通过，且旧实现负向验证失败；见SETTLEMENT_FENCE_REVIEW.md。新增测试审核另见SETTLEMENT_TRANSACTION_REVIEW.md，未返回前PENDING。运行源码未变，固定生产候选清单仍ec62af0；不扩大旧833全量比较。 / Independent review of runtime source ec62af0 was confirmed with16 passing rerun tests and a failing old-implementation negative check; see SETTLEMENT_FENCE_REVIEW.md. New test review is separate in SETTLEMENT_TRANSACTION_REVIEW.md and remains PENDING until returned. Runtime source is unchanged; candidate manifest stays at ec62af0. Earlier833-test comparisons are not extended.
+
+下一项继续版本化离线后端取消/硬时限协议，生产入口禁用。整体DEVELOPMENT_COMPLETE=false、RELEASE_READY=false、PRODUCTION_DEPLOYED=false、PRODUCTION_ACCEPTED=false，增长UNKNOWN。未触碰生产数据库、SMTP、配额、身份或任务配置。 / Next: versioned offline cancellation/deadline protocol, with production dispatch disabled. Overall development/release/deployment/production acceptance remain false; growth UNKNOWN. No production database, SMTP, quotas, identities or task configuration were touched.
