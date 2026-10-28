@@ -1,0 +1,111 @@
+{
+  "schema": "rokt.u1.release-plan.v1",
+  "description_zh": "不可执行的受控发布准备清单；不授权安装或生产派发。",
+  "description_en": "Non-executable controlled release preparation manifest; no installation or production dispatch authority.",
+  "source_commit": "3f03417ba46f565525b2b254fdbc559667ab96a9",
+  "baseline_commit": "1c8a7fdbae8866f6eadd8de9fd935b873a5b5033",
+  "files": [
+    {
+      "path": "autonomy/durable_slots.py",
+      "sha256": "f715f988e24d784fb3633f9be06665f4c42a9ae2803ad1315deae9548a0dc5c5",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/growth_ledger.py",
+      "sha256": "fc15509e9b97140304ed842e45b64be5953bdbcde1b1ffc63be38ef17e302c47",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/host_preparation.py",
+      "sha256": "ba3bf2edf4f39c130a1f56d8246a92476758ac53e223a3d067c02a987cd011d2",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/ledger_evidence.py",
+      "sha256": "ba5c0ecaaf7bb6e4909d85a81eb112721162a35e6e406246d337c0c0d43058f9",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/config/u1_host_disabled.xml",
+      "sha256": "571bac0b08270bd4c7031c39f56b530eeb6007570699b55bce71966820c67908",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/single_slot_adapter.py",
+      "sha256": "4808927b8b2fcc9c3e2ce825a591bb37bec31c5f65af3bb1f7db928f4cf29a09",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/unattended_policy.py",
+      "sha256": "21aea336dd46f35ee402598687831b39f33c7aee5ec5245bc63f83cc77ec781f",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/bridge_acceptance.py",
+      "sha256": "4a304578466bb978d9666adf961f21dfadaca70ba3d12d86a91cfdf02189e1eb",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/lock_recovery.py",
+      "sha256": "1f60366901e71300da03cf477c67a136acfcee645370c40e2a2a7fc6102edf80",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/bridge_session_evidence.py",
+      "sha256": "658751dc918a14e95c6631d33f7d2a808add11b962a6ab54bf01b806ffb91bd1",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/growth_snapshot.py",
+      "sha256": "ca861b99ea9335fe4b6c8842875d037b24da9ce28802f9fcece30cef2c5d0d5c",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/rollback_admission.py",
+      "production_target": "UNAPPROVED",
+      "sha256": "1e703faa3df531756d365e58385ec830d990770219caeccf7bd2d91acf0a1aed"
+    },
+    {
+      "path": "autonomy/release_contract.py",
+      "production_target": "UNAPPROVED",
+      "sha256": "59a70cdd02e5032cf5f4a52cb139c9d0b5ac4454d1d918f3e654df70b98ffed8"
+    }
+  ],
+  "production_target_version": "UNKNOWN",
+  "production_runtime_sha256": "UNAPPROVED",
+  "publisher_sha256": "UNAPPROVED",
+  "backend_contract": "NOT_RECEIVED",
+  "exclusive_lock_contract": "NOT_RECEIVED",
+  "existing_inventory": "1784775229336",
+  "production_db_migration_authorized": false,
+  "release_ready": false,
+  "production_deployed": false,
+  "install_allowed": false,
+  "dispatch_allowed": false,
+  "independent_review": "INDEPENDENT_REVIEW.md",
+  "validation": "U1_REFRESH_VALIDATION.json",
+  "compatibility_consumer": "autonomy.release_contract.inspect_release_contract",
+  "blockers": [
+    "PRODUCTION_ENTRYPOINT_AND_SOLE_LOCK_INTEGRATION_PENDING",
+    "TRUST_ROOT_AND_NONINTERACTIVE_IDENTITY_PENDING",
+    "SCHEMA_MIGRATION_AND_PUBLISHER_COMPATIBILITY_PENDING",
+    "PRODUCTION_DEPENDENCY_HASHES_UNAPPROVED",
+    "FORMAL_BACKEND_AND_TRUSTED_OS_COLLECTOR_PENDING"
+  ],
+  "backup": {
+    "status": "NOT_VERIFIED",
+    "required_zh": "正式发布器锁内验证目标精确字节、备份哈希及缺失文件标记。",
+    "required_en": "Formal publisher must verify exact bytes, backup hashes and absence records under the sole lock."
+  },
+  "rollback": {
+    "document": "ROLLBACK_PLAN.md",
+    "preserve_current_ledgers": true,
+    "restore_old_business_database": false,
+    "old_executor_compatibility": "UNVERIFIED",
+    "new_file_removal_support": "UNVERIFIED"
+  },
+  "self_check_zh": "双语；无秘密；测试与生产状态区分；安装/管理员操作均未执行。",
+  "self_check_en": "Bilingual; no secrets; tests separated from production; no installation or administrator operations.",
+  "source_inventory_sha256": "804b4f631c94e0b73e8b09906f3c75544414a35bf66b6d8987b7d9e6dc957bf4",
+  "regression": "U1_REFRESH_REGRESSION.json"
+}

@@ -1,5 +1,7 @@
 # U1交付状态 / U1 delivery status
 
+2026-10-28最新交付入口：U1_REFRESH_DELIVERY.md；固定源码3f03417，113项主线及111项独立测试通过，预算回执绑定缺陷已修复。下文保留历史记录。 / Latest delivery: U1_REFRESH_DELIVERY.md; pinned source3f03417 passed113 main and111 independent tests and repairs receipt binding. Historical text below is retained.
+
 本轮完成回滚计划准入代码，固定15b52672ddd03f94ead05d4db932ca6c07601ec0，独立9项通过，组合98项通过（10.298秒）。更新后的12文件源码清单隔离导入另2项通过（1.068秒）。这不是生产安装包：目标路径和指纹仍UNAPPROVED。 / This iteration implements rollback-plan admission at the pinned revision, with9 independent tests and98 combined tests passing in10.298 seconds. The updated12-file source manifest also passed2 isolated-import tests in1.068 seconds. It is not a production installation package: targets and fingerprints remain unapproved.
 
 ## 必填状态 / Required status

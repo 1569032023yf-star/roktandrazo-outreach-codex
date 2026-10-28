@@ -1,5 +1,7 @@
 # U1当前恢复点 / U1 current checkpoint
 
+2026-10-28恢复入口：U1_REFRESH_DELIVERY.md；源码3f03417修复预算错run/claim回执结算，新增离线发布合同检查及Windows路径拒绝。113项主线、111项独立通过。Issue2最新6435605069无新合同，不重复请求；正式backend/runtime/发布器接入仍待证。 / Current entry: U1_REFRESH_DELIVERY.md. Source3f03417 repairs run/claim settlement and adds offline release-contract/Windows-path validation.113 main and111 independent tests passed. Issue2 still ends at6435605069; formal backend/runtime/publisher evidence remains pending without duplicate requests.
+
 ## 最新覆盖记录 / Latest superseding checkpoint
 
 最新恢复入口为U1_DELIVERY_STATUS.md：回滚计划准入固定15b5267，独立9项通过，组合98项通过，源码与审核报告d141f93已推送核对。canonical已指向新报告。 / Latest recovery entry: U1_DELIVERY_STATUS.md. Rollback-plan admission15b5267 passed9 independent and98 combined tests; source/review report d141f93 was pushed and verified. Canonical queue points to that report. Production and overall completion remain gated.

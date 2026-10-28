@@ -2,7 +2,7 @@
   "schema": 1,
   "description_zh": "仅开发候选源文件清单，不是生产安装授权。",
   "description_en": "Development source inventory only; not production installation authority.",
-  "source_commit": "15b52672ddd03f94ead05d4db932ca6c07601ec0",
+  "source_commit": "3f03417ba46f565525b2b254fdbc559667ab96a9",
   "hash_basis": "git blob bytes",
   "files": [
     {
@@ -12,7 +12,7 @@
     },
     {
       "path": "autonomy/growth_ledger.py",
-      "sha256": "12d0fd418c914e4d7a7b75f6cc58584abef8c04f523a738f2b6afb72a5ddf32f",
+      "sha256": "fc15509e9b97140304ed842e45b64be5953bdbcde1b1ffc63be38ef17e302c47",
       "production_target": "UNAPPROVED"
     },
     {
@@ -64,6 +64,11 @@
       "path": "autonomy/rollback_admission.py",
       "production_target": "UNAPPROVED",
       "sha256": "1e703faa3df531756d365e58385ec830d990770219caeccf7bd2d91acf0a1aed"
+    },
+    {
+      "path": "autonomy/release_contract.py",
+      "production_target": "UNAPPROVED",
+      "sha256": "59a70cdd02e5032cf5f4a52cb139c9d0b5ac4454d1d918f3e654df70b98ffed8"
     }
   ],
   "RELEASE_READY": false,
@@ -76,5 +81,5 @@
     "FORMAL_BACKEND_AND_TRUSTED_OS_COLLECTOR_PENDING"
   ],
   "rollback_document": "U1_RELEASE_GATES.md",
-  "regression_scope": "b69214d full833 identical37failures17errors; 15b5267 combined98 pass; rollback independent9 pass; updated package import2 pass"
+  "regression_scope": "3f03417 targeted113 pass; independent111 pass; full tests-dir833 baseline1c8a7fd/candidate identical37 failures17 errors; root contract final7 pass"
 }
