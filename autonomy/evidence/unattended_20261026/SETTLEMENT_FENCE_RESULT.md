@@ -12,7 +12,7 @@
 
 下一工程断点仍为离线版本化后端取消/硬时限合同。本次优先修复已证实缺陷，不声称完成取消、强制终止、进程重启或无人登录验收。Issue2沿用既有请求，无重复发送。 / Next remains the versioned offline cancellation/deadline contract. This cycle prioritizes a demonstrated defect and makes no cancellation, forced termination, process restart or login-free acceptance claim. Existing Issue2 request retained without duplicates.
 
-独立Reviewer实际因用量限制失败，未出具本候选审核结论，SCOPED_REVIEW保持PENDING，不将自测视作独审。下周期先恢复此审核，再继续取消协议开发。 / The independent reviewer failed because of a usage limit and issued no verdict for this candidate. SCOPED_REVIEW remains PENDING; self-tests do not replace independent review. Resume this review next cycle before continuing cancellation-protocol development.
+独立Reviewer最终因用量限制失败；磁盘上留有声明通过的审核草稿，但未收到成功完成状态，保守保持SCOPED_REVIEW=PENDING，待确认该审核产物。不将自测视作独审。 / The independent reviewer ended with a usage-limit failure. A review draft claiming a pass exists on disk, but successful completion was not received; conservatively keep SCOPED_REVIEW=PENDING until the artifact is confirmed. Self-tests do not replace independent review.
 
 DEVELOPMENT_COMPLETE=false; SCOPED_REVIEW=PENDING; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false; BUSINESS_GROWTH=UNKNOWN.
 
