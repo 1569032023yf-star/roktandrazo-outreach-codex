@@ -1,7 +1,7 @@
 import tempfile
 import unittest
 from pathlib import Path
-from autonomy.single_slot_adapter import SingleSlotAdapter,OfflineTarget,AdapterError
+from autonomy.single_slot_adapter import SingleSlotAdapter,OfflineTarget,AdapterError,BACKEND_PROTOCOL,OPERATION_SCHEMA
 from autonomy.durable_slots import DurableSlots
 from autonomy.ledger_evidence import LedgerEvidenceVerifier
 from autonomy.growth_ledger import GrowthLedger,digest,business_day
@@ -12,9 +12,11 @@ from test_growth_ledger import consumer,signed,oid,amounts,T
 
 class FakeBackend:
     backend_id='synthetic-backend'
+    protocol_version=BACKEND_PROTOCOL
     def __init__(self,mode='success'):
         self.mode=mode;self.calls=0;self.effects=[];self.receipts=None
     def execute_once(self,operation,*,deadline_monotonic):
+        self.operation=operation;self.deadline=deadline_monotonic
         self.calls+=1;self.effects.append(operation['request_id'])
         common={k:operation[k] for k in ('slot','epoch','owner','run_id','request_id')}
         sr=signed('receipt',T+10,**common,token=operation['token'],state='failed' if self.mode=='failed' else 'completed',receipt='fixture-terminal',external_drained=True)
@@ -22,6 +24,8 @@ class FakeBackend:
         self.receipts=dict(slot_receipt=sr,budget_receipt=br)
         if self.mode=='lost':raise RuntimeError('synthetic-secret-never-echo')
         if self.mode=='missing':return {}
+        if self.mode=='cancel_ack':return {'cancel_ack':True}
+        if self.mode=='timeout':raise TimeoutError('synthetic-timeout')
         return self.receipts
 
 
@@ -44,10 +48,74 @@ class SingleSlotTests(unittest.TestCase):
         self.idle=signed('idle',T+10,**self.common,external_state='idle',existing_lock_held=True)
         self.request=signed('budget_request',T+10,run_id=self.common['run_id'],request_id=self.common['request_id'],day=business_day(T+10),amount=amounts(),cache_hit=False,claim_binding=dict(inventory_id=INVENTORY,**self.common))
     def admission(self,**changes):
-        payload=dict(self.adapter.ids,**self.adapter._lock(),**self.common,scope='isolated_offline',production_execution=False,max_wall_seconds=2,gates=dict.fromkeys(GATES,True))
+        payload=dict(self.adapter.ids,**self.adapter._lock(),**self.common,scope='isolated_offline',production_execution=False,backend_protocol=BACKEND_PROTOCOL,max_wall_seconds=2,gates=dict.fromkeys(GATES,True))
         payload.update(changes)
         return signed('offline_slot_admission',T+10,**payload)
     def run_one(self,e):return self.adapter.execute(e,self.plan,self.idle,self.request)
+
+    def test_protocol_version_default_deny_before_claim(self):
+        with exclusive_lock(self.runtime):
+            for value in (None, True, 1, 'v0'):
+                self.backend.protocol_version=value
+                with self.assertRaisesRegex(AdapterError,'BACKEND_PROTOCOL_UNSUPPORTED'):
+                    self.run_one(self.admission())
+            self.backend.protocol_version=BACKEND_PROTOCOL
+            for value in (None, True, 'v0'):
+                with self.assertRaisesRegex(AdapterError,'BINDING_MISMATCH'):
+                    self.run_one(self.admission(backend_protocol=value))
+        self.assertEqual(self.backend.calls,0)
+        self.assertEqual(self.slots.snapshot(),[])
+
+    def test_legacy_admission_missing_version_reconciles_but_cannot_execute(self):
+        self.backend.mode='lost'
+        with exclusive_lock(self.runtime):
+            admission=self.admission()
+            self.assertEqual(self.run_one(admission)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+            payload=dict(admission['payload'])
+            payload.pop('backend_protocol')
+            # Re-sign the actual legacy shape; do not substitute None for absence.
+            for key in ('schema','source_id','principal_id','inventory_id','kind',
+                        'observed_at_epoch','expires_at_epoch','receipt_id'):
+                payload.pop(key)
+            legacy=signed('offline_slot_admission',T+10,**payload)
+            self.assertNotIn('backend_protocol',legacy['payload'])
+            with self.assertRaisesRegex(AdapterError,'BINDING_MISMATCH'):
+                self.run_one(legacy)
+            self.assertEqual(self.backend.calls,1)
+            self.assertEqual(self.adapter.reconcile(legacy,**self.backend.receipts)['outcome'],'COMPLETED')
+
+    def test_versioned_operation_identity_and_time_bound(self):
+        with exclusive_lock(self.runtime):
+            self.run_one(self.admission())
+        operation=dict(self.backend.operation)
+        identity=operation.pop('idempotency_key')
+        self.assertEqual(identity,digest(operation))
+        self.assertEqual(operation['schema'],OPERATION_SCHEMA)
+        self.assertIs(operation['production_execution'],False)
+        self.assertEqual(operation['inventory_id'],INVENTORY)
+        self.assertEqual(operation['scope'],'isolated_offline')
+        self.assertEqual(operation['backend_protocol'],BACKEND_PROTOCOL)
+        self.assertEqual(self.backend.deadline,1+operation['max_wall_seconds'])
+        for key in ('token','request_id','lock_token_hash','slots_id','budget_id'):
+            changed=dict(operation);changed[key]='different'
+            self.assertNotEqual(identity,digest(changed))
+
+    def test_cancel_ack_and_timeout_preserve_unknown_budget_no_replay(self):
+        for mode in ('cancel_ack','timeout'):
+            case=SingleSlotTests();case.setUp()
+            try:
+                case.backend.mode=mode
+                with exclusive_lock(case.runtime):
+                    e=case.admission()
+                    self.assertEqual(case.run_one(e)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+                    self.assertEqual(case.run_one(e)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+                    self.assertEqual(case.backend.calls,1)
+                    self.assertEqual(case.slots.snapshot()[0][2],'unknown')
+                    with case.budget.tx() as c:
+                        self.assertEqual(c.execute('SELECT state FROM reservations').fetchone()[0],'reserved')
+                    # Only independently signed terminal receipts clear the fence.
+                    case.adapter.reconcile(e,**case.backend.receipts)
+            finally:case.doCleanups()
 
     def test_default_deny_and_missing_lock(self):
         empty=SingleSlotAdapter(self.slots,self.budget)

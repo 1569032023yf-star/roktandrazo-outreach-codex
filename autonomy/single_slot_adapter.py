@@ -16,6 +16,10 @@ from autonomy.growth_ledger import digest
 from autonomy.unattended_policy import INVENTORY, GATES
 
 
+BACKEND_PROTOCOL = 'rokt.offline-backend.v1'
+OPERATION_SCHEMA = 'rokt.offline-operation.v1'
+
+
 class AdapterError(RuntimeError):
     pass
 
@@ -99,10 +103,14 @@ class SingleSlotAdapter:
             raise AdapterError('OFFLINE_BACKEND_NOT_CONFIGURED')
         if require_backend and (getattr(self.backend,'backend_id',None)!=self.target.backend_id or not callable(getattr(self.backend,'execute_once',None))):
             raise AdapterError('BACKEND_IDENTITY_MISMATCH')
+        if require_backend and (type(getattr(self.backend,'protocol_version',None)) is not str or self.backend.protocol_version != BACKEND_PROTOCOL):
+            raise AdapterError('BACKEND_PROTOCOL_UNSUPPORTED')
         if path_id(self.slots.path)!=self.ids['slots_id'] or path_id(self.budget.path)!=self.ids['budget_id']:
             raise AdapterError('LEDGER_TARGET_MISMATCH')
         p=self._verify(envelope,'offline_slot_admission')
         self._bound(p,dict(self.ids,**self._lock(),inventory_id=INVENTORY,scope='isolated_offline',production_execution=False))
+        if require_backend:
+            self._bound(p,{'backend_protocol':BACKEND_PROTOCOL})
         for k in ('slot','owner'):
             if type(p.get(k)) is not str or not p[k] or len(p[k])>128:raise AdapterError('INVALID_OPERATION')
         if type(p.get('epoch')) is not int or p['epoch']<1:raise AdapterError('INVALID_OPERATION')
@@ -152,7 +160,14 @@ class SingleSlotAdapter:
             started=self.monotonic()
             if type(started) not in (int,float) or not 0<=started<float('inf'):
                 raise AdapterError('CLOCK_UNAVAILABLE')
-            result=self.backend.execute_once(dict(common,inventory_id=INVENTORY,token=token,scope='isolated_offline'),deadline_monotonic=started+wall)
+            operation=dict(common,inventory_id=INVENTORY,token=token,scope='isolated_offline',
+                schema=OPERATION_SCHEMA,backend_protocol=BACKEND_PROTOCOL,max_wall_seconds=wall,production_execution=False,
+                **self.ids,**self._lock())
+            operation['idempotency_key']=digest(operation)
+            # v1 backend must enforce deadline outside this Python callback and
+            # durably deduplicate this exact identity. This is a contract, not
+            # proof of capabilities. No cancellation dispatch is implemented.
+            result=self.backend.execute_once(operation,deadline_monotonic=started+wall)
             ended=self.monotonic()
             if type(ended) not in (int,float) or not started<=ended<=started+wall:
                 raise AdapterError('BACKEND_RESULT_LATE_OR_CLOCK_CHANGED')
