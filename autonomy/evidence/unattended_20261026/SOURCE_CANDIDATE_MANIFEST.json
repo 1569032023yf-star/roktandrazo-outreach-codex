@@ -2,7 +2,7 @@
   "schema": 1,
   "description_zh": "仅开发候选源文件清单，不是生产安装授权。",
   "description_en": "Development source inventory only; not production installation authority.",
-  "source_commit": "9ff81dcc40e25a767a358ac74f1db8f4928e75b6",
+  "source_commit": "ec62af049c903f83eb7c593834dd7d8a8a61946c",
   "hash_basis": "git blob bytes",
   "files": [
     {
@@ -32,7 +32,7 @@
     },
     {
       "path": "autonomy/single_slot_adapter.py",
-      "sha256": "4808927b8b2fcc9c3e2ce825a591bb37bec31c5f65af3bb1f7db928f4cf29a09",
+      "sha256": "70489a332c41e3a503ce7929b25027bb6fd1763ea2086e35706d701857f9e480",
       "production_target": "UNAPPROVED"
     },
     {
