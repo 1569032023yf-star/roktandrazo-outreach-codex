@@ -171,14 +171,13 @@ class SingleSlotTests(unittest.TestCase):
         self.assertEqual(len(self.backend.effects),1)
 
     def test_real_settlement_transaction_fault_preserves_reservation(self):
-        execute=self.backend.execute_once
-        def dispatch(*args,**kwargs):
-            result=execute(*args,**kwargs)
+        settle=self.budget.settle
+        def fail_settlement(*args,**kwargs):
             def fail(stage):
                 if stage=='before_commit':raise OSError('synthetic-settlement-commit-failure')
             self.budget.fault=fail
-            return result
-        self.backend.execute_once=dispatch
+            return settle(*args,**kwargs)
+        self.budget.settle=fail_settlement
         with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'):
             with exclusive_lock(self.runtime):
                 self.assertEqual(self.run_one(self.admission())['outcome'],'UNKNOWN_RECONCILE_ONLY')
