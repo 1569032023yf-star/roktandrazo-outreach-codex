@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-28T00:45:11.078058+00:00",
+  "updated_at": "2026-10-28T06:49:49.209168+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -585,7 +585,7 @@
       "review_status": "SCOPED_OFFLINE_PASS_3f03417",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "3f03417ba46f565525b2b254fdbc559667ab96a9",
+      "candidate_commit": "9ff81dcc40e25a767a358ac74f1db8f4928e75b6",
       "trust_boundary_review": "SCOPED_PASS",
       "schedule_contract_review": "SCOPED_PASS",
       "regression_runner_candidate": "b69214d",
@@ -594,11 +594,13 @@
       "bridge_candidate": "68802d5",
       "bridge_review": "SCOPED_PASS_68802D5",
       "handoff_comment": 6435605069,
-      "targeted_tests": 113,
+      "targeted_tests": 114,
       "snapshot_review": "SCOPED_PASS_DA443FD",
       "history_import_review": "SCOPED_PASS_DBDC424",
       "manifest_closure_review": "SCOPED_PASS_TEST621D3E4_PACKAGE_DBDC424",
-      "rollback_review": "SCOPED_PASS_15B5267"
+      "rollback_review": "SCOPED_PASS_15B5267",
+      "windows_observation_review": "SCOPED_PASS_9FF81DC",
+      "local_windows_canary": "LOCAL_FACTS_OBSERVED_NOT_PRODUCTION"
     }
   ]
 }

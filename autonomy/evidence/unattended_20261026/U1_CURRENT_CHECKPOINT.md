@@ -1,5 +1,7 @@
 # U1当前恢复点 / U1 current checkpoint
 
+最新增量为WINDOWS_OBSERVATION_RESULT.md：源码9ff81dc经独立7项审核，模块组合114项通过；本机只读canary成功，但不构成生产或无人登录验收。旧U1_REFRESH_DELIVERY.md仍保留整体门禁。 / Latest increment: WINDOWS_OBSERVATION_RESULT.md. Source9ff81dc passed7 independent tests and114 combined tests; a real local read-only canary succeeded without production or login-free acceptance. U1_REFRESH_DELIVERY.md retains overall gates.
+
 2026-10-28恢复入口：U1_REFRESH_DELIVERY.md；源码3f03417修复预算错run/claim回执结算，新增离线发布合同检查及Windows路径拒绝。113项主线、111项独立通过。Issue2最新6435605069无新合同，不重复请求；正式backend/runtime/发布器接入仍待证。 / Current entry: U1_REFRESH_DELIVERY.md. Source3f03417 repairs run/claim settlement and adds offline release-contract/Windows-path validation.113 main and111 independent tests passed. Issue2 still ends at6435605069; formal backend/runtime/publisher evidence remains pending without duplicate requests.
 
 ## 最新覆盖记录 / Latest superseding checkpoint

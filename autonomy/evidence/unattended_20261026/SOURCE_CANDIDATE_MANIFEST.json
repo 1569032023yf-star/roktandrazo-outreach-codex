@@ -2,7 +2,7 @@
   "schema": 1,
   "description_zh": "仅开发候选源文件清单，不是生产安装授权。",
   "description_en": "Development source inventory only; not production installation authority.",
-  "source_commit": "3f03417ba46f565525b2b254fdbc559667ab96a9",
+  "source_commit": "9ff81dcc40e25a767a358ac74f1db8f4928e75b6",
   "hash_basis": "git blob bytes",
   "files": [
     {
@@ -69,6 +69,11 @@
       "path": "autonomy/release_contract.py",
       "production_target": "UNAPPROVED",
       "sha256": "59a70cdd02e5032cf5f4a52cb139c9d0b5ac4454d1d918f3e654df70b98ffed8"
+    },
+    {
+      "path": "autonomy/windows_observation.py",
+      "production_target": "UNAPPROVED",
+      "sha256": "35563c2b65f7be373287d4001932fd94dbefe295a359c5e58cafc45933e2c196"
     }
   ],
   "RELEASE_READY": false,
