@@ -33,7 +33,7 @@ CUSTOMER_SMTP_ENABLED=NOT_ENABLED_BY_THIS_TASK_LIVE_STATE_UNVERIFIED
 EMAILS_SENT_THIS_TASK=0
 PRODUCTION_DB_UNAUTHORIZED_WRITES=0
 GIT_COMMIT=3f03417ba46f565525b2b254fdbc559667ab96a9_SOURCE
-PUSH_SUCCESS=CHECK_FINAL_REMOTE_VERIFICATION
+PUSH_SUCCESS=true_SOURCE_AND_REVIEW_VERIFIED_AT_70a274b5a88e37133156b090aff8e859dd31ee5a
 BLOCKERS_REQUIRING_USER=NONE_NOW_ADMIN_REQUEST_AFTER_COMPATIBLE_PACKAGE
 NEXT_AUTOMATIC_ACTION=CONSUME_EXISTING_ISSUE2_FORMAL_BACKEND_RUNTIME_PUBLISHER_CONTRACT
 ```
@@ -54,3 +54,6 @@ Independent acquisition accounting is tested with complete trusted history, cano
 
 
 完整回归核对：基线1c8a7fd与候选各833项、37失败17错误，失败/错误ID集合完全一致，NO_NEW_REGRESSION=true；不是全量全绿。最终源码相对运行启动版本仅新增合同路径拒绝变更，已单独覆盖113项最终专项。 / Full regression: baseline and candidate each833 tests,37 failures and17 errors with identical ID sets, NO_NEW_REGRESSION=true, not all green. Changes after runner startup only harden contract paths, covered by the final113 targeted tests.
+
+
+远端核验：源码、审核及交付报告提交70a274b已推送，远端分支SHA逐字匹配；本记录仅追加核验事实。 / Remote verification: source, review and delivery commit70a274b was pushed and the remote branch SHA matched exactly; this note records that verified fact.
