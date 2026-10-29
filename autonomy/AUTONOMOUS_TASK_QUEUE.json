@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-28T22:26:22.132499+00:00",
+  "updated_at": "2026-10-29T01:24:02.683667+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -578,7 +578,7 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/unattended_20261026/CANCELLATION_RESULT.md",
+      "checkpoint": "autonomy/evidence/unattended_20261026/CANCELLATION_PROCESS_RESULT.md",
       "next_action": "Offline cancellation-cost and cross-ledger consistency contracts and fault injection; production disabled",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
@@ -604,7 +604,9 @@
       "late_receipt_tests": "ac1345d: 15 targeted / 55 combined passed; independent scoped review passed; same-process reconstruction only",
       "settlement_fence_validation": "58 combined passed; runtime ec62af0 review confirmed; 18 adapter tests independently passed",
       "backend_protocol_validation": "87 scoped tests / 2 pinned imports / 22 independent tests passed",
-      "cancellation_validation": "91 combined / 2 pinned imports / 26 independent tests passed; allow_cancel_dispatch false"
+      "cancellation_validation": "91 combined / 2 pinned imports / 26 independent tests passed; allow_cancel_dispatch false",
+      "journal_process_test_commit": "642eaf6d0090e54d489eeaa587c5da89c07ff9dd",
+      "journal_process_validation": "69 combined / 3 independent passed; primitive only; no dispatch"
     }
   ]
 }
