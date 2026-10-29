@@ -81,13 +81,15 @@ def inspect_owner_drain(consumer,envelope,*,now,expected,lock_bytes,budget_snaps
             db.deserialize(budget_snapshot)
             db.execute('PRAGMA query_only=ON');db.execute('PRAGMA trusted_schema=OFF')
             db.set_progress_handler(lambda:1,100000)
-            row=db.execute('SELECT state,binding,claim_hash FROM reservations WHERE id=?',
+            row=db.execute('SELECT state,binding,claim_hash,run FROM reservations WHERE id=?',
                            (common['request_id'],)).fetchone()
             if row is None or row[0] not in ('reserved','unknown','overrun'):
                 return dict(denied,reason='PERSISTED_CLAIM_UNRESOLVED_REQUIRED')
+            if type(row[1]) is not str:
+                return dict(denied,reason='PERSISTED_CLAIM_REJECTED')
             binding=json.loads(row[1],object_pairs_hook=_unique)
             target=dict(inventory_id=INVENTORY,**common)
-            if (row[2]!=expected['claim_token_hash'] or type(binding) is not dict
+            if (row[2]!=expected['claim_token_hash'] or type(row[3]) is not str or row[3]!=common['run_id'] or type(binding) is not dict
                     or set(binding)!=set(target) or any(type(binding[k]) is not type(v) or binding[k]!=v for k,v in target.items())):
                 return dict(denied,reason='PERSISTED_CLAIM_MISMATCH')
     except (sqlite3.Error,ValueError,TypeError,RecursionError,MemoryError):

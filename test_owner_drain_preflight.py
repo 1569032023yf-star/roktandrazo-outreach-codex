@@ -83,6 +83,18 @@ class OwnerDrainPreflightTests(unittest.TestCase):
         fields=dict(self.fields,budget_snapshot_sha256=expected['budget_snapshot_sha256'])
         self.assertEqual(self.check(fields,expected,snapshot=snapshot)['reason'],'PERSISTED_CLAIM_MISMATCH')
 
+    def test_persisted_run_column_and_blob_binding_fail_closed(self):
+        for sql,value,reason in (
+            ('UPDATE reservations SET run=? WHERE id=?','different-run','PERSISTED_CLAIM_MISMATCH'),
+            ('UPDATE reservations SET binding=? WHERE id=?',b'\xff','PERSISTED_CLAIM_REJECTED')):
+            with closing(sqlite3.connect(':memory:')) as db:
+                db.deserialize(self.snapshot)
+                db.execute(sql,(value,self.expected['request_id']));db.commit()
+                snapshot=db.serialize()
+            expected=dict(self.expected,budget_snapshot_sha256=hashlib.sha256(snapshot).hexdigest())
+            fields=dict(self.fields,budget_snapshot_sha256=expected['budget_snapshot_sha256'])
+            self.assertEqual(self.check(fields,expected,snapshot=snapshot)['reason'],reason)
+
     def test_invalid_context_and_legacy_lock_rejected(self):
         self.assertFalse(self.check(expected={})['evidence_matches'])
         self.assertFalse(self.check(expected=dict(self.expected,epoch=True))['evidence_matches'])
