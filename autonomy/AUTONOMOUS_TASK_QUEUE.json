@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-29T01:24:02.683667+00:00",
+  "updated_at": "2026-10-29T04:33:03.128275+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -578,8 +578,8 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/unattended_20261026/CANCELLATION_PROCESS_RESULT.md",
-      "next_action": "Offline cancellation-cost and cross-ledger consistency contracts and fault injection; production disabled",
+      "checkpoint": "autonomy/evidence/unattended_20261026/CANCELLATION_CROSS_LEDGER_RESULT.md",
+      "next_action": "Versioned offline cancellation-cost binding and reserve-before-intent fault contract; no cancellation dispatch",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "SCOPED_CANCELLATION_INTENT_ONLY_PASS",
@@ -606,7 +606,10 @@
       "backend_protocol_validation": "87 scoped tests / 2 pinned imports / 22 independent tests passed",
       "cancellation_validation": "91 combined / 2 pinned imports / 26 independent tests passed; allow_cancel_dispatch false",
       "journal_process_test_commit": "642eaf6d0090e54d489eeaa587c5da89c07ff9dd",
-      "journal_process_validation": "69 combined / 3 independent passed; primitive only; no dispatch"
+      "journal_process_validation": "69 combined / 3 independent passed; primitive only; no dispatch",
+      "cross_ledger_test_commit": "09dae683c2cc920386da0691f246cc728c9f3d71",
+      "cross_ledger_validation": "71 combined / 2 independent tests passed; original execution budget only; cancellation costs not implemented",
+      "cross_ledger_review": "PASS_FOR_SCOPED_OFFLINE_TEST_INCREMENT_09DAE68"
     }
   ]
 }
