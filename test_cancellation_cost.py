@@ -190,5 +190,27 @@ class CancellationCostTests(unittest.TestCase):
                 self.assertEqual(db.execute('SELECT * FROM cancellations').fetchall(),saved)
             c.adapter.reconcile(admission,**c.backend.receipts)
 
+    def test_legacy_intent_upgrade_conflicts_without_rewrite_or_refund(self):
+        c=self.case
+        with exclusive_lock(c.runtime):
+            admission,journal,fields,cost,cost_id=self.prepare()
+            legacy=dict(fields);legacy.pop('cancel_cost_protocol')
+            result=c.adapter.reserve_cancellation(admission,signed('offline_cancel_request',T+10,**legacy))
+            self.assertEqual(result['outcome'],'RESERVED_RECONCILE_ONLY')
+            with closing(sqlite3.connect(journal.path)) as db:
+                before=db.execute('SELECT * FROM cancellations').fetchall()
+            request=signed('offline_cancel_request',T+10,**fields)
+            for attempt in range(2):
+                with self.assertRaisesRegex(AdapterError,'CANCEL_REQUEST_CONFLICT'):
+                    c.adapter.reserve_cancellation(admission,request,cost_request=cost)
+                self.assertEqual(len(self.rows()),2)
+                row=next(r for r in self.rows() if r['id']==cost_id)
+                self.assertEqual(row['state'],'reserved')
+                self.assertEqual(row['charged'],row['amount'])
+                with closing(sqlite3.connect(journal.path)) as db:
+                    self.assertEqual(db.execute('SELECT * FROM cancellations').fetchall(),before)
+            self.assertEqual(c.backend.calls,1)
+            c.adapter.reconcile(admission,**c.backend.receipts)
+
 
 if __name__=='__main__':unittest.main()
