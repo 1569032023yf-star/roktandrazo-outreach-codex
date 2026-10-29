@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-29T20:07:21.895233+00:00",
+  "updated_at": "2026-10-29T23:09:29.548508+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -578,8 +578,8 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/drain_bundle_20261030/RESULT.md",
-      "next_action": "Offline versioned cancellation terminal-receipt contract: ACK-only remains UNKNOWN; bind original operation and cancel cost receipt separately; no dispatch or automatic lock recovery; reviews/host contracts pending",
+      "checkpoint": "autonomy/evidence/unattended_20261026/CANCELLATION_SETTLEMENT_RESULT.md",
+      "next_action": "Offline independent versioned cancellation terminal-receipt read-only verifier and missing-evidence failure contracts; ACK cannot prove drained terminal; no dispatch/automatic lock recovery; independent reviews and host contracts pending",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "PENDING_INDEPENDENT_CANCELLATION_COST_REVIEW",
@@ -639,7 +639,10 @@
       "drain_bundle_candidate": "e0b281a8698449bf135905ffa947647c434f2fc2",
       "drain_bundle_review": "PENDING_INDEPENDENT_REVIEW",
       "drain_bundle_validation": "7 new /151 combined passed;8 pinned Git blobs/import verified; full slot/budget/cancel-cost/journal joins only; no recovery authority",
-      "drain_bundle_full_regression": "e90c264 vs e0b281a:833 each, identical37 failure/17 error IDs; no new regression; not all green"
+      "drain_bundle_full_regression": "e90c264 vs e0b281a:833 each, identical37 failure/17 error IDs; no new regression; not all green",
+      "cancellation_settlement_test_commit": "69c3d574552da674c343816687b79164bd34479d",
+      "cancellation_settlement_validation": "4 new targeted passed in1.055s;151 selected combined passed in26.069s under PYTHONUTF8=1; initial existing GBK fixture decode failure recorded; runtime unchanged",
+      "cancellation_settlement_review": "PENDING_INDEPENDENT_REVIEW"
     }
   ],
   "workbuddy_production_consumption": {
