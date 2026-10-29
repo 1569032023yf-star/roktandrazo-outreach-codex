@@ -623,7 +623,9 @@
       "host_remediation_status": "OFFLINE_CONTRACT_IMPLEMENTED_NOT_INSTALLABLE",
       "host_remediation_review": "PENDING_INDEPENDENT_REVIEW",
       "host_remediation_validation": "7 new / 40 host / 124 combined passed; PowerShell parse only; no live tests",
-      "host_remediation_full_regression": "e3ac89c vs922a696:833 each;37 failures/17 errors same IDs; no new regression; not all green"
+      "host_remediation_full_regression": "e3ac89c vs922a696:833 each;37 failures/17 errors same IDs; no new regression; not all green",
+      "host_remediation_publication": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6493117461",
+      "host_remediation_publication_receipt": "autonomy/evidence/host_remediation_20261029/PUBLICATION_RECEIPT.json"
     }
   ],
   "workbuddy_production_consumption": {

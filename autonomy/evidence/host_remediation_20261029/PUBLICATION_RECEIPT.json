@@ -1,0 +1,16 @@
+{
+  "schema": "rokt.host-remediation-implementation-publication.v1",
+  "summary_zh": "离线修复合同增量已发布并逐字读回；整体主机修复和独审未完成。",
+  "summary_en": "Offline remediation contract increment published and read back exactly; overall host remediation and independent review incomplete.",
+  "source_commit": "922a6965a80c6eb3c06ba15896821f208e013a19",
+  "report_commit": "400e44afac9c3334b952ac80aa0ffbba7b3e3c06",
+  "issue_comment": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6493117461",
+  "exact_readback": true,
+  "published_at": "2026-10-29T09:34:10.560440+00:00",
+  "overall_remediation_complete": false,
+  "independent_review": "PENDING",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "production_deployed": false
+}
