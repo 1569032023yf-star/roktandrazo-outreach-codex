@@ -300,6 +300,23 @@ class GrowthLedger:
 
     def reserve(self,envelope,*,now):
         p=self.evidence(envelope,'budget_request',now)
+        return self._reserve_verified(p,now=now)
+
+    def reserve_cancellation_cost(self,envelope,*,now,binding,claim_token_hash):
+        """Offline cost reservation before intent; no dispatch or automatic refund."""
+        p=self.evidence(envelope,'budget_request',now)
+        opaque(claim_token_hash)
+        if (type(binding) is not dict or binding.get('cancel_cost_protocol')!='rokt.offline-cancel-cost.v1'
+                or p.get('claim_binding')!=binding
+                or p.get('claim_token_hash')!=claim_token_hash
+                or p.get('request_id')!=binding.get('cancel_cost_request_id')
+                or p.get('run_id')!=binding.get('run_id')):
+            raise GrowthError('CANCEL_COST_BINDING_MISMATCH')
+        if any(type(p['claim_binding'].get(k)) is not type(v) for k,v in binding.items()):
+            raise GrowthError('CANCEL_COST_BINDING_MISMATCH')
+        return self._reserve_verified(p,now=now,claim_hash=claim_token_hash)
+
+    def _reserve_verified(self,p,*,now,claim_hash=None):
         rid=opaque(p['request_id']);run=opaque(p['run_id']);amount=vector(p['amount']);day=p['day'];day_start(day)
         if day!=business_day(now):raise GrowthError('BUDGET_DAY_MISMATCH')
         if type(p.get('cache_hit')) is not bool:raise GrowthError('INVALID_CACHE_FLAG')
@@ -307,6 +324,7 @@ class GrowthLedger:
         binding=p.get('claim_binding')
         if binding is not None and type(binding) is not dict:raise GrowthError('INVALID_BINDING')
         request_hash=digest({'day':day,'run':run,'amount':amount,'cache_hit':p['cache_hit'],'binding':binding})
+        if claim_hash is not None:request_hash=digest(dict(request_hash=request_hash,claim_hash=claim_hash))
         with self.tx() as c:
             old=c.execute('SELECT * FROM reservations WHERE id=?',(rid,)).fetchone()
             if old:
@@ -324,7 +342,7 @@ class GrowthLedger:
             run_cap=min(cap['run_wall'],c.execute('SELECT wall_limit FROM runs WHERE id=?',(run,)).fetchone()[0])
             run_wall=sum(json.loads(r['charged'])['wall_seconds'] for r in c.execute('SELECT * FROM reservations WHERE run=?',(run,)))
             if run_wall+amount['wall_seconds']>run_cap:raise GrowthError('RUN_WALL_CAP_REACHED')
-            c.execute('INSERT INTO reservations VALUES (?,?,?,?,?,?,?,NULL,?,NULL)',(rid,day,run,canonical(amount),canonical(amount),'reserved',request_hash,canonical(binding) if binding is not None else None))
+            c.execute('INSERT INTO reservations VALUES (?,?,?,?,?,?,?,NULL,?,?)',(rid,day,run,canonical(amount),canonical(amount),'reserved',request_hash,canonical(binding) if binding is not None else None,claim_hash))
         return 'RESERVED_NOT_DISPATCHED'
 
     def settle(self,envelope,*,now):

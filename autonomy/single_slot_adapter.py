@@ -31,6 +31,7 @@ def path_id(path):
 
 
 CANCEL_PROTOCOL = 'rokt.offline-cancel-journal.v1'
+CANCEL_COST_PROTOCOL = 'rokt.offline-cancel-cost.v1'
 CANCEL_SCHEMA = "CREATE TABLE cancellations (identity TEXT PRIMARY KEY, binding TEXT NOT NULL, state TEXT NOT NULL CHECK(state='RESERVED_RECONCILE_ONLY'))"
 
 
@@ -229,7 +230,7 @@ class SingleSlotAdapter:
         except Exception:
             return self._unknown(p,token)
 
-    def reserve_cancellation(self,admission,cancel_request):
+    def reserve_cancellation(self,admission,cancel_request,*,cost_request=None):
         """Persist intent only. Signed cancellation facts do not authorize dispatch."""
         if type(self.cancellation_journal) is not CancellationJournal:
             raise AdapterError('CANCEL_JOURNAL_NOT_CONFIGURED')
@@ -256,6 +257,35 @@ class SingleSlotAdapter:
         self._lock()
         binding=dict(expected,claim_token_hash=claim_hash)
         identity=digest(dict(inventory_id=INVENTORY,**common,claim_token_hash=claim_hash))
+        if cost_request is not None or 'cancel_cost_protocol' in request:
+            self._bound(request,{'cancel_cost_protocol':CANCEL_COST_PROTOCOL})
+            if cost_request is None:raise AdapterError('CANCEL_COST_REQUEST_REQUIRED')
+            cost_id=digest(dict(cancel_identity=identity,cancel_cost_protocol=CANCEL_COST_PROTOCOL))
+            cost=self._verify(cost_request,'budget_request')
+            cost_binding=dict(binding,cancel_identity=identity,cancel_cost_protocol=CANCEL_COST_PROTOCOL,
+                              cancel_cost_request_id=cost_id,request_id=cost_id,
+                              original_request_id=common['request_id'])
+            self._bound(cost,dict(request_id=cost_id,run_id=common['run_id'],
+                                  claim_binding=cost_binding,claim_token_hash=claim_hash))
+            # Independent signature binds the complete amount, never a zero-cost
+            # assumption. Original and cancellation costs share existing caps.
+            amount=cost.get('amount')
+            if (type(amount) is not dict or type(amount.get('wall_seconds')) is not int
+                    or not 0<amount['wall_seconds']<=p['max_wall_seconds']):
+                raise AdapterError('CANCEL_COST_WALL_MISMATCH')
+            try:
+                self.budget.reserve_cancellation_cost(cost_request,now=self._now(),
+                    binding=cost_binding,claim_token_hash=claim_hash)
+            except Exception:
+                # Lost reservation acknowledgement cannot authorize intent.
+                return dict(outcome='UNKNOWN_RECONCILE_ONLY',allow_cancel_dispatch=False,production_execution=False)
+            with self.budget.tx() as c:
+                cost_row=c.execute('SELECT state,binding,claim_hash FROM reservations WHERE id=?',(cost_id,)).fetchone()
+                if (cost_row is None or cost_row['state']!='reserved'
+                        or json.loads(cost_row['binding'])!=cost_binding or cost_row['claim_hash']!=claim_hash):
+                    raise AdapterError('CANCEL_COST_RECONCILIATION_REQUIRED')
+            self._lock()
+            binding=cost_binding
         return journal.reserve(identity,binding,protected=protected)
 
     def reconcile(self,admission,slot_receipt,budget_receipt):
