@@ -128,6 +128,81 @@ class SingleSlotTests(unittest.TestCase):
             journal_id=journal_id,cancel_protocol=CANCEL_PROTOCOL,scope='isolated_offline',production_execution=False)
         return journal,fields
 
+    def test_cancel_journal_then_settlement_failure_and_recovery(self):
+        import json,sqlite3
+        from contextlib import closing
+        from autonomy.growth_ledger import GrowthError
+        for lost_ack in (False,True):
+            with self.subTest(journal_ack_lost=lost_ack):
+                case=SingleSlotTests();case.setUp()
+                try:
+                    case.backend.mode='lost'
+                    with exclusive_lock(case.runtime):
+                        admission=case.admission();case.run_one(admission)
+                        journal,fields=case.cancellation_fixture()
+                        if lost_ack:
+                            def fault(stage):
+                                if stage=='after_commit':raise OSError('fixture-journal-ack-lost')
+                            journal.fault=fault
+                        request=signed('offline_cancel_request',T+10,**fields)
+                        result=case.adapter.reserve_cancellation(admission,request)
+                        self.assertEqual(result['outcome'],'UNKNOWN_RECONCILE_ONLY' if lost_ack else 'RESERVED_RECONCILE_ONLY')
+                        self.assertIs(result['allow_cancel_dispatch'],False)
+                        with closing(sqlite3.connect(journal.path)) as c:
+                            original_rows=c.execute('SELECT * FROM cancellations').fetchall()
+                        self.assertEqual(len(original_rows),1)
+                        self.assertEqual(original_rows[0][2],'RESERVED_RECONCILE_ONLY')
+                        self.assertEqual(case.slots.snapshot()[0][2],'unknown')
+                        # A zero-actual signed terminal receipt makes any premature
+                        # refund observable; intent alone must retain full charges.
+                        receipts=dict(case.backend.receipts)
+                        receipts['budget_receipt']=signed('budget_receipt',T+10,**case.common,
+                            claim_token_hash=fields['claim_token_hash'],outcome='known',actual=amounts(0),externally_reconciled=True)
+                        def fail_settlement(stage):
+                            if stage=='before_commit':raise OSError('fixture-budget-commit-failure')
+                        original_settle=case.budget.settle
+                        def failing_settle(*args,**kwargs):
+                            case.budget.fault=fail_settlement
+                            try:return original_settle(*args,**kwargs)
+                            finally:case.budget.fault=lambda stage:None
+                        case.budget.settle=failing_settle
+                        with self.assertRaises(GrowthError):
+                            case.adapter.reconcile(admission,**receipts)
+                        case.budget.settle=original_settle
+                        with case.budget.tx() as c:
+                            row=c.execute('SELECT state,charged,receipt_hash FROM reservations').fetchone()
+                            self.assertEqual(row['state'],'reserved')
+                            self.assertEqual(json.loads(row['charged']),amounts())
+                            self.assertIsNone(row['receipt_hash'])
+                        self.assertEqual(case.slots.snapshot()[0][2],'completed')
+                        self.assertEqual(json.loads((case.runtime/'supervisor.lock').read_text())['tree_state'],'unverified')
+                        # Replay remains blocked even with terminal slot + unsettled budget.
+                        self.assertEqual(case.run_one(admission)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+                        self.assertEqual(case.backend.calls,1)
+                        recovered=case.adapter.reconcile(admission,**receipts)
+                        self.assertEqual(recovered['budget_result'],'SETTLED')
+                        self.assertEqual(json.loads((case.runtime/'supervisor.lock').read_text())['tree_state'],'verified_closed')
+                        with case.budget.tx() as c:
+                            row=c.execute('SELECT state,charged FROM reservations').fetchone()
+                            self.assertEqual(row['state'],'settled')
+                            self.assertEqual(json.loads(row['charged']),amounts(0))
+                        with closing(sqlite3.connect(journal.path)) as c:
+                            self.assertEqual(c.execute('SELECT * FROM cancellations').fetchall(),original_rows)
+                        self.assertEqual(case.backend.calls,1)
+                finally:case.doCleanups()
+
+    def test_completed_claim_cannot_create_cancel_intent(self):
+        with exclusive_lock(self.runtime):
+            admission=self.admission();self.run_one(admission)
+            journal,fields=self.cancellation_fixture()
+            with self.assertRaisesRegex(AdapterError,'CANCEL_CLAIM_NOT_UNRESOLVED'):
+                self.adapter.reserve_cancellation(admission,signed('offline_cancel_request',T+10,**fields))
+            self.assertFalse(journal.path.exists())
+            self.assertEqual(self.slots.snapshot()[0][2],'completed')
+            with self.budget.tx() as c:
+                self.assertEqual(c.execute('SELECT state FROM reservations').fetchone()[0],'settled')
+            self.assertEqual(self.backend.calls,1)
+
     def test_cancel_intent_reopen_duplicate_and_commit_ack_lost(self):
         self.backend.mode='lost'
         with exclusive_lock(self.runtime):
