@@ -1,0 +1,112 @@
+{
+ "schema": "rokt.city.v1",
+ "source": "bd_leads.db:retail_city_queue + lead_discovery_query_state + lead_discovery_results + provider_request_audit; formal completion from production retail_city_queue.city_completion_checks",
+ "ruleset": {
+  "provider": "browser_maps",
+  "query_families_expected": 20,
+  "module_fingerprint": {
+   "retail_city_queue.py": {
+    "sha256": "27d60fa77644f15b786bfc61390d3671d4a3ee50cc8ae6e9e0fa42b19e820146",
+    "bytes": 20548
+   }
+  }
+ },
+ "formal_completion": {
+  "Cooperstown": {
+   "city_id": 22,
+   "all_pass": true,
+   "checks": {
+    "all_query_families": true,
+    "all_sources_or_reasons": true,
+    "pagination_complete": true,
+    "two_empty_pages": true,
+    "all_candidates_classified": true,
+    "no_unprocessed_candidates": true,
+    "official_site_recheck": true,
+    "review_recovery": true,
+    "last_three_batches_empty": true
+   }
+  },
+  "Lake Placid": {
+   "city_id": 23,
+   "all_pass": false,
+   "checks": {
+    "all_query_families": false,
+    "all_sources_or_reasons": false,
+    "pagination_complete": false,
+    "two_empty_pages": false,
+    "all_candidates_classified": true,
+    "no_unprocessed_candidates": true,
+    "official_site_recheck": true,
+    "review_recovery": true,
+    "last_three_batches_empty": false
+   }
+  },
+  "Ithaca": {
+   "city_id": 20,
+   "all_pass": false,
+   "checks": {
+    "all_query_families": true,
+    "all_sources_or_reasons": true,
+    "pagination_complete": true,
+    "two_empty_pages": true,
+    "all_candidates_classified": false,
+    "no_unprocessed_candidates": false,
+    "official_site_recheck": false,
+    "review_recovery": false,
+    "last_three_batches_empty": true
+   }
+  },
+  "Saratoga Springs": {
+   "city_id": 21,
+   "all_pass": true,
+   "checks": {
+    "all_query_families": true,
+    "all_sources_or_reasons": true,
+    "pagination_complete": true,
+    "two_empty_pages": true,
+    "all_candidates_classified": true,
+    "no_unprocessed_candidates": true,
+    "official_site_recheck": true,
+    "review_recovery": true,
+    "last_three_batches_empty": true
+   }
+  }
+ },
+ "active": null,
+ "closed_cities": [],
+ "pending_cities": [],
+ "discrepancies": [
+  {
+   "city_id": 20,
+   "city": "Ithaca",
+   "observed": "retail_city_queue.status=search_matrix_exhausted (completed_at 2026-09-23)",
+   "formal_completion_all_pass": false,
+   "failing_checks": [
+    "all_candidates_classified",
+    "no_unprocessed_candidates",
+    "official_site_recheck",
+    "review_recovery"
+   ],
+   "attribution": "queue status and the formal completion contract disagree: the row was closed but classification/website-recheck/review-recovery checks do not pass. Reported, not repaired - changing a city status is a production mutation outside this task."
+  }
+ ],
+ "cooperstown_revision": {
+  "prior_claim": "the 2026-10-28 operations summary said Cooperstown would not close on its own",
+  "observed": "city_completion_checks(22) returns 9/9 pass; completed_at=2026-10-22T16:49:35Z (2026-10-23 00:49 +08)",
+  "verdict": "the prior claim was already stale when published; Cooperstown has been formally closed since 2026-10-23"
+ },
+ "data_sources": "bd_leads.db",
+ "available": true,
+ "schema_version": "1.0",
+ "generated_at": "2026-10-29T11:50:11+08:00",
+ "business_timezone": "Asia/Shanghai (+08)",
+ "producer": "workbuddy-production-operator",
+ "evidence_kind": "production_state",
+ "channel": {
+  "endpoint": "http://127.0.0.1:8791",
+  "bridge_state": "DOWN_THIS_CYCLE",
+  "note": "endpoint not consulted this cycle; values derived directly from bd_leads.db (mode=ro) and file evidence"
+ },
+ "payload_sha256": "4326e01469491bd87abeef3ce12a242495ff8a62dcfa183f7b26fdf6e0f601e4"
+}

@@ -1,0 +1,89 @@
+{
+ "schema": "rokt.provider_audit.v1",
+ "source": "bd_leads.db:provider_request_audit + job_runs + lead_discovery_query_state",
+ "all_cities_7d": {
+  "window_hours": 168,
+  "provider": [
+   {
+    "provider": "browser_maps",
+    "audit_rows": 40,
+    "request_count": 37,
+    "result_count": 349
+   }
+  ],
+  "verdict": "REAL_REQUESTS"
+ },
+ "h24": {
+  "window_hours": 24,
+  "provider": [
+   {
+    "provider": "browser_maps",
+    "audit_rows": 11,
+    "request_count": 11,
+    "result_count": 158
+   }
+  ]
+ },
+ "per_run_attribution": [
+  {
+   "run_id": "inventory:2026-10-29:8f789080",
+   "started_at_local": "2026-10-29T10:30:16+08:00",
+   "provider_pages": 3,
+   "audit_rows": 3,
+   "result_count": 24,
+   "actual": 62,
+   "stop_reason": "target_met"
+  },
+  {
+   "run_id": "inventory:2026-10-29:2af7d25d",
+   "started_at_local": "2026-10-29T03:37:49+08:00",
+   "provider_pages": 3,
+   "audit_rows": 3,
+   "result_count": 60,
+   "actual": 63,
+   "stop_reason": "target_met"
+  },
+  {
+   "run_id": "inventory:2026-10-28:f3323da5",
+   "started_at_local": "2026-10-28T20:52:56+08:00",
+   "provider_pages": 3,
+   "audit_rows": 3,
+   "result_count": 60,
+   "actual": 62,
+   "stop_reason": "target_met"
+  },
+  {
+   "run_id": "inventory:2026-10-28:7cf9f85e",
+   "started_at_local": "2026-10-28T14:16:58+08:00",
+   "provider_pages": 2,
+   "audit_rows": 2,
+   "result_count": 14,
+   "actual": 61,
+   "stop_reason": "target_met"
+  },
+  {
+   "run_id": "inventory:2026-10-28:ec9fca7f",
+   "started_at_local": "2026-10-28T07:40:36+08:00",
+   "provider_pages": 2,
+   "audit_rows": 2,
+   "result_count": 2,
+   "actual": 61,
+   "stop_reason": "target_met"
+  }
+ ],
+ "last_requested_at_local": "2026-10-29T10:37:20+08:00",
+ "notes": "every provider_request_audit row in the last 5 runs is status=ok; the 2026-10-29 10:30 run issued 3 pages / 24 results before stopping with target_met. Discovery is executing real bounded work, it is not short-circuiting on an already-met target.",
+ "data_sources": "bd_leads.db",
+ "available": true,
+ "schema_version": "1.0",
+ "generated_at": "2026-10-29T11:50:11+08:00",
+ "business_timezone": "Asia/Shanghai (+08)",
+ "producer": "workbuddy-production-operator",
+ "evidence_kind": "production_state",
+ "channel": {
+  "endpoint": "http://127.0.0.1:8791",
+  "bridge_state": "DOWN_THIS_CYCLE",
+  "note": "endpoint not consulted this cycle; values derived directly from bd_leads.db (mode=ro) and file evidence"
+ },
+ "payload_sha256": "14812b9e1501a36bc989f1aa9cf57751fc0b506fae0c0ed1e2aee8558b680f3b"
+}

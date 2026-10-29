@@ -1,0 +1,318 @@
+{
+ "schema": "rokt.runtime.v1",
+ "source": "bd_leads.db:job_runs + system_config + bd_orchestrator trace",
+ "latest_run": {
+  "run_id": "inventory:2026-10-29:8f789080",
+  "status": "completed",
+  "target": 50,
+  "actual": 62,
+  "gap": 0,
+  "stop_reason": "target_met",
+  "started_at_utc": "2026-10-29 02:30:16",
+  "finished_at_utc": "2026-10-29 02:46:42",
+  "started_at_local": "2026-10-29T10:30:16+08:00",
+  "finished_at_local": "2026-10-29T10:46:42+08:00",
+  "duration_seconds": 986.0,
+  "provider_pages": 3,
+  "provider_rows": 3,
+  "provider_result_count": 24
+ },
+ "recent_runs": [
+  {
+   "run_id": "inventory:2026-10-29:8f789080",
+   "status": "completed",
+   "target": 50,
+   "actual": 62,
+   "gap": 0,
+   "stop_reason": "target_met",
+   "started_at_utc": "2026-10-29 02:30:16",
+   "finished_at_utc": "2026-10-29 02:46:42",
+   "started_at_local": "2026-10-29T10:30:16+08:00",
+   "finished_at_local": "2026-10-29T10:46:42+08:00",
+   "duration_seconds": 986.0,
+   "provider_pages": 3,
+   "provider_rows": 3,
+   "provider_result_count": 24
+  },
+  {
+   "run_id": "inventory:2026-10-29:2af7d25d",
+   "status": "completed",
+   "target": 50,
+   "actual": 63,
+   "gap": 0,
+   "stop_reason": "target_met",
+   "started_at_utc": "2026-10-28 19:37:49",
+   "finished_at_utc": "2026-10-28 19:52:54",
+   "started_at_local": "2026-10-29T03:37:49+08:00",
+   "finished_at_local": "2026-10-29T03:52:54+08:00",
+   "duration_seconds": 905.0,
+   "provider_pages": 3,
+   "provider_rows": 3,
+   "provider_result_count": 60
+  },
+  {
+   "run_id": "inventory:2026-10-28:f3323da5",
+   "status": "completed",
+   "target": 50,
+   "actual": 62,
+   "gap": 0,
+   "stop_reason": "target_met",
+   "started_at_utc": "2026-10-28 12:52:56",
+   "finished_at_utc": "2026-10-28 13:13:24",
+   "started_at_local": "2026-10-28T20:52:56+08:00",
+   "finished_at_local": "2026-10-28T21:13:24+08:00",
+   "duration_seconds": 1228.0,
+   "provider_pages": 3,
+   "provider_rows": 3,
+   "provider_result_count": 60
+  },
+  {
+   "run_id": "inventory:2026-10-28:7cf9f85e",
+   "status": "completed",
+   "target": 50,
+   "actual": 61,
+   "gap": 0,
+   "stop_reason": "target_met",
+   "started_at_utc": "2026-10-28 06:16:58",
+   "finished_at_utc": "2026-10-28 06:28:51",
+   "started_at_local": "2026-10-28T14:16:58+08:00",
+   "finished_at_local": "2026-10-28T14:28:51+08:00",
+   "duration_seconds": 713.0,
+   "provider_pages": 2,
+   "provider_rows": 2,
+   "provider_result_count": 14
+  },
+  {
+   "run_id": "inventory:2026-10-28:ec9fca7f",
+   "status": "completed",
+   "target": 50,
+   "actual": 61,
+   "gap": 0,
+   "stop_reason": "target_met",
+   "started_at_utc": "2026-10-27 23:40:36",
+   "finished_at_utc": "2026-10-27 23:51:24",
+   "started_at_local": "2026-10-28T07:40:36+08:00",
+   "finished_at_local": "2026-10-28T07:51:24+08:00",
+   "duration_seconds": 648.0,
+   "provider_pages": 2,
+   "provider_rows": 2,
+   "provider_result_count": 2
+  },
+  {
+   "run_id": "inventory:2026-10-28:1cbfbecc",
+   "status": "completed",
+   "target": 50,
+   "actual": 61,
+   "gap": 0,
+   "stop_reason": "target_met",
+   "started_at_utc": "2026-10-27 17:05:49",
+   "finished_at_utc": "2026-10-27 17:16:45",
+   "started_at_local": "2026-10-28T01:05:49+08:00",
+   "finished_at_local": "2026-10-28T01:16:45+08:00",
+   "duration_seconds": 656.0
+  },
+  {
+   "run_id": "inventory:2026-10-27:7be7c846",
+   "status": "completed",
+   "target": 50,
+   "actual": 61,
+   "gap": 0,
+   "stop_reason": "target_met",
+   "started_at_utc": "2026-10-27 10:31:18",
+   "finished_at_utc": "2026-10-27 10:42:18",
+   "started_at_local": "2026-10-27T18:31:18+08:00",
+   "finished_at_local": "2026-10-27T18:42:18+08:00",
+   "duration_seconds": 660.0
+  },
+  {
+   "run_id": "inventory:2026-10-27:dbbdab2e",
+   "status": "completed",
+   "target": 50,
+   "actual": 62,
+   "gap": 0,
+   "stop_reason": "target_met",
+   "started_at_utc": "2026-10-27 03:50:13",
+   "finished_at_utc": "2026-10-27 04:05:47",
+   "started_at_local": "2026-10-27T11:50:13+08:00",
+   "finished_at_local": "2026-10-27T12:05:47+08:00",
+   "duration_seconds": 934.0
+  }
+ ],
+ "latest_run_stage_trace": [
+  {
+   "seq": 1,
+   "at": "2026-10-29T02:30:16.909986+00:00",
+   "phase": "inventory",
+   "outcome": "enter",
+   "city_id": null,
+   "count": null
+  },
+  {
+   "seq": 2,
+   "at": "2026-10-29T02:30:16.984394+00:00",
+   "phase": "state",
+   "outcome": "enter",
+   "city_id": null,
+   "count": null
+  },
+  {
+   "seq": 3,
+   "at": "2026-10-29T02:30:16.999433+00:00",
+   "phase": "state",
+   "outcome": "complete",
+   "city_id": null,
+   "count": null
+  },
+  {
+   "seq": 4,
+   "at": "2026-10-29T02:36:14.605809+00:00",
+   "phase": "city",
+   "outcome": "enter",
+   "city_id": null,
+   "count": null
+  },
+  {
+   "seq": 5,
+   "at": "2026-10-29T02:36:14.643457+00:00",
+   "phase": "city",
+   "outcome": "complete",
+   "city_id": 23,
+   "count": null
+  },
+  {
+   "seq": 6,
+   "at": "2026-10-29T02:36:14.652222+00:00",
+   "phase": "places",
+   "outcome": "enter",
+   "city_id": 23,
+   "count": null
+  },
+  {
+   "seq": 7,
+   "at": "2026-10-29T02:37:20.280936+00:00",
+   "phase": "places",
+   "outcome": "complete",
+   "city_id": 23,
+   "count": 24
+  },
+  {
+   "seq": 8,
+   "at": "2026-10-29T02:37:20.291477+00:00",
+   "phase": "website",
+   "outcome": "enter",
+   "city_id": 23,
+   "count": null
+  },
+  {
+   "seq": 9,
+   "at": "2026-10-29T02:37:27.855800+00:00",
+   "phase": "website",
+   "outcome": "complete",
+   "city_id": 23,
+   "count": 1
+  },
+  {
+   "seq": 10,
+   "at": "2026-10-29T02:37:27.866265+00:00",
+   "phase": "postprocess",
+   "outcome": "enter",
+   "city_id": 23,
+   "count": null
+  },
+  {
+   "seq": 11,
+   "at": "2026-10-29T02:39:08.450607+00:00",
+   "phase": "postprocess",
+   "outcome": "complete",
+   "city_id": 23,
+   "count": 3
+  },
+  {
+   "seq": 12,
+   "at": "2026-10-29T02:39:08.461492+00:00",
+   "phase": "linked",
+   "outcome": "enter",
+   "city_id": 23,
+   "count": null
+  },
+  {
+   "seq": 13,
+   "at": "2026-10-29T02:41:41.094322+00:00",
+   "phase": "linked",
+   "outcome": "complete",
+   "city_id": 23,
+   "count": 6
+  },
+  {
+   "seq": 14,
+   "at": "2026-10-29T02:41:41.125250+00:00",
+   "phase": "completion",
+   "outcome": "enter",
+   "city_id": 23,
+   "count": null
+  },
+  {
+   "seq": 15,
+   "at": "2026-10-29T02:41:41.145532+00:00",
+   "phase": "completion",
+   "outcome": "complete",
+   "city_id": 23,
+   "count": null
+  },
+  {
+   "seq": 16,
+   "at": "2026-10-29T02:46:42.578223+00:00",
+   "phase": "inventory",
+   "outcome": "complete",
+   "city_id": null,
+   "count": 62
+  }
+ ],
+ "production_code": {
+  "campaign_eligible_v2.py": {
+   "sha256": "1143bedf563c0f76b883359362ffb2c2ea11c375fd923dc59768c5529cf3ad34",
+   "bytes": 18023
+  },
+  "preflight_gate.py": {
+   "sha256": "2cd286f201430fb9a48c68ead512671f398732e50e768c2fd69031f127f52622",
+   "bytes": 41251
+  },
+  "retail_city_queue.py": {
+   "sha256": "27d60fa77644f15b786bfc61390d3671d4a3ee50cc8ae6e9e0fa42b19e820146",
+   "bytes": 20548
+  },
+  "bd_orchestrator.py": {
+   "sha256": "0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8",
+   "bytes": 36070
+  }
+ },
+ "db": {
+  "size_bytes": 9797632,
+  "sha256": "7f2ab53bf8dcddd67474feeb11fcf16a80ad7ada0f7ac64afb537d1496865e65",
+  "mtime": "2026-10-29T10:46:42.725069+08:00",
+  "quick_check": "ok",
+  "leads_total": 1242
+ },
+ "send_freeze": {
+  "send_log_total": 517,
+  "send_log_max_sent_at": "2026-09-16T01:09:52.031266+08:00",
+  "send_log_today": 0,
+  "send_authorizations_rows": 23,
+  "customer_smtp_enabled": false,
+  "unauthorized_sends": 0
+ },
+ "inventory_run_lock_today": "released",
+ "data_sources": "bd_leads.db (read-only)",
+ "available": true,
+ "schema_version": "1.0",
+ "generated_at": "2026-10-29T11:50:11+08:00",
+ "business_timezone": "Asia/Shanghai (+08)",
+ "producer": "workbuddy-production-operator",
+ "evidence_kind": "production_state",
+ "channel": {
+  "endpoint": "http://127.0.0.1:8791",
+  "bridge_state": "DOWN_THIS_CYCLE",
+  "note": "endpoint not consulted this cycle; values derived directly from bd_leads.db (mode=ro) and file evidence"
+ },
+ "payload_sha256": "7ed17065229e77beabfe7e3ae3e327601251fa74f22f723f4842ba1401e76087"
+}

@@ -1,0 +1,166 @@
+{
+ "schema": "rokt.safe_authority.v1",
+ "measured_at": "2026-10-29T11:48:26.629172+08:00",
+ "rule_version": {
+  "name": "V1_V2_MX_HISTORY_SUPPRESSION_BUSINESS_FIT",
+  "entrypoint": "campaign_eligible_v2.select_candidates_for_plan_v2",
+  "mx_probe": "preflight_gate.query_mx",
+  "code": {
+   "campaign_eligible_v2.py": {
+    "sha256": "1143bedf563c0f76b883359362ffb2c2ea11c375fd923dc59768c5529cf3ad34",
+    "bytes": 18023
+   },
+   "preflight_gate.py": {
+    "sha256": "2cd286f201430fb9a48c68ead512671f398732e50e768c2fd69031f127f52622",
+    "bytes": 41251
+   }
+  }
+ },
+ "method": "bd_orchestrator._count_safe_ready_pool(conn) -> select_candidates_for_plan_v2 on a connect() handle; SAFE = distinct organization_key over returned candidate rows; two consecutive readings reported because MX resolution is live and can jitter. Same entrypoint as the 2026-10-28 snapshot, so the two numbers are comparable.",
+ "source": "bd_leads.db (read-only)",
+ "mx_positive_control": {
+  "domain": "gmail.com",
+  "result": "('ok', '2026-10-29T11:49:02.886004+08:00')",
+  "checked_at": "2026-10-29T11:48:42.816325+08:00"
+ },
+ "mx_negative_control": {
+  "domain": "nonexistent-domain-xyz-abc123456.invalid",
+  "result": "('nxdomain', '2026-10-29T11:49:23.227169+08:00')",
+  "checked_at": "2026-10-29T11:49:03.190278+08:00"
+ },
+ "measurement_complete": true,
+ "failure_reason": null,
+ "safe_unique_orgs": 63,
+ "reading_agreement": true,
+ "readings": [
+  {
+   "reading": 1,
+   "unique_organizations": 63,
+   "wall_seconds": 346.4,
+   "sampling_time": "2026-10-29T11:43:26+08:00"
+  },
+  {
+   "reading": 2,
+   "unique_organizations": 63,
+   "wall_seconds": 300.6,
+   "sampling_time": "2026-10-29T11:48:26+08:00"
+  }
+ ],
+ "db_identity": {
+  "size_bytes": 9797632,
+  "sha256": "7f2ab53bf8dcddd67474feeb11fcf16a80ad7ada0f7ac64afb537d1496865e65",
+  "mtime": "2026-10-29T10:46:42.725069+08:00",
+  "quick_check": "ok",
+  "leads_total": 1242
+ },
+ "leads_total": 1242,
+ "filters": {
+  "suppression_list_rows": 63,
+  "bounce_log_rows": 63,
+  "unmatched_dsn_rows": 48,
+  "send_log_total": 517,
+  "send_log_max_sent_at": "2026-09-16T01:09:52.031266+08:00",
+  "send_log_today": 0,
+  "send_authorizations_rows": 23,
+  "inventory_run_lock_today": "released"
+ },
+ "previous_snapshot": {
+  "safe_unique_orgs": 62,
+  "measured_at": "2026-10-28T22:46:59+08:00",
+  "same_rule_and_method": true
+ },
+ "safe_net_growth": {
+  "delta_vs_previous_snapshot": 1,
+  "previous_snapshot_at": "2026-10-28T22:52:13+08:00",
+  "elapsed_hours": 12.9,
+  "strict_24h_value": "UNKNOWN",
+  "strict_24h_note": "no snapshot exists at 2026-10-28T11:48+08:00, so a strictly 24-hour delta cannot be subtracted; the closest comparable point is the 2026-10-28 22:52 snapshot 12.9 hours earlier",
+  "d7_reference": {
+   "safe_unique_orgs": 56,
+   "baseline_at": "2026-10-22T15:49:52+08:00",
+   "delta": 7
+  }
+ },
+ "new_customer_funnel": {
+  "dedup_rule": "discovery window: distinct COALESCE(normalized_domain, lower(business_name)|city) over lead_discovery_results; lead window: distinct organization_key over leads",
+  "timezones": "discovery window compares UTC ISO; lead window compares leads.collected_at (+08 literal)",
+  "h24": {
+   "window_hours": 24,
+   "cutoff_utc": "2026-10-28T03:38:42.851008+00:00",
+   "merchant_records_discovered": 17,
+   "unique_organizations_discovered": 16,
+   "records_with_website": 16,
+   "new_leads": 13,
+   "new_distinct_organization_keys": 12,
+   "new_leads_with_email": 2,
+   "new_first_party_official_emails": 2,
+   "provider": [
+    {
+     "provider": "browser_maps",
+     "audit_rows": 11,
+     "request_count": 11,
+     "result_count": 158
+    }
+   ]
+  },
+  "d7": {
+   "window_hours": 168,
+   "cutoff_utc": "2026-10-22T03:38:42.851008+00:00",
+   "merchant_records_discovered": 48,
+   "unique_organizations_discovered": 44,
+   "records_with_website": 40,
+   "new_leads": 29,
+   "new_distinct_organization_keys": 28,
+   "new_leads_with_email": 8,
+   "new_first_party_official_emails": 8,
+   "provider": [
+    {
+     "provider": "browser_maps",
+     "audit_rows": 40,
+     "request_count": 37,
+     "result_count": 349
+    }
+   ]
+  },
+  "note": "merchant discovery != confirmed identity != has email != SAFE customer"
+ },
+ "data_sources": "bd_leads.db (read-only)",
+ "available": true,
+ "verdict": "ok",
+ "schema_version": "1.0",
+ "generated_at": "2026-10-29T11:50:11+08:00",
+ "business_timezone": "Asia/Shanghai (+08)",
+ "producer": "workbuddy-production-operator",
+ "evidence_kind": "production_state",
+ "channel": {
+  "endpoint": "http://127.0.0.1:8791",
+  "bridge_state": "DOWN_THIS_CYCLE",
+  "note": "endpoint not consulted this cycle; values derived directly from bd_leads.db (mode=ro) and file evidence"
+ },
+ "intraday_trajectory": [
+  {
+   "at": "2026-10-28T22:52:13+08:00",
+   "safe": 62,
+   "source": "SAFE_AUTHORITY_SNAPSHOT (10-28 build)"
+  },
+  {
+   "at": "2026-10-29T00:14:00+08:00",
+   "safe": 63,
+   "source": "workspace memory 2026-10-29 00:14 checkpoint (two reads 63/63)"
+  },
+  {
+   "at": "2026-10-29T06:41:00+08:00",
+   "safe": 64,
+   "source": "workspace memory 2026-10-29 06:41 checkpoint (two reads 64/64)"
+  },
+  {
+   "at": "2026-10-29T11:48:26+08:00",
+   "safe": 63,
+   "source": "this build (two reads 63/63)"
+  }
+ ],
+ "intraday_note": "SAFE is not monotonic today: it read 63 at 00:14, 64 at 06:41, and 63 at 11:48. The in-run authoritative count also moved 62 (10-28 20:52 run) -> 63 (10-29 03:37 run) -> 62 (10-29 10:30 run). Each observation was internally consistent (both reads agreed), so this is either a genuine eligibility loss or live-MX variance; _count_safe_ready_pool is documented as +/-1 unstable across reads, but not within a read pair.",
+ "intraday_peak_today": 64,
+ "delta_vs_intraday_peak": -1,
+ "payload_sha256": "df367effa2b76b7f0f90105afd7ab135f8a43d0eed004ed59ab8715c9d6eedf1"
+}

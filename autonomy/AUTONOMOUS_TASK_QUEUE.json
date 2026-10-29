@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-29T04:33:03.128275+00:00",
+  "updated_at": "2026-10-29T07:15:30.212509+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -567,8 +567,8 @@
       "executor": "current_authorized_chat",
       "created_at": "2026-10-23T11:30:44.675989+00:00",
       "outcome_unknown": false,
-      "blocked_reason": "FRESH_NATURAL_RUN_EVIDENCE_PENDING",
-      "next_action": "Consume original Inventory natural evidence; authentication recovered in verified WorkBuddy handoff",
+      "blocked_reason": "NATURAL_EVIDENCE_CONSUMED_WITH_INTEGRITY_AND_COMPLETENESS_RESERVATIONS",
+      "next_action": "Retain scoped natural-run observations; reconcile existing handoff payload and scheduler discrepancies without manual collection or production mutation.",
       "evidence_comment": 6388324879
     },
     {
@@ -578,7 +578,7 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/unattended_20261026/CANCELLATION_CROSS_LEDGER_RESULT.md",
+      "checkpoint": "autonomy/evidence/unattended_20261026/U1_CURRENT_CHECKPOINT.md",
       "next_action": "Versioned offline cancellation-cost binding and reserve-before-intent fault contract; no cancellation dispatch",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
@@ -609,7 +609,343 @@
       "journal_process_validation": "69 combined / 3 independent passed; primitive only; no dispatch",
       "cross_ledger_test_commit": "09dae683c2cc920386da0691f246cc728c9f3d71",
       "cross_ledger_validation": "71 combined / 2 independent tests passed; original execution budget only; cancellation costs not implemented",
-      "cross_ledger_review": "PASS_FOR_SCOPED_OFFLINE_TEST_INCREMENT_09DAE68"
+      "cross_ledger_review": "PASS_FOR_SCOPED_OFFLINE_TEST_INCREMENT_09DAE68",
+      "workbuddy_consumption_receipt": "autonomy/evidence/workbuddy_consumption_20261029/CONSUMPTION_RECEIPT.json",
+      "production_evidence_consumed": true,
+      "unattended_accepted": false,
+      "allow_dispatch": false,
+      "allow_cancel_dispatch": false
     }
-  ]
+  ],
+  "workbuddy_production_consumption": {
+    "schema": "codex.workbuddy-consumption-receipt.v1",
+    "summary_zh": "生产证据已读取及对账；Git完整性通过，payload及调度完整性存在保留；无人登录未通过。",
+    "summary_en": "Production evidence read and reconciled; Git integrity passed with payload and scheduler completeness reservations; login-free acceptance failed.",
+    "CODEX_HANDOFF_CONSUMED": false,
+    "publication_state": "PREPARED_PENDING_EXISTING_ISSUE2_RECEIPT",
+    "consumed_at": "2026-10-29T07:15:30.212509+00:00",
+    "workbuddy_commit": "5a2906104ffa89e0434fa6f8f8744fdb93347c7a",
+    "workbuddy_commit_at": "2026-10-29T11:52:07+08:00",
+    "codex_remote_head_at_start": "fe7ff037f9719f88cb37a78c196698c8825aa37f",
+    "files": [
+      {
+        "name": "PHASE0_STATE_REFRESH_20261029.json",
+        "sha": "ce2a755875ce6bc707bc20dcc155911d535a108a",
+        "url": "https://github.com/1569032023yf-star/workbuddy-task-window/blob/5a2906104ffa89e0434fa6f8f8744fdb93347c7a/handoff/workbuddy/production/PHASE0_STATE_REFRESH_20261029.json",
+        "bytes": 11120,
+        "git_blob_verified": true,
+        "json_parsed": true,
+        "schema": "rokt.phase0_refresh.v1",
+        "schema_version": null,
+        "schema_check": "ENVELOPE_AND_DECLARED_VERSION_ONLY_NO_EXTERNAL_JSON_SCHEMA",
+        "producer": "workbuddy-production-operator",
+        "source": "phase0_delta summaries",
+        "generated_at": "2026-10-29T11:55:00+08:00",
+        "measured_at": null,
+        "payload_sha256": null,
+        "computed_payload_sha256": "a8b45671cac3fe359bb367e6ebe21296ddebcd8a70ca94bdc5b8937646bd59c8",
+        "payload_verified": null,
+        "freshness": "PINNED_HISTORICAL_SNAPSHOT_NOT_LIVE_ACCEPTANCE"
+      },
+      {
+        "name": "SAFE_AUTHORITY_SNAPSHOT.json",
+        "sha": "7d45a90d50bb56eeaa71cb1e19e6931525c7b0ba",
+        "url": "https://github.com/1569032023yf-star/workbuddy-task-window/blob/5a2906104ffa89e0434fa6f8f8744fdb93347c7a/handoff/workbuddy/production/SAFE_AUTHORITY_SNAPSHOT.json",
+        "bytes": 5803,
+        "git_blob_verified": true,
+        "json_parsed": true,
+        "schema": "rokt.safe_authority.v1",
+        "schema_version": "1.0",
+        "schema_check": "ENVELOPE_AND_DECLARED_VERSION_ONLY_NO_EXTERNAL_JSON_SCHEMA",
+        "producer": "workbuddy-production-operator",
+        "source": "bd_leads.db (read-only)",
+        "generated_at": "2026-10-29T11:50:11+08:00",
+        "measured_at": "2026-10-29T11:48:26.629172+08:00",
+        "payload_sha256": "df367effa2b76b7f0f90105afd7ab135f8a43d0eed004ed59ab8715c9d6eedf1",
+        "computed_payload_sha256": "981259874eb22628ddaacb8de2137f966c6339877a546d8d30dace9d3f317344",
+        "payload_verified": false,
+        "freshness": "PINNED_HISTORICAL_SNAPSHOT_NOT_LIVE_ACCEPTANCE"
+      },
+      {
+        "name": "INVENTORY_SCHEDULER_RECONCILIATION.json",
+        "sha": "6a6a823f40e922a7df9c3942977fd3ce23e27400",
+        "url": "https://github.com/1569032023yf-star/workbuddy-task-window/blob/5a2906104ffa89e0434fa6f8f8744fdb93347c7a/handoff/workbuddy/production/INVENTORY_SCHEDULER_RECONCILIATION.json",
+        "bytes": 6812,
+        "git_blob_verified": true,
+        "json_parsed": true,
+        "schema": "rokt.scheduler.v1",
+        "schema_version": "1.0",
+        "schema_check": "ENVELOPE_AND_DECLARED_VERSION_ONLY_NO_EXTERNAL_JSON_SCHEMA",
+        "producer": "workbuddy-production-operator",
+        "source": "workbuddy.db:automations/automation_runs (throwaway copy) + bd_leads.db:job_runs",
+        "generated_at": "2026-10-29T11:50:11+08:00",
+        "measured_at": null,
+        "payload_sha256": "4bd21c1e9bc056cc943aedef21b9ba6c65a5e1fa53860cdb087efee49a7ef077",
+        "computed_payload_sha256": "e56fdd042d9bf749d38e215225840d1a62cb7a4c183401cc4c9fa4de6278eed3",
+        "payload_verified": false,
+        "freshness": "PINNED_HISTORICAL_SNAPSHOT_NOT_LIVE_ACCEPTANCE"
+      },
+      {
+        "name": "PRODUCTION_RUNTIME_LATEST.json",
+        "sha": "98bfbc6278bd2c580c639f5fe0428f70f4f889f3",
+        "url": "https://github.com/1569032023yf-star/workbuddy-task-window/blob/5a2906104ffa89e0434fa6f8f8744fdb93347c7a/handoff/workbuddy/production/PRODUCTION_RUNTIME_LATEST.json",
+        "bytes": 8070,
+        "git_blob_verified": true,
+        "json_parsed": true,
+        "schema": "rokt.runtime.v1",
+        "schema_version": "1.0",
+        "schema_check": "ENVELOPE_AND_DECLARED_VERSION_ONLY_NO_EXTERNAL_JSON_SCHEMA",
+        "producer": "workbuddy-production-operator",
+        "source": "bd_leads.db:job_runs + system_config + bd_orchestrator trace",
+        "generated_at": "2026-10-29T11:50:11+08:00",
+        "measured_at": null,
+        "payload_sha256": "7ed17065229e77beabfe7e3ae3e327601251fa74f22f723f4842ba1401e76087",
+        "computed_payload_sha256": "6b365bf622211a1c3f3769454c0731680a030b7011053f8ff24b8d2aa493df89",
+        "payload_verified": false,
+        "freshness": "PINNED_HISTORICAL_SNAPSHOT_NOT_LIVE_ACCEPTANCE"
+      },
+      {
+        "name": "CITY_STAGE_TRACE.json",
+        "sha": "cdb54d84ec349d11cd098ee2bff79a575510d16b",
+        "url": "https://github.com/1569032023yf-star/workbuddy-task-window/blob/5a2906104ffa89e0434fa6f8f8744fdb93347c7a/handoff/workbuddy/production/CITY_STAGE_TRACE.json",
+        "bytes": 3670,
+        "git_blob_verified": true,
+        "json_parsed": true,
+        "schema": "rokt.city.v1",
+        "schema_version": "1.0",
+        "schema_check": "ENVELOPE_AND_DECLARED_VERSION_ONLY_NO_EXTERNAL_JSON_SCHEMA",
+        "producer": "workbuddy-production-operator",
+        "source": "bd_leads.db:retail_city_queue + lead_discovery_query_state + lead_discovery_results + provider_request_audit; formal completion from production retail_city_queue.city_completion_checks",
+        "generated_at": "2026-10-29T11:50:11+08:00",
+        "measured_at": null,
+        "payload_sha256": "4326e01469491bd87abeef3ce12a242495ff8a62dcfa183f7b26fdf6e0f601e4",
+        "computed_payload_sha256": "23132146ab69996ba5644d874847fb4b6569b518bcc69a3afe155bc31912c0a3",
+        "payload_verified": false,
+        "freshness": "PINNED_HISTORICAL_SNAPSHOT_NOT_LIVE_ACCEPTANCE"
+      },
+      {
+        "name": "PROVIDER_REQUEST_AUDIT_24H.json",
+        "sha": "b079a6dca9f3e6a80e7b4044cf66d869cdf34104",
+        "url": "https://github.com/1569032023yf-star/workbuddy-task-window/blob/5a2906104ffa89e0434fa6f8f8744fdb93347c7a/handoff/workbuddy/production/PROVIDER_REQUEST_AUDIT_24H.json",
+        "bytes": 2513,
+        "git_blob_verified": true,
+        "json_parsed": true,
+        "schema": "rokt.provider_audit.v1",
+        "schema_version": "1.0",
+        "schema_check": "ENVELOPE_AND_DECLARED_VERSION_ONLY_NO_EXTERNAL_JSON_SCHEMA",
+        "producer": "workbuddy-production-operator",
+        "source": "bd_leads.db:provider_request_audit + job_runs + lead_discovery_query_state",
+        "generated_at": "2026-10-29T11:50:11+08:00",
+        "measured_at": null,
+        "payload_sha256": "14812b9e1501a36bc989f1aa9cf57751fc0b506fae0c0ed1e2aee8558b680f3b",
+        "computed_payload_sha256": "e7429e524e9e620726746961149655ddd661cd037fbfdfe215136a70a3e0c97a",
+        "payload_verified": false,
+        "freshness": "PINNED_HISTORICAL_SNAPSHOT_NOT_LIVE_ACCEPTANCE"
+      },
+      {
+        "name": "WORKBUDDY_LONG_TERM_OPERATIONS.json",
+        "sha": "d3e72995f9f59c9d137f8de2d0323a9105ca64ab",
+        "url": "https://github.com/1569032023yf-star/workbuddy-task-window/blob/5a2906104ffa89e0434fa6f8f8744fdb93347c7a/handoff/workbuddy/production/WORKBUDDY_LONG_TERM_OPERATIONS.json",
+        "bytes": 4372,
+        "git_blob_verified": true,
+        "json_parsed": true,
+        "schema": null,
+        "schema_version": "1.0",
+        "schema_check": "ENVELOPE_AND_DECLARED_VERSION_ONLY_NO_EXTERNAL_JSON_SCHEMA",
+        "producer": "workbuddy-production-operator",
+        "source": [
+          "bd_leads.db (mode=ro)",
+          "workbuddy.db (copy)",
+          "deploy-channel state/logs"
+        ],
+        "generated_at": "2026-10-29T11:50:11+08:00",
+        "measured_at": null,
+        "payload_sha256": "657bc4589fa24b62f5ed2ec093d7f59bfc6f76a92bf32608e0d80874b92c652e",
+        "computed_payload_sha256": "1cc6ce313612f380d3d2f2d3fea76ae2d851cb37df6c0e35e2419bd13a70338c",
+        "payload_verified": false,
+        "freshness": "PINNED_HISTORICAL_SNAPSHOT_NOT_LIVE_ACCEPTANCE"
+      }
+    ],
+    "safe": {
+      "value": 63,
+      "reading_agreement": true,
+      "readings": [
+        {
+          "unique_organizations": 63,
+          "wall_seconds": 346.4,
+          "sampling_time": "2026-10-29T11:43:26+08:00"
+        },
+        {
+          "unique_organizations": 63,
+          "wall_seconds": 300.6,
+          "sampling_time": "2026-10-29T11:48:26+08:00"
+        }
+      ],
+      "previous": {
+        "value": 62,
+        "at": "2026-10-28T22:52:13+08:00"
+      },
+      "delta_since_previous": 1,
+      "delta_7d": 7,
+      "strict_24h_delta": "UNKNOWN",
+      "why_24h_unknown": "no snapshot exists at 2026-10-28T11:48+08:00; subtracting against a 12.9h-older point and calling it 24h would be fabrication",
+      "method_unchanged": "bd_orchestrator._count_safe_ready_pool -> campaign_eligible_v2.select_candidates_for_plan_v2, distinct organization_key",
+      "intraday_trajectory": [
+        {
+          "at": "2026-10-28T22:52:13+08:00",
+          "safe": 62,
+          "source": "SAFE_AUTHORITY_SNAPSHOT (10-28 build)"
+        },
+        {
+          "at": "2026-10-29T00:14:00+08:00",
+          "safe": 63,
+          "source": "workspace memory 2026-10-29 00:14 checkpoint (two reads 63/63)"
+        },
+        {
+          "at": "2026-10-29T06:41:00+08:00",
+          "safe": 64,
+          "source": "workspace memory 2026-10-29 06:41 checkpoint (two reads 64/64)"
+        },
+        {
+          "at": "2026-10-29T11:48:26+08:00",
+          "safe": 63,
+          "source": "this build (two reads 63/63)"
+        }
+      ],
+      "intraday_peak_today": 64,
+      "delta_vs_intraday_peak": -1,
+      "trajectory_warning": "do not read SAFE 63 as monotonic growth: it peaked at 64 this morning and fell back by 1. Either one candidate lost eligibility or live-MX resolution varied; both readings inside each pair agreed, so it is not single-read noise.",
+      "in_run_counts": [
+        {
+          "run": "inventory:2026-10-28:f3323da5",
+          "actual": 62
+        },
+        {
+          "run": "inventory:2026-10-29:2af7d25d",
+          "actual": 63
+        },
+        {
+          "run": "inventory:2026-10-29:8f789080",
+          "actual": 62
+        }
+      ]
+    },
+    "inventory": {
+      "automation_id": "automation-1784775229336",
+      "status": "ACTIVE",
+      "owner_status": "confirmed",
+      "next_run_at": "2026-10-29T16:58:50+08:00",
+      "unique": true,
+      "duplicate_created": false
+    },
+    "cities": {
+      "Cooperstown": {
+        "city_id": 22,
+        "formal_checks": "9/9 pass",
+        "completed_at": "2026-10-23T00:49:35+08:00",
+        "status": "search_matrix_exhausted",
+        "correction": "the 2026-10-28 summary claimed it would not close on its own; that was already stale"
+      },
+      "Lake_Placid": {
+        "city_id": 23,
+        "query_families": "14/20 completed",
+        "pending_families": [
+          "family game store",
+          "visitor center gift shop",
+          "tourist gift shop",
+          "specialty retailer",
+          "puzzle store",
+          "card game store"
+        ],
+        "formal_checks": "4/9 pass",
+        "failing_checks": [
+          "all_query_families",
+          "all_sources_or_reasons",
+          "pagination_complete",
+          "two_empty_pages",
+          "last_three_batches_empty"
+        ],
+        "pages_processed": 36,
+        "results_seen": 349,
+        "new_unique_places": 48,
+        "last_success_at_local": "2026-10-29T10:37:20+08:00",
+        "last_error_type": "BROWSER_ERROR Page.inner_text timeout (2 cumulative provider errors, not a hard failure)",
+        "verdict": "ACTIVE_AND_ADVANCING"
+      },
+      "Ithaca": {
+        "city_id": 20,
+        "queue_status": "search_matrix_exhausted since 2026-09-23",
+        "formal_checks": "5/9 pass",
+        "failing_checks": [
+          "all_candidates_classified",
+          "no_unprocessed_candidates",
+          "official_site_recheck",
+          "review_recovery"
+        ],
+        "verdict": "QUEUE_STATUS_CONTRADICTS_COMPLETION_CONTRACT",
+        "action_taken": "reported only; changing a city row is a production mutation outside this task"
+      },
+      "Saratoga_Springs": {
+        "city_id": 21,
+        "formal_checks": "9/9 pass",
+        "status": "search_matrix_exhausted"
+      }
+    },
+    "bridge": {
+      "listening": false,
+      "last_health_ok": "2026-10-28T22:40:59+08:00",
+      "last_heartbeat": "2026-10-28T22:53:10+08:00",
+      "implementation_seal": "both channel_config.json and allowed_scope.json still match their sealed hashes",
+      "registered_releases": 4,
+      "new_release_this_cycle": false,
+      "session_scoped_health": true,
+      "survives_separate_agent_calls": false,
+      "boot_persistence_verified": false,
+      "why": "the supervisor is inside the agent job object; CREATE_BREAKAWAY_FROM_JOB returns WinError 5 and schtasks/reg are blocked, so it dies with the turn",
+      "evidence_available_offline": "BRIDGE_READONLY_SNAPSHOT_20261026.json plus this cycle's direct DB reads"
+    },
+    "proxy": {
+      "effective": "http://127.0.0.1:7877",
+      "kind": "mixed (HTTP CONNECT + SOCKS5)",
+      "env_file_sha256": "ab350e099200ba28437790c542d6d2ad870eeaf9a448c719f24b7f47ca690f9e",
+      "changed_this_cycle": false,
+      "egress_check": "connectivitycheck.gstatic.com/generate_204 -> 204 in 0.687s through 127.0.0.1:7877",
+      "non_interactive_egress": "UNVERIFIED",
+      "note": "the .env value is unchanged since the 2026-10-25 migration; the proxy works from sessions that inherit the operator environment, but no non-interactive/logged-off egress test exists yet",
+      "stale_dependency": {
+        "key": "BD_MX_HTTPS_PROXY",
+        "value": "http://127.0.0.1:3213",
+        "state": "still points at the retired Astrill port",
+        "impact": "query_mx falls back to direct DNS; both MX controls still resolve",
+        "action": "not migrated, still outside the authorised scope"
+      }
+    },
+    "producer_safety": {
+      "customer_smtp_enabled": false,
+      "emails_sent": 0,
+      "send_log_total": 517,
+      "send_log_max_sent_at": "2026-09-16T01:09:52+08:00",
+      "send_log_today": 0,
+      "send_authorizations_rows": 23,
+      "database_writes_by_this_task": 0,
+      "automation_state_changed": false,
+      "production_source_modified": false,
+      "bridge_started_this_cycle": false,
+      "inventory_started_manually": false,
+      "quota_changed": false,
+      "db_quick_check": "ok"
+    },
+    "current_task_production_database_access": false,
+    "current_task_production_database_writes": 0,
+    "current_task_smtp_calls": 0,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "unattended_accepted": false,
+    "production_evidence_accepted_without_reservations": false,
+    "inventory_zero_missed": "PRODUCER_REPORTED_NOT_INDEPENDENTLY_FULLY_VERIFIED",
+    "backend_request_comment": 6435605069,
+    "existing_issue": 2,
+    "next_action_zh": "继续离线版本化取消费用绑定及reserve-before-intent故障合同。",
+    "next_action_en": "Continue offline versioned cancellation-cost binding and reserve-before-intent fault contracts."
+  }
 }
