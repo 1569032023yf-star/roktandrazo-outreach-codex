@@ -1,0 +1,45 @@
+{
+  "schema": "rokt.owner-drain-preflight-source.v1",
+  "source_commit": "dd575dc7bc25f158997bae82fdf70fe382a8451e",
+  "files": [
+    {
+      "path": "autonomy/owner_drain_preflight.py",
+      "git_blob_sha": "781c10ca68cd8c0a045a696cd3f635b00154b018",
+      "sha256": "2df95c5dc2cc17dbfd4fd7e7eb2b9685316972786ac003ca55e6b4b999df400b"
+    },
+    {
+      "path": "autonomy/growth_snapshot.py",
+      "git_blob_sha": "ed668b78e8028419cddf23f2d4f8da139532b449",
+      "sha256": "ca861b99ea9335fe4b6c8842875d037b24da9ce28802f9fcece30cef2c5d0d5c"
+    },
+    {
+      "path": "autonomy/growth_ledger.py",
+      "git_blob_sha": "c761b9d6db06a67cb9630b08325303faabb53312",
+      "sha256": "5481788f0c9689c7382e92a989ae3fcb3ee034cf5a0a8557fc7122a66a5bb297"
+    },
+    {
+      "path": "autonomy/host_preparation.py",
+      "git_blob_sha": "89dd25ad7d810706aae97030864d5bb402b19b9b",
+      "sha256": "ba3bf2edf4f39c130a1f56d8246a92476758ac53e223a3d067c02a987cd011d2"
+    },
+    {
+      "path": "autonomy/unattended_policy.py",
+      "git_blob_sha": "0c2937be4ebc2fb6ffcd783a5b05360867171464",
+      "sha256": "21aea336dd46f35ee402598687831b39f33c7aee5ec5245bc63f83cc77ec781f"
+    },
+    {
+      "path": "autonomy/bridge_acceptance.py",
+      "git_blob_sha": "e00f3e1533dfde96c165b526872428b1aa78184b",
+      "sha256": "4a304578466bb978d9666adf961f21dfadaca70ba3d12d86a91cfdf02189e1eb"
+    },
+    {
+      "path": "test_owner_drain_preflight.py",
+      "git_blob_sha": "c022d9819bbd9e811681b84c3c03392485b3a29d",
+      "sha256": "2d830f9f4067539d9ccf3cc88238a260061f2577765b707016e5c00b8a29dc8d"
+    }
+  ],
+  "scope": "Offline helper/import closure only; no installer or trust provisioning",
+  "signature": "PENDING",
+  "allow_lock_recovery": false,
+  "allow_dispatch": false
+}

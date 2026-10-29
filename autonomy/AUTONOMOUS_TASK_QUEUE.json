@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-29T14:01:33.704089+00:00",
+  "updated_at": "2026-10-29T17:15:43.712415+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -578,8 +578,8 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/unattended_20261026/OWNER_DEATH_LATE_RECEIPT_RESULT.md",
-      "next_action": "Implement offline read-only trusted-drain preflight binding old lock identity and persisted claim/run; no lock mutation/refund/dispatch; pending independent reviews and existing host contracts",
+      "checkpoint": "autonomy/evidence/owner_drain_20261030/RESULT.md",
+      "next_action": "Extend offline read-only drain preflight to exact slot/cancellation-journal snapshots and reject missing joins; no automatic lock recovery; independent review and approved host contracts pending",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "PENDING_INDEPENDENT_CANCELLATION_COST_REVIEW",
@@ -631,7 +631,11 @@
       "owner_death_review": "PENDING_INDEPENDENT_REVIEW",
       "owner_death_late_receipt_test_commit": "45c621ac585d157f74aa3c020c6cbac830e60f88",
       "owner_death_late_receipt_validation": "3 added /5 targeted /129 combined passed; synthetic clock T+10; new lease accepts previously settled receipts only; UNKNOWN dead-lock drain release not implemented",
-      "owner_death_late_receipt_review": "PENDING_INDEPENDENT_REVIEW"
+      "owner_death_late_receipt_review": "PENDING_INDEPENDENT_REVIEW",
+      "owner_drain_preflight_candidate": "dd575dc7bc25f158997bae82fdf70fe382a8451e",
+      "owner_drain_preflight_review": "PENDING_INDEPENDENT_REVIEW",
+      "owner_drain_preflight_validation": "7 new /15 snapshot+preflight /144 combined passed;7 Git hash/import closure verified; join only, no recovery authority",
+      "owner_drain_preflight_full_regression": "97cc53c vs final dd575dc:833 each,37 failures/17 errors same IDs; no new regression; not all green"
     }
   ],
   "workbuddy_production_consumption": {
