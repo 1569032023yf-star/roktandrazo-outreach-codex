@@ -385,4 +385,98 @@ class SingleSlotTests(unittest.TestCase):
             with self.budget.tx() as c:self.assertEqual(c.execute('SELECT state FROM reservations').fetchone()[0],'reserved')
             self.adapter.reconcile(e,sr,br)
 
+# Fixed worker source: only temporary fixture paths are supplied as argv.
+CANCEL_PROCESS_WORKER = r"""
+import json, os, sys, time
+from pathlib import Path
+from autonomy.single_slot_adapter import CancellationJournal
+journal, gate, phase, ready = sys.argv[1:]
+Path(ready).write_text('ready')
+limit = time.monotonic() + 10
+while not Path(gate).exists():
+    if time.monotonic() > limit: sys.exit(72)
+    time.sleep(0.01)
+def fault(stage):
+    if stage == phase: os._exit(73)
+result = CancellationJournal(journal, fault=fault).reserve(
+    'fixture-cancel-identity', {'scope':'isolated_offline'}, protected=())
+print(json.dumps(result), flush=True)
+"""
+
+
+class CancellationProcessTests(unittest.TestCase):
+    def setUp(self):
+        self.temp=tempfile.TemporaryDirectory(prefix='u1-cancel-process-')
+        self.addCleanup(self.temp.cleanup)
+        self.root=Path(self.temp.name)
+        self.children=[]
+        self.addCleanup(self.close_children)
+
+    def close_children(self):
+        for child in self.children:
+            if child.poll() is None: child.kill()
+            child.communicate(timeout=10)
+
+    def launch(self, journal, gate, phase='none'):
+        import subprocess,sys,os
+        ready=self.root/('ready-'+str(len(self.children)))
+        child=subprocess.Popen([sys.executable,'-B','-c',CANCEL_PROCESS_WORKER,
+            str(journal),str(gate),phase,str(ready)],cwd=str(Path(__file__).resolve().parent),
+            stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,
+            shell=False,creationflags=0x08000000 if os.name=='nt' else 0)
+        self.children.append(child)
+        return child,ready
+
+    def finish(self, child, code=0):
+        import json,subprocess
+        try: out,err=child.communicate(timeout=15)
+        except subprocess.TimeoutExpired:
+            child.kill();child.communicate(timeout=10)
+            self.fail('bounded fixture subprocess timed out')
+        self.assertEqual(child.returncode,code)
+        self.assertEqual(err,b'')
+        if code: self.assertEqual(out,b'');return None
+        result=json.loads(out)
+        self.assertIs(result['allow_cancel_dispatch'],False)
+        self.assertIs(result['production_execution'],False)
+        return result['outcome']
+
+    def assert_one_row(self,journal):
+        import sqlite3
+        from contextlib import closing
+        with closing(sqlite3.connect(journal)) as c:
+            self.assertEqual(c.execute('SELECT identity,state FROM cancellations').fetchall(),
+                [('fixture-cancel-identity','RESERVED_RECONCILE_ONLY')])
+            self.assertEqual(c.execute('PRAGMA integrity_check').fetchone(),('ok',))
+
+    def test_four_processes_reserve_one_intent(self):
+        import time
+        journal=self.root/'journal.sqlite';gate=self.root/'gate'
+        children=[self.launch(journal,gate) for _ in range(4)]
+        deadline=time.monotonic()+10
+        while not all(ready.exists() for _,ready in children):
+            if time.monotonic()>deadline:self.fail('worker readiness timeout')
+            time.sleep(0.01)
+        gate.write_text('go')
+        outcomes=[self.finish(child) for child,_ in children]
+        self.assertEqual(outcomes.count('RESERVED_RECONCILE_ONLY'),1)
+        self.assertEqual(outcomes.count('DUPLICATE_RESERVED'),3)
+        self.assert_one_row(journal)
+
+    def test_exit_after_commit_new_process_does_not_replay_intent(self):
+        journal=self.root/'journal.sqlite';gate=self.root/'gate';gate.write_text('go')
+        child,_=self.launch(journal,gate,'after_commit');self.finish(child,73)
+        child,_=self.launch(journal,gate)
+        self.assertEqual(self.finish(child),'DUPLICATE_RESERVED')
+        self.assert_one_row(journal)
+
+    def test_exit_before_commit_new_process_records_intent_once(self):
+        journal=self.root/'journal.sqlite';gate=self.root/'gate';gate.write_text('go')
+        child,_=self.launch(journal,gate,'before_commit');self.finish(child,73)
+        child,_=self.launch(journal,gate)
+        self.assertEqual(self.finish(child),'RESERVED_RECONCILE_ONLY')
+        child,_=self.launch(journal,gate)
+        self.assertEqual(self.finish(child),'DUPLICATE_RESERVED')
+        self.assert_one_row(journal)
+
 if __name__=='__main__':unittest.main()
