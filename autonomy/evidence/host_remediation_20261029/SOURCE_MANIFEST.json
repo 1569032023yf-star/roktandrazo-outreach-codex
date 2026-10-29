@@ -1,0 +1,49 @@
+{
+  "schema": "rokt.host-remediation-source-manifest.v1",
+  "source_commit": "922a6965a80c6eb3c06ba15896821f208e013a19",
+  "files": [
+    {
+      "path": "autonomy/host_remediation.py",
+      "git_blob_sha": "d73f67fb57bb89a1008202fafb4b39da4dac4cb6",
+      "sha256": "d4bcaa974b07b67ffd49ffff94b1d14891097ae39378aa1cb588829863e35a13"
+    },
+    {
+      "path": "test_host_remediation.py",
+      "git_blob_sha": "624993691fcc7b52945ffb221a73da45429a0e1b",
+      "sha256": "bedd781fe1d540a8194ce8d4a9382a424273914d6f4c3782f9b88ddbaa47c564"
+    },
+    {
+      "path": "autonomy/evidence/host_remediation_20261029/DISABLED_SERVICE_CANDIDATE.json",
+      "git_blob_sha": "87499926820fbb43d278977cabfe8fedcb6500b2",
+      "sha256": "924be3421c2074a4c8cbe046ae6fbfd71913ce16872d9ac69b2251a22a51d1fb"
+    },
+    {
+      "path": "autonomy/evidence/host_remediation_20261029/Verify-DisabledService.ps1",
+      "git_blob_sha": "5c15c2ac4863e4274b55c9c1b907b33e8fc166cc",
+      "sha256": "333ae1cb4b645c1022ada20cb74be36b6a9e21f4eca4b5d527dc08f90dae9323"
+    },
+    {
+      "path": "autonomy/host_preparation.py",
+      "git_blob_sha": "89dd25ad7d810706aae97030864d5bb402b19b9b",
+      "sha256": "ba3bf2edf4f39c130a1f56d8246a92476758ac53e223a3d067c02a987cd011d2"
+    },
+    {
+      "path": "autonomy/unattended_policy.py",
+      "git_blob_sha": "0c2937be4ebc2fb6ffcd783a5b05360867171464",
+      "sha256": "21aea336dd46f35ee402598687831b39f33c7aee5ec5245bc63f83cc77ec781f"
+    },
+    {
+      "path": "autonomy/bridge_acceptance.py",
+      "git_blob_sha": "e00f3e1533dfde96c165b526872428b1aa78184b",
+      "sha256": "4a304578466bb978d9666adf961f21dfadaca70ba3d12d86a91cfdf02189e1eb"
+    }
+  ],
+  "signature": "PENDING_FORMAL_PUBLISHER",
+  "runtime_sha256": null,
+  "service_wrapper_sha256": null,
+  "publisher_sha256": null,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "scope": "Source and Python namespace-package import closure only; NOT an installable service/runtime package"
+}
