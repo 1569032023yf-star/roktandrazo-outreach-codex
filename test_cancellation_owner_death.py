@@ -41,7 +41,7 @@ with exclusive_lock(c.runtime):
     if sys.argv[2]=='drained':
         assert c.adapter.reconcile(admission,**c.backend.receipts)['outcome']=='COMPLETED'
     data=dict(admission=admission,fields=fields,cost=cost,cost_id=cost_id,
-              journal=str(journal.path),backend_calls=c.backend.calls)
+              journal=str(journal.path),backend_calls=c.backend.calls,receipts=c.backend.receipts)
     (c.root/'state.json').write_text(json.dumps(data),encoding='utf-8')
     os._exit(74)
 '''
@@ -69,6 +69,69 @@ class CancellationOwnerDeathTests(unittest.TestCase):
                     self.assertEqual(cost[1],'reserved');self.assertEqual(cost[2],cost[3])
             hashes.append(hashlib.sha256(path.read_bytes()).hexdigest())
         return hashes
+
+    def reopen(self,root,data):
+        trust=consumer()
+        slots=DurableSlots(root/'slots.sqlite',verify=LedgerEvidenceVerifier(trust,lambda:T+10))
+        budget=GrowthLedger(root/'budget.sqlite',consumer=trust)
+        backend=FakeBackend()
+        adapter=SingleSlotAdapter(slots,budget,
+            target=OfflineTarget(str(root/'runtime'),slots.path,budget.path,'synthetic-backend'),
+            consumer=trust,backend=backend,wall_clock=lambda:T+10,monotonic=lambda:1)
+        adapter.cancellation_journal=CancellationJournal(data['journal'])
+        return adapter,backend
+
+    def resign(self,kind,envelope,**changes):
+        payload=dict(envelope['payload'])
+        for key in ('schema','source_id','principal_id','inventory_id','kind',
+                    'observed_at_epoch','expires_at_epoch','receipt_id'):
+            payload.pop(key)
+        payload.update(changes)
+        return signed(kind,T+10,**payload)
+
+    def test_late_receipt_cannot_clear_dead_unverified_lease(self):
+        with tempfile.TemporaryDirectory(prefix='u1-owner-death-') as directory:
+            root=Path(directory);data=self.prepare(root,'unknown')
+            adapter,backend=self.reopen(root,data)
+            before=self.inspect(root,data)
+            lock=root/'runtime'/'supervisor.lock';lock_before=lock.read_bytes()
+            with self.assertRaisesRegex(AdapterError,'EXPECTED_LOCK_REQUIRED'):
+                adapter.reconcile(data['admission'],**data['receipts'])
+            self.assertEqual(backend.calls,0)
+            self.assertEqual(lock.read_bytes(),lock_before)
+            self.assertEqual(self.inspect(root,data),before)
+
+    def test_drained_recovered_lease_late_receipts_idempotent_keep_cancel_cost(self):
+        with tempfile.TemporaryDirectory(prefix='u1-owner-death-') as directory:
+            root=Path(directory);data=self.prepare(root,'drained')
+            runtime=root/'runtime';state=json.loads((runtime/'supervisor.lock').read_text())
+            recover_lock(runtime,state['token'])
+            adapter,backend=self.reopen(root,data)
+            before=self.inspect(root,data)
+            with exclusive_lock(runtime):
+                admission=self.resign('offline_slot_admission',data['admission'],**adapter._lock())
+                for _ in range(2):
+                    result=adapter.reconcile(admission,**data['receipts'])
+                    self.assertEqual(result['outcome'],'COMPLETED')
+                    self.assertFalse(result['production_execution'])
+                    self.assertEqual(self.inspect(root,data),before)
+                self.assertEqual(backend.calls,0)
+
+    def test_recovered_lease_rejects_signed_wrong_run_or_claim_late_receipts(self):
+        with tempfile.TemporaryDirectory(prefix='u1-owner-death-') as directory:
+            root=Path(directory);data=self.prepare(root,'drained')
+            runtime=root/'runtime';state=json.loads((runtime/'supervisor.lock').read_text())
+            recover_lock(runtime,state['token'])
+            adapter,backend=self.reopen(root,data)
+            before=self.inspect(root,data)
+            with exclusive_lock(runtime):
+                admission=self.resign('offline_slot_admission',data['admission'],**adapter._lock())
+                for changed in ({'run_id':'different-run'},{'claim_token_hash':'f'*64}):
+                    bad=self.resign('budget_receipt',data['receipts']['budget_receipt'],**changed)
+                    with self.assertRaisesRegex(AdapterError,'BINDING_MISMATCH'):
+                        adapter.reconcile(admission,data['receipts']['slot_receipt'],bad)
+                    self.assertEqual(self.inspect(root,data),before)
+                self.assertEqual(backend.calls,0)
 
     def test_unresolved_dead_owner_cannot_be_recovered_or_replayed(self):
         with tempfile.TemporaryDirectory(prefix='u1-owner-death-') as directory:
