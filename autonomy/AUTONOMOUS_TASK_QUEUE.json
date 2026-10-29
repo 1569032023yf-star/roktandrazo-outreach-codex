@@ -621,8 +621,8 @@
     "schema": "codex.workbuddy-consumption-receipt.v1",
     "summary_zh": "生产证据已读取及对账；Git完整性通过，payload及调度完整性存在保留；无人登录未通过。",
     "summary_en": "Production evidence read and reconciled; Git integrity passed with payload and scheduler completeness reservations; login-free acceptance failed.",
-    "CODEX_HANDOFF_CONSUMED": false,
-    "publication_state": "PREPARED_PENDING_EXISTING_ISSUE2_RECEIPT",
+    "CODEX_HANDOFF_CONSUMED": true,
+    "publication_state": "PUBLISHED_AND_INDEPENDENTLY_READ_BACK",
     "consumed_at": "2026-10-29T07:15:30.212509+00:00",
     "workbuddy_commit": "5a2906104ffa89e0434fa6f8f8744fdb93347c7a",
     "workbuddy_commit_at": "2026-10-29T11:52:07+08:00",
@@ -946,6 +946,10 @@
     "backend_request_comment": 6435605069,
     "existing_issue": 2,
     "next_action_zh": "继续离线版本化取消费用绑定及reserve-before-intent故障合同。",
-    "next_action_en": "Continue offline versioned cancellation-cost binding and reserve-before-intent fault contracts."
+    "next_action_en": "Continue offline versioned cancellation-cost binding and reserve-before-intent fault contracts.",
+    "issue_comment_id": 6490510762,
+    "issue_comment_url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6490510762",
+    "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
+    "publication_readback_at": "2026-10-29T07:18:24.983820+00:00"
   }
 }

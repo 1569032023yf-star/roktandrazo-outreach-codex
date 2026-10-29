@@ -38,7 +38,7 @@ English: Cooperstown passes9/9 and closed at October23 00:49:35; Lake Placid is1
 
 English: Bridge8791 is DOWN at sampling, cross-call survival is false and boot persistence is false; HKCU Run registration is not startup/login-free acceptance. The producer reports Job Object constraints, breakaway WinError5 and blocked schtasks/reg; this task neither reproduces nor bypasses them. Interactive7877 HTTP204 does not prove logged-off/non-interactive egress, which remains UNKNOWN. Retired MX proxy3213 remains unchanged with producer-reported DNS controls. No proxy/service mutation occurred.
 
-中文：时间独立保留：SAFE实测11:48:26；6份封装生成11:50:11；固定Git提交11:52:07；Phase0自报生成11:55:00，晚于提交172.999秒（按整秒173秒），原因UNKNOWN。其他文件无精确独立采样时间时记未提供，不用生成时间替代。当前消费约15:14+08，全部只是历史固定证据；旧验证器1小时新鲜度门禁不能通过，不伪称当前live验收。
+中文：时间独立保留：SAFE实测11:48:26；6份封装生成11:50:11；固定Git提交11:52:07；Phase0自报生成11:55:00，晚于提交173秒，原因UNKNOWN。其他文件无精确独立采样时间时记未提供，不用生成时间替代。当前消费约15:14+08，全部只是历史固定证据；旧验证器1小时新鲜度门禁不能通过，不伪称当前live验收。
 
 English: Preserve independent clocks: SAFE measured11:48:26, six envelopes generated11:50:11, Git commit11:52:07, Phase0 declared generation11:55:00,173 whole seconds after commit; cause UNKNOWN. Missing independent sampling times remain unspecified rather than replaced with generation time. Consumption around15:14+08 concerns historical pinned evidence; the existing one-hour freshness gate cannot pass and no live acceptance is claimed.
 
@@ -49,3 +49,7 @@ English: Producer evidence reports SMTP disabled, unauthorized sends0, send_log5
 中文：已检查正式Codex仓库Issue2及全部评论，最新既有合同请求6435605069，无新backend合同；WorkBuddy仓库Issue2不存在（404），因此继续使用原Codex Issue2，不新增或重复申请。未完成：payload算法兼容、调度残差及关联完整性、严格24h SAFE基线、Ithaca冲突、城市展示缺失、桥接/出口无人登录证据、正式backend/runtime/publisher合同和U1取消费用实现。下一项继续版本化取消费用绑定与reserve-before-intent故障合同；allow_dispatch=false及allow_cancel_dispatch=false，整体发布/部署/无人登录生产验收仍false。
 
 English: The existing Codex Issue2 and all comments were inspected; request6435605069 remains the latest backend request without a new contract. WorkBuddy Issue2 returns404, so the original Codex Issue2 remains the only channel, without duplicate requests. Outstanding: payload compatibility, scheduler residual/link completeness, strict24h baseline, Ithaca conflict, incomplete city listing, login-free bridge/egress evidence, formal backend/runtime/publisher contracts and U1 cancellation costs. Next remains versioned cancellation-cost binding and reserve-before-intent fault contracts; both dispatch flags stay false, with overall release/deployment/login-free acceptance false.
+
+中文：正式消费回执已发布并独立回读：Issue2 comment6490510762；CODEX_HANDOFF_CONSUMED=true。canonical本地权威autonomy/runtime/queue.json已更新，其Git忽略规则保持不变；已版本化投影autonomy/AUTONOMOUS_TASK_QUEUE.json同步保存本轮状态。
+
+English: Formal acknowledgement published and independently read back as Issue2 comment6490510762; CODEX_HANDOFF_CONSUMED=true. The local canonical runtime queue is updated without changing its Git-ignore rule; the versioned AUTONOMOUS_TASK_QUEUE.json projection mirrors this state.
