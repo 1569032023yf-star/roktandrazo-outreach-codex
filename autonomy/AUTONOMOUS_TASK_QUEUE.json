@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-29T10:53:25.820515+00:00",
+  "updated_at": "2026-10-29T14:01:33.704089+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -578,8 +578,8 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/unattended_20261026/CANCELLATION_OWNER_DEATH_RESULT.md",
-      "next_action": "Offline late receipt/trusted drain binding after owner death; independent review owner-death/cancellation cost and host; consume existing approved host contracts without duplicate requests",
+      "checkpoint": "autonomy/evidence/unattended_20261026/OWNER_DEATH_LATE_RECEIPT_RESULT.md",
+      "next_action": "Implement offline read-only trusted-drain preflight binding old lock identity and persisted claim/run; no lock mutation/refund/dispatch; pending independent reviews and existing host contracts",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "PENDING_INDEPENDENT_CANCELLATION_COST_REVIEW",
@@ -628,7 +628,10 @@
       "host_remediation_publication_receipt": "autonomy/evidence/host_remediation_20261029/PUBLICATION_RECEIPT.json",
       "owner_death_test_commit": "e07a85e10e9494983d1d3d4ef609d70575e96275",
       "owner_death_validation": "2 real owner-death tests /126 combined passed; unknown-tree lock recovery rejected; old admission under new lease rejected; no service/reboot acceptance",
-      "owner_death_review": "PENDING_INDEPENDENT_REVIEW"
+      "owner_death_review": "PENDING_INDEPENDENT_REVIEW",
+      "owner_death_late_receipt_test_commit": "45c621ac585d157f74aa3c020c6cbac830e60f88",
+      "owner_death_late_receipt_validation": "3 added /5 targeted /129 combined passed; synthetic clock T+10; new lease accepts previously settled receipts only; UNKNOWN dead-lock drain release not implemented",
+      "owner_death_late_receipt_review": "PENDING_INDEPENDENT_REVIEW"
     }
   ],
   "workbuddy_production_consumption": {
