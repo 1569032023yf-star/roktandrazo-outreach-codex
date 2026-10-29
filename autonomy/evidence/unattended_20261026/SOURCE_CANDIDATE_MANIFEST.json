@@ -2,7 +2,7 @@
   "schema": 1,
   "description_zh": "仅开发候选源文件清单，不是生产安装授权。",
   "description_en": "Development source inventory only; not production installation authority.",
-  "source_commit": "650df4b953cad38e2da93f18694fabb918572e60",
+  "source_commit": "9b28eb9cfe78bdc1bb5fffe42f07560d6fa94a30",
   "hash_basis": "git blob bytes",
   "files": [
     {
@@ -12,7 +12,7 @@
     },
     {
       "path": "autonomy/growth_ledger.py",
-      "sha256": "fc15509e9b97140304ed842e45b64be5953bdbcde1b1ffc63be38ef17e302c47",
+      "sha256": "5481788f0c9689c7382e92a989ae3fcb3ee034cf5a0a8557fc7122a66a5bb297",
       "production_target": "UNAPPROVED"
     },
     {
@@ -32,7 +32,7 @@
     },
     {
       "path": "autonomy/single_slot_adapter.py",
-      "sha256": "41c91c51fe9f7ed5f1be6aadfbac2b5db9c9ccdd7192a307326541f5b66cda21",
+      "sha256": "49aad96d3a0d66cdd116734af1af9fa1fc987ff3b0b720a16fb79ffe116c56bf",
       "production_target": "UNAPPROVED"
     },
     {
@@ -86,5 +86,5 @@
     "FORMAL_BACKEND_AND_TRUSTED_OS_COLLECTOR_PENDING"
   ],
   "rollback_document": "U1_RELEASE_GATES.md",
-  "regression_scope": "Current cancellation-intent candidate: 91 scoped tests passed; prior full regression does not cover current candidate; full comparison UNKNOWN"
+  "regression_scope": "Cancellation-cost candidate: 78 scoped tests passed; independent review and full regression UNKNOWN; dispatch disabled"
 }

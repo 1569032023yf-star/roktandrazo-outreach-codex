@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-29T07:15:30.212509+00:00",
+  "updated_at": "2026-10-29T09:03:17.640211+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -578,14 +578,14 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/unattended_20261026/U1_CURRENT_CHECKPOINT.md",
-      "next_action": "Versioned offline cancellation-cost binding and reserve-before-intent fault contract; no cancellation dispatch",
+      "checkpoint": "autonomy/evidence/unattended_20261026/CANCELLATION_COST_RESULT.md",
+      "next_action": "Independent review pinned cancellation-cost candidate; offline process-exit and legacy-intent upgrade fault contracts; dispatch disabled",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
-      "review_status": "SCOPED_CANCELLATION_INTENT_ONLY_PASS",
+      "review_status": "PENDING_INDEPENDENT_CANCELLATION_COST_REVIEW",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "650df4b953cad38e2da93f18694fabb918572e60",
+      "candidate_commit": "9b28eb9cfe78bdc1bb5fffe42f07560d6fa94a30",
       "trust_boundary_review": "SCOPED_PASS",
       "schedule_contract_review": "SCOPED_PASS",
       "regression_runner_candidate": "b69214d",
@@ -614,7 +614,8 @@
       "production_evidence_consumed": true,
       "unattended_accepted": false,
       "allow_dispatch": false,
-      "allow_cancel_dispatch": false
+      "allow_cancel_dispatch": false,
+      "cancellation_cost_validation": "7 added / 78 combined / 2 pinned imports passed; author self-review only"
     }
   ],
   "workbuddy_production_consumption": {

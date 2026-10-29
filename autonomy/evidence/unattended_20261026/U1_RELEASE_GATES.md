@@ -1,5 +1,7 @@
 # U1集成发布门禁 / U1 integration release gates
 
+取消费用增量：回滚必须同时保留原执行预留、独立取消费用预留及CancellationJournal；不可仅回滚journal或源码就退款。旧意图无费用合同不视为新版准入，换锁/过期请求不自动续约；新候选独审待完成，allow_cancel_dispatch=false。 / Cancellation-cost increment: rollback must preserve original and separate cancellation reservations plus CancellationJournal. Journal/source rollback never refunds costs. Legacy intents are not new cost admission; changed locks/expired signatures do not renew automatically. New independent review is pending and cancellation dispatch stays false.
+
 取消意图日志增量：任何回滚必须保留当前CancellationJournal及其RESERVED_RECONCILE_ONLY记录；禁止删除/还原旧日志来重新消费取消意图。该日志不授予取消派发能力；旧执行器忽略它不能作为恢复派发的理由。独立schema version1仅在隔离开发中验证，生产目标及初始化尚未批准。 / Cancellation-journal increment: rollback must preserve current CancellationJournal and RESERVED_RECONCILE_ONLY records. Never delete or restore an older journal to consume an intent again. It grants no cancellation-dispatch capability; an old executor ignoring it cannot justify resumed dispatch. Separate schema version1 is verified only in isolated development; production targets/initialization remain unapproved.
 
 基线 / Baseline: b3a0d3ae26ef99fea5f458ec029301d233a27f7c，已核对远端，比用户所列18ef758多一项临时账本实验提交。用户指令现在要求实际持久协议，旧实验审核不能继承为U1整体审核。
