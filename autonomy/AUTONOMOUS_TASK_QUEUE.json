@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-29T17:15:43.712415+00:00",
+  "updated_at": "2026-10-29T20:07:21.895233+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -578,8 +578,8 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/owner_drain_20261030/RESULT.md",
-      "next_action": "Extend offline read-only drain preflight to exact slot/cancellation-journal snapshots and reject missing joins; no automatic lock recovery; independent review and approved host contracts pending",
+      "checkpoint": "autonomy/evidence/drain_bundle_20261030/RESULT.md",
+      "next_action": "Offline versioned cancellation terminal-receipt contract: ACK-only remains UNKNOWN; bind original operation and cancel cost receipt separately; no dispatch or automatic lock recovery; reviews/host contracts pending",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "PENDING_INDEPENDENT_CANCELLATION_COST_REVIEW",
@@ -635,7 +635,11 @@
       "owner_drain_preflight_candidate": "dd575dc7bc25f158997bae82fdf70fe382a8451e",
       "owner_drain_preflight_review": "PENDING_INDEPENDENT_REVIEW",
       "owner_drain_preflight_validation": "7 new /15 snapshot+preflight /144 combined passed;7 Git hash/import closure verified; join only, no recovery authority",
-      "owner_drain_preflight_full_regression": "97cc53c vs final dd575dc:833 each,37 failures/17 errors same IDs; no new regression; not all green"
+      "owner_drain_preflight_full_regression": "97cc53c vs final dd575dc:833 each,37 failures/17 errors same IDs; no new regression; not all green",
+      "drain_bundle_candidate": "e0b281a8698449bf135905ffa947647c434f2fc2",
+      "drain_bundle_review": "PENDING_INDEPENDENT_REVIEW",
+      "drain_bundle_validation": "7 new /151 combined passed;8 pinned Git blobs/import verified; full slot/budget/cancel-cost/journal joins only; no recovery authority",
+      "drain_bundle_full_regression": "e90c264 vs e0b281a:833 each, identical37 failure/17 error IDs; no new regression; not all green"
     }
   ],
   "workbuddy_production_consumption": {
