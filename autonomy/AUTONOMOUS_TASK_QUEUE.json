@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-30T00:43:02.517682+00:00",
+  "updated_at": "2026-10-30T01:14:24.333471+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -578,8 +578,8 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/unattended_20261026/CANCELLATION_SETTLEMENT_FENCE_RESULT.md",
-      "next_action": "Offline independent versioned cancellation terminal-receipt read-only verifier and missing-evidence failure contracts; ACK cannot prove drained terminal; no dispatch/automatic lock recovery; independent reviews and host contracts pending",
+      "checkpoint": "autonomy/evidence/cancellation_terminal_20261030/RESULT.md",
+      "next_action": "Offline read-only join of versioned cancellation terminal proof with current persisted journal/cost state; conflicting and late terminal receipts fail closed; no settlement/recovery/dispatch authority; independent review and formal host/backend contracts pending",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "PENDING_INDEPENDENT_CANCELLATION_COST_REVIEW",
@@ -645,7 +645,11 @@
       "cancellation_settlement_review": "PENDING_INDEPENDENT_REVIEW",
       "cancellation_settlement_fence_test_commit": "72054bdb76f5dabd3d1dec4fb400bbffa3645caa",
       "cancellation_settlement_fence_validation": "1 new test with two real original-budget commit fault boundaries;5 targeted/152 combined passed; journal unchanged; settled cancellation fee never clears unresolved execution fence",
-      "cancellation_settlement_fence_review": "PENDING_INDEPENDENT_REVIEW"
+      "cancellation_settlement_fence_review": "PENDING_INDEPENDENT_REVIEW",
+      "cancellation_terminal_candidate": "7d0858ac16b5c258761ed562fd4b6ce007165927",
+      "cancellation_terminal_validation": "2 scenario groups/154 selected combined pass in28.419s;6 pinned Git blobs and isolated import verified; three signed proofs only; no state mutation or settlement authority",
+      "cancellation_terminal_review": "PENDING_INDEPENDENT_REVIEW",
+      "cancellation_terminal_full_regression": "FRESH_PINNED_BASELINE_AND_CANDIDATE_833_EACH_IDENTICAL_37_FAILURES_17_ERRORS_NO_NEW_REGRESSION_NOT_ALL_GREEN"
     }
   ],
   "workbuddy_production_consumption": {
@@ -982,5 +986,27 @@
     "issue_comment_url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6490510762",
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.983820+00:00"
+  },
+  "workbuddy_production_consumption_latest": {
+    "commit": "13572ee9f65a71d5006b4d5f53d699bb603c4702",
+    "receipt": "autonomy/evidence/workbuddy_consumption_20261030/CONSUMPTION_RECEIPT.json",
+    "CODEX_HANDOFF_CONSUMED": false,
+    "files": 13,
+    "json_files": 11,
+    "git_blob_verified": true,
+    "payload_mismatches": 3,
+    "safe": 65,
+    "safe_h24_producer_report": 3,
+    "safe_d7_producer_report": 9,
+    "verified_growth": "UNKNOWN_CONFLICTING_BASELINE_CLAIMS",
+    "inventory": "7 unique firing/run pairs all runtime rows present; producer zero misses; one 782.773s exceeds600s tolerance",
+    "cities": "Cooperstown closed9/9;LakePlacid15/20;Ithaca unresolved",
+    "provider": "city23 scope43 rows/40 requests with incompatible success/failure/timeout partition",
+    "bridge": "18:35 DOWN;22:53 UP_SESSION_SCOPED; boot persistence false",
+    "proxy": "Session0 structural hosting; actual logoff/noninteractive egress UNKNOWN",
+    "smtp": "publisher reports disabled/unauthorized mail0; no Codex production access",
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "unattended_accepted": false
   }
 }

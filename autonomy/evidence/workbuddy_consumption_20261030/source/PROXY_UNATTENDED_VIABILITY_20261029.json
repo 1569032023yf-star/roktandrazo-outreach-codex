@@ -1,0 +1,134 @@
+{
+  "schema": "rokt.proxy_unattended_viability.v1",
+  "generated_at": "2026-10-29T18:38:00+08:00",
+  "business_timezone": "Asia/Shanghai (+08)",
+  "producer": "workbuddy-production-operator",
+  "evidence_kind": "read_only_audit",
+  "policy": "This turn did not modify any proxy configuration, .env value, service setting or registry key. Read-only inspection only.",
+
+  "verdict": {
+    "port": 7877,
+    "unattended_supported": true,
+    "verdict_code": "SUPPORTED_BY_SERVICE_HOSTING",
+    "verified_by_actual_logoff": false,
+    "confidence": "high_structural",
+    "one_line": "7877 is served by a LocalSystem auto-start Windows service, in session 0, independent of the user GUI, so it is expected to answer while nobody is logged on. This is inferred from process lineage and service configuration, not from a real logoff test."
+  },
+
+  "listener_facts": {
+    "listen_address": "127.0.0.1:7877",
+    "protocols": ["TCP", "UDP"],
+    "pid": 30772,
+    "process_name": "MyClashCore.exe",
+    "session_id": 0,
+    "session0_meaning": "Services session. A user-session-only process cannot live here.",
+    "established_connections_at_audit_time": "many active loopback flows from WorkBuddy/agent processes, i.e. the proxy is actively serving traffic"
+  },
+
+  "process_lineage": {
+    "core_pid": 30772,
+    "core_parent_pid": 7916,
+    "core_parent_name": "MyClashHelperService.exe",
+    "core_parent_is_windows_service": true,
+    "gui_pid": 37524,
+    "gui_name": "MyClash.exe",
+    "gui_session_id": 1,
+    "gui_is_required_for_proxy": false,
+    "lineage_conclusion": "The proxy kernel is a child of the LocalSystem helper service, not of the desktop GUI. Killing or closing the MyClash window does not kill the kernel; the kernel's lifetime is tied to the service."
+  },
+
+  "hosting_service": {
+    "name": "MyClashHelperService",
+    "display_name": "MyClashHelperService",
+    "state": "Running",
+    "start_mode": "Auto",
+    "start_name": "LocalSystem",
+    "process_id": 7916,
+    "binary_path": "D:\\Clash Plus\\MyClashHelperService.exe",
+    "service_type": "Own Process",
+    "error_control": "Normal",
+    "recovery_policy": "UNKNOWN",
+    "recovery_policy_reason": "sc.exe qfailure is blocked by the host program blacklist; the failure/restart actions could not be read."
+  },
+
+  "production_dependency": {
+    "env_file": "roktandrazo-outreach\\.env",
+    "env_sha256": "ab350e099200ba28437790c542d6d2ad870eeaf9a448c719f24b7f47ca690f9e",
+    "env_bytes": 1780,
+    "keys": {
+      "SCRAPER_PROXY": "http://127.0.0.1:7877",
+      "DISCOVERY_PROVIDER": "browser_maps",
+      "BROWSER_MAPS_MODE": "direct"
+    },
+    "consumed_by": "discovery provider stack (browser_maps / browser_maps_scraper) through the scraper proxy resolver",
+    "verified_working": "Outbound Maps requests in recent Inventory runs returned real results with 0 provider errors, which proves the 7877 path works in the current interactive session."
+  },
+
+  "known_drift_not_touched": [
+    {
+      "key": "BD_MX_HTTPS_PROXY",
+      "value": "http://127.0.0.1:3213",
+      "state": "points at a closed port",
+      "impact": "MX lookups fall back to direct DNS via dnspython; SAFE pool counting still resolves MX correctly",
+      "action_taken": "none (out of scope for this audit; requires an explicit operator decision)"
+    },
+    {
+      "key": "Inventory automation prompt text",
+      "state": "the automation-1784775229336 prompt body still instructs to keep SCRAPER_PROXY=http://127.0.0.1:3213",
+      "impact": "documentation drift only; the prompt tells the operator not to change .env, and .env is 7877, so runtime behaviour is correct",
+      "action_taken": "none (prompt text is not the execution parameter)"
+    }
+  ],
+
+  "constraints_for_a_new_service": [
+    {
+      "id": "C1_DISK_DEPENDENCY",
+      "severity": "high",
+      "detail": "The proxy host binary lives on D: (D:\\Clash Plus). If D: is unavailable at boot (unmounted, offline disk, BitLocker locked), the auto-start helper service fails and 7877 never binds.",
+      "mitigation_for_codex": "Treat proxy availability as a runtime precondition: probe 127.0.0.1:7877 before an Inventory run and fail closed rather than retrying discovery blind."
+    },
+    {
+      "id": "C2_LOCALHOST_ONLY",
+      "severity": "low",
+      "detail": "7877 binds 127.0.0.1 only. Any service that runs on this host can use it; nothing off-host can.",
+      "mitigation_for_codex": "Keep SCRAPER_PROXY as a loopback URL; do not introduce a remote proxy hop."
+    },
+    {
+      "id": "C3_CONFIG_OWNED_BY_GUI",
+      "severity": "medium",
+      "detail": "The rule set and node selection are authored by the desktop GUI (session 1). With nobody logged on the kernel keeps serving the last written config; no one can change nodes or fix a dead node without a desktop session.",
+      "mitigation_for_codex": "Do not attempt proxy reconfiguration from the service. If outbound Maps fails while the proxy still listens, surface it as a provider/network error and stop the run; do not flip proxies automatically."
+    },
+    {
+      "id": "C4_NO_RECOVERY_VISIBILITY",
+      "severity": "medium",
+      "detail": "Service recovery actions cannot be read (sc.exe blocked) and cannot be set from an agent turn.",
+      "mitigation_for_codex": "Health-check the port; never assume the SCM will restart the helper."
+    },
+    {
+      "id": "C5_SESSION0_NETWORK_STACK",
+      "severity": "low",
+      "detail": "A session-0 service resolves localhost normally; the loopback path was already proven by the running core. But a service that itself runs in session 0 must not rely on per-user proxy environment variables set in HKCU.",
+      "mitigation_for_codex": "Set SCRAPER_PROXY explicitly in the service environment (machine-level or service-level), not only in the user profile."
+    }
+  ],
+
+  "what_would_change_the_verdict": [
+    "An actual logoff test showing 7877 stops listening (would flip SUPPORTED_BY_SERVICE_HOSTING to NOT_SUPPORTED).",
+    "MyClashHelperService losing Auto start mode or LocalSystem identity.",
+    "D: becoming non-persistent across reboots."
+  ],
+
+  "explicit_statement": {
+    "unattended_verified": false,
+    "reason_not_verified": "A real logoff/logon cycle would terminate the current interactive session and the agent turn; the evidence is therefore structural (service auto-start + LocalSystem + session-0 lineage).",
+    "do_not_overclaim": "Report as 'supported by service hosting, structurally verified', never as 'tested under logoff'."
+  },
+
+  "safety": {
+    "proxy_config_modified": false,
+    "service_modified": false,
+    "registry_modified": false,
+    "env_modified": false
+  }
+}

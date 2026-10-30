@@ -1,0 +1,71 @@
+{
+ "operation": "releases",
+ "count": 4,
+ "releases": [
+  {
+   "release_id": "phase4a8s-safe50-continuous-discovery",
+   "file_count": 1,
+   "targets": [
+    "bd_orchestrator.py"
+   ],
+   "deployable": true,
+   "registered_at": null,
+   "registered_by": null,
+   "patch_sha256": "3c7ba8d9baf9c6c4e35ecd5cfa5ef91e87b949ef10abad560fe191f768714bda"
+  },
+  {
+   "release_id": "phase4a8u-city-recovery-production-rebase-20261022",
+   "file_count": 2,
+   "targets": [
+    "discovery/discovery_service.py",
+    "retail_city_queue.py"
+   ],
+   "deployable": true,
+   "registered_at": "2026-10-22T01:17:41+08:00",
+   "registered_by": "bridge",
+   "patch_sha256": "a050aa91ed1b73c39e30b9ae4692d626964d62eb0dfbcd7a6632b6b5d67113cb"
+  },
+  {
+   "release_id": "phase4a8v-inventory-stage-trace-20261022",
+   "file_count": 1,
+   "targets": [
+    "bd_orchestrator.py"
+   ],
+   "deployable": true,
+   "registered_at": "2026-10-22T19:14:35+08:00",
+   "registered_by": "bridge",
+   "patch_sha256": "2c4e1750fe7e39c996baa731bed740e8b2ef08546147b1f9976e25ae550c2081"
+  },
+  {
+   "release_id": "phase4a8w-city-legacy-ledger-20261022",
+   "file_count": 2,
+   "targets": [
+    "discovery/discovery_service.py",
+    "retail_city_queue.py"
+   ],
+   "deployable": true,
+   "registered_at": "2026-10-22T23:18:00+08:00",
+   "registered_by": "bridge",
+   "patch_sha256": "f15887a0356b0f7e3617e939ae2efbaee5f99cceebd327eef6da2d29e0ffa55a"
+  }
+ ],
+ "seal": {
+  "sealed": true,
+  "tampered": false,
+  "diffs": [],
+  "sealed_at": "2026-10-22T23:18:00+0800"
+ },
+ "ts": "2026-10-29T22:53:47+0800",
+ "schema_version": "1.0",
+ "evidence_kind": "releases",
+ "generated_at": "2026-10-29T22:53:47+08:00",
+ "business_timezone": "Asia/Shanghai (+08)",
+ "producer": "workbuddy-production-operator",
+ "channel": {
+  "endpoint": "http://127.0.0.1:8791",
+  "bridge_version": "2.1",
+  "auth": "Bearer (Credential Manager)"
+ },
+ "data_sources": "deploy-channel releases/channel_config.json + registry seal",
+ "payload_sha256": "08d7699102024c7a279f91e9cf5987d20efa7be9d4addc3e2792bdbf021757b5"
+}

@@ -1,0 +1,234 @@
+{
+  "schema": "rokt.inventory_service_contract.v1",
+  "generated_at": "2026-10-29T18:42:00+08:00",
+  "business_timezone": "Asia/Shanghai (+08)",
+  "producer": "workbuddy-production-operator",
+  "evidence_kind": "read_only_contract",
+  "purpose": "Give Codex an exact, installable-service-grade contract for the single authoritative Inventory execution path. Facts only; no production writes were performed while collecting them.",
+
+  "authority": {
+    "single_entrypoint": "bd_orchestrator.py --stage inventory --live",
+    "entrypoint_absolute": "C:\\Users\\15690\\WorkBuddy\\2026-06-05-15-31-42\\roktandrazo-outreach\\bd_orchestrator.py",
+    "working_directory_required": "C:\\Users\\15690\\WorkBuddy\\2026-06-05-15-31-42\\roktandrazo-outreach",
+    "why_single": "stage_inventory is the only stage that performs discovery. Other stages (morning/pre-send/outreach/post-send/end-of-day/status) never fetch provider pages, so Inventory cannot be split or duplicated without creating a second collector.",
+    "dry_run_default": "argparse defines --dry-run with default=True; --live is the only switch that performs work. A service must pass --live explicitly.",
+    "scheduler_of_record": {
+      "layer": "WorkBuddy automation (external scheduler, not Windows Task Scheduler)",
+      "id": "automation-1784775229336",
+      "name": "RoktRazo BD Inventory - 4x/day (6h interval) Asia/Shanghai",
+      "status": "ACTIVE",
+      "rrule": "FREQ=HOURLY;INTERVAL=6",
+      "cwd": "C:\\Users\\15690\\WorkBuddy\\2026-06-05-15-31-42\\roktandrazo-outreach",
+      "effective_interval": "6h + previous run duration (anchored, not a fixed wall-clock grid)",
+      "do_not_create": "a second Inventory scheduler; the new service must either replace this scheduler or be driven by it, never run alongside it"
+    }
+  },
+
+  "run_lock": {
+    "api": {
+      "module": "bd_db",
+      "acquire": "acquire_run_lock(name: str = None, holder: str = 'daily_operator', stale_after_seconds: int = 7200) -> bool",
+      "release": "release_run_lock(name: str = None, holder: str | None = None) -> bool",
+      "source_lines": {"acquire": "bd_db.py:796", "release": "bd_db.py:830"}
+    },
+    "key_layout": {
+      "lock_key": "run_lock:daily_outreach:{name}",
+      "resolved_inventory_key": "run_lock:daily_outreach:inventory:{business_date}",
+      "acquired_at_key": "{lock_key}_acquired_at",
+      "value_semantics": "holder string while held; literal 'released' after a clean release",
+      "timestamp_format": "UTC, '%Y-%m-%d %H:%M:%S'"
+    },
+    "call_site": {
+      "acquire": "bd_orchestrator.py:451 -> acquire_run_lock(f'inventory:{business_date}', run_id)",
+      "release": "bd_orchestrator.py:549 -> release_run_lock(f'inventory:{business_date}', run_id) in a finally block",
+      "failure_branch": "on lock conflict the run is finished as status=stopped, stop_reason=lock_conflict, and stage_inventory returns False"
+    },
+    "atomicity": "BEGIN IMMEDIATE on the SQLite connection, then SELECT existing value, compute staleness, then upsert both keys, then commit",
+    "staleness": {
+      "threshold_seconds": 7200,
+      "rule": "a held lock older than 7200s based on _acquired_at is treated as stale and taken over; the takeover is logged",
+      "unparseable_timestamp_behaviour": "treated as NOT stale (fail closed, the lock is respected)"
+    },
+    "release_ownership": "release only updates the row when value equals the caller's holder string, so one run can never release another run's lock",
+    "cross_layer_agreement": "deploy-channel channel_config.lock declares the identical key_prefix 'run_lock:daily_outreach:inventory:' and stale_after_seconds 7200, so a deploy apply and an Inventory run mutually exclude on the same key"
+  },
+
+  "backend": {
+    "engine": "SQLite",
+    "path": "C:\\Users\\15690\\WorkBuddy\\2026-06-05-15-31-42\\roktandrazo-outreach\\data\\bd_leads.db",
+    "resolved_via": "bd_db.DB_PATH (never hardcode; there is a 0-byte decoy bd_leads.db at the repo root that must not be used)",
+    "size_bytes_at_audit": 9814016,
+    "journal_mode": "wal",
+    "table_count": 27,
+    "schema_user_version": 0,
+    "quick_check": "ok",
+    "schema_version_note": "PRAGMA user_version is 0, so there is no numeric schema generation to gate on. Treat the 27-table set as the contract and verify presence, not a version integer.",
+    "wal_implication": "wal mode means a service and an interactive operator can read concurrently, but only one writer should act at a time; the run lock is that serializer. A service must also make sure data/bd_leads.db-wal and -shm are on the same volume and writable by the service account.",
+    "tables_the_run_touches": [
+      "system_config (lock keys, active_retail_state cursor, execution_mode)",
+      "job_runs (run_id, status, stop_reason, actual, gap, started_at/finished_at in UTC)",
+      "retail_city_queue (city activation, completion)",
+      "lead_discovery_query_state (per-city page/result counters, FK active_city_id)",
+      "leads (store_name, city, official_website; no website column exists)",
+      "provider_request_audit (per-page request_count; page truth, not page count rows)",
+      "final_send_plan (read-only count of planned rows)"
+    ],
+    "do_not": [
+      "do not override the cursor in system_config",
+      "do not run against any other .db file",
+      "do not switch to TRUNCATE/DELETE journal mode"
+    ]
+  },
+
+  "runtime": {
+    "required_interpreter": {
+      "path": "C:\\Users\\15690\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "version": "3.13.0 (MSC v.1941 64-bit)",
+      "why": "This is the only interpreter on the host that carries the discovery dependency set."
+    },
+    "interpreter_that_must_not_be_used": {
+      "path": "C:\\Users\\15690\\.workbuddy\\binaries\\python\\versions\\3.13.12\\python.exe",
+      "version": "3.13.14 (managed distribution)",
+      "installed_dependencies": "NONE of the required packages are present",
+      "probe_result": {
+        "requests": "MISSING",
+        "beautifulsoup4": "MISSING",
+        "playwright": "MISSING",
+        "dnspython": "MISSING",
+        "lxml": "MISSING",
+        "dns_import": "ImportError"
+      },
+      "consequence": "An Inventory run started with the managed interpreter fails at import time or produces a false zero SAFE pool (no dnspython means MX checks silently degrade). All existing RoktRazo-BD-* scheduled tasks point at this interpreter; that is safe only for DB-only stages such as post-send, and is a trap for Inventory."
+    },
+    "dependency_versions_on_required_interpreter": {
+      "requests": "2.34.2",
+      "beautifulsoup4": "4.15.0",
+      "playwright": "1.62.0",
+      "dnspython": "2.8.0",
+      "lxml": "6.1.1"
+    },
+    "playwright_browsers": {
+      "path": "C:\\Users\\15690\\AppData\\Local\\ms-playwright",
+      "env_var_set": false,
+      "PLAYWRIGHT_BROWSERS_PATH": "(unset)",
+      "risk": "Playwright resolves browsers under the *current user's* LOCALAPPDATA. A service running as LocalSystem resolves to C:\\Windows\\system32\\config\\systemprofile\\AppData\\Local\\ms-playwright and finds nothing, so Maps scraping dies immediately.",
+      "mandatory_fix_for_a_service": "Set PLAYWRIGHT_BROWSERS_PATH=C:\\Users\\15690\\AppData\\Local\\ms-playwright in the service environment, or run the service under the 15690 account."
+    },
+    "env_loader": {
+      "file": "env_loader.py",
+      "semantics": "os.environ.setdefault - real process environment wins, .env is only a fallback",
+      "implication": "A service must either inherit a correct environment or rely on .env. Setting an empty or wrong value in the service environment silently overrides .env.",
+      "no_dotenv": "python-dotenv is not installed on either interpreter; do not add 'from dotenv import load_dotenv' to service code"
+    },
+    "env_file": {
+      "path": "roktandrazo-outreach\\.env",
+      "sha256": "ab350e099200ba28437790c542d6d2ad870eeaf9a448c719f24b7f47ca690f9e",
+      "bytes": 1780,
+      "relevant_values": {
+        "DISCOVERY_PROVIDER": "browser_maps",
+        "BROWSER_MAPS_MODE": "direct",
+        "SCRAPER_PROXY": "http://127.0.0.1:7877"
+      },
+      "known_stale_value_not_to_fix_silently": "BD_MX_HTTPS_PROXY still points at http://127.0.0.1:3213 (closed). MX currently relies on the dnspython direct-DNS fallback. Changing it is an operator decision, not a service-install step."
+    },
+    "throughput_knobs": {
+      "WORKBUDDY_DISCOVERY_MAX_PAGES": {"default": 3, "clamped": "min(3, max(1, value))", "role": "provider pages per Inventory run"},
+      "WORKBUDDY_WEBSITE_RESOLUTION_MAX": {"default": 20, "role": "website resolution batch size"},
+      "WORKBUDDY_STAGING_POSTPROCESS_MAX": {"default": 20, "role": "staging postprocess batch size"},
+      "safe_inventory_target": "derived from inventory_target_for_date(business_date): weekday 50, weekend 60; not an env knob"
+    }
+  },
+
+  "execution_sequence": {
+    "source": "bd_orchestrator.py:433-549",
+    "steps": [
+      "1. set_execution_mode('inventory_recovery')",
+      "2. update_job_run(run_id, current_step='inventory_start', target=inventory_target_for_date(business_date))",
+      "3. acquire_run_lock(f'inventory:{business_date}', run_id); on failure -> stop_reason=lock_conflict, return False",
+      "4. _resolve_active_discovery_state() reads the state cursor from system_config; a state error stops the run before any fetch",
+      "5. count SAFE / BROAD / planned FSP and log them (this is the pre-run waterline)",
+      "6. seed_default_queue + activate_next_city + complete_active_city_if_exhausted (inside one transaction)",
+      "7. DiscoveryService.run_places_batch(city, max_pages=WORKBUDDY_DISCOVERY_MAX_PAGES)",
+      "8. provider status gate: if status not in {running, paused_by_runtime_limit, query_completed, places_matrix_completed_web_pending} OR provider_errors -> stop with stop_reason=discovery_provider_error:<status>",
+      "9. run_website_resolution(city, resolver, max_results=WORKBUDDY_WEBSITE_RESOLUTION_MAX, unlinked_only=True)",
+      "10. run_staging_postprocess(city, max_results=WORKBUDDY_STAGING_POSTPROCESS_MAX, unlinked_only=True)",
+      "11. run_linked_backlog(city, resolver, max_results=min(20, website_max, postprocess_max))",
+      "12. complete_active_city_if_exhausted (a city may go terminal inside this run)",
+      "13. recount SAFE / BROAD, compute gap = max(0, target - safe)",
+      "14. finish_job_run(run_id, 'completed' if gap==0 else 'partial', actual=safe, gap=gap, stop_reason='target_met' | 'safe_inventory_gap')",
+      "15. finally: release_run_lock(f'inventory:{business_date}', run_id)"
+    ],
+    "important_semantics": [
+      "Meeting the SAFE target is an OUTCOME, never permission to skip discovery. DISCOVERY_PATH_EXECUTED is printed unconditionally as true on the live path.",
+      "status=partial with stop_reason=safe_inventory_gap and zero SAFE gain is a NORMAL run, not a failure.",
+      "A provider failure must not be recorded as 'no email found'; it is a run-level stopped status.",
+      "The cursor must never be overridden by the service."
+    ]
+  },
+
+  "observability_contract": {
+    "run_record": "job_runs rows keyed by run_id; timestamps are UTC and must be shifted +08 to compare with operator logs",
+    "provider_page_truth": "sum of provider_request_audit.request_count within the run window; counting audit rows undercounts pages",
+    "safe_authority": "_count_safe_ready_pool(conn) is the only authoritative SAFE number; it is non-deterministic by +/-1 across reads and takes 300-350s per call",
+    "broad_ready": "_count_broad_ready_pool() is stable and is not the send-gate authority"
+  },
+
+  "file_sha256": {
+    "bd_orchestrator.py": "0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8",
+    "bd_db.py": "c06fe7ebb3d6330bfccf078634c5ab6dc16563423e8e975e44da859aaa7ce0c7",
+    "bd_template.py": "00ab0d45e376da0590ea540881c37ea5fce7bce3b7a94e766002e72e8f7e9c49",
+    "discovery/discovery_service.py": "abc2f682cbff4a8b6781997bc2a08ac00f5e41289d67ce02b1c7afa519ad6770",
+    "discovery/providers/browser_maps.py": "88e53fa9afb3142186f1708f140cc0588810e34fd0c1a6ebc48d9dbef2e061c4",
+    "discovery/providers/browser_maps_scraper.py": "18d1c79da73ef5e8c8673f538b83af0d493cc433d732a04c32a54c6277eecd49",
+    "discovery/website_resolver.py": "8945d43975e4f5750baa956adae0c8f3de5b6b9374741be4217b1b5289844f8f",
+    "retail_city_queue.py": "27d60fa77644f15b786bfc61390d3671d4a3ee50cc8ae6e9e0fa42b19e820146",
+    "outreach_control.py": "b23c135917c488e8b2f22dfcb8f03405ba92de74057b394a40f01cc0b144edce",
+    "env_loader.py": "46b7d4dd4272ede1065534af498247f1c53b08f1ca277bd3ae1b34c16a63e74e",
+    ".env": "ab350e099200ba28437790c542d6d2ad870eeaf9a448c719f24b7f47ca690f9e"
+  },
+
+  "publisher_layers": {
+    "production_deployer": {
+      "mechanism": "deploy-channel loopback bridge (127.0.0.1:8791) POST /v1/apply",
+      "gates": "14 read-only gates evaluated live before any byte is replaced",
+      "lock_behaviour": "takes the same official Inventory run-lock key with holder=deploy:<op_id>, never steals a live lock",
+      "safety_properties": "byte-level backup with fsync and re-read SHA, same-volume temp file, os.replace atomic swap, post-write SHA verification, automatic rollback on failure",
+      "state_now": "bridge NOT_RUNNING; the deployer is unavailable until the supervisor is started",
+      "registry_seal": "SEAL_VERIFIED_FULL"
+    },
+    "handoff_publisher": {
+      "mechanism": "git push to github.com/1569032023yf-star/workbuddy-task-window.git, branch main",
+      "local_clone": "C:\\Users\\15690\\workbuddy-task-window",
+      "target_directory": "handoff/workbuddy/production/",
+      "this_document_lives_there": true
+    },
+    "do_not_confuse": "The handoff publisher ships evidence. The deployer ships production code. A new Inventory service must never gain write access to the deployer channel beyond what Codex already has."
+  },
+
+  "service_requirements_summary": {
+    "must": [
+      "run the required interpreter (system Python 3.13.0), never the managed one",
+      "cd into the project working directory before running",
+      "pass --live explicitly",
+      "serialize on run_lock:daily_outreach:inventory:<business_date> via bd_db, never invent a second lock",
+      "set PLAYWRIGHT_BROWSERS_PATH so headless chromium is findable",
+      "have read/write access to data/bd_leads.db plus its -wal and -shm siblings",
+      "probe 127.0.0.1:7877 before a run and fail closed if absent",
+      "never override the cursor, never create a second scheduler, never touch SMTP or send paths"
+    ],
+    "must_not": [
+      "call --stage outreach / pre-send / post-send / end-of-day",
+      "write send_log, suppression, bounce_log or send_authorizations",
+      "modify .env, proxy settings, templates or the DB schema",
+      "rotate the run lock manually on behalf of another holder"
+    ]
+  },
+
+  "safety": {
+    "production_code_modified": false,
+    "database_written": false,
+    "scheduler_modified": false,
+    "smtp_touched": false,
+    "inventory_started_by_this_turn": false
+  }
+}

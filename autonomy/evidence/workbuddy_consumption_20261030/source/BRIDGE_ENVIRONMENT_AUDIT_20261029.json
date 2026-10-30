@@ -1,0 +1,217 @@
+{
+  "schema": "rokt.bridge_environment_audit.v1",
+  "generated_at": "2026-10-29T18:35:00+08:00",
+  "business_timezone": "Asia/Shanghai (+08)",
+  "producer": "workbuddy-production-operator",
+  "evidence_kind": "read_only_audit",
+  "scope": "8791 loopback deploy channel: runtime state, Windows execution identity, job-object containment, existing service/logon startup mechanisms",
+  "out_of_scope": [
+    "no service installation",
+    "no schtasks/sc/reg writes (sc.exe, reg.exe, schtasks.exe are on the host program blacklist)",
+    "no bridge start in this turn",
+    "no proxy change",
+    "no production code or database write"
+  ],
+
+  "bridge_live_state": {
+    "listener_8791": "ABSENT",
+    "netstat_evidence": "no TCP or UDP row matched 127.0.0.1:8791 (full netstat dump filtered)",
+    "pythonw_instances": 0,
+    "state": "NOT_RUNNING",
+    "consequence": "The deploy channel offers no operations right now. Codex cannot call /v1/* until the supervisor is started."
+  },
+
+  "stale_runtime_artifacts": {
+    "supervisor_lock": {
+      "path": "state/supervisor.lock",
+      "pid": 24692,
+      "started_at": "2026-10-28T22:40:44+08:00",
+      "pid_alive": false,
+      "classification": "STALE_LOCK"
+    },
+    "supervisor_heartbeat": {
+      "path": "state/supervisor_heartbeat.json",
+      "ts": "2026-10-28T22:53:10+08:00",
+      "pid": 24692,
+      "child_pid": 48712,
+      "health_ok": true,
+      "health_fails": 0,
+      "restart_streak": 0,
+      "alert_present": false,
+      "child_alive": false,
+      "classification": "STALE_HEARTBEAT_LAST_KNOWN_GOOD"
+    },
+    "inflight": {"count": 0, "operations": [], "since": null},
+    "alert_file_present": false,
+    "self_healing_behaviour": "supervisor.acquire_singleton() reclaims a stale pid lock and logs STALE_LOCK_RECLAIMED; it validates the lock pid against tasklist image name (python.exe/pythonw.exe) to defeat Windows PID reuse. No manual cleanup is required."
+  },
+
+  "channel_root": {
+    "path": "C:\\Users\\15690\\WorkBuddy\\deploy-channel",
+    "note": "NOT inside the roktandrazo-outreach project tree; it is a sibling directory under WorkBuddy.",
+    "binding": "127.0.0.1 only, never 0.0.0.0 (stated in bridge.py header and CODEX_ENTRYPOINT.md)"
+  },
+
+  "interface_contract": {
+    "health": {"method": "GET", "path": "/healthz", "auth": "none"},
+    "operations": {
+      "method": "POST",
+      "auth": "Authorization: Bearer <token from Windows Credential Manager>",
+      "paths": ["/v1/preflight", "/v1/apply", "/v1/status", "/v1/rollback", "/v1/register", "/v1/releases", "/v1/telemetry", "/v1/health", "/v1/runtime", "/v1/city", "/v1/provider-audit", "/v1/scheduler", "/v1/safe"],
+      "write_ops": ["/v1/apply", "/v1/rollback", "/v1/register"],
+      "note": "All authenticated operations are POST. A GET against an authenticated path returns 404."
+    },
+    "credential_target": "rokt-deploy-channel:bridge-token",
+    "credential_store": "Windows Credential Manager (CRED_TYPE_GENERIC)",
+    "token_fingerprint_public": "08f41aa2da0f",
+    "token_value_handling": "never written to disk, chat, git or logs"
+  },
+
+  "registry_integrity": {
+    "verification_method": "recomputed with the registry's own algorithm: sha256 of file bytes for channel_config/scope, sha256 of json.dumps(entry, sort_keys=True, ensure_ascii=False) for each release entry",
+    "channel_config_sha256_match": true,
+    "allowed_scope_sha256_match": true,
+    "release_entries_match": true,
+    "release_entry_count": 4,
+    "release_ids": [
+      "phase4a8s-safe50-continuous-discovery",
+      "phase4a8u-city-recovery-production-rebase-20261022",
+      "phase4a8v-inventory-stage-trace-20261022",
+      "phase4a8w-city-legacy-ledger-20261022"
+    ],
+    "sealed_at": "2026-10-22T23:18:00+0800",
+    "verdict": "SEAL_VERIFIED_FULL",
+    "note": "release_entries are hashes of the registry entry dicts, not of the patch/manifest files. Hashing the patch files against the seal produces false negatives and must not be used as a tamper signal."
+  },
+
+  "component_sha256": {
+    "bin/bridge.py": "d752c98fc9acff096b17c61daa4a209af3302b362bd25727f0f9118567742a27",
+    "bin/executor.py": "a3c271424131b4d42d8b0ed3f46e8355e3ff9d0556406e2199a5da093043105b",
+    "bin/launch_supervisor.py": "8584cac83e836c19d6b623be488e2e3067fcb38f0472600a5d900bd4a3aba81d",
+    "bin/multifile.py": "897e6860b8d6687e95d3e3844c08de9bc6f06be32162199a3faf027aaf6222ae",
+    "bin/prodobs.py": "6acbdf73cde9186f4bc61c0327e2f5d11695f8f885af4f08269365de382ed940",
+    "bin/registry.py": "e5ec8e29cdbd14da3cbb722b8e6db8b5ecc89601972a3994e952d778fd129bbe",
+    "bin/safe_measure.py": "15e4231dd01f65fac29daa02201853b7ad3d1a12aee9027c93bf8f69f48dc3cf",
+    "bin/supervisor.py": "1ed1e2c5db103f92d774be28408be205a303263d997d0b0f16d2c2c4d592deaf",
+    "bin/telemetry.py": "58ba6ec1ec27300b332216069824315a4bb18ec8150a4652b58fc219a79bccc8",
+    "bin/start_supervisor.cmd": "25de2a180ca91e6a6155bb4fdd66ff158c1d09e22119ddd9d7da545892ca9183",
+    "bin/launch_supervisor.vbs": "4daf486d80937dfd77623fe17267f84a24937b06df248b923e5aff776cd05e15"
+  },
+
+  "supervision_semantics": {
+    "single_instance": "state/supervisor.lock pid file, validated against tasklist image name",
+    "tick_seconds": 5.0,
+    "health_interval_seconds": 10.0,
+    "health_timeout_seconds": 3.0,
+    "health_url": "http://127.0.0.1:8791/healthz (probed with an empty ProxyHandler so the machine-wide HTTP(S)_PROXY cannot hijack a loopback probe)",
+    "restart_policy": "3 consecutive health failures, exponential backoff capped at 60s, reset after 120s healthy",
+    "inflight_guard": "never force-restart while state/inflight.json count>0 and the marker is younger than 900s",
+    "alert_file": "state/bridge_alert.json after 5 consecutive unhealthy restarts",
+    "child_interpreter": "sys.executable of the supervisor process (whichever python launched it)",
+    "adoption": "if 8791 already answers /healthz, the supervisor adopts the running bridge instead of fighting for the bind"
+  },
+
+  "windows_execution_identity": {
+    "current_shell_context": {
+      "user": "15690",
+      "privilege": "standard user (Limited RunLevel on all existing scheduled tasks)",
+      "admin_available_in_agent_turn": false
+    },
+    "agent_turn_constraints_observed": [
+      "CREATE_BREAKAWAY_FROM_JOB returns WinError 5 (access denied) when the agent host's job object forbids breakaway",
+      "WMI Win32_Process.Create is blocked by the host security policy",
+      "Start-Process / wscript / explorer.exe dispatch are blocked or silently return rc=1 without spawning",
+      "schtasks.exe, sc.exe and reg.exe are on the host program blacklist and cannot be invoked from an agent turn",
+      "Add-Type (runtime .NET compilation) is blocked, so kernel32 IsProcessInJob cannot be called to self-inspect the job object"
+    ],
+    "job_object_conclusion": {
+      "agent_turn_in_job_object": "STRONG_INDIRECT_EVIDENCE",
+      "direct_api_proof": "UNAVAILABLE (Add-Type blocked)",
+      "corroborating_evidence": [
+        "start_supervisor.cmd comment: 'Started through explorer.exe so the process leaves the invoking job object (the agent host recycles its own process tree)'",
+        "launch_supervisor.vbs uses wscript WshShell.Run with bWaitOnReturn=False to detach from the calling tree",
+        "Observed WinError 5 on explicit breakaway attempts"
+      ]
+    }
+  },
+
+  "existing_startup_mechanisms": {
+    "hkcu_run_value": {
+      "name": "RoktDeployChannelSupervisor",
+      "command": "\"C:/Users/15690/.workbuddy/binaries/python/versions/3.13.12/pythonw.exe\" \"C:/Users/15690/WorkBuddy/deploy-channel/bin/supervisor.py\"",
+      "trigger": "user logon only (HKCU Run)",
+      "current_effect": "nothing at this moment because the process is not running",
+      "unattended_behaviour": "does NOT run when nobody is logged on"
+    },
+    "legacy_run_value": {
+      "name": "RoktDeployBridge",
+      "present": false,
+      "note": "CODEX_ENTRYPOINT.md section 7 still documents RoktDeployBridge launching bridge.py directly. That value no longer exists; supervision moved to RoktDeployChannelSupervisor. The doc is stale on this point."
+    },
+    "launcher_cmd": {
+      "path": "bin/start_supervisor.cmd",
+      "mechanism": "start \"\" pythonw supervisor.py, intended to be invoked through explorer so the child leaves the caller's job",
+      "unattended_behaviour": "manual only"
+    },
+    "launcher_vbs": {
+      "path": "bin/launch_supervisor.vbs",
+      "mechanism": "WScript.Shell.Run hidden, bWaitOnReturn=False",
+      "interpreter_fallback": "managed pythonw 3.13.12, else C:\\Users\\15690\\AppData\\Local\\Programs\\Python\\Python313\\pythonw.exe",
+      "unattended_behaviour": "manual only"
+    },
+    "windows_service": {
+      "present": false,
+      "note": "No service hosts the bridge. Service inventory for BD/Rokt/Bridge/Exec returned only BDESVC (unrelated OS service), BDExecutionHost (zombie, see below) and cbdhsvc (clipboard)."
+    },
+    "scheduled_task": {
+      "present": false,
+      "note": "No task named RoktDeployBridge exists. The registration attempt documented in CODEX_ENTRYPOINT.md section 7 never landed."
+    }
+  },
+
+  "bd_execution_host": {
+    "name": "BDExecutionHost",
+    "state": "Stopped",
+    "start_mode": "Manual",
+    "start_name": "LocalSystem",
+    "binary": "C:\\Users\\15690\\.workbuddy\\binaries\\python\\versions\\3.13.12\\pythonservice.exe",
+    "binary_exists": false,
+    "classification": "ZOMBIE_SERVICE",
+    "detail": "The registered ImagePath does not exist on disk (the managed python distribution ships python.exe/pythonw.exe only, no pythonservice.exe). The service cannot start in any configuration and must not be relied on as an unattended execution layer. Its module was retired to _retired/p3d_20260909/."
+  },
+
+  "other_bd_scheduled_tasks": [
+    {"name": "RoktRazo-BD-Outreach", "state": "Disabled", "exec": "managed python 3.13.12 python.exe", "args": "bd_orchestrator.py --stage outreach --live", "principal": "15690", "run_level": "Limited", "logon_type": "Interactive"},
+    {"name": "RoktRazo-BD-PreSend", "state": "Disabled", "exec": "managed python 3.13.12 python.exe", "args": "bd_orchestrator.py --stage pre-send --live", "principal": "15690", "run_level": "Limited", "logon_type": "Interactive"},
+    {"name": "RoktRazo-BD-PostSend", "state": "Ready", "exec": "managed python 3.13.12 python.exe", "args": "bd_orchestrator.py --stage post-send --live", "principal": "15690", "run_level": "Limited", "logon_type": "Interactive", "last_run": "2026-10-29T00:10:01+08:00", "last_result": 0},
+    {"name": "ProxyOverrideGuard", "state": "Disabled", "principal": "15690", "logon_type": "Interactive"}
+  ],
+
+  "scheduled_task_unattended_finding": {
+    "observation": "Every BD-related scheduled task uses LogonType=Interactive with principal 15690.",
+    "implication": "None of them can execute while the user is logged off. This is a structural blocker for unattended operation independent of the service question."
+  },
+
+  "requirement_for_new_service": {
+    "blocking_question": "How can a new Inventory service legally survive the end of the agent session?",
+    "answer": "It cannot be created from inside the agent session. It must be installed once by the operator with administrator rights as a Windows service (or an S4U/ServiceAccount scheduled task). After installation the SCM owns the process, so agent-turn job objects and session teardown become irrelevant.",
+    "rejected_paths": [
+      {"path": "breakaway from the agent job object", "why": "WinError 5 observed; requires the job to carry JOB_OBJECT_LIMIT_BREAKAWAY_OK, which the host does not grant"},
+      {"path": "HKCU Run value", "why": "logon-triggered only; nothing runs while logged off"},
+      {"path": "existing scheduled tasks", "why": "LogonType=Interactive and all BD ones are Disabled or send-stage only"},
+      {"path": "BDExecutionHost", "why": "ImagePath missing, zombie service"},
+      {"path": "agent-driven schtasks/sc/reg registration", "why": "binaries are on the host program blacklist"}
+    ],
+    "recommended_path": "operator-executed Windows service install with an explicit account decision (see SERVICE_INSTALLATION_BLUEPRINT_20261029.md)"
+  },
+
+  "safety": {
+    "smtp_touched": false,
+    "send_touched": false,
+    "database_opened_read_only": true,
+    "proxy_modified": false,
+    "service_installed": false,
+    "tasks_modified": false,
+    "codex_operations_invoked": false
+  }
+}
