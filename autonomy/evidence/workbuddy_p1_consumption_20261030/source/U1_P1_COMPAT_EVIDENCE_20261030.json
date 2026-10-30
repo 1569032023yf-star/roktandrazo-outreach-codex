@@ -1,0 +1,422 @@
+{
+  "schema": "rokt.u1-p1-compat-evidence.v1",
+  "generated_at": "2026-10-30T14:35:00+08:00",
+  "generated_at_utc": "2026-10-30T06:35:00Z",
+  "producer": "workbuddy-operator (read-only lane)",
+  "scope": "bounded READ-ONLY candidate compatibility validation; no install, no ACL change, no service registration, no proxy change, no Inventory trigger, no production DB write",
+  "pinned_inputs": {
+    "SOURCE_SHA": "d7d424c120281981e70753ea1c15fe130134929f",
+    "EVIDENCE_PACKAGE_SHA": "c7f2ac15391f3fe3522d3e218650749474b39188",
+    "PACKAGE_MANIFEST_SHA256": "1011e76faa2bedf793991f0860d87cc53e2f49d3a0af76cf49b4391bc7e4a3c0",
+    "request_comment_id": 6513015427,
+    "execution_directive_comment_id": 6516441030
+  },
+  "package_integrity": {
+    "source": "DEV_PACKAGE.zip @ c7f2ac15",
+    "zip_bytes": 12297,
+    "zip_sha256": "2575e0d0c4a1ea19f1267e691d9e8323acc57e0418787661b0699f91a910fd95",
+    "declared_file_hashes_matched": "7/7",
+    "embedded_manifest_json_sha256": "1011e76faa2bedf793991f0860d87cc53e2f49d3a0af76cf49b4391bc7e4a3c0",
+    "embedded_manifest_matches_pinned": true,
+    "per_file": [
+      {"path": "config/host.json", "bytes": 202, "sha256": "fc4495c5cb95e23a34892ef35204a40713171fe5fcb362a90b03eec2eb0a8492", "match": true},
+      {"path": "runtime/build.json", "bytes": 261, "sha256": "86772d16c46d5fa7fb2580696471df1ffa676326d449514bea719ea90db0481e", "match": true},
+      {"path": "runtime/dependencies.json", "bytes": 1363, "sha256": "9e6d0158d90f6ac73951ce819a86dbdb4453d1d4f3545582b5bc874d79b8bfc2", "match": true},
+      {"path": "service/RoktU1Bridge.cs", "bytes": 3998, "sha256": "b53cc5c18a5f2c75ad9e4b0a66e6263bac2bbebee0f4b935c8b741aa1f5ea950", "match": true},
+      {"path": "service/RoktU1Bridge.exe", "bytes": 7680, "sha256": "af344fd8a24e0dbbf89017f9f467abd2a06dc84b6151fde3656199e3d8b2143f", "match": true, "pe_machine": "0x8664", "pe_x64": true},
+      {"path": "Install-DisabledHost.ps1", "bytes": 8756, "sha256": "519745b0cb92a6246f22ac0d552117d2b56d92275726c6a12480602a3137b421", "match": true},
+      {"path": "Rollback-DisabledHost.ps1", "bytes": 3267, "sha256": "4243b09ca2b143c7e208e148c7754c64323972b903b6ca174c888c5304c48bb5", "match": true}
+    ]
+  },
+  "items": [
+    {
+      "id": 1,
+      "title_en": "Windows identity / virtual-account capability / effective ACL baseline / minimal RX-Modify delta",
+      "title_zh": "Windows 身份 / 虚拟账户能力 / 生效 ACL 基线 / 最小 RX-Modify 增量",
+      "verdict": "PARTIAL",
+      "sampled_at": "2026-10-30T14:26:00+08:00",
+      "sub_results": [
+        {
+          "id": "1a",
+          "fact": "executing identity of this lane",
+          "value": "RAKTROZO\\15690 SID=S-1-5-21-5926390-557196042-3608508572-1001 IsElevated=False IntegrityLevel=Medium(S-1-16-8192) BUILTIN\\Administrators=deny-only",
+          "source": "WindowsIdentity::GetCurrent + whoami /groups",
+          "verdict": "PASS"
+        },
+        {
+          "id": "1b",
+          "fact": "host platform",
+          "value": "Windows 11 家庭版 中文版 Build 26200 Version 10.0.26200, PartOfDomain=False Domain=WORKGROUP",
+          "source": "Win32_OperatingSystem / Win32_ComputerSystem",
+          "verdict": "PASS"
+        },
+        {
+          "id": "1c",
+          "fact": "SERVICE-type SID namespace resolvable on this host (virtual-account capability at SID level)",
+          "value": "NT SERVICE\\TrustedInstaller -> S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464 ; NT SERVICE\\ALL SERVICES -> S-1-5-80-0",
+          "source": "NTAccount.Translate(SecurityIdentifier)",
+          "verdict": "PASS"
+        },
+        {
+          "id": "1d",
+          "fact": "candidate service SID materialisation",
+          "value": "NT SERVICE\\RoktU1Bridge is UNRESOLVABLE while the service does not exist; Install-DisabledHost.ps1 correctly creates the service (line 95) before translating the account (line 98)",
+          "source": "NTAccount.Translate raised; Install-DisabledHost.ps1:95-98",
+          "verdict": "PASS",
+          "note": "ordering is correct; actual creation is NOT approved and was NOT executed"
+        },
+        {
+          "id": "1e",
+          "fact": "C:\\Program Files inherited ACL baseline",
+          "value": "NT SERVICE\\TrustedInstaller:(F) + (CI)(IO)(F); NT AUTHORITY\\SYSTEM:(M) + (OI)(CI)(IO)(F); BUILTIN\\Administrators:(M) + (OI)(CI)(IO)(F); BUILTIN\\Users:(RX) + (OI)(CI)(IO)(GR,GE). No WD/AD for Users -> non-elevated creation of a new directory under Program Files is not permitted.",
+          "source": "icacls \"C:\\Program Files\"",
+          "verdict": "INHERITED_BASELINE"
+        },
+        {
+          "id": "1f",
+          "fact": "C:\\ProgramData inherited ACL baseline",
+          "value": "NT AUTHORITY\\SYSTEM:(OI)(CI)(F); BUILTIN\\Administrators:(OI)(CI)(F); CREATOR OWNER:(OI)(CI)(IO)(F); BUILTIN\\Users:(OI)(CI)(RX); BUILTIN\\Users:(CI)(WD,AD,WEA,WA). Users may create a new subfolder at ProgramData root.",
+          "source": "icacls \"C:\\ProgramData\"",
+          "verdict": "INHERITED_BASELINE"
+        },
+        {
+          "id": "1g",
+          "fact": "minimal proposed RX/Modify delta",
+          "value": "code root C:\\Program Files\\RoktU1Bridge\\v1 -> SYSTEM Full, BUILTIN\\Administrators Full, NT SERVICE\\RoktU1Bridge ReadAndExecute; state root C:\\ProgramData\\RoktU1Bridge -> SYSTEM Full, BUILTIN\\Administrators Full, NT SERVICE\\RoktU1Bridge Modify. Inheritance protected (SetAccessRuleProtection(true,false)), CI+OI, so the inherited BUILTIN\\Users RX is deliberately dropped.",
+          "source": "Install-DisabledHost.ps1:99-108",
+          "verdict": "PROPOSED_ONLY",
+          "note": "this is the candidate's own proposal, re-read as source; it is NOT the effective ACL of any directory (targets do not exist) and is NOT approved"
+        },
+        {
+          "id": "1h",
+          "fact": "target directories and service",
+          "value": "C:\\Program Files\\RoktU1Bridge ABSENT; C:\\ProgramData\\RoktU1Bridge ABSENT; Win32_Service Name='RoktU1Bridge' NOT_REGISTERED; no service matching *Rokt* or *U1*",
+          "source": "filesystem probe + Win32_Service query",
+          "verdict": "PASS"
+        },
+        {
+          "id": "1i",
+          "fact": "SeServiceLogonRight / LSA user-rights policy",
+          "value": "NOT OBTAINABLE: secedit /export /areas USER_RIGHTS returns '你没有执行该命令的足够权限' with the current unelevated token",
+          "source": "secedit.exe /export /areas USER_RIGHTS /cfg",
+          "verdict": "BLOCKED",
+          "blocked_by": "requires an elevated (UAC) administrator token; no privilege escalation path is used by this lane by design"
+        }
+      ],
+      "why_partial": "identity, SID namespace and both parent ACL baselines are observed; the effective ACL of the two target roots cannot exist before installation, the ACL delta is therefore PROPOSED_ONLY, and the service logon right is BLOCKED behind elevation."
+    },
+    {
+      "id": 2,
+      "title_en": "Approved non-interactive egress and the 7877/session dependency",
+      "title_zh": "已批准的非交互出口与 7877/会话依赖",
+      "verdict": "PARTIAL",
+      "sampled_at": "2026-10-30T14:31:00+08:00",
+      "sub_results": [
+        {
+          "id": "2a",
+          "fact": "7877 listener and owning process",
+          "value": "127.0.0.1:7877 ONLY (no external bind). PID 15344 MyClashCore.exe, SessionId=0, ParentProcessId=6356",
+          "source": "Get-NetTCPConnection -State Listen + Win32_Process",
+          "verdict": "PASS"
+        },
+        {
+          "id": "2b",
+          "fact": "parent is an auto-start LocalSystem service",
+          "value": "MyClashHelperService: State=Running, StartMode=Auto, DelayedAutoStart=False, StartName=LocalSystem, ProcessId=6356, PathName=D:\\Clash Plus\\MyClashHelperService.exe",
+          "source": "Win32_Service",
+          "verdict": "PASS"
+        },
+        {
+          "id": "2c",
+          "fact": "GUI is separate from the listener",
+          "value": "MyClash.exe PID 35256 SessionId=1 started 2026-10-30 09:20:23; the listener PID 15344 is Session 0 and its parent is the service, not the GUI",
+          "source": "Get-Process + Win32_Process",
+          "verdict": "PASS"
+        },
+        {
+          "id": "2d",
+          "fact": "loopback reachability",
+          "value": "TcpClient 127.0.0.1:7877 CONNECT_OK (local 127.0.0.1:62779)",
+          "source": "System.Net.Sockets.TcpClient",
+          "verdict": "PASS"
+        },
+        {
+          "id": "2e",
+          "fact": "actual egress through 7877",
+          "value": "https://www.gstatic.com/generate_204 -> 204 ; https://api.github.com/ -> 200",
+          "source": "curl with proxy 127.0.0.1:7877",
+          "verdict": "PASS",
+          "note": "proves the listener forwards traffic, not merely that it accepts connections"
+        },
+        {
+          "id": "2f",
+          "fact": "egress availability without an interactive desktop",
+          "value": "STRUCTURAL_INFERENCE: the kernel lives in Session 0 under an Auto-start LocalSystem service, so lifetime is bound to the service rather than to a logged-on desktop; loopback is machine-wide, therefore a service running in any session can reach 127.0.0.1:7877",
+          "source": "Session/parent topology above",
+          "verdict": "PARTIAL",
+          "note": "NOT empirically proven; logoff and reboot were not exercised"
+        },
+        {
+          "id": "2g",
+          "fact": "logoff / reboot behaviour, D: volume mount, GUI-less node switching",
+          "value": "UNKNOWN",
+          "source": "not measured - measuring would require terminating this session or rebooting the host",
+          "verdict": "UNKNOWN",
+          "risks": [
+            "if D: is not mounted at boot, D:\\Clash Plus\\MyClashHelperService.exe never starts and 7877 is absent",
+            "node/rule configuration is written by the Session-1 GUI; unattended recovery of a dead node is not proven",
+            "the reboot path of the Auto-start service itself was not observed"
+          ]
+        },
+        {
+          "id": "2h",
+          "fact": "two distinct egress configurations exist and must not be conflated",
+          "value": "agent shell session: HTTP_PROXY=HTTPS_PROXY=http://127.0.0.1:63440 (host-managed). production discovery: .env SCRAPER_PROXY=http://127.0.0.1:7877. A Session-0 service inherits neither a user profile nor this shell env, so any proxy value must be injected explicitly by the service definition.",
+          "source": "env probe + .env (SCRAPER_PROXY)",
+          "verdict": "PASS",
+          "note": "the candidate writes no proxy code at all; it has no egress requirement today"
+        },
+        {
+          "id": "2i",
+          "fact": "8791 authenticated bridge listener",
+          "value": "no listener on 127.0.0.1:8791",
+          "source": "Get-NetTCPConnection -State Listen",
+          "verdict": "PASS"
+        }
+      ],
+      "why_partial": "the listener, its service ownership, Session 0 placement and real forwarding are observed; the unattended claim stays UNKNOWN because logoff/reboot was intentionally not exercised and the D: dependency is unverified."
+    },
+    {
+      "id": 3,
+      "title_en": "Runtime fingerprints and publisher support for new files / backup-or-absence / atomic replacement / deletion rollback",
+      "title_zh": "运行时指纹与发布器对新增文件 / 备份或不存在 / 原子替换 / 删除回滚的支持",
+      "verdict": "PARTIAL",
+      "sampled_at": "2026-10-30T14:33:00+08:00",
+      "sub_results": [
+        {
+          "id": "3a",
+          "fact": "runtime fingerprints (already-obtained; not re-counted as host acceptance)",
+          "value": "python 3.13.0, sqlite 3.45.3, tz +0800 (Asia/Shanghai), AMD64; 5/5 .NET Framework 4 x64 DLL SHA256 match the candidate declaration (System, System.Core, System.ServiceProcess, clr, mscorlib); python.exe SHA256 matches Codex LOCAL_RUNTIME_OBSERVATION",
+          "source": "prior sampling in this session",
+          "verdict": "PASS_LOCAL_OBSERVATION_ONLY"
+        },
+        {
+          "id": "3b",
+          "fact": "publisher file-type and path scope",
+          "value": "allowed_scope.rules.extensions=[.py]; deny_name_patterns include *.json, *.env*, *.db, *.pem, *.key, *.p12, *.csv; paths whitelist = 13 exact .py files under the production root; max_files_per_release=6; max_patch_bytes=262144",
+          "source": "deploy-channel/releases/allowed_scope.json (sha256 eea98b18a7ec3501b95f5d48e615cae8e71f8063b7ff694ebe833b9930fdabb5) + registry.py:_check_schema:157-158, _check_scope:164-174",
+          "verdict": "NOT_SUPPORTED",
+          "note": "the candidate payload is config/host.json + runtime/*.json + service/RoktU1Bridge.cs + service/RoktU1Bridge.exe + 2 *.ps1 = 0 of 7 files are .py; the publisher cannot carry any of them"
+        },
+        {
+          "id": "3c",
+          "fact": "exact new files (target previously absent)",
+          "value": "UNSUPPORTED IN THE APPLY PATH. registry._apply_checks returns {feasible:false, reason:'target_absent'} when the target is not a file, which forces deployable=false; executor.op_apply_multi reads the existing target bytes (line 990) before it can write a backup, so an absent target aborts before any write",
+          "source": "registry.py:266-268, 336, 376 ; executor.py:988-999",
+          "verdict": "NOT_SUPPORTED"
+        },
+        {
+          "id": "3d",
+          "fact": "backup representation when the target does not exist",
+          "value": "THERE IS NO SUCH REPRESENTATION. The literal 'ABSENT' exists only as manifest vocabulary (registry.py:155) and as an attestation branch (registry.py:247-249); the backup step is an unconditional byte copy of an existing file (executor.py:1002-1012) and no absence sentinel is ever written to the backups directory",
+          "source": "registry.py:155,247-249 ; executor.py:1002-1012",
+          "verdict": "NOT_SUPPORTED"
+        },
+        {
+          "id": "3e",
+          "fact": "atomic replacement",
+          "value": "SUPPORTED: per-file temp file on the same volume, write, fsync, DACL copied from the original, os.replace, then a post-replace SHA+size re-verification for every file; any failure rolls the whole release back",
+          "source": "executor.py:1014-1023, 1025-1031",
+          "verdict": "PASS_SOURCE_LEVEL"
+        },
+        {
+          "id": "3f",
+          "fact": "deletion rollback (rollback of a file that did not exist before)",
+          "value": "NOT SUPPORTED: op_rollback_multi restores each file from its .before.bak via os.replace and requires current==declared_after and backup==declared_before; there is no branch that deletes a file created by the apply",
+          "source": "executor.py:1124-1139, 1164-1174",
+          "verdict": "NOT_SUPPORTED"
+        },
+        {
+          "id": "3g",
+          "fact": "source support vs configuration enablement vs machine acceptance",
+          "value": "source support: atomic replace only. configuration enablement: 4 registered releases, 3 deployable, 0 targeting non-.py paths, and none targeting a not-yet-existing file. machine acceptance for this candidate: NOT PERFORMED (no installation authorised).",
+          "source": "channel_config.json (sha256 d88740521378cdda12e676566b4a641f0b2e532d472c6c70fa781e5e6c9da073)",
+          "verdict": "PARTIAL"
+        }
+      ],
+      "why_partial": "exactly one of the four requested publisher capabilities (atomic replacement) is supported at source level. New-file delivery, backup-or-absence and deletion rollback are architecturally absent. The local Python/.NET fingerprint PASS must NOT be read as publisher or host acceptance."
+    },
+    {
+      "id": 4,
+      "title_en": "Original Inventory binding, original exclusive lock and sole scheduling authority",
+      "title_zh": "原 Inventory 绑定、原排他锁与唯一调度权威",
+      "verdict": "PASS",
+      "sampled_at": "2026-10-30T14:29:00+08:00",
+      "sub_results": [
+        {
+          "id": "4a",
+          "fact": "sole ACTIVE Inventory authority",
+          "value": "automation-1784775229336 'RoktRazo BD Inventory — 4x/day (6h interval) Asia/Shanghai' status=ACTIVE schedule=FREQ=HOURLY;INTERVAL=6. The two additional inventory automations 1785720738893 and 1785720747436 are PAUSED. 30 automations exist in total.",
+          "source": "workbuddy.db (read-only URI) automations table",
+          "verdict": "PASS"
+        },
+        {
+          "id": "4b",
+          "fact": "channel inventory binding",
+          "value": "channel_config.inventory_automation_id = automation-1784775229336 (matches 4a)",
+          "source": "channel_config.json",
+          "verdict": "PASS"
+        },
+        {
+          "id": "4c",
+          "fact": "lock key shape and today's state",
+          "value": "run_lock:daily_outreach:inventory:2026-10-30 = 'released'; _acquired_at = 2026-10-30 05:09:09Z (=13:09:09 +08); released 05:26:30Z (=13:26:30 +08). Lock is NOT currently held.",
+          "source": "data/bd_leads.db system_config (read-only)",
+          "verdict": "PASS"
+        },
+        {
+          "id": "4d",
+          "fact": "key construction agrees on both sides",
+          "value": "orchestrator calls acquire_run_lock(f'inventory:{business_date}') at bd_orchestrator.py:451 and releases at :549; bd_db.acquire_run_lock builds f'run_lock:daily_outreach:{date_str}' (bd_db.py:801); the channel prefix channel_config.lock.key_prefix is 'run_lock:daily_outreach:inventory:'. Composite key is identical.",
+          "source": "bd_orchestrator.py:451,549 ; bd_db.py:796-828 ; channel_config.json lock",
+          "verdict": "PASS",
+          "note": "the identity holds only because the caller passes the 'inventory:' prefix; bd_db itself has no inventory-specific key, so the prefix is a caller contract, not a database invariant"
+        },
+        {
+          "id": "4e",
+          "fact": "holder semantics and stale rule",
+          "value": "acquire: BEGIN IMMEDIATE, refuses a valid lock held by another holder, 7200s stale rule; release: UPDATE ... WHERE value=holder, so a non-owner cannot release. Channel executor replicates this (executor.py:755-803).",
+          "source": "bd_db.py:796-828 ; executor.py:755-803",
+          "verdict": "PASS"
+        },
+        {
+          "id": "4f",
+          "fact": "production DB integrity at sampling time",
+          "value": "data/bd_leads.db quick_check=ok, mtime 2026-10-30T13:26:30+08:00, sha256 4fdc92bd75ac3169cbaa834f5029930388295890fe0bb8fa9bbd8b63d326358e",
+          "source": "sqlite3 read-only connection + hashlib",
+          "verdict": "PASS",
+          "note": "read-only; no write issued"
+        },
+        {
+          "id": "4g",
+          "fact": "capabilities the minimal host is missing",
+          "value": "authenticated 8791 listener: ABSENT. Python executor: ABSENT (no listener, no python worker). Production backend: NOT REFERENCED - RoktU1Bridge.cs contains no SQLite, database, HTTP or listener code; it writes one unsigned local heartbeat file.",
+          "source": "listener probe + RoktU1Bridge.cs full read",
+          "verdict": "ABSENT_BY_DESIGN",
+          "note": "correctly reported by Codex as PRODUCTION_INSTALLABLE=false; no integration claim is made here"
+        },
+        {
+          "id": "4h",
+          "fact": "no second scheduler and no manual injection",
+          "value": "no scheduler was created, no task was triggered, the original Inventory was left on its natural cadence (today's run 13:09-13:26 +08 completed normally)",
+          "source": "automation table unchanged + lock record",
+          "verdict": "PASS"
+        }
+      ],
+      "why_partial": ""
+    },
+    {
+      "id": 5,
+      "title_en": "v2 recovery-guard migration, bidirectional incompatibility matrix and STOP_AND_PRESERVE",
+      "title_zh": "v2 恢复守卫迁移、双向不兼容矩阵与 STOP_AND_PRESERVE",
+      "verdict": "PASS",
+      "sampled_at": "2026-10-30T14:30:00+08:00",
+      "sub_results": [
+        {
+          "id": "5a",
+          "fact": "guard implementation under test",
+          "value": "autonomy/lock_recovery.py sha256 e6552960b9a15af38a5fbd238037094d8c75af80d9c0370b6d69092060da7741 (8045 bytes) from PINNED_SOURCE.zip @ c7f2ac15; guard marker bytes exactly b'rokt.recovery-guard.v2\\n' (23 bytes); file name supervisor.recovery.lock",
+          "source": "lock_recovery.py:_guard:56-107",
+          "verdict": "PASS"
+        },
+        {
+          "id": "5b",
+          "fact": "bidirectional migration matrix, isolated fixture",
+          "value": "10/10 cases PASS + 1 observed constraint: legacy empty guard -> LEGACY_OR_UNKNOWN_RECOVERY_GUARD and file preserved byte-for-byte (C1); truncated/newline-only guard rejected (C2,C3); fresh runtime publishes exact 23-byte marker (C4); legacy O_EXCL acquisition rejected with FileExistsError once the v2 marker exists (C5); legacy schema-v1 supervisor.lock -> LOCK_IDENTITY_UNPROVEN (C6); empty legacy supervisor.lock blocks v2 and is left untouched (C7); guard file survives an aborted critical section (C8); second process gets RECOVERY_GUARD_BUSY (C9); exclusive_lock writes schema_version=2 and removes only its own lock (C10)",
+          "source": "isolated fixture run_guard_matrix.py against a temp sandbox; result guard_matrix_result.json",
+          "verdict": "PASS"
+        },
+        {
+          "id": "5c",
+          "fact": "observed constraint: guard is not reentrant inside one process",
+          "value": "nesting _guard() twice in the same process raises FileExistsError RECOVERY_GUARD_BUSY (C11). Production composition acquires the guard once and passes the lease (single_slot_adapter._lock / cancellation_recovery._owner do not nest), so this is a constraint on future callers, not a present defect.",
+          "source": "C11 observation",
+          "verdict": "OBSERVED"
+        },
+        {
+          "id": "5d",
+          "fact": "production guard state (migration precondition)",
+          "value": "C:\\Users\\15690\\WorkBuddy\\deploy-channel\\state\\supervisor.recovery.lock is ABSENT; only the legacy supervisor.lock (64 bytes, 2026-10-29 22:40) exists. There is no legacy empty marker in production to migrate.",
+          "source": "directory listing",
+          "verdict": "PASS"
+        },
+        {
+          "id": "5e",
+          "fact": "STOP_AND_PRESERVE enforcement",
+          "value": "rollback_admission requires preserve_ledger=True AND restore_old_database=False among 10 mandatory flags plus zero unresolved slots/budget, and never returns allow_dispatch=True. Isolated fixture: 8/8 assertions PASS, dispatch_ever_allowed=false. Code anchor: rollback_admission.py:46-47.",
+          "source": "rollback_admission.py (sha256 from PINNED_SOURCE.zip) + isolated fixture run_rollback_admission.py",
+          "verdict": "PASS"
+        },
+        {
+          "id": "5f",
+          "fact": "no ledger restore path in the guard",
+          "value": "lock_recovery.py performs no ledger or database IO; recover_lock unlinks only supervisor.lock after identity proof and refuses LEGACY locks. rollback_admission is explicitly plan-only ('Never authorizes dispatch or performs IO').",
+          "source": "lock_recovery.py:177-197 ; rollback_admission.py:1,20",
+          "verdict": "PASS"
+        }
+      ],
+      "why_partial": ""
+    }
+  ],
+  "summary": {
+    "items_total": 5,
+    "items_pass": 2,
+    "items_partial": 3,
+    "items_blocked_whole": 0,
+    "fully_completed_items": ["4", "5"],
+    "sub_blocked": ["1i SeServiceLogonRight requires elevation"],
+    "sub_unknown": ["2g logoff/reboot egress", "2g D: volume dependency", "2g GUI-less node recovery"],
+    "sub_not_supported": ["3b non-.py payload", "3c exact new files", "3d backup-or-absence", "3f deletion rollback"],
+    "overall_count": "2 / 5 fully verified; 3 / 5 partial",
+    "explicit_non_claims": [
+      "local Python/.NET fingerprint PASS is NOT publisher acceptance",
+      "local Python/.NET fingerprint PASS is NOT host/production acceptance",
+      "structural egress inference is NOT an unattended (logoff/reboot) proof",
+      "PROPOSED_ONLY ACL delta is NOT an effective ACL and NOT an approval",
+      "the candidate DOES NOT satisfy the existing host_remediation gates and is NOT installable by this evidence"
+    ]
+  },
+  "safety_attestation": {
+    "service_installed": false,
+    "service_started": false,
+    "directory_created": false,
+    "account_created": false,
+    "acl_modified": false,
+    "proxy_modified": false,
+    "registry_modified": false,
+    "scheduled_task_modified": false,
+    "logoff_or_reboot": false,
+    "inventory_triggered": false,
+    "second_scheduler_created": false,
+    "production_db_written": false,
+    "smtp_or_customer_email": false,
+    "production_ledger_touched": false,
+    "fixtures_confined_to": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1fixture and C:\\Users\\15690\\AppData\\Local\\Temp\\u1pkg"
+  },
+  "evidence_files_sha256": {
+    "deploy-channel/bin/registry.py": "e5ec8e29cdbd14da3cbb722b8e6db8b5ecc89601972a3994e952d778fd129bbe",
+    "deploy-channel/bin/executor.py": "a3c271424131b4d42d8b0ed3f46e8355e3ff9d0556406e2199a5da093043105b",
+    "deploy-channel/bin/multifile.py": "897e6860b8d6687e95d3e3844c08de9bc6f06be32162199a3faf027aaf6222ae",
+    "deploy-channel/bin/supervisor.py": "1ed1e2c5db103f92d774be28408be205a303263d997d0b0f16d2c2c4d592deaf",
+    "deploy-channel/releases/channel_config.json": "d88740521378cdda12e676566b4a641f0b2e532d472c6c70fa781e5e6c9da073",
+    "deploy-channel/releases/allowed_scope.json": "eea98b18a7ec3501b95f5d48e615cae8e71f8063b7ff694ebe833b9930fdabb5",
+    "deploy-channel/state/registry_seal.json": "cd67d79dfa67834511ee8a78b94798ab1d4aa0cc8780bb45f9566b4c69f31d50",
+    "roktandrazo-outreach/bd_db.py": "c06fe7ebb3d6330bfccf078634c5ab6dc16563423e8e975e44da859aaa7ce0c7",
+    "roktandrazo-outreach/bd_orchestrator.py": "0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8",
+    "PINNED_SOURCE/autonomy/lock_recovery.py": "e6552960b9a15af38a5fbd238037094d8c75af80d9c0370b6d69092060da7741",
+    "DEV_PACKAGE/service/RoktU1Bridge.exe": "af344fd8a24e0dbbf89017f9f467abd2a06dc84b6151fde3656199e3d8b2143f",
+    "DEV_PACKAGE/service/RoktU1Bridge.cs": "b53cc5c18a5f2c75ad9e4b0a66e6263bac2bbebee0f4b935c8b741aa1f5ea950",
+    "DEV_PACKAGE/Install-DisabledHost.ps1": "519745b0cb92a6246f22ac0d552117d2b56d92275726c6a12480602a3137b421",
+    "DEV_PACKAGE/Rollback-DisabledHost.ps1": "4243b09ca2b143c7e208e148c7754c64323972b903b6ca174c888c5304c48bb5"
+  }
+}

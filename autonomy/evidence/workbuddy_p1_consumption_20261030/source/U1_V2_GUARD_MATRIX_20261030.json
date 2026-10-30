@@ -1,0 +1,87 @@
+{
+ "schema": "rokt.v2-recovery-guard-fixture.v1",
+ "source": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1pkg\\ps\\autonomy\\lock_recovery.py",
+ "sandbox_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1fixture\\sandbox",
+ "marker_expected": "rokt.recovery-guard.v2\n",
+ "cases": [
+  {
+   "case": "C1_legacy_empty_guard_rejected",
+   "expected": "RuntimeError:LEGACY_OR_UNKNOWN_RECOVERY_GUARD + file preserved",
+   "actual": "ERR:RuntimeError:LEGACY_OR_UNKNOWN_RECOVERY_GUARD; exists=True; size_before=0; size_after=0",
+   "verdict": "PASS",
+   "note": ""
+  },
+  {
+   "case": "C2_legacy_truncated_guard_rejected",
+   "expected": "LEGACY_OR_UNKNOWN_RECOVERY_GUARD",
+   "actual": "ERR:RuntimeError:LEGACY_OR_UNKNOWN_RECOVERY_GUARD",
+   "verdict": "PASS",
+   "note": ""
+  },
+  {
+   "case": "C3_newline_only_guard_rejected",
+   "expected": "LEGACY_OR_UNKNOWN_RECOVERY_GUARD",
+   "actual": "ERR:RuntimeError:LEGACY_OR_UNKNOWN_RECOVERY_GUARD",
+   "verdict": "PASS",
+   "note": ""
+  },
+  {
+   "case": "C4_fresh_runtime_publishes_v2_marker",
+   "expected": "OK + exact marker bytes",
+   "actual": "OK; bytes=23; exact=True",
+   "verdict": "PASS",
+   "note": "b'rokt.recovery-guard.v2\\n'"
+  },
+  {
+   "case": "C5_legacy_oexcl_rejected_by_v2_marker",
+   "expected": "REJECTED:FileExistsError",
+   "actual": "REJECTED:FileExistsError",
+   "verdict": "PASS",
+   "note": ""
+  },
+  {
+   "case": "C6_legacy_json_lock_not_recoverable",
+   "expected": "RuntimeError:LOCK_IDENTITY_UNPROVEN",
+   "actual": "RuntimeError:LOCK_IDENTITY_UNPROVEN",
+   "verdict": "PASS",
+   "note": "lock still present=True"
+  },
+  {
+   "case": "C7_empty_legacy_lock_blocks_v2",
+   "expected": "FileExistsError + untouched",
+   "actual": "FileExistsError:[Errno 17] File exists: 'C:\\\\Users\\\\15690\\\\AppData\\\\Local\\\\Temp\\\\u1fixture\\\\sandbox\\\\c7_empty_legacy_lock\\\\supervisor.lock'; size_after=0",
+   "verdict": "PASS",
+   "note": ""
+  },
+  {
+   "case": "C8_guard_file_preserved_after_abort",
+   "expected": "guard file still present",
+   "actual": "exists=True size=23",
+   "verdict": "PASS",
+   "note": ""
+  },
+  {
+   "case": "C9_second_process_gets_busy",
+   "expected": "HELD then RECOVERY_GUARD_BUSY",
+   "actual": "holder=HELD; contender=ERR:FileExistsError:RECOVERY_GUARD_BUSY",
+   "verdict": "PASS",
+   "note": ""
+  },
+  {
+   "case": "C10_exclusive_lock_contract",
+   "expected": "schema_version=2 and lock removed on clean exit",
+   "actual": "schema_version=2 token_len=32; lock_removed=True",
+   "verdict": "PASS",
+   "note": ""
+  },
+  {
+   "case": "C11_nested_guard_same_process",
+   "expected": "RECOVERY_GUARD_BUSY (non-reentrant constraint)",
+   "actual": "FileExistsError:RECOVERY_GUARD_BUSY",
+   "verdict": "OBSERVED",
+   "note": "composition must acquire the guard once and pass the lease, as production code does"
+  }
+ ],
+ "pass": 10,
+ "fail": 0
+}

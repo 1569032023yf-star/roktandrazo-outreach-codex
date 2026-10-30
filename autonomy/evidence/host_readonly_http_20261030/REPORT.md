@@ -1,0 +1,20 @@
+# 隔离只读HTTP状态接入 / Isolated read-only HTTP status integration
+
+固定源码 / Source: `59926ebbab4d0761a269acff69ddb891c45c5f97`，恢复基线 / baseline `2cc13ba1c7ef0e81c0f49b08035739b96beaf377`。
+
+复用启动前本线程留下的HTTP候选，并接入最新已审核的recovery_status快照层。新增工厂不自动绑定或启动端口，无安装入口。真实临时回环HTTP测试使用系统随机端口，未绑定8791。读取者只接受不可变字节和外部独立预期SHA，不打开生产数据库或任意路径。 / Reuses this thread's pre-existing HTTP candidate and integrates the latest reviewed recovery-status snapshot layer. The handler factory never binds/starts a listener or installs a service. Real loopback tests use ephemeral ports, never8791. The reader accepts immutable bytes and an independent digest without external database paths.
+
+认证后只允许GET `/v1/health`及`/v1/recovery-status/<64hex>`；Bearer使用固定时间比较，缺失/错误/重复认证拒绝。拒绝请求体、transfer encoding、写方法、查询注入和任意命令。输出固定投影，不返回原binding、旧锁、异常内容或凭据，也不记录请求和认证。快照COMPLETED仅journal_phase，execution_terminal/lock_closed/source_authorized仍UNKNOWN；NOT_RECORDED不转成可重放，所有权限false。 / Authenticated GET exposes health and explicitly recovery-journal-scoped status only. Constant-time bearer comparison rejects missing/wrong/duplicate authentication. Bodies, transfer encoding, mutating methods, query injection and arbitrary commands reject. Fixed projections omit bindings, old locks, exception details and credentials; request/auth logging is suppressed. COMPLETED remains journal_phase only, with execution terminal/lock/source authority UNKNOWN. Absence never enables replay; all authority flags remain false.
+
+实测42项组合通过7.218秒，含6项新HTTP场景（真实HTTP，不是仅函数模型），覆盖PREPARED/COMPLETED/NOT_RECORDED、坏哈希、伪造授权、错误后端、重复认证及拒绝副作用。固定新候选的可比回归结果另见本目录JSON，不继承旧833；源码清单与隔离导入另见SOURCE_MANIFEST.json。 /42 combined tests passed in7.218s, including six new real HTTP scenarios covering journal phases, absence, wrong hashes, forged authority, backend errors, duplicate authentication and side-effect refusal. Fresh comparable regression and pinned import results are recorded separately in this directory; old833 results are not inherited.
+
+新适配器独立审核PENDING，旧状态层独审不覆盖本增量。未改C#开发包、安装脚本或正式桥接，生产package清单保持c7f2ac15。仍缺正式backend、生产认证信任根/过期轮换、SCM Python集成及有效身份ACL。当前路由是明确标注的离线候选合同，不宣称与现有8791生产API兼容。 / Independent review PENDING for this adapter; the previous status-layer review does not cover it. The C# package/installers/production bridge are unchanged atc7f2ac15. Formal backend, provisioned/expiring production credentials, SCM/Python integration and effective identity/ACL remain missing. Routes are an offline candidate contract, not asserted compatibility with the existing8791 API.
+
+回滚仅离线撤销本新增模块及测试；未安装或部署，没有生产备份需要恢复，不回滚账本、guard或已审P0。平台未提供整轮硬停止工具；子进程测试有界，833单次子进程900秒上限。原host独立树的未提交包文件、旧cancellation_terminal_bundle证据保留未改。 / Rollback removes only these offline additions. No installation/deployment or production backup restoration occurred; ledgers/guards/reviewedP0 are not rolled back. No whole-turn hard-stop facility is exposed; test subprocesses are bounded, with900s per comparable suite. Other host-worktree changes and old terminal-bundle evidence are preserved.
+
+DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false; BUSINESS_GROWTH=UNKNOWN. 生产派发/取消关闭；无SMTP、生产库写入、Inventory触发、ACL/服务/代理改动。 / Dispatch/cancel remain disabled; no SMTP, production DB writes, Inventory triggers or ACL/service/proxy changes.
+
+下一步：固定该HTTP适配器独审，结合最新WorkBuddy证据制定正式backend/status及认证合同；现发布器不支持开发包文件类型、新文件、缺席备份或删除回滚，不能直接投递或扩白名单。 / Next: independently review this pinned adapter and define formal backend/status/authentication contracts using the latest WorkBuddy evidence. The current publisher cannot transport the package types/new files/absence backups/deletion rollback; do not deploy it or broaden allowlists.
+
+
+新固定可比回归已完成：基线2cc13ba与候选59926eb各833项，37失败17错误ID完全一致，NO_NEW_REGRESSION=true，非全绿。12份固定源码及隔离导入通过；结果见BASELINE_REGRESSION.json、CANDIDATE_REGRESSION.json、REGRESSION_COMPARISON.json及SOURCE_MANIFEST.json。 / Fresh pinned comparison completed:833 tests each, identical37 failure/17 error IDs, no new regression, not all green. Twelve pinned source files and isolated import pass; see the named artifacts.

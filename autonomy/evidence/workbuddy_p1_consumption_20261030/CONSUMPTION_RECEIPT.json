@@ -1,0 +1,62 @@
+{
+  "workbuddy_commit": "0b09694855e37eb366c10b3b6571282b60b5a19c",
+  "commit_api_created_at": "2026-10-30T06:33:56Z",
+  "generated_at": "2026-10-30T14:35:00+08:00",
+  "commit_precedes_generation_seconds": 64,
+  "files": [
+    {
+      "name": "U1_P1_COMPAT_EVIDENCE_20261030.json",
+      "git_blob_sha": "2d1a8e9e646881d17a615c48c94e33cdd8d63349",
+      "git_blob_verified": true,
+      "sha256": "e1862db17aaff2a6e11b5418e1646267a72bb8a808b50fcfa2ccea2519f15427",
+      "bytes": 26655,
+      "json_parsed": true,
+      "schema": "rokt.u1-p1-compat-evidence.v1",
+      "producer": "workbuddy-operator (read-only lane)",
+      "generated_at": "2026-10-30T14:35:00+08:00",
+      "source": null,
+      "schema_check": "DECLARED_VERSION_AND_SHAPE_NO_EXTERNAL_JSON_SCHEMA",
+      "payload_hash": "NOT_PROVIDED"
+    },
+    {
+      "name": "U1_P1_COMPAT_EVIDENCE_20261030.md",
+      "git_blob_sha": "562771efeb0a18a3d6fbc8a1c8755c2747cc1d1c",
+      "git_blob_verified": true,
+      "sha256": "7dc8ff5799b0256ca85a47487c8f360cb41e89b1324d586914ead8832825c297",
+      "bytes": 18466,
+      "markdown_read": true
+    },
+    {
+      "name": "U1_ROLLBACK_ADMISSION_20261030.json",
+      "git_blob_sha": "d3ccba1c60f5463f2e95b21636614532cc01d8bb",
+      "git_blob_verified": true,
+      "sha256": "482a71ca05f52abc5d7aa13a0b906078c66ef17c310d7a49bbb7e408beb93f6e",
+      "bytes": 2075,
+      "json_parsed": true,
+      "schema": "rokt.rollback-admission-fixture.v1",
+      "producer": null,
+      "generated_at": null,
+      "source": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1pkg\\ps\\autonomy\\rollback_admission.py",
+      "schema_check": "DECLARED_VERSION_AND_SHAPE_NO_EXTERNAL_JSON_SCHEMA",
+      "payload_hash": "NOT_PROVIDED"
+    },
+    {
+      "name": "U1_V2_GUARD_MATRIX_20261030.json",
+      "git_blob_sha": "1e3699fd8d2281c9ed8c264e9b65f15ccdc12f77",
+      "git_blob_verified": true,
+      "sha256": "5e08f06270c3b81181298c7ea171a9c17f76eb537ce896b7ba1323924bd35018",
+      "bytes": 2841,
+      "json_parsed": true,
+      "schema": "rokt.v2-recovery-guard-fixture.v1",
+      "producer": null,
+      "generated_at": null,
+      "source": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1pkg\\ps\\autonomy\\lock_recovery.py",
+      "schema_check": "DECLARED_VERSION_AND_SHAPE_NO_EXTERNAL_JSON_SCHEMA",
+      "payload_hash": "NOT_PROVIDED"
+    }
+  ],
+  "candidate_package_bytes_and_7_files_verified": true,
+  "production_resampled": false,
+  "CODEX_HANDOFF_CONSUMED": false,
+  "publication": "PENDING_EXISTING_ISSUE2_READBACK"
+}

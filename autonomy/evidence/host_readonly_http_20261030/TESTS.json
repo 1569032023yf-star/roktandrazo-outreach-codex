@@ -1,0 +1,10 @@
+{
+  "source_commit": "59926ebbab4d0761a269acff69ddb891c45c5f97",
+  "command": "python -B -m unittest test_host_readonly_http test_recovery_status test_cancellation_recovery test_growth_snapshot test_host_remediation test_disabled_host_package -q",
+  "tests": 42,
+  "seconds": 7.218,
+  "result": "PASS",
+  "new_http_tests": 6,
+  "independent_review": "PENDING",
+  "port": "EPHEMERAL_LOOPBACK_NOT_8791"
+}

@@ -1,0 +1,91 @@
+{
+ "schema": "rokt.rollback-admission-fixture.v1",
+ "source": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1pkg\\ps\\autonomy\\rollback_admission.py",
+ "inventory_id": "1784775229336",
+ "cases": [
+  {
+   "case": "R1_all_flags_true_preserve_false_restore",
+   "result": {
+    "allow_rollback_plan": true,
+    "allow_dispatch": false,
+    "reason": "PLAN_ONLY_ADMITTED"
+   },
+   "note": ""
+  },
+  {
+   "case": "R2_preserve_ledger_false",
+   "result": {
+    "allow_rollback_plan": false,
+    "allow_dispatch": false,
+    "reason": "REQUIRED_FACT_UNKNOWN_OR_FALSE"
+   },
+   "note": ""
+  },
+  {
+   "case": "R3_restore_old_database_true",
+   "result": {
+    "allow_rollback_plan": false,
+    "allow_dispatch": false,
+    "reason": "REQUIRED_FACT_UNKNOWN_OR_FALSE"
+   },
+   "note": ""
+  },
+  {
+   "case": "R4_dispatch_not_stopped",
+   "result": {
+    "allow_rollback_plan": false,
+    "allow_dispatch": false,
+    "reason": "REQUIRED_FACT_UNKNOWN_OR_FALSE"
+   },
+   "note": ""
+  },
+  {
+   "case": "R5_unresolved_slots",
+   "result": {
+    "allow_rollback_plan": false,
+    "allow_dispatch": false,
+    "reason": "UNRESOLVED_EFFECTS"
+   },
+   "note": ""
+  },
+  {
+   "case": "R6_epoch_not_advanced",
+   "result": {
+    "allow_rollback_plan": false,
+    "allow_dispatch": false,
+    "reason": "NEW_AUTHORITY_EPOCH_REQUIRED"
+   },
+   "note": ""
+  },
+  {
+   "case": "R7_wrong_inventory",
+   "result": {
+    "allow_rollback_plan": false,
+    "allow_dispatch": false,
+    "reason": "UNKNOWN_OR_INVALID_CONTEXT"
+   },
+   "note": ""
+  },
+  {
+   "case": "R8_legacy_empty_evidence_context",
+   "result": {
+    "allow_rollback_plan": false,
+    "allow_dispatch": false,
+    "reason": "CONTEXT_MISMATCH"
+   },
+   "note": ""
+  }
+ ],
+ "assertions": {
+  "R1_plan_only_admitted": true,
+  "R2_preserve_ledger_required": true,
+  "R3_restore_db_forbidden": true,
+  "R4_dispatch_must_be_stopped": true,
+  "R5_zero_unresolved_effects": true,
+  "R6_epoch_must_advance": true,
+  "R7_inventory_pinned": true,
+  "R8_empty_context_denied": true
+ },
+ "dispatch_ever_allowed": false,
+ "all_assertions_pass": true
+}

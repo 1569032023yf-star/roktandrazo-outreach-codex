@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-30T06:12:22.184049+00:00",
+  "updated_at": "2026-10-30T07:06:12.665666+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -579,7 +579,7 @@
       "status": "in_progress",
       "executor": "current_authorized_chat",
       "checkpoint": "autonomy/evidence/u1_recovery_status_20261030/REPORT.md",
-      "next_action": "Integrate read-only host HTTP and pinned recovery snapshots in isolation, preserving existing candidates; production remains disabled.",
+      "next_action": "Independently review pinned offline authenticated HTTP recovery-status adapter; integrate formal backend/auth trust contracts and plan publisher capability closure without changing production scope or dispatch.",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "PASS_SCOPED_OFFLINE_STATUS_ONLY",
@@ -681,6 +681,16 @@
         "request_independently_read_back": true,
         "next_action_zh": "消费候选特定只读兼容证据，并离线补齐8791认证接口/生产后端与现有31门禁差异；不因等待外部证据停止安全离线集成。",
         "next_action_en": "Consume candidate-specific read-only compatibility evidence and implement missing authenticated8791/backend/31-gate contracts offline without stopping safe integration while evidence is pending."
+      },
+      "host_readonly_http": {
+        "source_commit": "59926ebbab4d0761a269acff69ddb891c45c5f97",
+        "report": "autonomy/evidence/host_readonly_http_20261030/REPORT.md",
+        "tests": 42,
+        "review": "PENDING_INDEPENDENT_REVIEW",
+        "production_integrated": false,
+        "comparable_regression": "833 each;identical37 failures17 errors;NO_NEW_REGRESSION=true;not_all_green",
+        "pinned_files": 12,
+        "isolated_import": "PASS"
       }
     },
     {
@@ -763,5 +773,19 @@
     ],
     "next_action_zh": "隔离整合只读宿主HTTP与固定恢复快照，保留预存候选；生产入口继续禁用。",
     "next_action_en": "Integrate read-only host HTTP and pinned recovery snapshots in isolation, preserving existing candidates; production remains disabled."
+  },
+  "workbuddy_p1_compat_consumption": {
+    "commit": "0b09694855e37eb366c10b3b6571282b60b5a19c",
+    "receipt": "autonomy/evidence/workbuddy_p1_consumption_20261030/CONSUMPTION_RECEIPT.json",
+    "CODEX_HANDOFF_CONSUMED": false,
+    "files": 4,
+    "items_complete_producer": 2,
+    "items_partial": 3,
+    "publisher": "UNSUPPORTED_PACKAGE_TYPES_NEW_FILES_ABSENCE_BACKUP_DELETION_ROLLBACK",
+    "bridge": "8791_NO_LISTENER_AT_NEW_SAMPLE",
+    "noninteractive_egress": "UNKNOWN_LOGOFF_REBOOT_NOT_TESTED",
+    "installation_authorized": false,
+    "production_dispatch": false,
+    "clock_reservation": "generation64seconds_after_commit_api_time"
   }
 }

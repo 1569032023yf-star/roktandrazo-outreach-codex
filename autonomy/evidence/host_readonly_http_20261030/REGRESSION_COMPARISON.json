@@ -1,0 +1,8 @@
+{
+  "baseline_commit": "2cc13ba1c7ef0e81c0f49b08035739b96beaf377",
+  "candidate_commit": "59926ebbab4d0761a269acff69ddb891c45c5f97",
+  "baseline_count": 833,
+  "candidate_count": 833,
+  "NO_NEW_REGRESSION": true,
+  "all_green": false
+}
