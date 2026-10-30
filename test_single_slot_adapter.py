@@ -66,6 +66,27 @@ class SingleSlotTests(unittest.TestCase):
         self.assertEqual(self.backend.calls,0)
         self.assertEqual(self.slots.snapshot(),[])
 
+    def test_direct_reconcile_overrun_and_duplicate_keep_fence(self):
+        import json
+        self.backend.mode='lost'
+        with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'), exclusive_lock(self.runtime):
+            admission=self.admission();self.run_one(admission)
+            br=self.backend.receipts['budget_receipt']['payload']
+            receipt=signed('budget_receipt',T+10,**self.common,
+                claim_token_hash=br['claim_token_hash'],outcome='known',
+                actual=amounts(2),externally_reconciled=True)
+            for expected in ('OVERRUN','DUPLICATE'):
+                # A previously clean fence cannot authorize overrun closure.
+                mark_tree('verified_closed')
+                result=self.adapter.reconcile(admission,self.backend.receipts['slot_receipt'],receipt)
+                self.assertEqual(result['outcome'],'UNKNOWN_RECONCILE_ONLY')
+                self.assertEqual(result['budget_result'],expected)
+                self.assertEqual(json.loads((self.runtime/'supervisor.lock').read_text())['tree_state'],'unverified')
+                with self.budget.tx() as c:
+                    self.assertEqual(c.execute('SELECT state FROM reservations').fetchone()[0],'overrun')
+        self.assertTrue((self.runtime/'supervisor.lock').exists())
+        self.assertEqual(self.backend.calls,1)
+
     def test_legacy_admission_missing_version_reconciles_but_cannot_execute(self):
         self.backend.mode='lost'
         with exclusive_lock(self.runtime):

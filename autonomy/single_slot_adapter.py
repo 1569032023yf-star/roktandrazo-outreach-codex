@@ -152,6 +152,9 @@ class SingleSlotAdapter:
             raise AdapterError('BINDING_MISMATCH')
 
     def _admission(self,envelope,*,require_backend=True):
+        active=lock_recovery._ACTIVE_LEASE.get()
+        if active is not None and (active[1].get('recovery_only') is True or active[1].get('recovery_required') is True):
+            raise AdapterError('RECOVERY_ONLY_NO_DISPATCH')
         if self.target is None or self.consumer is None or (require_backend and self.backend is None):
             raise AdapterError('OFFLINE_BACKEND_NOT_CONFIGURED')
         if require_backend and (getattr(self.backend,'backend_id',None)!=self.target.backend_id or not callable(getattr(self.backend,'execute_once',None))):
@@ -305,11 +308,16 @@ class SingleSlotAdapter:
             if row is None or row['claim_hash']!=digest(token) or json.loads(row['binding'])!=expected:
                 raise AdapterError('CLAIM_RECEIPT_CONFLICT')
         self._lock()
+        lock_recovery.mark_tree('unverified')
         state=self.slots.reconcile(p['slot'],sr['state'],slot_receipt,now=self._now(),epoch=p['epoch'],owner=p['owner'])
         if any(row[2] in ('claimed','running','unknown') for row in self.slots.snapshot()):
             raise AdapterError('OTHER_EXECUTION_UNRESOLVED')
         # A trusted drained receipt, not normal function return, proves cleanup.
         settled=self.budget.settle(budget_receipt,now=self._now())
+        with self.budget.tx() as c:
+            final=c.execute('SELECT state FROM reservations WHERE id=?',(common['request_id'],)).fetchone()
+        if settled not in ('SETTLED','DUPLICATE') or final is None or final['state']!='settled':
+            return {'outcome':'UNKNOWN_RECONCILE_ONLY','slot_result':state,'budget_result':settled,'production_execution':False}
         # Keep the recovery fence until both durable ledgers acknowledge the
         # receipt. A storage failure must not release an unresolved reservation.
         lock_recovery.mark_tree('verified_closed')

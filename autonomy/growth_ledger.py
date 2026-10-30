@@ -392,6 +392,7 @@ class GrowthLedger:
         """
         from autonomy.lock_recovery import _ACTIVE_LEASE
         if _ACTIVE_LEASE.get() is None:raise GrowthError('EXISTING_LOCK_REQUIRED')
+        if _ACTIVE_LEASE.get()[1].get('recovery_only') is True:raise GrowthError('RECOVERY_ONLY_NO_DISPATCH')
         p=self.evidence(envelope,'budget_request',now)
         expected={'inventory_id':INVENTORY,'slot':slot,'epoch':epoch,'owner':owner}
         if type(epoch) is not int or epoch<1 or type(slot) is not str or type(owner) is not str:

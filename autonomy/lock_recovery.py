@@ -1,11 +1,13 @@
 """Conservative process-instance lock recovery / 保守的进程实例锁恢复。"""
 import ctypes
+import errno
 from contextlib import contextmanager
 from contextvars import ContextVar
 from datetime import datetime, timezone
 import uuid
 import json
 import os
+import tempfile
 from pathlib import Path
 
 
@@ -53,25 +55,56 @@ _ACTIVE_LEASE = ContextVar('supervisor_active_lease', default=None)
 
 @contextmanager
 def _guard(runtime):
+    """Versioned kernel-owned guard; process exit releases the OS lock.
+
+    Never unlink this file: removing a locked inode permits a parallel lock.
+    Legacy empty O_EXCL markers are rejected, never guessed stale or deleted.
+    Once initialized, legacy executors fail their O_EXCL acquisition safely.
+    """
     path = Path(runtime) / 'supervisor.recovery.lock'
-    fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-    primary = None
+    marker=b'rokt.recovery-guard.v2\n'
     try:
-        yield
-    except BaseException as error:
-        primary = error
-        raise
-    finally:
-        cleanup_error = None
-        for action in (lambda: os.close(fd), lambda: path.unlink()):
+        fd=os.open(path,os.O_RDWR)
+    except FileNotFoundError:
+        # Publish a complete marker atomically. Never expose an empty file that
+        # a concurrent initializer could mistake for an abandoned legacy guard.
+        temp_fd,temp_path=tempfile.mkstemp(prefix='.recovery-guard-',dir=path.parent)
+        try:
             try:
-                action()
-            except OSError as error:
-                cleanup_error = cleanup_error or error
-                if primary is not None:
-                    primary.add_note('RECOVERY_GUARD_CLEANUP_FAILED')
-        if primary is None and cleanup_error is not None:
-            raise cleanup_error
+                os.write(temp_fd,marker);os.fsync(temp_fd)
+            finally:os.close(temp_fd)
+            try:os.link(temp_path,path)
+            except FileExistsError:pass
+        finally:os.unlink(temp_path)
+        fd=os.open(path,os.O_RDWR)
+    locked=False
+    try:
+        try:
+            if os.name=='nt':
+                import msvcrt
+                os.lseek(fd,0,os.SEEK_SET);msvcrt.locking(fd,msvcrt.LK_NBLCK,1)
+            else:
+                import fcntl
+                fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        except OSError as error:
+            # Preserve the existing public contention contract. Do not relabel
+            # open failures, malformed guards or unrelated kernel errors.
+            if error.errno in (errno.EACCES,errno.EAGAIN) or getattr(error,'winerror',None)==33:
+                raise FileExistsError('RECOVERY_GUARD_BUSY') from None
+            raise
+        locked=True
+        os.lseek(fd,0,os.SEEK_SET)
+        raw=os.read(fd,len(marker)+1)
+        if raw!=marker:
+            raise RuntimeError('LEGACY_OR_UNKNOWN_RECOVERY_GUARD')
+        yield
+    finally:
+        try:
+            if locked:
+                if os.name=='nt':
+                    os.lseek(fd,0,os.SEEK_SET);msvcrt.locking(fd,msvcrt.LK_UNLCK,1)
+                else:fcntl.flock(fd,fcntl.LOCK_UN)
+        finally:os.close(fd)
 
 
 def _write_state(lock, state):
