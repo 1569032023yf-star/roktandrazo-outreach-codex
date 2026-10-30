@@ -608,7 +608,7 @@
       "cross_ledger_test_commit": "09dae683c2cc920386da0691f246cc728c9f3d71",
       "cross_ledger_validation": "71 combined / 2 independent tests passed; original execution budget only; cancellation costs not implemented",
       "cross_ledger_review": "PASS_FOR_SCOPED_OFFLINE_TEST_INCREMENT_09DAE68",
-      "workbuddy_consumption_receipt": "autonomy/evidence/workbuddy_consumption_20261029/CONSUMPTION_RECEIPT.json",
+      "workbuddy_consumption_receipt": "autonomy/evidence/windows_consumption_20261030/CONSUMPTION_RECEIPT.json",
       "production_evidence_consumed": true,
       "unattended_accepted": false,
       "allow_dispatch": false,
@@ -693,13 +693,15 @@
       "windows_environment_consumption": {
         "workbuddy_commit": "54b79153adf8b8d6df1349e5ea78751bf244f24e",
         "receipt": "autonomy/evidence/windows_consumption_20261030/CONSUMPTION_RECEIPT.json",
-        "CODEX_HANDOFF_CONSUMED": false,
+        "CODEX_HANDOFF_CONSUMED": true,
         "bridge": "DOWN_AUTOSTART_INEFFECTIVE",
         "proxy_producer_verdict": "NOT_SUPPORTED_OBSERVED",
         "proxy_unattended": "NOT_ACCEPTED_SINGLE_BOOT_SAMPLE",
         "acl": "TARGET_ABSENT_INHERITANCE_PROPOSAL_CONFLICT_PENDING",
         "safe": "UNKNOWN",
-        "business_growth": "UNKNOWN"
+        "business_growth": "UNKNOWN",
+        "comment_id": 6520177729,
+        "independent_readback": true
       }
     },
     {

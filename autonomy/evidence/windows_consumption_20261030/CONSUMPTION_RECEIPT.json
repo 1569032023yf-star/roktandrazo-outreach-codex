@@ -25,7 +25,13 @@
   "commit_after_generation_seconds": 100,
   "production_resampled": false,
   "producer_comment": 6517133750,
-  "CODEX_HANDOFF_CONSUMED": false,
-  "publication": "PENDING",
-  "source_commit": "acdb1494ebb02f140e3ca0faf97aef82aa70a68f"
+  "CODEX_HANDOFF_CONSUMED": true,
+  "publication": "PUBLISHED_AND_INDEPENDENTLY_EXACT_MATCHED",
+  "source_commit": "acdb1494ebb02f140e3ca0faf97aef82aa70a68f",
+  "comment_id": 6520177729,
+  "comment_url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6520177729",
+  "independent_readback": true,
+  "readback_at": "2026-10-30T10:09:37.398643+00:00",
+  "report_commit": "25542926f65b3d98b211a5e477b2a7c3791b0749",
+  "published_source_git_bytes": "2/2_MATCH"
 }
