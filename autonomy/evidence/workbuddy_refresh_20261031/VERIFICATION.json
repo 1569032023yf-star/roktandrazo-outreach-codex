@@ -133,6 +133,7 @@
   "declared_schema_check": "OBJECT_ENVELOPE_VERSION_ONLY_NO_EXTERNAL_SCHEMA",
   "production_resampled": false,
   "semantic_review": "COMPLETED_WITH_RESERVATIONS",
-  "CODEX_HANDOFF_CONSUMED": false,
-  "publication": "PENDING"
+  "CODEX_HANDOFF_CONSUMED": true,
+  "publication": "INDEPENDENTLY_EXACT_MATCHED",
+  "comment_id": 6535746968
 }

@@ -32,8 +32,13 @@
     }
   ],
   "report": "autonomy/evidence/workbuddy_refresh_20261031/REPORT.md",
-  "CODEX_HANDOFF_CONSUMED": false,
-  "publication": "PENDING",
+  "CODEX_HANDOFF_CONSUMED": true,
+  "publication": "PUBLISHED_INDEPENDENTLY_EXACT_MATCHED",
   "independent_review": "PENDING",
-  "source_commit": "e24e378b082d1ee4adad9f057d2c501c5786b2d9"
+  "source_commit": "e24e378b082d1ee4adad9f057d2c501c5786b2d9",
+  "comment_id": 6535746968,
+  "comment_url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6535746968",
+  "independent_readback": true,
+  "readback_at": "2026-10-30T23:33:27.361857+00:00",
+  "report_commit": "fbc63c84125d8ab0e0fc3fa0924278c91cf9d821"
 }
