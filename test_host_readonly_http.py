@@ -22,8 +22,12 @@ class HostReadOnlyHTTPTests(unittest.TestCase):
             if isinstance(self.value,Exception):raise self.value
             return self.value
         self.now=1000
+        self.clock_error=False
+        def clock():
+            if self.clock_error:raise RuntimeError('clock unavailable')
+            return self.now
         self.server=HTTPServer(('127.0.0.1',0),readonly_handler(self.token,read,
-            credential_expires_at=1100,clock=lambda:self.now))
+            credential_expires_at=1100,clock=clock))
         self.thread=threading.Thread(target=self.server.serve_forever,kwargs={'poll_interval':0.01})
         self.thread.start();self.addCleanup(self.close)
 
@@ -106,6 +110,29 @@ class HostReadOnlyHTTPTests(unittest.TestCase):
             with self.assertRaises(ValueError):readonly_handler(self.token,lambda _: {},credential_expires_at=expiry)
         self.assertEqual(self.request('/v1/health','HEAD'),(405,{}))
         self.assertEqual(self.request('/v1/health','POST',auth=False)[0],401)
+        self.assertEqual(self.calls,[])
+
+    def test_clock_rollback_permanently_fences_credential_across_requests(self):
+        path='/v1/recovery-status/'+'a'*64
+        self.assertEqual(self.request(path)[0],200)
+        self.now=999
+        self.assertEqual(self.request(path)[0],401)
+        self.now=1001
+        self.assertEqual(self.request(path)[0],401)
+        self.assertEqual(self.calls,['a'*64])
+
+    def test_expiry_cannot_be_revived_by_clock_rollback(self):
+        self.now=1100
+        self.assertEqual(self.request('/v1/health')[0],401)
+        self.now=1000
+        self.assertEqual(self.request('/v1/recovery-status/'+'a'*64)[0],401)
+        self.assertEqual(self.calls,[])
+
+    def test_failed_clock_remains_fenced_after_clock_recovers(self):
+        self.clock_error=True
+        self.assertEqual(self.request('/v1/health')[0],401)
+        self.clock_error=False
+        self.assertEqual(self.request('/v1/recovery-status/'+'a'*64)[0],401)
         self.assertEqual(self.calls,[])
 
     def test_duplicate_authorization_rejected_without_backend_read(self):

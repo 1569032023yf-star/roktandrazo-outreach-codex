@@ -8,6 +8,7 @@ import json
 import re
 import math
 import time
+import threading
 from http.server import BaseHTTPRequestHandler
 from autonomy.unattended_policy import INVENTORY
 from autonomy.recovery_status import inspect_recovery_status
@@ -28,6 +29,9 @@ def readonly_handler(token, status_reader, *, credential_expires_at, clock=time.
     if type(credential_expires_at) is not int or credential_expires_at<=0 or not callable(clock):
         raise ValueError('EXPLICIT_CREDENTIAL_DEADLINE_REQUIRED')
     expected=('Bearer '+token).encode('ascii')
+    credential_lock=threading.Lock()
+    last_clock=None
+    invalidated=False
 
     class Handler(BaseHTTPRequestHandler):
         protocol_version='HTTP/1.0'
@@ -51,12 +55,19 @@ def readonly_handler(token, status_reader, *, credential_expires_at, clock=time.
             if self.command!='HEAD':self.wfile.write(raw)
 
         def authenticated(self):
-            try:
-                now=clock()
-                valid=(type(now) in (int,float) and math.isfinite(now) and
-                       0<=now<credential_expires_at)
-            except Exception:
-                valid=False
+            nonlocal last_clock,invalidated
+            # Shared by all handler instances for this credential. Once time
+            # becomes untrustworthy, this factory cannot revive the credential.
+            with credential_lock:
+                try:
+                    now=clock()
+                    valid=(not invalidated and type(now) in (int,float) and
+                           math.isfinite(now) and 0<=now<credential_expires_at and
+                           (last_clock is None or now>=last_clock))
+                except Exception:
+                    valid=False
+                if valid:last_clock=now
+                else:invalidated=True
             auth=self.headers.get_all('Authorization',[])
             return (valid and len(auth)==1 and
                     hmac.compare_digest(auth[0].encode('utf-8'),expected))
