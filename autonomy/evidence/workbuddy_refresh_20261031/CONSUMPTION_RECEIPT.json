@@ -1,0 +1,39 @@
+{
+  "workbuddy_commit": "7414098294e6e32dd0939cbfe9bd68049cf655c6",
+  "verified_file_count": 7,
+  "files": [
+    {
+      "name": "CITY_STAGE_TRACE.json",
+      "git_blob_sha": "66c1b93dc421d32309f7be167b0d5e5efea07c39"
+    },
+    {
+      "name": "INVENTORY_SCHEDULER_RECONCILIATION.json",
+      "git_blob_sha": "5b77efdc25b3d580be34384ad5716e498165c904"
+    },
+    {
+      "name": "PRODUCTION_RUNTIME_LATEST.json",
+      "git_blob_sha": "cd2ebda0792633d4781878b732a8fc519d6cd03c"
+    },
+    {
+      "name": "PROVIDER_REQUEST_AUDIT_24H.json",
+      "git_blob_sha": "792605c9cbce3f083650b3c28679da17e2ab4472"
+    },
+    {
+      "name": "RELEASE_REGISTRY_SNAPSHOT.json",
+      "git_blob_sha": "29c2929968a15c716d98724f7e95b27ca7febddf"
+    },
+    {
+      "name": "SAFE_AUTHORITY_SNAPSHOT.json",
+      "git_blob_sha": "038e8bc5837b30bd9c9906ec48a11b0f90dd23d9"
+    },
+    {
+      "name": "WORKBUDDY_LONG_TERM_OPERATIONS.json",
+      "git_blob_sha": "fd4bbb6d9bbe1f8c91c5b5463274205b2cd58253"
+    }
+  ],
+  "report": "autonomy/evidence/workbuddy_refresh_20261031/REPORT.md",
+  "CODEX_HANDOFF_CONSUMED": false,
+  "publication": "PENDING",
+  "independent_review": "PENDING",
+  "source_commit": "e24e378b082d1ee4adad9f057d2c501c5786b2d9"
+}

@@ -576,8 +576,8 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/host_http_response_gate_20261031/REPORT.md",
-      "next_action": "First finish semantic/payload reconciliation of WorkBuddy74140982 and publish one exact-readback receipt through existing Issue2. Then independent HTTP review and durable install journal/OS adapter including partial ACL failure, formal auth/backend and maintenance lease. Dispatch closed.",
+      "checkpoint": "autonomy/evidence/workbuddy_refresh_20261031/REPORT.md",
+      "next_action": "Publish/read back the prepared74140982 receipt in existing Issue2; independently review attribution/HTTP candidates, then protected install journal/OS adapter partial-ACL fault contracts and formal maintenance lease/auth/backend. Dispatch closed.",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "PASS_SCOPED_OFFLINE_STATUS_ONLY",
@@ -708,7 +708,7 @@
         "commit": "7414098294e6e32dd0939cbfe9bd68049cf655c6",
         "verified_blobs": 7,
         "json_parse": "7_PASS",
-        "semantic_review": "PENDING",
+        "semantic_review": "COMPLETED_WITH_RESERVATIONS",
         "CODEX_HANDOFF_CONSUMED": false,
         "verification": "autonomy/evidence/workbuddy_refresh_20261031/VERIFICATION.json"
       },
@@ -716,6 +716,14 @@
         "api_id": 6520202418,
         "body_claimed_id": 6520177690,
         "status": "PROPOSED_ONLY_NOT_AUTHORIZED"
+      },
+      "inventory_attribution": {
+        "source_commit": "e24e378b082d1ee4adad9f057d2c501c5786b2d9",
+        "tests": 24,
+        "review": "PENDING",
+        "verified_pairs": 6,
+        "claimed_pairs": 7,
+        "zero_missed_runs": "UNKNOWN"
       }
     },
     {

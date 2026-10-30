@@ -1,193 +1,138 @@
 {
   "workbuddy_commit": "7414098294e6e32dd0939cbfe9bd68049cf655c6",
-  "verified_files": [
+  "commit_created_at": "2026-10-30T14:53:02Z",
+  "files": [
     {
       "name": "CITY_STAGE_TRACE.json",
       "git_blob_sha": "66c1b93dc421d32309f7be167b0d5e5efea07c39",
-      "schema": "1.0",
-      "keys": [
-        "active",
-        "next",
-        "pending_refs",
-        "blocking_attribution",
-        "schema_version",
-        "evidence_kind",
-        "generated_at",
-        "business_timezone",
-        "producer",
-        "channel",
-        "run_id",
-        "data_sources",
-        "ruleset_sha256",
-        "unavailable",
-        "payload_sha256"
-      ]
+      "declared_schema": null,
+      "generated_at": "2026-10-30T22:52:51+08:00",
+      "producer": "workbuddy-production-operator",
+      "payload_verified": true,
+      "computed_payload_sha256": "b7c996bae1cac1e3b52cbfe71d68db617cfb8f3226308afeda0f35778ca474ca"
     },
     {
       "name": "INVENTORY_SCHEDULER_RECONCILIATION.json",
       "git_blob_sha": "5b77efdc25b3d580be34384ad5716e498165c904",
-      "schema": "rokt.scheduler.v1",
-      "keys": [
-        "schema",
-        "generated_at",
-        "business_timezone",
-        "window_hours",
-        "source",
-        "canonical_automation",
-        "reconciliation_model",
-        "matched_slots",
-        "missed_inventory_runs_confirmed",
-        "firings_in_window",
-        "firings_executed_production",
-        "firings_without_production_run",
-        "firings",
-        "uniqueness",
-        "verdict",
-        "operation",
-        "schema_version",
-        "evidence_kind",
-        "producer",
-        "channel",
-        "run_id",
-        "data_sources",
-        "unavailable",
-        "payload_sha256"
-      ]
+      "declared_schema": "rokt.scheduler.v1",
+      "generated_at": "2026-10-30T22:52:51+08:00",
+      "producer": "workbuddy-production-operator",
+      "payload_verified": false,
+      "computed_payload_sha256": "c1f11014ab55b595f0005c66f5d69bf4b65235fcc0b47a778fe0cc3467d80745"
     },
     {
       "name": "PRODUCTION_RUNTIME_LATEST.json",
       "git_blob_sha": "cd2ebda0792633d4781878b732a8fc519d6cd03c",
-      "schema": "rokt.runtime.v1",
-      "keys": [
-        "schema",
-        "generated_at",
-        "business_timezone",
-        "source",
-        "code",
-        "db",
-        "lock",
-        "runs",
-        "running_inventory_now",
-        "inventory_runs_last_2h",
-        "inventory_runs_last_24h",
-        "trigger_receipts",
-        "field_notes",
-        "operation",
-        "verdict",
-        "schema_version",
-        "evidence_kind",
-        "producer",
-        "channel",
-        "run_id",
-        "data_sources",
-        "production_code_sha256",
-        "unavailable",
-        "payload_sha256"
-      ]
+      "declared_schema": "rokt.runtime.v1",
+      "generated_at": "2026-10-30T22:52:51+08:00",
+      "producer": "workbuddy-production-operator",
+      "payload_verified": false,
+      "computed_payload_sha256": "77b8c14dc6a5ebeb37c9b83f6678548d365ebf55dcd33f536f559e9041686d28"
     },
     {
       "name": "PROVIDER_REQUEST_AUDIT_24H.json",
       "git_blob_sha": "792605c9cbce3f083650b3c28679da17e2ab4472",
-      "schema": "1.0",
-      "keys": [
-        "city22_24h",
-        "all_cities_7d",
-        "schema_version",
-        "evidence_kind",
-        "generated_at",
-        "business_timezone",
-        "producer",
-        "channel",
-        "run_id",
-        "data_sources",
-        "payload_sha256"
-      ]
+      "declared_schema": null,
+      "generated_at": "2026-10-30T22:52:51+08:00",
+      "producer": "workbuddy-production-operator",
+      "payload_verified": true,
+      "computed_payload_sha256": "2aedea7b892dc5b08662001039409060ccbb1d95226344f28b5f55937c8f4b76"
     },
     {
       "name": "RELEASE_REGISTRY_SNAPSHOT.json",
       "git_blob_sha": "29c2929968a15c716d98724f7e95b27ca7febddf",
-      "schema": "1.0",
-      "keys": [
-        "operation",
-        "count",
-        "releases",
-        "seal",
-        "ts",
-        "schema_version",
-        "evidence_kind",
-        "generated_at",
-        "business_timezone",
-        "producer",
-        "channel",
-        "data_sources",
-        "payload_sha256"
-      ]
+      "declared_schema": null,
+      "generated_at": "2026-10-30T22:52:51+08:00",
+      "producer": "workbuddy-production-operator",
+      "payload_verified": true,
+      "computed_payload_sha256": "615e8fc4f1ffe2e701ee54249f48c10b83324d9cf2d31fadd1a4c03d373a7a76"
     },
     {
       "name": "SAFE_AUTHORITY_SNAPSHOT.json",
       "git_blob_sha": "038e8bc5837b30bd9c9906ec48a11b0f90dd23d9",
-      "schema": "rokt.safe_authority.v1",
-      "keys": [
-        "schema",
-        "measured_at",
-        "business_timezone",
-        "rule_version",
-        "method",
-        "source",
-        "mx_positive_control",
-        "mx_negative_control",
-        "measurement_complete",
-        "failure_reason",
-        "safe_unique_orgs",
-        "db_identity",
-        "mx_probe_seconds",
-        "mx_probe_ok",
-        "mx_proxy_configured",
-        "leads_total",
-        "filters",
-        "readings",
-        "reading_agreement",
-        "new_customer_funnel",
-        "safe_net_growth",
-        "finished_at",
-        "available",
-        "generated_at",
-        "refresh_requested",
-        "refresh_result",
-        "age_hours",
-        "fresh",
-        "authoritative_route",
-        "operation",
-        "verdict",
-        "schema_version",
-        "evidence_kind",
-        "producer",
-        "channel",
-        "run_id",
-        "data_sources",
-        "production_code_sha256",
-        "unavailable",
-        "payload_sha256"
-      ]
+      "declared_schema": "rokt.safe_authority.v1",
+      "generated_at": "2026-10-30T22:52:51+08:00",
+      "producer": "workbuddy-production-operator",
+      "payload_verified": false,
+      "computed_payload_sha256": "c13083df690f16982cb726967b9f251529c7c325e165b2ce1493a6f4eec1a7b3"
     },
     {
       "name": "WORKBUDDY_LONG_TERM_OPERATIONS.json",
       "git_blob_sha": "fd4bbb6d9bbe1f8c91c5b5463274205b2cd58253",
-      "schema": "1.0",
-      "keys": [
-        "schema_version",
-        "generated_at",
-        "business_timezone",
-        "fields",
-        "evidence_files",
-        "healthz",
-        "acceptance",
-        "sources"
-      ]
+      "declared_schema": null,
+      "generated_at": "2026-10-30T22:52:51+08:00",
+      "producer": null,
+      "payload_verified": null,
+      "computed_payload_sha256": "0381a3566c1ac4ed236fa760de81eb0c973f4215f743d1905df39b066f993f50"
     }
   ],
-  "json_parse": "PASS",
-  "semantic_review": "PENDING",
+  "reconciliation": {
+    "pairs": [
+      {
+        "firing_id": "automation-1784775229336:1793360442079",
+        "run_id": "inventory:2026-10-30:1047e9be",
+        "inventory_execution_verified": true,
+        "reason": "VERIFIED_INVENTORY_ROW",
+        "calculated_drift_seconds": 39.462,
+        "within_declared_tolerance": true
+      },
+      {
+        "firing_id": "automation-1784775229336:1793336227990",
+        "run_id": "inventory:2026-10-30:53eb75b0",
+        "inventory_execution_verified": true,
+        "reason": "VERIFIED_INVENTORY_ROW",
+        "calculated_drift_seconds": 40.576,
+        "within_declared_tolerance": true
+      },
+      {
+        "firing_id": "automation-1784775229336:1793312379944",
+        "run_id": "inventory:2026-10-30:88680be0",
+        "inventory_execution_verified": true,
+        "reason": "VERIFIED_INVENTORY_ROW",
+        "calculated_drift_seconds": 51.765,
+        "within_declared_tolerance": true
+      },
+      {
+        "firing_id": "automation-1784775229336:1793288394920",
+        "run_id": "post-send:2026-10-29:1e39cf7a",
+        "inventory_execution_verified": false,
+        "reason": "INVENTORY_STAGE_AND_AUTHORITY_REQUIRED",
+        "calculated_drift_seconds": 26.837,
+        "within_declared_tolerance": true
+      },
+      {
+        "firing_id": "automation-1784775229336:1793264340193",
+        "run_id": "inventory:2026-10-29:70803bcf",
+        "inventory_execution_verified": true,
+        "reason": "VERIFIED_INVENTORY_ROW",
+        "calculated_drift_seconds": 9.97,
+        "within_declared_tolerance": true
+      },
+      {
+        "firing_id": "automation-1784775229336:1793240276966",
+        "run_id": "inventory:2026-10-29:8f789080",
+        "inventory_execution_verified": true,
+        "reason": "VERIFIED_INVENTORY_ROW",
+        "calculated_drift_seconds": 782.773,
+        "within_declared_tolerance": false
+      },
+      {
+        "firing_id": "automation-1784775229336:1793215554060",
+        "run_id": "inventory:2026-10-29:2af7d25d",
+        "inventory_execution_verified": true,
+        "reason": "VERIFIED_INVENTORY_ROW",
+        "calculated_drift_seconds": 33.539,
+        "within_declared_tolerance": true
+      }
+    ],
+    "verified_inventory_executions": 6,
+    "zero_missed_runs": "UNKNOWN",
+    "production_accepted": false,
+    "allow_dispatch": false
+  },
+  "declared_schema_check": "OBJECT_ENVELOPE_VERSION_ONLY_NO_EXTERNAL_SCHEMA",
+  "production_resampled": false,
+  "semantic_review": "COMPLETED_WITH_RESERVATIONS",
   "CODEX_HANDOFF_CONSUMED": false,
-  "publication": "NOT_PUBLISHED"
+  "publication": "PENDING"
 }

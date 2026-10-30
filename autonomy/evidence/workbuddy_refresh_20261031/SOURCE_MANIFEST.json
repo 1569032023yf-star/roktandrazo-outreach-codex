@@ -1,0 +1,19 @@
+{
+  "source_commit": "e24e378b082d1ee4adad9f057d2c501c5786b2d9",
+  "files": [
+    {
+      "path": "autonomy/handoff_validation.py",
+      "git_blob_sha": "0984380cadc200891bd99d6d00aa3b9d1c464c7e",
+      "sha256": "9b97ad5dde4ba6852ce7f706261915e0ab7ac5cabc2291f1ef8385bc3a5fbd15"
+    },
+    {
+      "path": "test_handoff_inventory_attribution.py",
+      "git_blob_sha": "e039e19ecefa96c67651e89751aa08ce6077d113",
+      "sha256": "adf016ed5885766f669283d2e1e5576a79a561a66b53a14719b548c98a481c37"
+    }
+  ],
+  "tests": 24,
+  "elapsed_seconds": 2.249,
+  "review": "PENDING",
+  "full_regression": "NOT_RUN_FOR_THIS_PIN"
+}
