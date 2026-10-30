@@ -57,6 +57,14 @@
   ],
   "candidate_package_bytes_and_7_files_verified": true,
   "production_resampled": false,
-  "CODEX_HANDOFF_CONSUMED": false,
-  "publication": "PENDING_EXISTING_ISSUE2_READBACK"
+  "CODEX_HANDOFF_CONSUMED": true,
+  "publication": {
+    "issue": 2,
+    "comment_id": 6517053781,
+    "url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6517053781",
+    "independent_exact_body_readback": true,
+    "readback_at": "2026-10-30T07:07:05.446099+00:00",
+    "report_commit": "28cecd8d09a17007380e7ec87a2572809b530b7c"
+  },
+  "archived_git_blobs_match": true
 }
