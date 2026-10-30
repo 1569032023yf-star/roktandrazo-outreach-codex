@@ -576,8 +576,8 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/host_http_expiry_20261030/REPORT.md",
-      "next_action": "Independently review acdb1494 HTTP expiry candidate; implement formal credential lifecycle/read-only backend and protected disabled-install journal/OS adapter with maintenance-lease enforcement offline. Preserve ACL proposal conflict; production dispatch closed.",
+      "checkpoint": "autonomy/evidence/host_http_clock_fence_20261030/REPORT.md",
+      "next_action": "Independently review de39078 HTTP clock fence; implement formal credential lifecycle/read-only backend and durable install journal/OS adapter with maintenance-lease enforcement offline. Production dispatch remains closed.",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "PASS_SCOPED_OFFLINE_STATUS_ONLY",
@@ -681,14 +681,15 @@
         "next_action_en": "Consume candidate-specific read-only compatibility evidence and implement missing authenticated8791/backend/31-gate contracts offline without stopping safe integration while evidence is pending."
       },
       "host_readonly_http": {
-        "source_commit": "acdb1494ebb02f140e3ca0faf97aef82aa70a68f",
-        "report": "autonomy/evidence/host_http_expiry_20261030/REPORT.md",
-        "tests": 44,
+        "source_commit": "de39078e6b0c990c451e345467e57ec8407311ab",
+        "report": "autonomy/evidence/host_http_clock_fence_20261030/REPORT.md",
+        "tests": 47,
         "review": "PENDING_INDEPENDENT_REVIEW",
         "production_integrated": false,
-        "comparable_regression": "NOT_RUN_FOR_THIS_PIN; prior59926ebb result not inherited",
+        "comparable_regression": "NOT_RUN_FOR_THIS_PIN",
         "pinned_files": 12,
-        "isolated_import": "PASS"
+        "isolated_import": "PASS",
+        "clock_fence": "FACTORY_LIFETIME_ONLY_NOT_DURABLE"
       },
       "windows_environment_consumption": {
         "workbuddy_commit": "54b79153adf8b8d6df1349e5ea78751bf244f24e",

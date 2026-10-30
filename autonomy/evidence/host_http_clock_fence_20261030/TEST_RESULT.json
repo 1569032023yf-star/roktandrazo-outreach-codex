@@ -1,0 +1,11 @@
+{
+  "source_commit": "de39078e6b0c990c451e345467e57ec8407311ab",
+  "command": "python -B -m unittest test_host_readonly_http test_recovery_status test_cancellation_recovery test_growth_snapshot test_host_remediation test_disabled_host_package -q",
+  "tests": 47,
+  "elapsed_seconds": 9.02,
+  "failures": 0,
+  "errors": 0,
+  "result": "PASS",
+  "independent_review": "PENDING",
+  "full_regression": "NOT_RUN_FOR_THIS_PIN"
+}
