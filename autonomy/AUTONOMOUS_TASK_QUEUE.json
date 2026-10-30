@@ -1,6 +1,6 @@
 {
   "schema": "rokt.canonical-queue-projection.v1",
-  "updated_at": "2026-10-30T01:55:42.342435+00:00",
+  "updated_at": "2026-10-30T06:12:22.184049+00:00",
   "canonical_path": "autonomy/runtime/queue.json",
   "read_only_projection": true,
   "scheduler_created": false,
@@ -578,14 +578,14 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/u1_p0_final_20261030/REPORT.md",
-      "next_action": "Consume candidate-specific read-only compatibility evidence and implement missing authenticated8791/backend/31-gate contracts offline without stopping safe integration while evidence is pending.",
+      "checkpoint": "autonomy/evidence/u1_recovery_status_20261030/REPORT.md",
+      "next_action": "Integrate read-only host HTTP and pinned recovery snapshots in isolation, preserving existing candidates; production remains disabled.",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
-      "review_status": "PASS_WHOLE_FIXED_OFFLINE_CANDIDATE_NOT_PRODUCTION",
+      "review_status": "PASS_SCOPED_OFFLINE_STATUS_ONLY",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "d7d424c120281981e70753ea1c15fe130134929f",
+      "candidate_commit": "079792aa848aba979e2c0680eee73ec91b7f0b3a",
       "trust_boundary_review": "SCOPED_PASS",
       "schedule_contract_review": "SCOPED_PASS",
       "regression_runner_candidate": "b69214d",
@@ -694,9 +694,14 @@
       "executor": "current_authorized_chat",
       "scope_zh": "消费候选特定只读兼容证据，并离线补齐8791认证接口/生产后端与现有31门禁差异；不因等待外部证据停止安全离线集成。",
       "scope_en": "Consume candidate-specific read-only compatibility evidence and implement missing authenticated8791/backend/31-gate contracts offline without stopping safe integration while evidence is pending.",
-      "checkpoint": "autonomy/evidence/u1_p0_final_20261030/REPORT.md",
+      "checkpoint": "autonomy/evidence/u1_recovery_status_20261030/REPORT.md",
       "production_execution": false,
-      "allow_dispatch": false
+      "allow_dispatch": false,
+      "next_action": "Integrate read-only host HTTP and pinned recovery snapshots in isolation, preserving existing candidates; production remains disabled.",
+      "candidate_commit": "079792aa848aba979e2c0680eee73ec91b7f0b3a",
+      "review_status": "PASS_SCOPED_OFFLINE_STATUS_ONLY",
+      "release_ready": false,
+      "production_deployed": false
     }
   ],
   "u1_p0_latest": {
@@ -730,5 +735,33 @@
     "request_independently_read_back": true,
     "next_action_zh": "消费候选特定只读兼容证据，并离线补齐8791认证接口/生产后端与现有31门禁差异；不因等待外部证据停止安全离线集成。",
     "next_action_en": "Consume candidate-specific read-only compatibility evidence and implement missing authenticated8791/backend/31-gate contracts offline without stopping safe integration while evidence is pending."
+  },
+  "u1_recovery_status_latest": {
+    "source_commit": "079792aa848aba979e2c0680eee73ec91b7f0b3a",
+    "branch": "codex/autonomous-bd-supervisor",
+    "report": "autonomy/evidence/u1_recovery_status_20261030/REPORT.md",
+    "updated_at": "2026-10-30T06:12:22.184049+00:00",
+    "combined_tests": 23,
+    "combined_seconds": 6.636,
+    "independent_tests": 23,
+    "independent_seconds": 5.915,
+    "reviewer": "/root/recovery_status_review",
+    "SCOPED_OFFLINE_REVIEW_PASSED": true,
+    "NO_NEW_REGRESSION": "NOT_RUN_FOR_THIS_PIN",
+    "DEVELOPMENT_COMPLETE": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "business_growth": "UNKNOWN",
+    "operation_id": "NOT_STARTED",
+    "smtp_enabled": false,
+    "counts_as_complete_unattended_cycle": false,
+    "preserved_untracked": [
+      "autonomy/evidence/cancellation_terminal_bundle_20261030/",
+      "autonomy/host_readonly_http.py",
+      "test_host_readonly_http.py"
+    ],
+    "next_action_zh": "隔离整合只读宿主HTTP与固定恢复快照，保留预存候选；生产入口继续禁用。",
+    "next_action_en": "Integrate read-only host HTTP and pinned recovery snapshots in isolation, preserving existing candidates; production remains disabled."
   }
 }

@@ -1,0 +1,58 @@
+{
+  "source_commit": "079792aa848aba979e2c0680eee73ec91b7f0b3a",
+  "files": [
+    {
+      "path": "autonomy/bridge_acceptance.py",
+      "sha256": "4a304578466bb978d9666adf961f21dfadaca70ba3d12d86a91cfdf02189e1eb",
+      "bytes": 1851
+    },
+    {
+      "path": "autonomy/cancellation_recovery.py",
+      "sha256": "273614a92b18da65eafd206c2239821edffd74ca80ed95ca4b1f70c35ef11197",
+      "bytes": 11739
+    },
+    {
+      "path": "autonomy/cancellation_terminal.py",
+      "sha256": "4d609428476cafc09bdbc141f617f2b3c3ebad15f650ab9c537fd661d99f2f4a",
+      "bytes": 4025
+    },
+    {
+      "path": "autonomy/growth_ledger.py",
+      "sha256": "52af63b96cfe740ac511c10beb20e67eccabc07b8996836e54c0f5c1a1e5f399",
+      "bytes": 26212
+    },
+    {
+      "path": "autonomy/growth_snapshot.py",
+      "sha256": "ca861b99ea9335fe4b6c8842875d037b24da9ce28802f9fcece30cef2c5d0d5c",
+      "bytes": 4341
+    },
+    {
+      "path": "autonomy/host_preparation.py",
+      "sha256": "ba3bf2edf4f39c130a1f56d8246a92476758ac53e223a3d067c02a987cd011d2",
+      "bytes": 7413
+    },
+    {
+      "path": "autonomy/lock_recovery.py",
+      "sha256": "e6552960b9a15af38a5fbd238037094d8c75af80d9c0370b6d69092060da7741",
+      "bytes": 8045
+    },
+    {
+      "path": "autonomy/recovery_status.py",
+      "sha256": "e4229a403e5b26e428beaea7639df44b34ebbbed5bd76efef162a514ae29358f",
+      "bytes": 4528
+    },
+    {
+      "path": "autonomy/single_slot_adapter.py",
+      "sha256": "e941653ee9f9739771c3854028062b7aa9bf82bf0cfe2ed5d02c7f32f3977869",
+      "bytes": 19095
+    },
+    {
+      "path": "autonomy/unattended_policy.py",
+      "sha256": "21aea336dd46f35ee402598687831b39f33c7aee5ec5245bc63f83cc77ec781f",
+      "bytes": 2201
+    }
+  ],
+  "isolated_import_returncode": 0,
+  "isolated_import_output": "PINNED_IMPORT_OK\n",
+  "production_execution": false
+}

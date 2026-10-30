@@ -1,3 +1,9 @@
+2026-10-30 U1增量：079792aa新增路径无关的恢复日志快照状态层，23组合/23独立项通过，7新增项；10文件固定源码隔离导入通过。COMPLETED仅日志阶段，不授予生产终态/锁关闭/重放。仅新状态层独审通过，旧833结论不扩到本pin。WB main仍13572ee9/Issue2仍6513015427。整体开发/发布/部署/生产验收仍false，下一步隔离HTTP状态接入，保留启动前未提交文件。详见../u1_recovery_status_20261030/REPORT.md。
+
+2026-10-30 increment079792aa adds path-free recovery snapshot status:23 combined/23 independently run tests pass, including seven new tests, plus10 pinned source imports. COMPLETED is journal phase only, never terminal/lock/replay authority. Scoped status review passes; old833 regression is not extended. WorkBuddy main13572ee9/Issue2 6513015427 unchanged. Overall development/release/deployment/acceptance remain false. Next: isolated HTTP/status integration, preserving existing uncommitted files. See the new report.
+
+---
+
 2026-10-30 U1固定候选d7d424c：取消终态持久恢复离线闭环、默认禁用宿主工具及真实开发包已实现；239组合/85独立项通过，833基线与候选同37失败17错误ID，新增回归0但非全绿。整体离线独审/运输审核通过。生产宿主8791/Python/backend与31门禁尚未满足，DEVELOPMENT_COMPLETE/RELEASE_READY/PRODUCTION_DEPLOYED/PRODUCTION_ACCEPTED=false。Issue2新候选只读兼容交接6513015427已逐字回读；下一步补接口接入并自动消费WorkBuddy，不重复旧合同。SMTP关闭，无生产DB/安装/权限修改。此为用户指令工程，不计完整无人值守周期。详见 evidence/u1_p0_final_20261030/REPORT.md。
 
 2026-10-30 pinned U1 d7d424c completes offline durable cancellation recovery, disabled-host tooling and a real development package.239 combined/85 independent tests pass;833 baseline/candidate retain identical37 failure/17 error IDs: zero new regression, not all green. Whole offline source/transport review passes. Production8791/Python/backend and31 gates remain unsatisfied, so overall development/release/deployment/acceptance remain false. Candidate-specific read-only Issue2 request6513015427 was independently matched. Next: integrate missing interfaces offline and consume WorkBuddy evidence without duplicate requests. SMTP off; no production DB/install/permission change. User-triggered engineering is not a complete unattended cycle. See the linked report.

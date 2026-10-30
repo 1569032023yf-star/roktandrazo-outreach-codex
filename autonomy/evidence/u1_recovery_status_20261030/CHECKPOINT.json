@@ -1,0 +1,28 @@
+{
+  "source_commit": "079792aa848aba979e2c0680eee73ec91b7f0b3a",
+  "branch": "codex/autonomous-bd-supervisor",
+  "report": "autonomy/evidence/u1_recovery_status_20261030/REPORT.md",
+  "updated_at": "2026-10-30T06:12:22.184049+00:00",
+  "combined_tests": 23,
+  "combined_seconds": 6.636,
+  "independent_tests": 23,
+  "independent_seconds": 5.915,
+  "reviewer": "/root/recovery_status_review",
+  "SCOPED_OFFLINE_REVIEW_PASSED": true,
+  "NO_NEW_REGRESSION": "NOT_RUN_FOR_THIS_PIN",
+  "DEVELOPMENT_COMPLETE": false,
+  "RELEASE_READY": false,
+  "PRODUCTION_DEPLOYED": false,
+  "PRODUCTION_ACCEPTED": false,
+  "business_growth": "UNKNOWN",
+  "operation_id": "NOT_STARTED",
+  "smtp_enabled": false,
+  "counts_as_complete_unattended_cycle": false,
+  "preserved_untracked": [
+    "autonomy/evidence/cancellation_terminal_bundle_20261030/",
+    "autonomy/host_readonly_http.py",
+    "test_host_readonly_http.py"
+  ],
+  "next_action_zh": "隔离整合只读宿主HTTP与固定恢复快照，保留预存候选；生产入口继续禁用。",
+  "next_action_en": "Integrate read-only host HTTP and pinned recovery snapshots in isolation, preserving existing candidates; production remains disabled."
+}
