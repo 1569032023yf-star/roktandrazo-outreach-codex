@@ -1,0 +1,31 @@
+{
+  "workbuddy_commit": "54b79153adf8b8d6df1349e5ea78751bf244f24e",
+  "files": [
+    {
+      "path": "handoff/workbuddy/production/WINDOWS_ENVIRONMENT_EVIDENCE_20261030.json",
+      "git_blob_sha": "c2386c8fc10695c96a975a59fad7e0724ffc4649",
+      "sha256": "0a0768d402e2472a75d7f1e69e8daca24d1b1d3d218affabac4aaeaac0e792c0",
+      "bytes": 24953
+    },
+    {
+      "path": "handoff/workbuddy/production/WINDOWS_ENVIRONMENT_EVIDENCE_20261030.md",
+      "git_blob_sha": "a623e0173a6b0ce59d693e9c8514803a4602bfe3",
+      "sha256": "4cb5ad654f6995ae36efa8163bce40093b4c9608116f956b1ee320728920934b",
+      "bytes": 14627
+    }
+  ],
+  "verified_file_count": 2,
+  "json_parse": "PASS",
+  "declared_schema_structure": "PASS",
+  "external_json_schema": "NOT_SUPPLIED_NOT_CLAIMED",
+  "producer": "workbuddy",
+  "sample_time_note": "Individual sample times retained verbatim in source; report generation is not a fresh sample.",
+  "generated_at": "2026-10-30T15:10:15+08:00",
+  "git_commit_created_at": "2026-10-30T07:11:55Z",
+  "commit_after_generation_seconds": 100,
+  "production_resampled": false,
+  "producer_comment": 6517133750,
+  "CODEX_HANDOFF_CONSUMED": false,
+  "publication": "PENDING",
+  "source_commit": "acdb1494ebb02f140e3ca0faf97aef82aa70a68f"
+}

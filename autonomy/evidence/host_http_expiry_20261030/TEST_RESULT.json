@@ -1,0 +1,9 @@
+{
+  "source_commit": "acdb1494ebb02f140e3ca0faf97aef82aa70a68f",
+  "returncode": 0,
+  "elapsed_seconds": 14.723,
+  "stdout": "",
+  "stderr": "----------------------------------------------------------------------\nRan 44 tests in 14.236s\n\nOK\n",
+  "independent_review": "PENDING",
+  "full_regression": "NOT_RUN_FOR_THIS_PIN"
+}

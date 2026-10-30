@@ -1,0 +1,67 @@
+{
+  "source_commit": "acdb1494ebb02f140e3ca0faf97aef82aa70a68f",
+  "files": [
+    {
+      "path": "autonomy/bridge_acceptance.py",
+      "git_blob_sha": "e00f3e1533dfde96c165b526872428b1aa78184b",
+      "sha256": "4a304578466bb978d9666adf961f21dfadaca70ba3d12d86a91cfdf02189e1eb"
+    },
+    {
+      "path": "autonomy/cancellation_recovery.py",
+      "git_blob_sha": "738d1a53646702d2898b1476f3ecb1950035e394",
+      "sha256": "273614a92b18da65eafd206c2239821edffd74ca80ed95ca4b1f70c35ef11197"
+    },
+    {
+      "path": "autonomy/cancellation_terminal.py",
+      "git_blob_sha": "19fc8eeec43d4ac3fd59e25ec9e362c940e69e6a",
+      "sha256": "4d609428476cafc09bdbc141f617f2b3c3ebad15f650ab9c537fd661d99f2f4a"
+    },
+    {
+      "path": "autonomy/growth_ledger.py",
+      "git_blob_sha": "77ebea5612f2aa4b49763bcd724a16b43fa7827e",
+      "sha256": "52af63b96cfe740ac511c10beb20e67eccabc07b8996836e54c0f5c1a1e5f399"
+    },
+    {
+      "path": "autonomy/growth_snapshot.py",
+      "git_blob_sha": "ed668b78e8028419cddf23f2d4f8da139532b449",
+      "sha256": "ca861b99ea9335fe4b6c8842875d037b24da9ce28802f9fcece30cef2c5d0d5c"
+    },
+    {
+      "path": "autonomy/host_preparation.py",
+      "git_blob_sha": "89dd25ad7d810706aae97030864d5bb402b19b9b",
+      "sha256": "ba3bf2edf4f39c130a1f56d8246a92476758ac53e223a3d067c02a987cd011d2"
+    },
+    {
+      "path": "autonomy/host_readonly_http.py",
+      "git_blob_sha": "f9ee47f0d583578da8d002fe353ff8b0291fca7b",
+      "sha256": "645f8907bc34b9b7f4ed298303bccfe2f5123147da855212e77a7eb26f8f29d4"
+    },
+    {
+      "path": "autonomy/lock_recovery.py",
+      "git_blob_sha": "c7ba87a636796be0060bd0f8ac7ad8af691f9c7c",
+      "sha256": "e6552960b9a15af38a5fbd238037094d8c75af80d9c0370b6d69092060da7741"
+    },
+    {
+      "path": "autonomy/recovery_status.py",
+      "git_blob_sha": "6eca0368e5e0fb304f8e5d065f5007a4c38749a6",
+      "sha256": "e4229a403e5b26e428beaea7639df44b34ebbbed5bd76efef162a514ae29358f"
+    },
+    {
+      "path": "autonomy/single_slot_adapter.py",
+      "git_blob_sha": "4737ed86334b7727c36ac8297b973d2af3d894bc",
+      "sha256": "e941653ee9f9739771c3854028062b7aa9bf82bf0cfe2ed5d02c7f32f3977869"
+    },
+    {
+      "path": "autonomy/unattended_policy.py",
+      "git_blob_sha": "0c2937be4ebc2fb6ffcd783a5b05360867171464",
+      "sha256": "21aea336dd46f35ee402598687831b39f33c7aee5ec5245bc63f83cc77ec781f"
+    },
+    {
+      "path": "test_host_readonly_http.py",
+      "git_blob_sha": "94e20833c1ac7c3bebd339c3e0b38ee437a4109a",
+      "sha256": "5429eb2631c3c79dca7c43226c26fb3c3bb0003507db9b8cc32c2acf15657bb1"
+    }
+  ],
+  "isolated_import": "PASS",
+  "production_package_changed": false
+}

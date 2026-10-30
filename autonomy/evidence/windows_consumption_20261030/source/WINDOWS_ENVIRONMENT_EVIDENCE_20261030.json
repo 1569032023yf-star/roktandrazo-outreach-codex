@@ -1,0 +1,431 @@
+{
+  "schema": "rokt.windows_env_evidence.v1",
+  "generated_at": "2026-10-30T15:10:15+08:00",
+  "generated_at_utc": "2026-10-30T07:10:15Z",
+  "evidence_class": "READ_ONLY_LOCAL_OBSERVATION",
+  "approval": "NONE - observations are not approvals",
+  "operator_context": {
+    "agent": "workbuddy",
+    "session_id": 1,
+    "host_user": "RAKTROZO\\15690",
+    "note": "All probes executed without elevation. Any probe requiring Administrator is reported as BLOCKED, never as PASS."
+  },
+
+  "host": {
+    "computer_name": "RAKTROZO",
+    "domain": "WORKGROUP",
+    "part_of_domain": false,
+    "manufacturer": "HP",
+    "model": "HP ZHAN 99 Pro 23.8 inch G9 All-in-One Desktop PC",
+    "cpu": "12th Gen Intel(R) Core(TM) i7-12700",
+    "cpu_cores": 12,
+    "cpu_logical": 20,
+    "ram_gb": 15.7,
+    "os_caption": "Microsoft Windows 11 家庭版 中文版",
+    "os_edition_family": "Windows 11 Home",
+    "os_build": "26200",
+    "os_arch": "64-bit",
+    "os_install_date": "2026-06-02",
+    "last_boot": "2026-10-30T08:48:03+08:00",
+    "fast_startup_hiberboot_enabled": 1,
+    "netfx_release": "4.8.09221",
+    "dotnet_core_present": false,
+    "disks": [
+      { "drive": "C", "fs": "NTFS", "type": "Fixed", "size_gb": 200, "free_gb": 16 },
+      { "drive": "D", "fs": "NTFS", "type": "Fixed", "size_gb": 275.7, "free_gb": 167, "disk_model": "SAMSUNG MZVLQ512HBLU-00BH1", "bus": "NVMe", "partition_style": "GPT", "operational": "Online" }
+    ],
+    "edition_implications": [
+      "Windows 11 Home has no secpol.msc / gpedit.msc; user-rights assignment is only reachable through elevated secedit or LSA API.",
+      "BitLocker management UI is unavailable on Home; Get-BitLockerVolume returns access denied without elevation.",
+      "Windows services, virtual service accounts (NT SERVICE\\<name>) and SCM remain fully supported on Home."
+    ]
+  },
+
+  "identity": {
+    "whoami_user": "raktrozo\\15690",
+    "user_sid": "S-1-5-21-5926390-557196042-3608508572-1001",
+    "integrity_level": "Medium (S-1-16-8192)",
+    "elevated": false,
+    "groups_observed": [
+      { "name": "BUILTIN\\Administrators", "sid": "S-1-5-32-544", "state": "deny-only (used for deny only)" },
+      { "name": "BUILTIN\\Users", "sid": "S-1-5-32-545", "state": "enabled" },
+      { "name": "Mandatory Label\\Medium Mandatory Level", "sid": "S-1-16-8192", "state": "integrity label" }
+    ],
+    "token_privileges": [
+      { "name": "SeShutdownPrivilege", "state": "Disabled" },
+      { "name": "SeChangeNotifyPrivilege", "state": "Enabled" },
+      { "name": "SeUndockPrivilege", "state": "Disabled" },
+      { "name": "SeIncreaseWorkingSetPrivilege", "state": "Disabled" },
+      { "name": "SeTimeZonePrivilege", "state": "Disabled" }
+    ],
+    "uac_policy": {
+      "EnableLUA": 1,
+      "ConsentPromptBehaviorAdmin": 5,
+      "PromptOnSecureDesktop": 1,
+      "FilterAdministratorToken": 1,
+      "LocalAccountTokenFilterPolicy": null,
+      "EnableInstallerDetection": 1
+    },
+    "interpretation": "Administrator membership is deny-only at Medium integrity, so every install/elevation step must go through a UAC consent prompt. There is no silent elevation path from this session."
+  },
+
+  "virtual_account_capability": {
+    "namespace_resolvable": true,
+    "probes": [
+      { "account": "NT SERVICE\\TrustedInstaller", "result": "RESOLVED", "sid": "S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464" },
+      { "account": "NT SERVICE\\ALL SERVICES", "result": "RESOLVED", "sid": "S-1-5-80-0" },
+      { "account": "NT SERVICE\\RoktU1Bridge", "result": "UNRESOLVABLE_UNTIL_SERVICE_CREATED" }
+    ],
+    "conclusion": "The NT SERVICE virtual-account namespace works on this host. RoktU1Bridge is unresolvable only because the service does not exist yet, which matches the installer ordering (create service first, then translate account to SID). No account creation is required or permitted.",
+    "account_creation_performed": false
+  },
+
+  "service_logon_right": {
+    "verdict": "BLOCKED",
+    "probe": "secedit /export /areas USER_RIGHTS /cfg <temp>.inf",
+    "exit_code": 740,
+    "message": "You do not have sufficient privileges to execute this command. Ensure you are running as a local administrator or use 'Run as administrator'.",
+    "file_created": false,
+    "why_it_matters": "Whether a virtual service account already holds SeServiceLogonRight cannot be read without elevation on this host.",
+    "post_install_verification_required": "After the service exists, verify with: sc sdshow / secedit /export under an elevated shell, then confirm the SCM logon succeeds (Event 7036 followed by running state).",
+    "not_a_deployment_blocker": true,
+    "reason_not_blocker": "The installer itself runs elevated by definition; this limitation only affects our ability to pre-verify before installation."
+  },
+
+  "acl_baseline": {
+    "method": "Get-Acl (DACL only) + icacls on existing sibling directories as empirical precedent; no directory was created and no ACL was modified.",
+    "target_paths": {
+      "code_root": "C:\\Program Files\\RoktU1Bridge",
+      "state_root": "C:\\ProgramData\\RoktU1Bridge",
+      "code_root_exists": false,
+      "state_root_exists": false
+    },
+    "parents": [
+      {
+        "path": "C:\\Program Files",
+        "owner": "NT SERVICE\\TrustedInstaller",
+        "access_rules_protected": true,
+        "ace_total": 13,
+        "inheritable_ace_count": 7,
+        "sddl": "O:S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464G:S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464D:PAI(A;OICIIO;GA;;;CO)(A;OICIIO;GA;;;SY)(A;;0x1301bf;;;SY)(A;OICIIO;GA;;;BA)(A;;0x1301bf;;;BA)(A;OICIIO;GXGR;;;BU)(A;;0x1200a9;;;BU)(A;CIIO;GA;;;S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464)(A;;FA;;;S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464)(A;;0x1200a9;;;AC)(A;OICIIO;GXGR;;;AC)(A;;0x1200a9;;;S-1-15-2-2)(A;OICIIO;GXGR;;;S-1-15-2-2)"
+      },
+      {
+        "path": "C:\\ProgramData",
+        "owner": "NT AUTHORITY\\SYSTEM",
+        "access_rules_protected": true,
+        "ace_total": 5,
+        "inheritable_ace_count": 5,
+        "sddl": "O:SYG:SYD:PAI(A;OICIIO;GA;;;CO)(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)(A;OICI;0x1200a9;;;BU)(A;CI;DCLCRPCR;;;BU)"
+      }
+    ],
+    "empirical_precedent": [
+      {
+        "path": "C:\\Program Files\\AMD",
+        "inherited_ace_count": 13,
+        "explicit_ace_count": 0,
+        "effective_on_child_directory": [
+          "NT SERVICE\\TrustedInstaller:(I)(F)",
+          "NT AUTHORITY\\SYSTEM:(I)(F)",
+          "BUILTIN\\Administrators:(I)(F)",
+          "BUILTIN\\Users:(I)(RX)",
+          "CREATOR OWNER:(I)(OI)(CI)(IO)(F)"
+        ],
+        "same_pattern_observed_on": ["Billfish", "Google", "HP", "HPCommRecovery", "Intel", "Microsoft Office", "Microsoft Office 15", "Microsoft OfficePLUS"]
+      },
+      {
+        "path": "C:\\ProgramData\\CooCare",
+        "inherited_ace_count": 5,
+        "explicit_ace_count": 0,
+        "effective_on_child_directory": [
+          "NT AUTHORITY\\SYSTEM:(I)(OI)(CI)(F)",
+          "BUILTIN\\Administrators:(I)(OI)(CI)(F)",
+          "CREATOR OWNER:(I)(OI)(CI)(IO)(F)",
+          "BUILTIN\\Users:(I)(OI)(CI)(RX)",
+          "BUILTIN\\Users:(I)(CI)(WD,AD,WEA,WA)"
+        ]
+      }
+    ],
+    "predicted_effective_acl_for_new_directories": {
+      "code_root": "INHERITED_PREDICTABLE: SYSTEM/A Administrators F, BUILTIN\\Users RX, CREATOR OWNER inherit-only F. No ACE grants the service SID.",
+      "state_root": "INHERITED_PREDICTABLE: SYSTEM/Administrators F, CREATOR OWNER inherit-only F, BUILTIN\\Users RX plus BUILTIN\\Users (CI)(WD,AD,WEA,WA) i.e. any user may create subfolders and append data inside the state root.",
+      "confidence": "High - 8 of 12 sampled Program Files children and all sampled ProgramData children matched the inherited-only pattern."
+    },
+    "security_notes": [
+      "The inherited 'BUILTIN\\Users (CI)(WD,AD,WEA,WA)' on ProgramData children means any local user can create subdirectories under C:\\ProgramData\\RoktU1Bridge unless inheritance is broken. That is a hardening candidate, not a functional blocker.",
+      "Relying on 'Everyone' or inherited ACEs is insufficient: the observed ACLs on both parents contain no Everyone ACE and no service-SID ACE."
+    ],
+    "proposed_minimal_deltas": {
+      "status": "PROPOSED_ONLY - NOT APPLIED, NOT APPROVED",
+      "code_root": [
+        "Grant NT SERVICE\\RoktU1Bridge ReadAndExecute (or ReadAndExecute+Synchronize) on C:\\Program Files\\RoktU1Bridge, inheritance enabled, This folder/subfolders/files.",
+        "Keep inheritance; do not break it. Existing inherited ACEs already cover SYSTEM and BUILTIN\\Users."
+      ],
+      "state_root": [
+        "Grant NT SERVICE\\RoktU1Bridge Modify on C:\\ProgramData\\RoktU1Bridge, This folder/subfolders/files.",
+        "Consider removing the inherited BUILTIN\\Users (CI)(WD,AD,WEA,WA) create-subfolder ACE to stop arbitrary local subfolder creation."
+      ],
+      "service_sid_membership_in_builtin_users": "UNKNOWN - cannot be enumerated for a non-existent service SID, and account creation is prohibited. Explicit ACEs are therefore recommended over reliance on group membership."
+    }
+  },
+
+  "windows_services": [
+    {
+      "name": "MyClashHelperService",
+      "display_name": "MyClashHelperService",
+      "state": "Running",
+      "start_mode": "Auto",
+      "start_name": "LocalSystem",
+      "delayed_auto_start": false,
+      "pid": 6356,
+      "path": "D:\\Clash Plus\\MyClashHelperService.exe",
+      "failure_actions_present": false,
+      "registry_start": 2,
+      "service_sid_type": null,
+      "required_privileges": null,
+      "depend_on_service": null,
+      "finding": "Auto-start LocalSystem service with NO configured failure/recovery actions. If the helper crashes, nothing restarts it. sc.exe is blocked by security policy on this host, so the registry values are the authoritative source."
+    },
+    {
+      "name": "BDExecutionHost",
+      "display_name": "RoktAndRazoBDExecutionHost",
+      "state": "Stopped",
+      "start_mode": "Manual",
+      "start_name": "LocalSystem",
+      "pid": 0,
+      "path": "\"C:\\Users\\15690\\.workbuddy\\binaries\\python\\versions\\3.13.12\\pythonservice.exe\"",
+      "binary_exists": false,
+      "finding": "Confirmed zombie: the service registration exists but its binary is absent from disk. It can never start. This is the missing service layer for unattended execution."
+    },
+    {
+      "name": "BDESVC",
+      "display_name": "BitLocker Drive Encryption Service",
+      "state": "Running",
+      "start_mode": "Manual",
+      "start_name": "LocalSystem",
+      "note": "Present, but BitLocker management APIs still returned access denied to this non-elevated session."
+    }
+  ],
+
+  "scheduled_tasks": [
+    { "task": "RoktRazo-BD-Outreach", "state": "Disabled", "user": "15690", "logon_type": "Interactive", "run_level": "Limited", "last_run": "2026-09-22T23:00:01", "last_result": 0 },
+    { "task": "RoktRazo-BD-PreSend", "state": "Disabled", "user": "15690", "logon_type": "Interactive", "run_level": "Limited", "last_run": "2026-09-08T22:30:01", "last_result": 0 },
+    { "task": "RoktRazo-BD-PostSend", "state": "Ready", "user": "15690", "logon_type": "Interactive", "run_level": "Limited", "last_run": "2026-10-30T00:10:01", "last_result": 0 }
+  ],
+  "scheduled_task_finding": "All remaining BD tasks run as Interactive/Limited for user 15690. They cannot execute while no user is logged on, independent of the service question.",
+
+  "autostart": {
+    "hkcu_run": [
+      { "name": "RoktDeployChannelSupervisor", "value": "\"C:/Users/15690/.workbuddy/binaries/python/versions/3.13.12/pythonw.exe\" \"C:/Users/15690/WorkBuddy/deploy-channel/bin/supervisor.py\"" },
+      { "name": "WorkBuddy.WorkBuddy", "value": "C:\\Users\\15690\\AppData\\Local\\Programs\\WorkBuddy\\WorkBuddy.exe" },
+      { "name": "OneDrive", "value": "C:\\Users\\15690\\AppData\\Local\\Microsoft\\OneDrive\\OneDrive.exe /background" }
+    ],
+    "hkcu_run_total_entries": 11,
+    "hklm_run": [
+      { "name": "SecurityHealth" },
+      { "name": "RtkAudUService" },
+      { "name": "AweSun", "value": "C:\\Program Files\\Oray\\AweSun\\AweSun.exe --cmd=autorun" }
+    ],
+    "startup_folder": "EMPTY",
+    "bridge_autostart": {
+      "targets_exist": {
+        "pythonw.exe": { "exists": true, "bytes": 90112 },
+        "supervisor.py": { "exists": true, "bytes": 13578 }
+      },
+      "process_running": false,
+      "pythonw_instances": 0,
+      "effective": false,
+      "finding": "The Run entry and both target files exist, yet after today's 08:48 logon no pythonw process is alive. Autostart is registered but not effective in practice."
+    }
+  },
+
+  "proxy_unattended": {
+    "verdict": "NOT_SUPPORTED_OBSERVED",
+    "verdict_note": "This DOWNGRADES the 2026-10-29 structural inference. The kernel that owns 127.0.0.1:7877 was not started at boot; it was started 1.2 s after the Clash GUI launched.",
+    "listener": {
+      "address": "127.0.0.1:7877",
+      "pid": 15344,
+      "process": "MyClashCore.exe",
+      "session_id": 0,
+      "parent_pid": 6356,
+      "parent_process": "MyClashHelperService.exe",
+      "start": "2026-10-30T09:20:24+08:00"
+    },
+    "gui": {
+      "pid": 35256,
+      "process": "MyClash.exe",
+      "session_id": 1,
+      "start": "2026-10-30T09:20:23+08:00",
+      "user_profile_write": "C:\\Users\\15690\\AppData\\Roaming\\Clash Plus\\Clash Plus\\Cloak.lock created 2026-10-30T09:20:23+08:00"
+    },
+    "timeline": [
+      { "time": "2026-10-30T08:47:33+08:00", "event": "Event 6006 - clean shutdown of previous session" },
+      { "time": "2026-10-30T08:48:03+08:00", "event": "LastBootUpTime - cold boot" },
+      { "time": "2026-10-30T08:48:20+08:00", "event": "Event 6005/6013 - event log service started" },
+      { "time": "2026-10-30T08:48:23+08:00", "event": "Interactive logon (Win32_LogonSession type 2, user 15690); MyClashHelperService PID 6356 starts" },
+      { "time": "2026-10-30T08:48:25+08:00", "event": "explorer.exe starts in session 1" },
+      { "time": "2026-10-30T09:20:23+08:00", "event": "MyClash.exe (GUI) starts in session 1; Cloak.lock written in user profile" },
+      { "time": "2026-10-30T09:20:24+08:00", "event": "MyClashCore.exe starts as child of helper service, session 0, binds 127.0.0.1:7877" }
+    ],
+    "negative_evidence": [
+      "The kernel start is 31 min 21 s AFTER boot and only 1.2 s after the GUI start - the causal chain GUI -> helper service -> kernel is the only sequence consistent with the timestamps.",
+      "No Service Control Manager event exists at 09:20, so this was not a service restart (only 7045 install events on 2026-09-30 and 2026-10-23, plus one 7034 unexpected stop on 2026-10-23).",
+      "No Application-log crash record exists for MyClashCore.exe in the last 7 days, which argues against 'the kernel was running since boot and crashed'.",
+      "The helper service has no failure actions, so a silently dead kernel would never be restarted by SCM."
+    ],
+    "still_unknown": [
+      "Whether the helper service can spawn the kernel on demand WITHOUT any GUI request (single boot sample only).",
+      "Behaviour after a real logoff (not tested - it would terminate this session).",
+      "Behaviour after resume from hibernation with Fast Startup enabled (HiberbootEnabled=1).",
+      "BitLocker state of D: (query blocked for non-elevated session)."
+    ],
+    "practical_consequence": "Inventory discovery uses Playwright through SCRAPER_PROXY=http://127.0.0.1:7877. If 7877 is only alive while the interactive GUI session runs, then an unattended service would start with no proxy and every discovery run would fail with ERR_PROXY_CONNECTION_FAILED. The service design must gate on proxy reachability or accept that it only runs while the console session exists.",
+    "production_egress_observed_now": {
+      "gstatic_via_7877": 204,
+      "github_api_via_7877": 200,
+      "loopback_connect": "OK (127.0.0.1:52163 -> 127.0.0.1:7877)"
+    },
+    "system_proxy_state": {
+      "ProxyEnable": 1,
+      "ProxyServer": "127.0.0.1:7877",
+      "AutoConfigURL": null,
+      "ProxyOverride_length": 482
+    },
+    "separate_egress_note": "This agent session also carries HTTP_PROXY=127.0.0.1:63440 (host-managed). That is a different egress from the production SCRAPER_PROXY=7877. A Session-0 service inherits neither."
+  },
+
+  "bridge_runtime": {
+    "port_8791_listening": false,
+    "pythonw_instances": 0,
+    "stale_lock": { "file": "state\\supervisor.lock", "bytes": 64, "mtime": "2026-10-29T22:40:50+08:00", "owner_pid": 24692, "owner_alive": false },
+    "last_activity": {
+      "supervisor_log_mtime": "2026-10-29T22:41:04+08:00",
+      "heartbeat_mtime": "2026-10-29T22:54:51+08:00",
+      "last_events": ["STALE_LOCK_RECLAIMED stale_pid=24692", "SUPERVISOR_START pid=40556", "SPAWN child_pid=36628", "HEALTH_TRANSITION ok=true"]
+    },
+    "finding": "The supervisor last ran 2026-10-29 22:40-22:54 and produced no shutdown or crash record, then never came back. Today's logon at 08:48 did not restart it despite the Run entry."
+  },
+
+  "runtime_fingerprint": {
+    "python_version": "3.13.0",
+    "python_executable": "C:\\Users\\15690\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+    "python_exe_sha256": "62ebc90a2884bb63a0cd67e789cafdd51e771eee043587e2354327b4ccc9bb05",
+    "sqlite_version": "3.45.3",
+    "sqlite_pyd_sha256_prefix": "3e625978d7c55f4b609086a872177c42",
+    "timezone": "+0800 (Asia/Shanghai; tzname reports 台北标准时间)",
+    "arch": "AMD64",
+    "netfx_framework64_dlls_present": {
+      "System.dll": true,
+      "System.Core.dll": true,
+      "System.ServiceProcess.dll": true,
+      "mscorlib.dll": true,
+      "clr.dll": true
+    },
+    "managed_python_note": "C:\\Users\\15690\\.workbuddy\\binaries\\python\\versions\\3.13.12 lacks requests/beautifulsoup4/playwright/dnspython. It is sufficient only for the stdlib-only supervisor, not for Inventory.",
+    "playwright_browsers_path_env": "UNSET - a LocalSystem service would not find chromium under the user profile unless PLAYWRIGHT_BROWSERS_PATH is injected explicitly."
+  },
+
+  "publisher_recap": {
+    "channel_root": "C:\\Users\\15690\\WorkBuddy\\deploy-channel",
+    "seal": "SEAL_VERIFIED_FULL (channel_config, allowed_scope, 4 release entries all match registry_seal.json)",
+    "capabilities": {
+      "atomic_replace": "SUPPORTED",
+      "new_file_creation": "NOT_SUPPORTED (target_absent -> deployable=false; apply reads target bytes before backing up)",
+      "backup_representation_of_absent_target": "NOT_SUPPORTED (no sentinel for 'target did not exist')",
+      "delete_rollback": "NOT_SUPPORTED (rollback only restores .before.bak)"
+    },
+    "scope_constraints": {
+      "extensions": [".py"],
+      "json_explicitly_rejected": true,
+      "whitelisted_py_paths": 13,
+      "max_files": 6,
+      "max_total_bytes": 262144
+    },
+    "candidate_mismatch": "The U1 candidate ships 7 files (.json/.cs/.exe/.ps1) and 0 .py files, so the channel cannot carry any of them. This is an expressiveness gap, not a failed gate."
+  },
+
+  "inventory_authority": {
+    "unique_active_inventory": "automation-1784775229336",
+    "automations_matching_inventory": 4,
+    "detail": [
+      { "id": "automation-1784775229336", "name": "RoktRazo BD Inventory — 4x/day (6h interval) Asia/Shanghai", "status": "ACTIVE" },
+      { "id": "automation-1785720738893", "name": "BD Weekend Inventory AM — Sat/Sun 10:00", "status": "PAUSED" },
+      { "id": "automation-1785720747436", "name": "BD Weekend Inventory PM — Sat/Sun 16:00", "status": "PAUSED" },
+      { "id": "c6bf1717-a7a6-40c7-a1de-074fab9b6128", "name": "BD Production Evidence Refresh — 22:40 (read-only, no inventory)", "status": "ACTIVE" }
+    ],
+    "sole_entrypoint": "python bd_orchestrator.py --stage inventory --live (cwd must be the project root)",
+    "lock_key": "run_lock:daily_outreach:inventory:<business_date>",
+    "verdict": "PASS - single ACTIVE Inventory scheduler, no second scheduler created."
+  },
+
+  "verdicts": {
+    "item_1_identity_and_acl": {
+      "verdict": "PARTIAL",
+      "what_is_now_closed": [
+        "Execution identity, SID, integrity level, group state and UAC policy are fully enumerated.",
+        "Virtual-account namespace support is proven with two SIDs.",
+        "Effective ACL for both future target directories is no longer a pure guess: 8 of 12 Program Files children show the identical inherited-only pattern, so the predicted ACE set is empirical, not theoretical."
+      ],
+      "what_remains_open": [
+        "SeServiceLogonRight is BLOCKED without elevation (exit 740).",
+        "PROPOSED_ONLY ACL deltas are not applied and not approved.",
+        "Service SID membership in BUILTIN\\Users is UNKNOWN."
+      ]
+    },
+    "item_2_proxy_noninteractive_egress": {
+      "verdict": "NOT_SUPPORTED_OBSERVED",
+      "change_from_previous_round": "Downgraded from 'PARTIAL / structurally supported' to negative evidence.",
+      "reason": "The kernel owning 7877 starts 1.2 s after the GUI, 31 min after boot, with no SCM restart event and no crash record. Unattended operation cannot assume 7877 exists.",
+      "residual_unknown": "Whether the helper service can spawn the kernel without any GUI request."
+    },
+    "item_3_runtime_and_publisher": {
+      "verdict": "PARTIAL",
+      "note": "Runtime fingerprints match the pinned candidate; publisher capability gap is unchanged and is architectural."
+    },
+    "item_4_inventory_authority_and_lock": {
+      "verdict": "PASS",
+      "note": "Re-verified this round; unchanged from the 2026-10-30 delivery."
+    },
+    "item_5_v2_guard_migration": {
+      "verdict": "PASS",
+      "note": "Unchanged from the 2026-10-30 delivery (fixture 10/10 plus rollback admission 8/8). No production ledger touched."
+    }
+  },
+
+  "referenced_file_hashes": {
+    "project": {
+      "bd_orchestrator.py": { "bytes": 36070, "sha256": "0ddb12feea430a30166a2d1b8acbb1650205d608c52e2e2d808db183665454c8" },
+      "bd_db.py": { "bytes": 46262, "sha256": "c06fe7ebb3d6330bfccf078634c5ab6dc16563423e8e975e44da859aaa7ce0c7" },
+      "outreach_control.py": { "bytes": 7440, "sha256": "b23c135917c488e8b2f22dfcb8f03405ba92de74057b394a40f01cc0b144edce" },
+      "env_loader.py": { "bytes": 2496, "sha256": "46b7d4dd4272ede1065534af498247f1c53b08f1ca277bd3ae1b34c16a63e74e" },
+      "discovery/discovery_service.py": { "bytes": 113803, "sha256": "abc2f682cbff4a8b6781997bc2a08ac00f5e41289d67ce02b1c7afa519ad6770" },
+      "discovery/providers/browser_maps.py": { "bytes": 15195, "sha256": "88e53fa9afb3142186f1708f140cc0588810e34fd0c1a6ebc48d9dbef2e061c4" },
+      ".env": { "bytes": 1780, "sha256": "ab350e099200ba28437790c542d6d2ad870eeaf9a448c719f24b7f47ca690f9e" }
+    },
+    "deploy_channel": {
+      "bin/supervisor.py": { "bytes": 13578, "sha256": "1ed1e2c5db103f92d774be28408be205a303263d997d0b0f16d2c2c4d592deaf" },
+      "bin/registry.py": { "bytes": 20008, "sha256": "e5ec8e29cdbd14da3cbb722b8e6db8b5ecc89601972a3994e952d778fd129bbe" },
+      "bin/executor.py": { "bytes": 70205, "sha256": "a3c271424131b4d42d8b0ed3f46e8355e3ff9d0556406e2199a5da093043105b" },
+      "bin/start_supervisor.cmd": { "bytes": 385, "sha256": "25de2a180ca91e6a6155bb4fdd66ff158c1d09e22119ddd9d7da545892ca9183" },
+      "releases/channel_config.json": { "bytes": 12303, "sha256": "d88740521378cdda12e676566b4a641f0b2e532d472c6c70fa781e5e6c9da073" },
+      "releases/allowed_scope.json": { "bytes": 1599, "sha256": "eea98b18a7ec3501b95f5d48e615cae8e71f8063b7ff694ebe833b9930fdabb5" },
+      "state/registry_seal.json": { "bytes": 718, "sha256": "cd67d79dfa67834511ee8a78b94798ab1d4aa0cc8780bb45f9566b4c69f31d50" }
+    }
+  },
+
+  "tooling_limitations": [
+    "sc.exe is blocked by the host Program Blacklist; the service registry key was read directly instead. This block cannot be bypassed and was not retried.",
+    "Add-Type (P/Invoke) is blocked by policy, so LSA user-right enumeration and IsProcessInJob could not be called directly.",
+    "quser.exe is not present on this Windows 11 Home install; Win32_LogonSession was used instead.",
+    "BitLocker queries and secedit export require elevation and returned access denied / exit 740."
+  ],
+
+  "non_claims": [
+    "Local observations are not approvals for any gate.",
+    "No directory, account, ACL, proxy, registry or scheduled task was created, modified or removed.",
+    "No service was registered, started or stopped; no Inventory run was triggered; no second scheduler was created.",
+    "The Session-0 proxy conclusion is based on one boot sample and is not a logoff/reboot test.",
+    "PROPOSED_ONLY ACL deltas are not effective ACLs.",
+    "The pinned U1 candidate still does not satisfy the host_remediation gates and must not be installed on the strength of this evidence.",
+    "CURRENT_SAFE=UNKNOWN; BUSINESS_GROWTH_VERIFIED=UNKNOWN."
+  ]
+}
