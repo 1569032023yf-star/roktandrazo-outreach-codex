@@ -1,0 +1,8 @@
+{
+  "source_commit": "4201851b7de1a054b30295b805a90e730c57ab84",
+  "tests": 49,
+  "elapsed_seconds": 9.19,
+  "result": "PASS",
+  "independent_review": "PENDING",
+  "full_regression": "NOT_RUN_FOR_THIS_PIN"
+}
