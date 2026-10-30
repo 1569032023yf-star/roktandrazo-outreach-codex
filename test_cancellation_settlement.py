@@ -92,6 +92,43 @@ class CancellationSettlementTests(unittest.TestCase):
             self.assertEqual(self.row(cost_id)['state'], 'reserved')
             self.assertEqual(c.backend.calls, 1)
 
+    def test_original_settlement_failure_after_fee_settled_keeps_recovery_fence(self):
+        for phase in ('before_commit', 'after_commit'):
+            with self.subTest(phase=phase):
+                fixture = CancellationSettlementTests(); fixture.setUp()
+                try:
+                    c = fixture.c
+                    with exclusive_lock(c.runtime):
+                        admission, journal, cost_id, binding = fixture.prepare()
+                        journal_bytes = journal.path.read_bytes()
+                        fee_receipt = fixture.receipt(binding)
+                        fixture.assertEqual(c.budget.settle(fee_receipt, now=T+10), 'SETTLED')
+                        original_settle = c.budget.settle
+                        def faulted_settle(envelope, *, now):
+                            c.budget.fault = lambda stage: (_ for _ in ()).throw(OSError('fixture')) if stage == phase else None
+                            try:
+                                return original_settle(envelope, now=now)
+                            finally:
+                                c.budget.fault = lambda stage: None
+                        c.budget.settle = faulted_settle
+                        with fixture.assertRaisesRegex(GrowthError, 'STORAGE_OUTCOME_UNVERIFIED'):
+                            c.adapter.reconcile(admission, **c.backend.receipts)
+                        c.budget.settle = original_settle
+                        # Slot commit succeeded, but no joint acknowledgement:
+                        # neither fee settlement nor terminal slot clears fence.
+                        lock = json.loads((c.runtime/'supervisor.lock').read_text(encoding='utf-8'))
+                        fixture.assertEqual(lock['tree_state'], 'unverified')
+                        fixture.assertEqual(c.slots.snapshot()[0][2], 'completed')
+                        fixture.assertEqual(fixture.row(cost_id)['state'], 'settled')
+                        fixture.assertEqual(json.loads(fixture.row(cost_id)['charged']), amounts(0))
+                        fixture.assertEqual(journal.path.read_bytes(), journal_bytes)
+                        result = c.adapter.reconcile(admission, **c.backend.receipts)
+                        fixture.assertEqual(result['budget_result'], 'SETTLED' if phase == 'before_commit' else 'DUPLICATE')
+                        fixture.assertEqual(c.budget.settle(fee_receipt, now=T+10), 'DUPLICATE')
+                        fixture.assertEqual(c.backend.calls, 1)
+                finally:
+                    fixture.doCleanups()
+
     def test_settled_fee_and_cancel_ack_cannot_replace_drained_terminal(self):
         c = self.c
         with exclusive_lock(c.runtime):
