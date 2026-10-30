@@ -21,7 +21,9 @@ class HostReadOnlyHTTPTests(unittest.TestCase):
             self.calls.append(operation)
             if isinstance(self.value,Exception):raise self.value
             return self.value
-        self.server=HTTPServer(('127.0.0.1',0),readonly_handler(self.token,read))
+        self.now=1000
+        self.server=HTTPServer(('127.0.0.1',0),readonly_handler(self.token,read,
+            credential_expires_at=1100,clock=lambda:self.now))
         self.thread=threading.Thread(target=self.server.serve_forever,kwargs={'poll_interval':0.01})
         self.thread.start();self.addCleanup(self.close)
 
@@ -90,7 +92,21 @@ class HostReadOnlyHTTPTests(unittest.TestCase):
 
     def test_empty_or_invalid_provisioning_rejected(self):
         for token in ('','short','a'*32+'\r\n'):
-            with self.assertRaises(ValueError):readonly_handler(token,lambda _: 'UNKNOWN')
+            with self.assertRaises(ValueError):readonly_handler(token,lambda _: 'UNKNOWN',credential_expires_at=1100)
+
+    def test_expired_and_invalid_clock_reject_before_any_backend_read(self):
+        for now in (1100,1101,-1,True,float('nan'),float('inf'),None):
+            self.now=now
+            for method in ('GET','POST','HEAD'):
+                self.assertEqual(self.request('/v1/recovery-status/'+'a'*64,method)[0],401)
+        self.assertEqual(self.calls,[])
+
+    def test_explicit_deadline_required_and_head_has_no_body(self):
+        for expiry in (None,True,0,-1,1100.0):
+            with self.assertRaises(ValueError):readonly_handler(self.token,lambda _: {},credential_expires_at=expiry)
+        self.assertEqual(self.request('/v1/health','HEAD'),(405,{}))
+        self.assertEqual(self.request('/v1/health','POST',auth=False)[0],401)
+        self.assertEqual(self.calls,[])
 
     def test_duplicate_authorization_rejected_without_backend_read(self):
         connection=http.client.HTTPConnection(*self.server.server_address,timeout=5)

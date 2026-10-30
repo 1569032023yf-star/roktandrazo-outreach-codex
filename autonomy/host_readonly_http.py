@@ -6,6 +6,8 @@ status reader. This is not integrated into the disabled SCM package or 8791.
 import hmac
 import json
 import re
+import math
+import time
 from http.server import BaseHTTPRequestHandler
 from autonomy.unattended_policy import INVENTORY
 from autonomy.recovery_status import inspect_recovery_status
@@ -19,10 +21,12 @@ def snapshot_status_reader(snapshot, expected_sha256):
     return lambda identity: inspect_recovery_status(snapshot, expected_sha256, identity)
 
 
-def readonly_handler(token, status_reader):
+def readonly_handler(token, status_reader, *, credential_expires_at, clock=time.time):
     if type(token) is not str or re.fullmatch('[A-Za-z0-9_-]{32,128}',token) is None:
         raise ValueError('PROVISIONED_TOKEN_REQUIRED')
     if not callable(status_reader):raise ValueError('READ_ONLY_STATUS_READER_REQUIRED')
+    if type(credential_expires_at) is not int or credential_expires_at<=0 or not callable(clock):
+        raise ValueError('EXPLICIT_CREDENTIAL_DEADLINE_REQUIRED')
     expected=('Bearer '+token).encode('ascii')
 
     class Handler(BaseHTTPRequestHandler):
@@ -43,11 +47,22 @@ def readonly_handler(token, status_reader):
             raw=json.dumps(payload,sort_keys=True,separators=(',',':')).encode('ascii')
             self.send_response(code);self.send_header('Content-Type','application/json')
             self.send_header('Cache-Control','no-store');self.send_header('Content-Length',str(len(raw)))
-            self.send_header('Connection','close');self.end_headers();self.wfile.write(raw)
+            self.send_header('Connection','close');self.end_headers()
+            if self.command!='HEAD':self.wfile.write(raw)
+
+        def authenticated(self):
+            try:
+                now=clock()
+                valid=(type(now) in (int,float) and math.isfinite(now) and
+                       0<=now<credential_expires_at)
+            except Exception:
+                valid=False
+            auth=self.headers.get_all('Authorization',[])
+            return (valid and len(auth)==1 and
+                    hmac.compare_digest(auth[0].encode('utf-8'),expected))
 
         def do_GET(self):
-            auth=self.headers.get_all('Authorization',[])
-            if (len(auth)!=1 or not hmac.compare_digest(auth[0].encode('utf-8'),expected)):
+            if not self.authenticated():
                 self.reply(401,error='UNAUTHORIZED');return
             if (self.headers.get_all('Transfer-Encoding') or
                 self.headers.get_all('Content-Length',[]) not in ([],['0'])):
@@ -78,6 +93,8 @@ def readonly_handler(token, status_reader):
                 replay_allowed=False)
 
         def reject(self):
+            if not self.authenticated():
+                self.reply(401,error='UNAUTHORIZED');return
             self.reply(405,error='READ_ONLY_METHOD_REQUIRED')
 
         do_POST=do_PUT=do_DELETE=do_PATCH=do_HEAD=do_OPTIONS=reject
