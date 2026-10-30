@@ -576,8 +576,8 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/workbuddy_refresh_20261031/REPORT.md",
-      "next_action": "Independently review pinned attribution/HTTP; implement protected install journal/OS adapter with partial-ACL failure preservation and formal maintenance lease/auth/backend offline. Await producer clarification through existing receipt; do not repeat backend requests. Dispatch closed.",
+      "checkpoint": "autonomy/evidence/handoff_one_to_one_20261031/REPORT.md",
+      "next_action": "Independently review pinned HTTP/one-to-one attribution; implement protected install journal/OS adapter with partial-ACL failure preservation and formal maintenance lease/auth/backend offline. Dispatch closed.",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "PASS_SCOPED_OFFLINE_STATUS_ONLY",
@@ -720,12 +720,13 @@
         "status": "PROPOSED_ONLY_NOT_AUTHORIZED"
       },
       "inventory_attribution": {
-        "source_commit": "e24e378b082d1ee4adad9f057d2c501c5786b2d9",
-        "tests": 24,
+        "source_commit": "71a539a50b6f79d8f09ae5adaf4a785802df6751",
+        "tests": 37,
         "review": "PENDING",
         "verified_pairs": 6,
         "claimed_pairs": 7,
-        "zero_missed_runs": "UNKNOWN"
+        "zero_missed_runs": "UNKNOWN",
+        "one_to_one_required": true
       }
     },
     {

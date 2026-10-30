@@ -1,0 +1,113 @@
+{
+  "source_commit": "71a539a50b6f79d8f09ae5adaf4a785802df6751",
+  "source_files": [
+    {
+      "path": "autonomy/handoff_validation.py",
+      "git_blob_sha": "79ed2fe20af11101a0f60c414d11e1c297d8ca18",
+      "sha256": "6b1865deb5a96fb610d8e13167981055807cd1631fd70a99a825bdc92bf4c620"
+    },
+    {
+      "path": "test_handoff_inventory_attribution.py",
+      "git_blob_sha": "11325af15825b723543b9ea15304f5c2ed6ce681",
+      "sha256": "8fe44638b8d78477dc747a99d9192cadeaa67b7a1805d9e928bfbdb71251ae79"
+    }
+  ],
+  "production_blobs": [
+    {
+      "name": "CITY_STAGE_TRACE.json",
+      "git_blob_sha": "66c1b93dc421d32309f7be167b0d5e5efea07c39"
+    },
+    {
+      "name": "INVENTORY_SCHEDULER_RECONCILIATION.json",
+      "git_blob_sha": "5b77efdc25b3d580be34384ad5716e498165c904"
+    },
+    {
+      "name": "PRODUCTION_RUNTIME_LATEST.json",
+      "git_blob_sha": "cd2ebda0792633d4781878b732a8fc519d6cd03c"
+    },
+    {
+      "name": "PROVIDER_REQUEST_AUDIT_24H.json",
+      "git_blob_sha": "792605c9cbce3f083650b3c28679da17e2ab4472"
+    },
+    {
+      "name": "RELEASE_REGISTRY_SNAPSHOT.json",
+      "git_blob_sha": "29c2929968a15c716d98724f7e95b27ca7febddf"
+    },
+    {
+      "name": "SAFE_AUTHORITY_SNAPSHOT.json",
+      "git_blob_sha": "038e8bc5837b30bd9c9906ec48a11b0f90dd23d9"
+    },
+    {
+      "name": "WORKBUDDY_LONG_TERM_OPERATIONS.json",
+      "git_blob_sha": "fd4bbb6d9bbe1f8c91c5b5463274205b2cd58253"
+    }
+  ],
+  "reconciliation": {
+    "pairs": [
+      {
+        "firing_id": "automation-1784775229336:1793360442079",
+        "run_id": "inventory:2026-10-30:1047e9be",
+        "inventory_execution_verified": true,
+        "reason": "VERIFIED_INVENTORY_ROW",
+        "calculated_drift_seconds": 39.462,
+        "within_declared_tolerance": true
+      },
+      {
+        "firing_id": "automation-1784775229336:1793336227990",
+        "run_id": "inventory:2026-10-30:53eb75b0",
+        "inventory_execution_verified": true,
+        "reason": "VERIFIED_INVENTORY_ROW",
+        "calculated_drift_seconds": 40.576,
+        "within_declared_tolerance": true
+      },
+      {
+        "firing_id": "automation-1784775229336:1793312379944",
+        "run_id": "inventory:2026-10-30:88680be0",
+        "inventory_execution_verified": true,
+        "reason": "VERIFIED_INVENTORY_ROW",
+        "calculated_drift_seconds": 51.765,
+        "within_declared_tolerance": true
+      },
+      {
+        "firing_id": "automation-1784775229336:1793288394920",
+        "run_id": "post-send:2026-10-29:1e39cf7a",
+        "inventory_execution_verified": false,
+        "reason": "INVENTORY_STAGE_AND_AUTHORITY_REQUIRED",
+        "calculated_drift_seconds": 26.837,
+        "within_declared_tolerance": true
+      },
+      {
+        "firing_id": "automation-1784775229336:1793264340193",
+        "run_id": "inventory:2026-10-29:70803bcf",
+        "inventory_execution_verified": true,
+        "reason": "VERIFIED_INVENTORY_ROW",
+        "calculated_drift_seconds": 9.97,
+        "within_declared_tolerance": true
+      },
+      {
+        "firing_id": "automation-1784775229336:1793240276966",
+        "run_id": "inventory:2026-10-29:8f789080",
+        "inventory_execution_verified": true,
+        "reason": "VERIFIED_INVENTORY_ROW",
+        "calculated_drift_seconds": 782.773,
+        "within_declared_tolerance": false
+      },
+      {
+        "firing_id": "automation-1784775229336:1793215554060",
+        "run_id": "inventory:2026-10-29:2af7d25d",
+        "inventory_execution_verified": true,
+        "reason": "VERIFIED_INVENTORY_ROW",
+        "calculated_drift_seconds": 33.539,
+        "within_declared_tolerance": true
+      }
+    ],
+    "verified_inventory_executions": 6,
+    "zero_missed_runs": "UNKNOWN",
+    "production_accepted": false,
+    "allow_dispatch": false
+  },
+  "tests": 37,
+  "elapsed_seconds": 3.423,
+  "review": "PENDING",
+  "full_regression": "NOT_RUN_FOR_THIS_PIN"
+}
