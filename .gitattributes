@@ -17,3 +17,5 @@ autonomy/evidence/acceleration_pipeline_20261022/** -text
 patches/production/provider_diagnostics_20261024/** -text
 autonomy/evidence/lake_p0_20261023/*20261025* -text
 tools/package_provider_diagnostics.py -text
+# Preserve the reviewed U1 development package in Git transport / 保留U1开发包传输字节
+autonomy/evidence/u1_p0_final_20261030/dev-package/** -text
