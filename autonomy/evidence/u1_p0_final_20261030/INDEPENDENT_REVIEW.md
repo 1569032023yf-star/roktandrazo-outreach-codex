@@ -65,3 +65,13 @@ English: After the main workstream pins the manifest, completes comparable regre
 中文：另独立审阅 `CONTROLLED_RELEASE_AND_ROLLBACK.md`：精确范围、原Inventory/发布器互斥、默认禁用且不启动的授权草案、账本/guard保留及旧执行器不得复启的回滚门禁与源码一致。`ROLLBACK_PLAN_REVIEW_PASSED=true`仅表示该停止并保留方案可审，不表示实机回滚演练或执行授权。没有将局部安装互斥误作生产运行锁，也没有把启动/权威切换暗含于禁用登记。
 
 English: `CONTROLLED_RELEASE_AND_ROLLBACK.md` was independently reviewed: exact scope, original-Inventory/publisher exclusion, disabled/no-start authorization draft and ledger/guard preservation with no legacy-executor restart match the code. `ROLLBACK_PLAN_REVIEW_PASSED=true` approves review of this stop-and-preserve plan only, not a live rollback drill or execution authority. It neither substitutes installation exclusion for the production run lock nor embeds activation/cutover into disabled registration.
+
+## Git运输封存复核 / Git transport seal recheck
+
+中文：独立从运输提交 `c7f2ac15391f3fe3522d3e218650749474b39188` 的Git对象读取包清单、全部5份文件与2份脚本和ZIP，未依赖工作树内容。此前被忽略的 `runtime/build.json` 与 `runtime/dependencies.json` 现已纳入Git；7份artifact/script的SHA256与字节数全部匹配清单，ZIP加上manifest共8个条目，条目集合精确一致且每份字节等于Git对象，未发现依赖文件遗漏。`.gitattributes` 将该开发包目录设为 `-text`，防止运输时文本换行转换。功能源码仍固定为 `d7d424c120281981e70753ea1c15fe130134929f`，本次未重复功能测试。
+
+English: The manifest, all five files plus two scripts, and ZIP were independently read from Git objects at transport commit `c7f2ac15391f3fe3522d3e218650749474b39188`, without relying on working-tree content. Previously ignored `runtime/build.json` and `runtime/dependencies.json` are now tracked. All seven artifact/script SHA256 values and byte counts match the manifest. The ZIP contains exactly those seven entries plus the manifest, with every entry byte-identical to Git; no declared dependency file is omitted. `.gitattributes` marks this development-package directory `-text` to prevent newline conversion in transport. Functional source remains pinned to `d7d424c120281981e70753ea1c15fe130134929f`; no functional tests were repeated for this transport-only change.
+
+中文：包manifest SHA256为 `1011e76faa2bedf793991f0860d87cc53e2f49d3a0af76cf49b4391bc7e4a3c0`；ZIP为12297字节，SHA256为 `2575e0d0c4a1ea19f1267e691d9e8323acc57e0418787661b0699f91a910fd95`，与 `DEV_PACKAGE_TRANSPORT.json` 一致。`TRANSPORT_REVIEW_PASSED=true`。此结果仅证明固定开发包可完整运输，`production_approved=false`及上述生产未批准结论保持不变。
+
+English: Manifest SHA256 is `1011e76faa2bedf793991f0860d87cc53e2f49d3a0af76cf49b4391bc7e4a3c0`. ZIP size is12297 bytes and SHA256 is `2575e0d0c4a1ea19f1267e691d9e8323acc57e0418787661b0699f91a910fd95`, matching `DEV_PACKAGE_TRANSPORT.json`. `TRANSPORT_REVIEW_PASSED=true`. This establishes complete transport of the fixed development package only; `production_approved=false` and the production non-approval above remain unchanged.

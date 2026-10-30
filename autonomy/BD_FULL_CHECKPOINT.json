@@ -905,5 +905,37 @@
       "independent_tests": 39,
       "real_unattended_acceptance": false
     }
+  },
+  "u1_p0_latest": {
+    "source_commit": "d7d424c120281981e70753ea1c15fe130134929f",
+    "package_commit": "c7f2ac15391f3fe3522d3e218650749474b39188",
+    "report": "autonomy/evidence/u1_p0_final_20261030/REPORT.md",
+    "updated_at": "2026-10-30T01:55:42.342435+00:00",
+    "scope_frozen": true,
+    "cancellation_recovery": "COMPLETE_OFFLINE",
+    "installer_implemented": true,
+    "real_dev_package_built": true,
+    "combined_tests": 239,
+    "independent_tests": 85,
+    "comparable_tests_each": 833,
+    "baseline_failures": 37,
+    "baseline_errors": 17,
+    "NO_NEW_REGRESSION": true,
+    "full_suite_all_green": false,
+    "OFFLINE_CODE_REVIEW_PASSED": true,
+    "TRANSPORT_REVIEW_PASSED": true,
+    "DEVELOPMENT_COMPLETE": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "production_installable": false,
+    "business_growth": "UNKNOWN",
+    "smtp_enabled": false,
+    "new_inventory_created": false,
+    "counts_as_complete_unattended_cycle": false,
+    "workbuddy_request_comment": 6513015427,
+    "request_independently_read_back": true,
+    "next_action_zh": "消费候选特定只读兼容证据，并离线补齐8791认证接口/生产后端与现有31门禁差异；不因等待外部证据停止安全离线集成。",
+    "next_action_en": "Consume candidate-specific read-only compatibility evidence and implement missing authenticated8791/backend/31-gate contracts offline without stopping safe integration while evidence is pending."
   }
 }

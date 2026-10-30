@@ -1,0 +1,12 @@
+{
+  "schema": "rokt.u1-candidate-p1-handoff.v1",
+  "comment_id": 6513015427,
+  "url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6513015427",
+  "body_matches": true,
+  "source_commit": "d7d424c120281981e70753ea1c15fe130134929f",
+  "package_commit": "c7f2ac15391f3fe3522d3e218650749474b39188",
+  "scope": "READ_ONLY_CANDIDATE_COMPATIBILITY_NO_PRODUCTION_AUTHORITY",
+  "production_execution": false,
+  "description_zh": "候选特定只读兼容核验已发布并独立逐字回读；不授权任何生产修改。",
+  "description_en": "Candidate-specific read-only compatibility request published and independently matched word for word; no production modification authority."
+}
