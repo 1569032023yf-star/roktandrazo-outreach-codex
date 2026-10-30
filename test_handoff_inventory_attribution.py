@@ -34,4 +34,20 @@ class InventoryAttributionTests(unittest.TestCase):
         self.assertFalse(result['pairs'][0]['within_declared_tolerance'])
         self.assertEqual(result['zero_missed_runs'],'UNKNOWN')
 
+    def test_two_firings_cannot_claim_one_runtime_execution(self):
+        other=dict(self.s['firings'][0],firing_id='f2')
+        self.s['firings'].append(other)
+        result=reconcile_inventory_firings(self.s,self.r)
+        self.assertEqual(result['verified_inventory_executions'],0)
+        self.assertTrue(all(p['reason']=='ONE_TO_ONE_FIRING_RUN_REQUIRED' for p in result['pairs']))
+
+    def test_duplicate_or_absent_firing_identity_cannot_prove_execution(self):
+        for identity in (None,''):
+            with self.subTest(identity=identity):
+                scheduler=copy.deepcopy(self.s);scheduler['firings'][0]['firing_id']=identity
+                self.assertEqual(reconcile_inventory_firings(scheduler,self.r)['verified_inventory_executions'],0)
+        self.s['firings'].append(dict(self.s['firings'][0],run_id='inventory:r2'))
+        self.r['runs'].append(dict(self.r['runs'][0],run_id='inventory:r2'))
+        self.assertEqual(reconcile_inventory_firings(self.s,self.r)['verified_inventory_executions'],0)
+
 if __name__=='__main__':unittest.main()

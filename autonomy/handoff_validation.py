@@ -1,6 +1,7 @@
 """Pure pinned-handoff verification / 固定交接证据验证，无网络或写入。"""
 import hashlib
 import json
+from collections import Counter
 from datetime import datetime, timedelta
 
 METADATA = frozenset(('schema_version', 'evidence_kind', 'generated_at',
@@ -21,6 +22,8 @@ def reconcile_inventory_firings(scheduler, runtime):
     rows={}
     for row in runtime['runs']:
         rows.setdefault(row['run_id'],[]).append(row)
+    run_claims=Counter(f.get('run_id') for f in scheduler['firings'])
+    firing_claims=Counter(f.get('firing_id') for f in scheduler['firings'])
     results=[]
     for firing in scheduler['firings']:
         candidates=rows.get(firing.get('run_id'),[])
@@ -29,7 +32,11 @@ def reconcile_inventory_firings(scheduler, runtime):
         try:
             triggered=stamp(firing['triggered_at'])
             completed=stamp(firing['completed_at'])
-            if len(candidates)==1:
+            unique=(type(firing.get('firing_id')) is str and bool(firing['firing_id']) and
+                    firing_claims[firing['firing_id']]==1 and run_claims[firing.get('run_id')]==1)
+            if not unique:
+                reason='ONE_TO_ONE_FIRING_RUN_REQUIRED'
+            if unique and len(candidates)==1:
                 row=candidates[0]
                 reason='INVENTORY_STAGE_AND_AUTHORITY_REQUIRED'
                 if (scheduler['canonical_automation']['id']==authority and
