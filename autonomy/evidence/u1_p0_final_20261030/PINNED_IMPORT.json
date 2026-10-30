@@ -1,0 +1,9 @@
+{
+  "source_commit": "d7d424c120281981e70753ea1c15fe130134929f",
+  "files": 25,
+  "returncode": 0,
+  "stdout": "PINNED_IMPORT_OK\n",
+  "stderr": "",
+  "stage": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-p0-pinned-stage-so9nix9w",
+  "production_execution": false
+}

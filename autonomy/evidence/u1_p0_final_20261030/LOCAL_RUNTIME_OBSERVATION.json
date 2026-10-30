@@ -1,0 +1,28 @@
+{
+  "schema": "rokt.local-u1-runtime-observation.v1",
+  "python": "3.13.0 (tags/v3.13.0:60403a5, Oct  7 2024, 09:38:07) [MSC v.1941 64 bit (AMD64)]",
+  "sqlite": "3.45.3",
+  "files": [
+    {
+      "name": "python.exe",
+      "sha256": "62ebc90a2884bb63a0cd67e789cafdd51e771eee043587e2354327b4ccc9bb05",
+      "bytes": 103696
+    },
+    {
+      "name": "__init__.py",
+      "sha256": "8c2cf6c0598d0d4f96f28ee6b4e2abc17c1dd2021f601301d958789635bbf2c8",
+      "bytes": 2571
+    },
+    {
+      "name": "_sqlite3.pyd",
+      "sha256": "3e625978d7c55f4b609086a872177c4207fb483c7715e2204937299531394f4c",
+      "bytes": 128272
+    }
+  ],
+  "tzdata_version": "2026.3",
+  "tzdata_files": 625,
+  "tzdata_tree_sha256": "ac2de8d0be7bb63d3ee8bbc51674c02b86bc8fa9a4c103fb96d3d100b6fb8a84",
+  "production_target_compatible": "UNKNOWN",
+  "production_approved": false,
+  "scope": "Local observations only; Windows/runtime transitive dependencies require WorkBuddy validation"
+}

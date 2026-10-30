@@ -1,0 +1,9 @@
+{
+  "source_commit": "d7d424c120281981e70753ea1c15fe130134929f",
+  "tests": 239,
+  "seconds": 43.005,
+  "result": "PASS",
+  "production_execution": false,
+  "command": "python -X utf8 -B -m unittest [25 U1 root modules] autonomy.test_lock_recovery autonomy.test_supervisor -q",
+  "scope": "U1 composition plus affected supervisor/lock compatibility; independent review85 reported separately"
+}

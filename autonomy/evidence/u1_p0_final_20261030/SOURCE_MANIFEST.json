@@ -1,0 +1,187 @@
+{
+  "schema": "rokt.u1-p0-source.v1",
+  "source_commit": "d7d424c120281981e70753ea1c15fe130134929f",
+  "hash_basis": "exact git blob bytes",
+  "files": [
+    {
+      "path": "autonomy/bridge_acceptance.py",
+      "sha256": "4a304578466bb978d9666adf961f21dfadaca70ba3d12d86a91cfdf02189e1eb",
+      "git_blob": "e00f3e1533dfde96c165b526872428b1aa78184b",
+      "bytes": 1851,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/bridge_session_evidence.py",
+      "sha256": "658751dc918a14e95c6631d33f7d2a808add11b962a6ab54bf01b806ffb91bd1",
+      "git_blob": "d188c17355bb76b675cca7a43395bf581de0c968",
+      "bytes": 7785,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/build_dev_disabled_host.py",
+      "sha256": "6a51a366f8271573a9fe894043d9a56789186edf0fd6fc14ffacb3723781e1fd",
+      "git_blob": "5e53667ca8ed029daf375b87742184295135b5cc",
+      "bytes": 3587,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/cancellation_recovery.py",
+      "sha256": "273614a92b18da65eafd206c2239821edffd74ca80ed95ca4b1f70c35ef11197",
+      "git_blob": "738d1a53646702d2898b1476f3ecb1950035e394",
+      "bytes": 11739,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/cancellation_terminal.py",
+      "sha256": "4d609428476cafc09bdbc141f617f2b3c3ebad15f650ab9c537fd661d99f2f4a",
+      "git_blob": "19fc8eeec43d4ac3fd59e25ec9e362c940e69e6a",
+      "bytes": 4025,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/cancellation_terminal_bundle.py",
+      "sha256": "46c67ada9d7412bd6fd05c106800a38de76d6bc85763a3ac37c7a4005500f405",
+      "git_blob": "9f3d792ed47de77bafabd4e0a71c6e380bb251be",
+      "bytes": 2371,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/config/u1_host_disabled.xml",
+      "sha256": "571bac0b08270bd4c7031c39f56b530eeb6007570699b55bce71966820c67908",
+      "git_blob": "7f8485675ba45bc12bd7ec5601a0363ff39c8bad",
+      "bytes": 1053,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/disabled_host_package.py",
+      "sha256": "6121c34d3fe7980f77e738a50feca39f29154288bbaedd84dfa08a5b4209d7df",
+      "git_blob": "551dce6af35932fec7b9d32ed54885d82fced08b",
+      "bytes": 6735,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/drain_bundle_preflight.py",
+      "sha256": "69b930f6ed9b9f3e115e49ab7b47c818b3b44705b9f475f152e6fc27565cc864",
+      "git_blob": "af4c1e867d7a6cac02211cf230134110d8efc837",
+      "bytes": 7823,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/durable_slots.py",
+      "sha256": "f715f988e24d784fb3633f9be06665f4c42a9ae2803ad1315deae9548a0dc5c5",
+      "git_blob": "a277be8011a87f0faac10d4b9cf5b3e213638e3f",
+      "bytes": 11214,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/growth_ledger.py",
+      "sha256": "52af63b96cfe740ac511c10beb20e67eccabc07b8996836e54c0f5c1a1e5f399",
+      "git_blob": "77ebea5612f2aa4b49763bcd724a16b43fa7827e",
+      "bytes": 26212,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/growth_snapshot.py",
+      "sha256": "ca861b99ea9335fe4b6c8842875d037b24da9ce28802f9fcece30cef2c5d0d5c",
+      "git_blob": "ed668b78e8028419cddf23f2d4f8da139532b449",
+      "bytes": 4341,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/host_preparation.py",
+      "sha256": "ba3bf2edf4f39c130a1f56d8246a92476758ac53e223a3d067c02a987cd011d2",
+      "git_blob": "89dd25ad7d810706aae97030864d5bb402b19b9b",
+      "bytes": 7413,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/host_remediation.py",
+      "sha256": "d4bcaa974b07b67ffd49ffff94b1d14891097ae39378aa1cb588829863e35a13",
+      "git_blob": "d73f67fb57bb89a1008202fafb4b39da4dac4cb6",
+      "bytes": 4467,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/ledger_evidence.py",
+      "sha256": "ba5c0ecaaf7bb6e4909d85a81eb112721162a35e6e406246d337c0c0d43058f9",
+      "git_blob": "2484b910742fa889beb152ee5be6ca82a6f4cf65",
+      "bytes": 1088,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/lock_recovery.py",
+      "sha256": "e6552960b9a15af38a5fbd238037094d8c75af80d9c0370b6d69092060da7741",
+      "git_blob": "c7ba87a636796be0060bd0f8ac7ad8af691f9c7c",
+      "bytes": 8045,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/owner_drain_preflight.py",
+      "sha256": "2df95c5dc2cc17dbfd4fd7e7eb2b9685316972786ac003ca55e6b4b999df400b",
+      "git_blob": "781c10ca68cd8c0a045a696cd3f635b00154b018",
+      "bytes": 5399,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/release_contract.py",
+      "sha256": "59a70cdd02e5032cf5f4a52cb139c9d0b5ac4454d1d918f3e654df70b98ffed8",
+      "git_blob": "ba2bd3ace5dc2aad76b445f91a61fda21a0c67fd",
+      "bytes": 4375,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/rollback_admission.py",
+      "sha256": "1e703faa3df531756d365e58385ec830d990770219caeccf7bd2d91acf0a1aed",
+      "git_blob": "6546b6d94b30e9e8db4ee30bc6e62fb6d9309ad3",
+      "bytes": 2862,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/single_slot_adapter.py",
+      "sha256": "e941653ee9f9739771c3854028062b7aa9bf82bf0cfe2ed5d02c7f32f3977869",
+      "git_blob": "4737ed86334b7727c36ac8297b973d2af3d894bc",
+      "bytes": 19095,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/unattended_policy.py",
+      "sha256": "21aea336dd46f35ee402598687831b39f33c7aee5ec5245bc63f83cc77ec781f",
+      "git_blob": "0c2937be4ebc2fb6ffcd783a5b05360867171464",
+      "bytes": 2201,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/windows/Install-DisabledHost.ps1",
+      "sha256": "519745b0cb92a6246f22ac0d552117d2b56d92275726c6a12480602a3137b421",
+      "git_blob": "e40a0bcb4747904ebda33e6adca858772ab9fd8a",
+      "bytes": 8756,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/windows/RoktU1Bridge.cs",
+      "sha256": "b53cc5c18a5f2c75ad9e4b0a66e6263bac2bbebee0f4b935c8b741aa1f5ea950",
+      "git_blob": "0be37728663473fe65c1d7b6a5579c8c9bba940c",
+      "bytes": 3998,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/windows/Rollback-DisabledHost.ps1",
+      "sha256": "4243b09ca2b143c7e208e148c7754c64323972b903b6ca174c888c5304c48bb5",
+      "git_blob": "6c37fce5009e1b34c876d300afcaf74e9c7936bd",
+      "bytes": 3267,
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/windows_observation.py",
+      "sha256": "35563c2b65f7be373287d4001932fd94dbefe295a359c5e58cafc45933e2c196",
+      "git_blob": "177e453d9a00e5822433b40e5218eeada505d342",
+      "bytes": 4233,
+      "production_target": "UNAPPROVED"
+    }
+  ],
+  "production_ready": false,
+  "guard_version": "rokt.recovery-guard.v2",
+  "rollback": "STOP_ONLY_PRESERVE_ALL_LEDGERS_AND_GUARD_NO_LEGACY_EXECUTOR",
+  "scope_zh": "U1完整离线候选及递归本地依赖；不是生产安装授权",
+  "scope_en": "Complete U1 offline candidate and recursive local dependencies; no production authority"
+}

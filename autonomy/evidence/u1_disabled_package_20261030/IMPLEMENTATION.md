@@ -1,3 +1,5 @@
+更新：已从固定源码d7d424c重新构建，当前有效开发包及独审见 ../u1_p0_final_20261030/；下文旧包哈希仅保留历史，不作发布依据。 / Update: rebuilt from pinned source d7d424c; the current development package and independent review are in ../u1_p0_final_20261030/. Older hashes below are historical, not release authority.
+
 # U1 禁用宿主开发包 / Disabled host development package
 
 ## 实际结果 / Actual results
