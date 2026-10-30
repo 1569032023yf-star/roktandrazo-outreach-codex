@@ -99,6 +99,10 @@ def readonly_handler(token, status_reader, *, credential_expires_at, clock=time.
                     self.reply(503,error='BACKEND_STATUS_UNAVAILABLE');return
             except Exception:
                 self.reply(503,error='BACKEND_STATUS_UNAVAILABLE');return
+            # A slow backend must not release status under a credential that
+            # expired or was fenced by another request while it was reading.
+            if not self.authenticated():
+                self.reply(401,error='UNAUTHORIZED');return
             self.reply(200,cancel_identity=operation_id,journal_phase=value['journal_phase'],
                 execution_terminal='UNKNOWN',lock_closed='UNKNOWN',source_authorized='UNKNOWN',
                 replay_allowed=False)

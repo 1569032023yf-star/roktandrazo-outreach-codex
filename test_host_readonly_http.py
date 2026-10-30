@@ -16,9 +16,11 @@ class HostReadOnlyHTTPTests(unittest.TestCase):
         self.raw=fixtures.RecoveryStatusTests().image()
         self.digest=hashlib.sha256(self.raw).hexdigest()
         self.calls=[];self.value=inspect_recovery_status(self.raw,self.digest,'a'*64)
+        self.after_read=None
         self.token='offline-fixture-token-'+'a'*32
         def read(operation):
             self.calls.append(operation)
+            if self.after_read:self.after_read()
             if isinstance(self.value,Exception):raise self.value
             return self.value
         self.now=1000
@@ -134,6 +136,24 @@ class HostReadOnlyHTTPTests(unittest.TestCase):
         self.clock_error=False
         self.assertEqual(self.request('/v1/recovery-status/'+'a'*64)[0],401)
         self.assertEqual(self.calls,[])
+
+    def test_backend_read_cannot_release_status_after_expiry(self):
+        self.after_read=lambda:setattr(self,'now',1100)
+        code,result=self.request('/v1/recovery-status/'+'a'*64)
+        self.assertEqual(code,401)
+        self.assertNotIn('journal_phase',result)
+        self.now=1000
+        self.assertEqual(self.request('/v1/recovery-status/'+'a'*64)[0],401)
+        self.assertEqual(self.calls,['a'*64])
+
+    def test_backend_read_cannot_release_status_after_clock_failure(self):
+        self.after_read=lambda:setattr(self,'clock_error',True)
+        code,result=self.request('/v1/recovery-status/'+'a'*64)
+        self.assertEqual(code,401)
+        self.assertNotIn('journal_phase',result)
+        self.clock_error=False
+        self.assertEqual(self.request('/v1/health')[0],401)
+        self.assertEqual(self.calls,['a'*64])
 
     def test_duplicate_authorization_rejected_without_backend_read(self):
         connection=http.client.HTTPConnection(*self.server.server_address,timeout=5)
