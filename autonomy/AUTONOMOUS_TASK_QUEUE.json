@@ -990,7 +990,7 @@
   "workbuddy_production_consumption_latest": {
     "commit": "13572ee9f65a71d5006b4d5f53d699bb603c4702",
     "receipt": "autonomy/evidence/workbuddy_consumption_20261030/CONSUMPTION_RECEIPT.json",
-    "CODEX_HANDOFF_CONSUMED": false,
+    "CODEX_HANDOFF_CONSUMED": true,
     "files": 13,
     "json_files": 11,
     "git_blob_verified": true,
@@ -1007,6 +1007,9 @@
     "smtp": "publisher reports disabled/unauthorized mail0; no Codex production access",
     "allow_dispatch": false,
     "allow_cancel_dispatch": false,
-    "unattended_accepted": false
+    "unattended_accepted": false,
+    "receipt_comment_id": 6512498478,
+    "receipt_url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6512498478",
+    "independent_readback": true
   }
 }

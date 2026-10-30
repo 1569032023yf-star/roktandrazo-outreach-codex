@@ -1,8 +1,8 @@
 {
   "schema": "codex.workbuddy-consumption-receipt.v1",
   "workbuddy_commit": "13572ee9f65a71d5006b4d5f53d699bb603c4702",
-  "CODEX_HANDOFF_CONSUMED": false,
-  "state": "VERIFIED_WITH_RESERVATIONS_PENDING_PUBLICATION",
+  "CODEX_HANDOFF_CONSUMED": true,
+  "state": "PUBLISHED_AND_INDEPENDENTLY_READ_BACK_WITH_RESERVATIONS",
   "files": [
     {
       "name": "BRIDGE_ENVIRONMENT_AUDIT_20261029.json",
@@ -246,5 +246,13 @@
   "code_candidate": "7d0858ac16b5c258761ed562fd4b6ce007165927",
   "production_dispatch": false,
   "unattended_accepted": false,
-  "verified_business_growth": "UNKNOWN"
+  "verified_business_growth": "UNKNOWN",
+  "publication": {
+    "issue": 2,
+    "comment_id": 6512498478,
+    "url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6512498478",
+    "independent_readback_exact_body_match": true,
+    "readback_at": "2026-10-30T01:15:49.643832+00:00",
+    "published_report_commit": "25e3cb49db0eb5944fea463491d553f1c65df42b"
+  }
 }
