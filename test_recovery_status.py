@@ -12,14 +12,14 @@ from autonomy.recovery_status import inspect_recovery_status
 
 
 class RecoveryStatusTests(unittest.TestCase):
-    def image(self, state='PREPARED', version=1, binding=None, extra=False, wal=False):
+    def image(self, state='PREPARED', version=1, binding=None, extra=False, wal=False, binding_raw=None):
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp)/'isolated.sqlite'
             with closing(sqlite3.connect(path)) as db:
                 db.execute(SCHEMA); db.execute(HANDOFF_SCHEMA)
                 db.execute('PRAGMA user_version='+str(version))
                 b = binding if binding is not None else dict(binding_hash='b'*64, receipts_hash='c'*64, recovery_id='d'*64, protocol=PROTOCOL)
-                db.execute('INSERT INTO recoveries VALUES (?,?,?)', ('a'*64, json.dumps(b), state))
+                db.execute('INSERT INTO recoveries VALUES (?,?,?)', ('a'*64, json.dumps(b) if binding_raw is None else binding_raw, state))
                 if extra: db.execute('CREATE TABLE unexpected (x)')
                 db.commit()
                 if wal: db.execute('PRAGMA journal_mode=WAL').fetchone()
@@ -59,6 +59,21 @@ class RecoveryStatusTests(unittest.TestCase):
         for snapshot,sha,identity in ((raw,'0'*64,'a'*64),(raw,True,'a'*64),(raw,hashlib.sha256(raw).hexdigest(),"' OR 1=1"),
                                      (bytearray(raw),'0'*64,'a'*64),(b'', '0'*64,'a'*64)):
             self.assertFalse(inspect_recovery_status(snapshot,sha,identity)['accepted'])
+
+    def test_binding_parse_is_bounded_and_never_echoes_invalid_data(self):
+        for value in ('['*2000+'0'+']'*2000, 'secret-invalid-json', b'not-text', '{"protocol":"'+'x'*1100+'"}'):
+            result=self.inspect(self.image(binding_raw=value))
+            self.assertFalse(result['accepted'])
+            self.assertNotIn('secret-invalid-json', str(result))
+
+    def test_time_limit_applies_to_absent_and_present_records(self):
+        from unittest.mock import patch
+        raw=self.image()
+        for identity in ('a'*64,'e'*64):
+            with patch('autonomy.recovery_status.time.monotonic', side_effect=[0,3]):
+                result=self.inspect(raw,identity)
+            self.assertFalse(result['accepted'])
+            self.assertEqual(result['reason'],'INSPECTION_BUDGET_EXCEEDED')
 
     def test_actual_partial_recovery_then_completed_snapshot_remains_observation(self):
         import test_cancellation_cost as fixtures

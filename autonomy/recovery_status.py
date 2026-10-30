@@ -64,6 +64,8 @@ def inspect_recovery_status(snapshot, expected_sha256, cancel_identity):
                 return dict(result, reason='INSPECTION_BUDGET_EXCEEDED')
             if row is None:
                 return dict(result, accepted=True, reason='NOT_RECORDED', journal_phase='NOT_RECORDED')
+            if type(row[0]) is not str or len(row[0]) > 1024:
+                return dict(result, reason='INVALID_PERSISTED_RECORD')
             binding = json.loads(row[0])
             if (type(binding) is not dict or set(binding) != {'binding_hash', 'receipts_hash', 'recovery_id', 'protocol'} or
                 binding['protocol'] != PROTOCOL or
