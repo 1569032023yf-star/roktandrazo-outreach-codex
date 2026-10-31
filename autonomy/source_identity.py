@@ -29,9 +29,10 @@ class SourceIdentityGuard:
     """
     MAX_FILE_BYTES = 16 * 1024 * 1024
     MAX_TOTAL_BYTES = 64 * 1024 * 1024
+    _directory_class = DirectoryIdentityGuard
 
     def __init__(self, directory, manifest, *, offline_only=False):
-        self._directory = DirectoryIdentityGuard(directory, offline_only=offline_only)
+        self._directory = self._directory_class(directory, offline_only=offline_only)
         if type(manifest) is not dict or not 1 <= len(manifest) <= 64:
             raise ValueError('EXACT_MANIFEST_REQUIRED')
         names = set()

@@ -52,15 +52,18 @@ class DirectoryIdentityGuard:
             raise ValueError('NON_DIRECTORY_OR_REPARSE_HANDLE')
         return (identity.volume, bytes(identity.identifier).hex())
 
+    def _open_handle(self, ancestor):
+        # LIST_DIRECTORY|READ_ATTRIBUTES, SHARE_READ|SHARE_WRITE (no SHARE_DELETE),
+        # OPEN_EXISTING, BACKUP_SEMANTICS|OPEN_REPARSE_POINT.
+        return self._api.CreateFileW(str(ancestor), 0x81, 3, None, 3, 0x02200000, None)
+
     def __enter__(self):
         if self._entered:
             raise ValueError('GUARD_SINGLE_USE')
         self._entered = True
         try:
             for ancestor in (*reversed(self.path.parents), self.path):
-                # LIST_DIRECTORY|READ_ATTRIBUTES, SHARE_READ|SHARE_WRITE (no SHARE_DELETE),
-                # OPEN_EXISTING, BACKUP_SEMANTICS|OPEN_REPARSE_POINT.
-                handle = self._api.CreateFileW(str(ancestor), 0x81, 3, None, 3, 0x02200000, None)
+                handle = self._open_handle(ancestor)
                 if handle == ctypes.c_void_p(-1).value:
                     raise ctypes.WinError(ctypes.get_last_error())
                 self._handles.append(handle)
