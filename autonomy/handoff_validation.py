@@ -9,6 +9,52 @@ METADATA = frozenset(('schema_version', 'evidence_kind', 'generated_at',
     'production_code_sha256', 'unavailable', 'payload_sha256', 'ruleset_sha256'))
 
 
+def reconcile_safe_growth(current, baseline, *, window_hours):
+    """Compare supplied snapshots only; caller verifies their pinned bytes.
+
+    只比较已提供的快照；调用方另验固定字节。无基线、不等窗口或口径不明均未知。
+    This is arithmetic evidence, never business or execution authority.
+    这是算术证据，不授予业务验收或执行权限。
+    """
+    result = dict(net_growth='UNKNOWN', reason='BASELINE_SNAPSHOT_REQUIRED',
+                  window_hours=window_hours, production_accepted=False,
+                  allow_dispatch=False, business_growth='UNKNOWN')
+    if type(window_hours) is not int or window_hours not in (24, 168):
+        result['reason'] = 'SUPPORTED_EXACT_WINDOW_REQUIRED'
+        return result
+    if baseline is None:
+        return result
+    try:
+        for snapshot in (baseline, current):
+            if (snapshot['schema'] != 'rokt.safe_authority.v1' or
+                    snapshot['measurement_complete'] is not True or
+                    snapshot['available'] is not True or
+                    type(snapshot['safe_unique_orgs']) is not int or
+                    snapshot['safe_unique_orgs'] < 0):
+                raise ValueError('COMPLETE_INTEGER_SNAPSHOT_REQUIRED')
+        # Explicit full method includes the distinct-organization definition.
+        for key in ('rule_version', 'method'):
+            if not current[key] or current[key] != baseline[key]:
+                raise ValueError('IDENTICAL_RULE_AND_DEDUP_REQUIRED')
+        if (type(current['rule_version']) is not dict or
+                type(current['method']) is not str):
+            raise ValueError('IDENTICAL_RULE_AND_DEDUP_REQUIRED')
+        start = datetime.fromisoformat(baseline['measured_at'])
+        end = datetime.fromisoformat(current['measured_at'])
+        if start.utcoffset() is None or end.utcoffset() is None:
+            raise ValueError('AWARE_TIMESTAMP_REQUIRED')
+        result['actual_window_seconds'] = (end - start).total_seconds()
+        if end - start != timedelta(hours=window_hours):
+            raise ValueError('EXACT_WINDOW_REQUIRED')
+        result.update(net_growth=current['safe_unique_orgs'] - baseline['safe_unique_orgs'],
+                      reason='COMPARABLE_SUPPLIED_SNAPSHOTS')
+    except (KeyError, TypeError, AttributeError):
+        result['reason'] = 'INCOMPLETE_OR_INVALID_EVIDENCE'
+    except ValueError as exc:
+        result['reason'] = str(exc)
+    return result
+
+
 def reconcile_inventory_firings(scheduler, runtime):
     """Read-only attribution; temporal proximity alone grants no authority.
 
