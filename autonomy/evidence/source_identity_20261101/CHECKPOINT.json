@@ -1,0 +1,62 @@
+{
+  "schema": "codex.u1.source-identity-cycle.v1",
+  "summary_zh": "新增真实Windows源目录与文件句柄、同句柄hash离线合同；不是发布或生产验收。",
+  "summary_en": "Actual Windows source directory/file handles and same-handle hash contracts; not publication or production acceptance.",
+  "source_commit": "8f775825d51624d68e39b8afb0ad9514af418ee1",
+  "actual_start": "2026-11-01T04:37:30.9884789+08:00",
+  "triggered_at": "2026-10-31T20:37:24.071Z",
+  "recorded_at": "2026-10-31T20:41:06.583638+00:00",
+  "remote_head_at_start": "7d18195f063a225f29b189ddd7597c430b586565",
+  "tests": {
+    "new": 10,
+    "new_seconds": 0.357,
+    "combined": 87,
+    "combined_seconds": 5.455,
+    "result": "PASS",
+    "platform": "Windows",
+    "process_timeout_seconds": 120
+  },
+  "review": "PENDING",
+  "full_regression": "NOT_RUN_ISOLATED_ADDITIVE_OFFLINE_GUARD_OLD833_NOT_INHERITED",
+  "workbuddy_commit": "3033463370e7adf62943e642632955c74394bc7c",
+  "workbuddy_remote_unchanged": true,
+  "existing_receipt_comment": 6546897497,
+  "new_receipt": false,
+  "source_files": {
+    "autonomy/source_identity.py": {
+      "git_blob": "25530e8bf7861d5555a86bfd0af98ad9861d772e",
+      "working_sha256": "56918610da69468f2217f95542c589a63f635e3316c4914135b1bd7a7d5e1b61"
+    },
+    "test_source_identity.py": {
+      "git_blob": "1469d928aa6f4f6b49029fa6c5abe4f587e49a45",
+      "working_sha256": "1024cf639b8ff6c787927250554c44aaa7f891e2de7510e6274b70472f4e2216"
+    },
+    "autonomy/directory_identity.py": {
+      "git_blob": "c4dd09136a0683c0743902842f0c602b01990453",
+      "working_sha256": "4bacd9c93bd8e9591ed1db2226f845a345394d147a9ad69bd3b8f440fa98afa6"
+    }
+  },
+  "source_open_handles_observed": true,
+  "ordinary_write_delete_opens_blocked": true,
+  "publication_integrated": false,
+  "acl_trust_verified": false,
+  "preexisting_writable_mappings_verified": false,
+  "formal_lease_verified": false,
+  "power_loss_durability": "UNKNOWN",
+  "DEVELOPMENT_COMPLETE": false,
+  "RELEASE_READY": false,
+  "PRODUCTION_DEPLOYED": false,
+  "PRODUCTION_ACCEPTED": false,
+  "BUSINESS_GROWTH": "UNKNOWN",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "production_execution": false,
+  "production_db_access": false,
+  "smtp_calls": 0,
+  "preserved_process": 22948,
+  "preserved_process_scope": "PREEXISTING_CANARY_ORIGIN_UNKNOWN_NOT_STARTED_OR_STOPPED",
+  "evidence_commit_before_seal": "7ffde2c16b8f526a07d976b70e2379e2273087d8",
+  "evidence_remote_verified": true,
+  "finished_at": "2026-10-31T20:41:28.124965+00:00"
+}
