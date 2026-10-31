@@ -1,0 +1,32 @@
+# 发布祖先目录句柄绑定 / Publication ancestor handle binding
+
+中文：固定源码 6dafc860540eebcd122fc0c738204ec22f67aa81。实际启动22:38:27+08与触发14:38:18Z独立；恢复HEAD55bf9ca015469e5b8fbfcd18cc88cf639424f4fd与远端一致。已读canonical/checkpoint及本会话适用规范；原recovery-guard.v2和主/宿主工作树他人未提交文件保留。既有creator_bridge.py PID9836不终止；代理仅看变量名。用户附件缺点路径不存在，正确.codex路径存在。无整轮硬限时接口，本轮45分钟内结束，子进程timeout20秒。
+
+English: Pinned source 6dafc860540eebcd122fc0c738204ec22f67aa81. Actual start22:38:27+08 is separate from trigger14:38:18Z. Recovery HEAD55bf9ca015469e5b8fbfcd18cc88cf639424f4fd matched remote. Canonical/checkpoint and applicable session rules were read; the recovery guard and others' main/host-tree dirty files were preserved. Existing creator_bridge.py PID9836 was not stopped. Only proxy variable names were inspected. The missing-dot attachment path is absent; correct .codex path exists. No whole-turn hard-limit interface is available; the cycle ends within45 minutes, with child tests bounded to20 seconds.
+
+中文：DirectoryIdentityGuard按卷根到发布父目录顺序持有真实Win32目录句柄，OPEN_EXISTING、OPEN_REPARSE_POINT|BACKUP_SEMANTICS，不启用任何特权；请求LIST_DIRECTORY|READ_ATTRIBUTES、共享READ|WRITE、不共享DELETE。通过GetFileInformationByHandleEx属性查询拒绝reparse/非目录，读取VolumeSerialNumber+128位FileId并在发布前后复核。失败关闭先前句柄，不回退到无绑定发布；只允许本地盘符绝对路径，拒绝UNC/device/..及末尾点空格。首次发布现在从核验至rename后回读期间持有祖先句柄；目录内容和ACL仍可变化，可信ACL/授权标志继续false。
+
+English: DirectoryIdentityGuard retains actual Win32 handles in volume-root-to-parent order, using OPEN_EXISTING and OPEN_REPARSE_POINT|BACKUP_SEMANTICS without enabling privileges. It requests LIST_DIRECTORY|READ_ATTRIBUTES and shares READ|WRITE without DELETE. GetFileInformationByHandleEx checks directory/reparse attributes and captures volume serial plus128-bit file ID for revalidation. Failures close prior handles without an unbound fallback. Local drive absolute paths only; UNC/device/traversal/trailing dot or space are rejected. Publication now holds ancestor handles through verification, rename and readback. Contents/ACLs may still change; trusted-ACL and authority flags remain false.
+
+中文：首轮68组合出现3个真实失败：只请求READ_ATTRIBUTES的0x80句柄没有阻止同进程、跨进程及发布边界父目录rename，不能据此宣称保护。修为0x81（加入LIST_DIRECTORY）后13项相关测试通过，最终68组合全部通过4.468秒。6项新测试覆盖真实目录rename阻止/释放后恢复、子进程rename阻止、部分打开失败句柄释放、模拟reparse/信息失败释放、发布边界故障保留及路径范围拒绝。模拟reparse测试不是实际junction验收；ReFS未实测，不因使用128位API声称兼容性通过。测试还明确证明持句柄时子文件仍可写，以防过度解读。
+
+English: The first68-test run had three real failures: attributes-only access0x80 did not block same-process, cross-process or publication-boundary parent renames. Protection could not be claimed. Adding LIST_DIRECTORY (0x81) made13 related tests pass; the final68-test combination passes in4.468s. Six new tests cover actual rename blocking/release, cross-process denial, cleanup after partial opens, simulated reparse/information failure cleanup, preservation at the publication boundary and path rejection. Simulated reparse is not actual junction acceptance; ReFS was not tested and128-bit API use does not imply compatibility acceptance. A test explicitly shows child writes remain possible while handles are held.
+
+中文：证据为当前非提权Windows临时目录，未访问或修改生产目标ACL/服务/数据库。此前日志exit17/adapter exit19/发布exit23与持久PUBLISH exit29故障测试继续通过。git diff --check通过。新增组件只接离线发布原语，未接正式安装器或生产调用链，本轮采用定向及组合回归，不继承旧833，不声称全量NO_NEW_REGRESSION。独立Reviewer未提供，PENDING；自检不是独审。
+
+English: Evidence comes from current unelevated Windows temporary directories, with no production target ACL/service/database access or mutation. Prior journal exit17, adapter exit19, publication exit23 and persistent PUBLISH exit29 tests remain passing. Diff whitespace validation passes. The component is integrated only into the offline publication primitive, outside the formal installer/production call graph. Targeted/combined regressions are used; old833 results are not inherited and full NO_NEW_REGRESSION is not claimed. Independent reviewer unavailable: PENDING, not replaced by self-check.
+
+中文：剩余：源目录/文件身份仍未按句柄绑定，hash读取/源目录替换/内容修改竞态未全部关闭；owner/DACL与正式Inventory租约未验证，目录掉电持久性UNKNOWN。关闭句柄或进程退出即失去名称保护；不据旧ID自动恢复执行，发布后无回执继续status-only。PowerShell观察器ExecutionPolicy阻塞保留，不重试/Bypass/改策略。下一项离线补源对象身份与已打开文件hash读取合同，固定独审，再做正式租约/OS集成前合同。无可安装包或管理员/生产切换授权。
+
+English: Remaining gaps: source-directory/file identity is not yet handle-bound; hash-read/source-swap/content races are not fully closed. Owner/DACL and formal Inventory leases remain unverified; power-loss directory durability is UNKNOWN. Closing handles/process exit releases namespace protection. Old IDs never authorize automatic resumption; published-without-receipt remains status-only. The PowerShell ExecutionPolicy blocker is retained without retry/bypass/policy changes. Next: offline source-object identity/open-file hash contracts, pinned independent review, then formal lease/OS integration contracts. No installable package or elevation/production-switch authority exists.
+
+中文：发布清单/Git blob/工作字节SHA见RESULT.json。Git55bf9ca为前态备份；回退只撤本轮句柄组件并恢复first_publication.py，不恢复数据库、不删除状态或历史日志。WB main仍7414098294e6e32dd0939cbfe9bd68049cf655c6，已实际读取Issue2最新comment6535746968，无新交付、重复合同请求或消费回执。8791无人登录/跨调用及7877非交互出口仍未验收。没有生产代码、DB、SMTP、城市、配额、ACL、服务、代理、调度修改，无采集/邮件/部署。
+
+English: RESULT.json contains the source manifest, exact Git blobs and working-byte hashes. Git55bf9ca preserves the pre-change source; rollback removes the handle component and restores first_publication.py without restoring databases or deleting state/history. WB main remains7414098294e6e32dd0939cbfe9bd68049cf655c6; Issue2 was actually read with latest comment6535746968. No new handoff, duplicate contract request or receipt.8791 unattended/cross-call persistence and7877 noninteractive egress remain unaccepted. No production code/database/SMTP/city/quota/ACL/service/proxy/scheduler mutation, collection, mail or deployment.
+
+DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false; BUSINESS_GROWTH=UNKNOWN. 生产及取消派发关闭。 / Production/cancellation dispatch remains closed.
+
+参考资料 / Primary API references:
+- [CreateFileW](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew): share/access and directory/reparse flags; attribute access is distinguished from data access. 属性访问与数据访问分别说明。
+- [GetFileInformationByHandleEx](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getfileinformationbyhandleex): attribute class9, identity class18. 属性/身份结构编号。
+- [FILE_ID_INFO](https://learn.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-file_id_info): volume plus128-bit identity. 卷号与128位身份。

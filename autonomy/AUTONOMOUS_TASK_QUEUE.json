@@ -577,7 +577,7 @@
       "status": "in_progress",
       "executor": "current_authorized_chat",
       "checkpoint": "autonomy/evidence/handoff_one_to_one_20261031/REPORT.md",
-      "next_action": "Review pinned publication/audit-root/journal/adapter/HTTP/attribution; implement protected handle/directory identity binding and formal Inventory lease contracts before real OS/PowerShell integration. Published-without-receipt: status only. No observer bypass/retry or production Execute/dispatch.",
+      "next_action": "Review pinned directory/publication/audit/journal/adapter/HTTP/attribution; implement offline source-object identity and opened-file hash contracts. Ancestor handles do not prove ACL/contents/lease. Formal Inventory lease/installer integration missing; published-without-receipt status only; Execute/dispatch disabled.",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "PASS_SCOPED_OFFLINE_STATUS_ONLY",
@@ -870,6 +870,51 @@
         "BUSINESS_GROWTH": "UNKNOWN",
         "allow_dispatch": false,
         "allow_install": false,
+        "production_execution": false
+      },
+      "directory_identity_latest": {
+        "source_commit": "6dafc860540eebcd122fc0c738204ec22f67aa81",
+        "actual_start": "2026-10-31T22:38:27.9041599+08:00",
+        "triggered_at": "2026-10-31T14:38:18.449Z",
+        "recorded_at": "2026-10-31T14:42:59.993553+00:00",
+        "tests": {
+          "combined": 68,
+          "new_identity_tests": 6,
+          "seconds": 4.468,
+          "result": "PASS",
+          "initial_failed_tests": 3,
+          "initial_fault": "attributes-only handles did not prevent directory rename",
+          "fix": "request LIST_DIRECTORY|READ_ATTRIBUTES, access0x81, no SHARE_DELETE"
+        },
+        "review": "PENDING",
+        "full_regression": "NOT_RUN_ISOLATED_OFFLINE_PRIMITIVE",
+        "acl_trust_verified": false,
+        "source_contents_locked": false,
+        "formal_lease_verified": false,
+        "power_loss_durability": "UNKNOWN",
+        "workbuddy_commit": "7414098294e6e32dd0939cbfe9bd68049cf655c6",
+        "latest_issue2_comment": 6535746968,
+        "source_files": {
+          "autonomy/directory_identity.py": {
+            "git_blob": "c4dd09136a0683c0743902842f0c602b01990453",
+            "working_sha256": "4bacd9c93bd8e9591ed1db2226f845a345394d147a9ad69bd3b8f440fa98afa6"
+          },
+          "autonomy/first_publication.py": {
+            "git_blob": "dfde40130afd81c6a811aecc3a8d0f09294b9f81",
+            "working_sha256": "787eaf2ca7164a34cae26fb0f75043125ce347d721de6dab841082677d27c93b"
+          },
+          "test_directory_identity.py": {
+            "git_blob": "8aed9c674aac33cead4a1332e0d32dc17f9c2eec",
+            "working_sha256": "3fc5cee156f4d3d21a236fcaac12d1711b35680b3a5edb42112379d4f4ba92dd"
+          }
+        },
+        "DEVELOPMENT_COMPLETE": false,
+        "RELEASE_READY": false,
+        "PRODUCTION_DEPLOYED": false,
+        "PRODUCTION_ACCEPTED": false,
+        "BUSINESS_GROWTH": "UNKNOWN",
+        "allow_install": false,
+        "allow_dispatch": false,
         "production_execution": false
       }
     },
@@ -2706,7 +2751,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-10-31T11:39:22.373355+00:00",
+  "updated_at": "2026-10-31T14:42:59.993553+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "13572ee9f65a71d5006b4d5f53d699bb603c4702",
     "receipt": "autonomy/evidence/workbuddy_consumption_20261030/CONSUMPTION_RECEIPT.json",

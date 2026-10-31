@@ -1,3 +1,9 @@
+2026-10-31 22:38周期：源码6dafc860540eebcd122fc0c738204ec22f67aa81新增真实Windows祖先目录句柄绑定并接离线发布；首轮属性访问句柄3失败，修0x81后68组合通过4.468秒（6新增），同/跨进程父目录rename拒绝，失败释放句柄。子文件仍可写、源对象/ACL/租约/掉电持久性未通过，独审PENDING，不继承833。WB74140982/Issue2 6535746968不变不重发；观察脚本阻塞不绕过。下一项源对象身份/打开文件hash合同及固定独审。四总体状态false，派发/取消关闭，增长UNKNOWN。
+
+Cycle22:38: source6dafc860540eebcd122fc0c738204ec22f67aa81 binds actual Windows ancestor handles into offline publication. Initial attributes-only handles caused3 failures; access0x81 repair yields68 combined pass in4.468s (6 new), blocking same/cross-process parent rename and releasing failed opens. Children remain writable; source objects/ACL/lease/power-loss durability unverified. Review PENDING,833 not inherited. WB74140982/Issue2 6535746968 unchanged, no repost; observer blocker not bypassed. Next source-object identity/open-file hash contracts and pinned review. Four overall flags false; dispatch/cancel closed, growth UNKNOWN.
+
+---
+
 2026-10-31 19:36周期：源码6d6b63b527d5f8794098ae03134870f2ddd9968d首次目录发布原语在真实Windows临时目录验证，62组合通过4.138秒（7新增）；竞态空目标不覆盖，联接日志驱动真实rename后exit29保留1回执+PUBLISH未决，不重放。仅离线原语，可信句柄/ACL竞态/掉电持久性/正式租约未解，独审PENDING，不继承833。WB74140982不变不重发回执；观察脚本策略阻塞保留不绕过。下一步固定独审及句柄/目录身份绑定与正式租约合同。四总体状态false，生产/取消派发关闭，增长UNKNOWN。
 
 Cycle19:36: source6d6b63b527d5f8794098ae03134870f2ddd9968d validates first-publication primitive in actual Windows temporary directories;62 combined pass in4.138s (7 new). Competing empty destination is preserved; joined driver exit29 after real rename retains one receipt and pending PUBLISH without replay. Offline primitive only; trusted handles/ACL races/power-loss durability/formal lease unresolved, review PENDING,833 not inherited. WB74140982 unchanged, no receipt repost. Observer policy blocker retained without bypass. Next pinned review and handle/directory identity binding/formal lease contracts. Four overall flags false; dispatch/cancel closed, growth UNKNOWN.
