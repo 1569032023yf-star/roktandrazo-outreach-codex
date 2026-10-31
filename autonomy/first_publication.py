@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import re
 import stat
+from autonomy.directory_identity import DirectoryIdentityGuard
 
 
 def _ordinary(path, directory):
@@ -56,13 +57,15 @@ def publish_first_directory_offline(staging, destination, manifest, *, offline_o
             or '..' in source.parts or '..' in target.parts
             or source.parent != target.parent or source == target):
         raise ValueError('DISTINCT_ABSOLUTE_SIBLINGS_REQUIRED')
-    for ancestor in (source.parent, *source.parent.parents):
-        _ordinary(ancestor, True)
-    if os.path.lexists(target):
-        raise FileExistsError('DESTINATION_MUST_BE_ABSENT')
-    _verify(source, expected)
-    os.rename(source, target)
-    _verify(target, expected)
+    with DirectoryIdentityGuard(source.parent, offline_only=True) as guard:
+        if os.path.lexists(target):
+            raise FileExistsError('DESTINATION_MUST_BE_ABSENT')
+        _verify(source, expected)
+        guard.revalidate()
+        os.rename(source, target)
+        _verify(target, expected)
+        guard.revalidate()
     return dict(observed='RENAMED_AND_HASHES_MATCHED_OFFLINE',
+                ancestor_handles_held_during_rename=True,
                 allow_install=False, allow_dispatch=False, production_execution=False,
                 trusted_handle_verified=False, power_loss_durability='UNKNOWN')
