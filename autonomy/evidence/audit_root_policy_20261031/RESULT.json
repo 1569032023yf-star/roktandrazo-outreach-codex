@@ -1,0 +1,42 @@
+{
+  "source_commit": "5c271c842466c90c8fbbfb107ccce034ac63af80",
+  "actual_start": "2026-10-31T16:33:52.5165609+08:00",
+  "triggered_at": "2026-10-31T08:33:42.688Z",
+  "recorded_at": "2026-10-31T08:37:02.745143+00:00",
+  "tests": {
+    "combined": 55,
+    "new_policy_tests": 7,
+    "seconds": 3.724,
+    "result": "PASS"
+  },
+  "powershell_ast_parse": "PASS_NOT_EXECUTION",
+  "powershell_execution": "BLOCKED_SECURITYERROR_UNAUTHORIZEDACCESS",
+  "real_audit_root_observation": "UNKNOWN",
+  "review": "PENDING",
+  "full_regression": "NOT_RUN_ADDITIVE_ISOLATED_POLICY",
+  "candidate_audit_root": "C:\\ProgramData\\RoktU1InstallAudit",
+  "candidate_path_status": "PROPOSED_ONLY_NOT_CREATED",
+  "source_files": {
+    "autonomy/audit_root_policy.py": {
+      "git_blob": "08a87912f4dfb92b4a4888f91288d2e7682f6ae9",
+      "working_sha256": "d80a4c61ed19817fd97896655582c5e36a78e5380e15fb7357ba00433934a163"
+    },
+    "autonomy/windows/Get-InstallAuditRootObservation.ps1": {
+      "git_blob": "e998b7ff3091aada52497732d7be2e06d7a14525",
+      "working_sha256": "9e08c68eede5047e40a3e85e2e9bb168752b56c8206dff48a247f26ecdfbcc66"
+    },
+    "test_audit_root_policy.py": {
+      "git_blob": "a963cb6eee7e6ab2adab86e0c596917b291465ad",
+      "working_sha256": "2c16654e9d786c4a9e7f9c07659665c1099aeed88c7d075b20b05b0a43cef0e9"
+    }
+  },
+  "workbuddy_remote_commit": "7414098294e6e32dd0939cbfe9bd68049cf655c6",
+  "DEVELOPMENT_COMPLETE": false,
+  "RELEASE_READY": false,
+  "PRODUCTION_DEPLOYED": false,
+  "PRODUCTION_ACCEPTED": false,
+  "BUSINESS_GROWTH": "UNKNOWN",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "production_execution": false
+}
