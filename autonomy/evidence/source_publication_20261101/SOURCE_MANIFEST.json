@@ -1,0 +1,65 @@
+{
+  "schema": "codex.u1.source-publication-cycle.v1",
+  "summary_zh": "真实Windows持有子文件句柄的发布尝试被错误5拒绝；失败后日志PUBLISH未知并拒绝重放，未证明成功发布。",
+  "summary_en": "Actual Windows publication with held child handles fails with error5; journal retains UNKNOWN PUBLISH and rejects replay, without proving successful publication.",
+  "source_commit": "5f4ec4193f398e50df001a60bc972fa279dcec82",
+  "actual_start": "2026-11-01T07:43:04.8088631+08:00",
+  "triggered_at": "2026-10-31T23:42:56.659Z",
+  "recorded_at": "2026-10-31T23:47:56.904151+00:00",
+  "remote_head_at_start": "47aaf5bbd86be2bf6f621541c34871972d13e497",
+  "tests": {
+    "new": 7,
+    "new_seconds": 0.102,
+    "combined": 94,
+    "combined_seconds": 5.607,
+    "result": "PASS",
+    "process_timeout_seconds": 120
+  },
+  "windows_build": 26200,
+  "review": "PENDING",
+  "full_regression": "NOT_RUN_ISOLATED_OFFLINE_ATTEMPT_OLD833_NOT_INHERITED",
+  "source_files": {
+    "autonomy/directory_identity.py": {
+      "git_blob": "88b0882c7f1b9a1cae2b91e67043d07eaade0dfa",
+      "working_sha256": "081ecaca13b7e04530d28f2d528e77d149b68112295ccb1150715e0a343141bb"
+    },
+    "autonomy/source_identity.py": {
+      "git_blob": "b530a2e2df5ac4bb92de713357bf470c4c749180",
+      "working_sha256": "89efe5237f4021b2cbacfd045e347883d6a82b65ce81ce062f935fddf5a8cdfd"
+    },
+    "autonomy/source_publication.py": {
+      "git_blob": "c68679de4d9517c8e2b0eb039096b3536fe69c0c",
+      "working_sha256": "fc971365cf28cc25661334399ff87e7b9a5aeb17df4bb3128f4cd459f5cfa523"
+    },
+    "test_source_publication.py": {
+      "git_blob": "aca44a3efad45f6bc099f34ebb8d7e5871b08866",
+      "working_sha256": "2d35c069b609652bacec97e2957c4fc0c4fc61b0d6130409e6f42dc1b1d3f268"
+    }
+  },
+  "actual_rename_error": 5,
+  "source_preserved": true,
+  "held_source_successful_publication_verified": false,
+  "publish_journal_observed": "UNKNOWN",
+  "publish_journal_pending": "PUBLISH",
+  "replay_allowed": false,
+  "workbuddy_commit": "3033463370e7adf62943e642632955c74394bc7c",
+  "workbuddy_remote_unchanged": true,
+  "existing_receipt_comment": 6546897497,
+  "new_consumption_receipt": false,
+  "acl_trust_verified": false,
+  "formal_lease_verified": false,
+  "production_installer_integrated": false,
+  "preexisting_writable_mappings_verified": false,
+  "power_loss_durability": "UNKNOWN",
+  "DEVELOPMENT_COMPLETE": false,
+  "RELEASE_READY": false,
+  "PRODUCTION_DEPLOYED": false,
+  "PRODUCTION_ACCEPTED": false,
+  "BUSINESS_GROWTH": "UNKNOWN",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "production_execution": false,
+  "production_db_access": false,
+  "smtp_calls": 0
+}
