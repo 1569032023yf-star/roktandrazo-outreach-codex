@@ -1,0 +1,20 @@
+{
+  "source_commit": "deecc456b97736d6f895879ee1c0b086a8f84e34",
+  "tests": "41 combined passed in 2.920s; 4 new journal tests",
+  "review": "PENDING",
+  "scope": "exclusive durable offline journal primitive only",
+  "workbuddy_commit": "7414098294e6e32dd0939cbfe9bd68049cf655c6",
+  "receipt_reused": "Issue2 comment6535746968; no new receipt",
+  "allow_dispatch": false,
+  "allow_install": false,
+  "production_execution": false,
+  "DEVELOPMENT_COMPLETE": false,
+  "RELEASE_READY": false,
+  "PRODUCTION_DEPLOYED": false,
+  "PRODUCTION_ACCEPTED": false,
+  "BUSINESS_GROWTH": "UNKNOWN",
+  "files": {
+    "autonomy/install_journal.py": "1481bda71821344b59c07cc664e3cbec7577dd1d56f9fa934194351bc70896f9",
+    "test_install_journal.py": "fc0d585729a6f667492dacad5db3727340cf4a7c307b5641956f3fea0786ab2b"
+  }
+}
