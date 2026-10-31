@@ -1,0 +1,41 @@
+{
+  "source_commit": "6d6b63b527d5f8794098ae03134870f2ddd9968d",
+  "actual_start": "2026-10-31T19:36:25.1659032+08:00",
+  "triggered_at": "2026-10-31T11:36:15.382Z",
+  "recorded_at": "2026-10-31T11:39:22.373355+00:00",
+  "tests": {
+    "combined": 62,
+    "new_publication_tests": 7,
+    "seconds": 4.138,
+    "result": "PASS",
+    "platform": "Windows",
+    "subprocess_exit_codes": [
+      23,
+      29
+    ]
+  },
+  "review": "PENDING",
+  "full_regression": "NOT_RUN_ISOLATED_ADDITIVE_PRIMITIVE",
+  "power_loss_durability": "UNKNOWN",
+  "trusted_handle_verified": false,
+  "production_installer_integrated": false,
+  "workbuddy_remote_commit": "7414098294e6e32dd0939cbfe9bd68049cf655c6",
+  "source_files": {
+    "autonomy/first_publication.py": {
+      "git_blob": "132c0b916cdd8870cf662b431329c116fceb6913",
+      "working_sha256": "e2d31903467a650307ad8b94c3a1b8f54a95db34e2be2fd33874dd0bde7af4cf"
+    },
+    "test_first_publication.py": {
+      "git_blob": "d1e32b7d4b22b732a103acffda1c32afc07e9cfe",
+      "working_sha256": "f902e5779dec444c017cd0308d91cfcfce470f95116af076a0e411b131484b24"
+    }
+  },
+  "DEVELOPMENT_COMPLETE": false,
+  "RELEASE_READY": false,
+  "PRODUCTION_DEPLOYED": false,
+  "PRODUCTION_ACCEPTED": false,
+  "BUSINESS_GROWTH": "UNKNOWN",
+  "allow_dispatch": false,
+  "allow_install": false,
+  "production_execution": false
+}

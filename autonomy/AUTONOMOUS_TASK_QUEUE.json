@@ -577,7 +577,7 @@
       "status": "in_progress",
       "executor": "current_authorized_chat",
       "checkpoint": "autonomy/evidence/handoff_one_to_one_20261031/REPORT.md",
-      "next_action": "Review pinned audit-root/journal/adapter/HTTP/attribution; continue offline handle-binding and atomic first-publication fault contracts. Observer execution blocked by policy: no bypass or retry without supported signed route. Formal Inventory lease/OS integration remain missing; Execute/dispatch disabled.",
+      "next_action": "Review pinned publication/audit-root/journal/adapter/HTTP/attribution; implement protected handle/directory identity binding and formal Inventory lease contracts before real OS/PowerShell integration. Published-without-receipt: status only. No observer bypass/retry or production Execute/dispatch.",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "PASS_SCOPED_OFFLINE_STATUS_ONLY",
@@ -829,6 +829,47 @@
         "BUSINESS_GROWTH": "UNKNOWN",
         "allow_install": false,
         "allow_dispatch": false,
+        "production_execution": false
+      },
+      "first_publication_latest": {
+        "source_commit": "6d6b63b527d5f8794098ae03134870f2ddd9968d",
+        "actual_start": "2026-10-31T19:36:25.1659032+08:00",
+        "triggered_at": "2026-10-31T11:36:15.382Z",
+        "recorded_at": "2026-10-31T11:39:22.373355+00:00",
+        "tests": {
+          "combined": 62,
+          "new_publication_tests": 7,
+          "seconds": 4.138,
+          "result": "PASS",
+          "platform": "Windows",
+          "subprocess_exit_codes": [
+            23,
+            29
+          ]
+        },
+        "review": "PENDING",
+        "full_regression": "NOT_RUN_ISOLATED_ADDITIVE_PRIMITIVE",
+        "power_loss_durability": "UNKNOWN",
+        "trusted_handle_verified": false,
+        "production_installer_integrated": false,
+        "workbuddy_remote_commit": "7414098294e6e32dd0939cbfe9bd68049cf655c6",
+        "source_files": {
+          "autonomy/first_publication.py": {
+            "git_blob": "132c0b916cdd8870cf662b431329c116fceb6913",
+            "working_sha256": "e2d31903467a650307ad8b94c3a1b8f54a95db34e2be2fd33874dd0bde7af4cf"
+          },
+          "test_first_publication.py": {
+            "git_blob": "d1e32b7d4b22b732a103acffda1c32afc07e9cfe",
+            "working_sha256": "f902e5779dec444c017cd0308d91cfcfce470f95116af076a0e411b131484b24"
+          }
+        },
+        "DEVELOPMENT_COMPLETE": false,
+        "RELEASE_READY": false,
+        "PRODUCTION_DEPLOYED": false,
+        "PRODUCTION_ACCEPTED": false,
+        "BUSINESS_GROWTH": "UNKNOWN",
+        "allow_dispatch": false,
+        "allow_install": false,
         "production_execution": false
       }
     },
@@ -2665,7 +2706,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-10-31T08:37:02.745143+00:00",
+  "updated_at": "2026-10-31T11:39:22.373355+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "13572ee9f65a71d5006b4d5f53d699bb603c4702",
     "receipt": "autonomy/evidence/workbuddy_consumption_20261030/CONSUMPTION_RECEIPT.json",

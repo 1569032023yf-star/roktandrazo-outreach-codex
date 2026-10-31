@@ -1,0 +1,27 @@
+# 首次目录发布离线实现 / Offline first-directory publication
+
+中文：固定源码 6d6b63b527d5f8794098ae03134870f2ddd9968d。实际启动19:36:25+08，触发11:36:15Z独立保留；恢复HEAD e7d050d388010a01b66a77c3c1fa36ed7615b007与远端一致。已读取canonical、checkpoint和会话适用规范，recovery-guard.v2及他人未提交文件保留，既有Python9836不终止。代理只检查变量名。平台无整轮硬限时接口，本轮45分钟内结束，子进程timeout20秒。
+
+English: Pinned source 6d6b63b527d5f8794098ae03134870f2ddd9968d. Actual start19:36:25+08 is distinct from trigger11:36:15Z. Recovery HEAD e7d050d388010a01b66a77c3c1fa36ed7615b007 matched remote. Canonical/checkpoint and applicable session rules were read; the recovery guard and others' dirty files were preserved, and Python9836 was not stopped. Proxy inspection exposed variable names only. No whole-turn hard-limit interface is available; this cycle ends within45 minutes, with subprocess tests bounded to20 seconds.
+
+中文：新增Windows离线发布原语：要求绝对不同同父路径、精确1至64文件清单及SHA256；拒绝路径穿越、祖先/文件reparse、非普通文件及硬链接，发布前后均核验清单和摘要。首次发布仅os.rename，不调用replace，不提供复制fallback或删除/回滚。Windows上目标存在即拒绝（包括空目录）；非Windows拒绝执行，避免POSIX替换空目录语义。offline_only只是范围声明，不是生产权限边界。
+
+English: The new Windows offline primitive requires distinct absolute sibling paths, an exact1-to64-file manifest and SHA256s. It rejects traversal, ancestor/file reparses, nonregular files and hardlinks, verifying file sets and hashes before and after publication. First publication uses only os.rename, never replace, copy fallback or deletion/rollback. Existing Windows destinations including empty directories are rejected; non-Windows execution is refused rather than inheriting POSIX empty-directory replacement semantics. offline_only is a scope declaration, not a production authority boundary.
+
+中文：62项组合通过4.138秒，7项新增测试：真实rename、已有空目录拒绝、rename边界竞态目标保留、精确清单/hash/目录拒绝、发布后被改hash保留目标、真实子进程exit23、硬链接/路径逃逸、与持久合同驱动联接exit29（部分断言同测试内）。联接场景在真实rename后、PUBLISH回执前退出，恢复1项STAGE回执+PUBLISH未决，实际目标文件保留；相同operation_id在CREATE_NEW拒绝前不调用adapter。测试只写各自TemporaryDirectory，测试fixture退出时清理自有临时目录，发布原语本身不清理。前期安装journal/adapter、ACL策略、HTTP、归因、包/设计及恢复状态测试一并通过。git diff --check通过。
+
+English: 62 combined tests pass in4.138s, with seven new tests covering real rename, existing/competing empty destinations, exact sets/hashes/types, preservation after post-rename hash changes, child exit23, hardlinks/path escape and persistent-contract integration exit29 (some assertions share test methods). The joined scenario exits after actual rename but before the PUBLISH receipt, retaining one STAGE receipt and pending PUBLISH while preserving target bytes. Reusing the operation ID fails CREATE_NEW before adapter invocation. Writes occur only in test-owned TemporaryDirectory roots; fixture teardown cleans those owned roots, while the publication primitive performs no cleanup. Existing journal/adapter, ACL-policy, HTTP, attribution, package/design and recovery tests also pass. Diff whitespace validation passes.
+
+中文：限制：观察到的是Windows目录名切换/不覆盖合同，不是掉电持久性（UNKNOWN）；未fsync目录或持可信句柄，hash校验与rename仍有路径/ACL竞态。临时测试目录非生产受保护根，真实code/state发布、SCM、维护租约/管理员授权及现有PowerShell安装器均未接入。未将此primitive接入生产Execute，不因测试通过授权安装。前轮观察脚本ExecutionPolicy阻塞保留，不重试/Bypass/改策略。独审PENDING，未伪造审核通过；旧833结果不继承。新增隔离两文件未接生产调用链，本轮定向及组合回归，无新全量或NO_NEW_REGRESSION声明。
+
+English: Observed Windows namespace/no-clobber behavior is not power-loss durability (UNKNOWN). No directory fsync or trusted handles are provided; hash checks and rename still face path/ACL races. Temporary fixtures are not protected production roots, and actual code/state publication, SCM, maintenance/elevation authorization and existing PowerShell installation remain unintegrated. The primitive is not wired to production Execute and tests cannot authorize installation. Prior observer ExecutionPolicy failure is retained without retry/bypass/policy changes. Independent review remains PENDING. Old833 results are not inherited; isolated additive files outside the production call graph receive targeted/combined validation without a new full comparison or NO_NEW_REGRESSION claim.
+
+中文：源码清单/Git blob/工作字节SHA见RESULT.json。备份为Git前态e7d050d；源码回退仅撤本轮两新增离线文件。生产回滚从未执行；正式方案仍仅撤Disabled注册、保留代码/状态/日志，不删除数据库或覆盖历史。下一项固定源码独审、受保护句柄与目录身份绑定、正式维护租约及真实OS适配层集成前合同；不自动重放已发布但无回执的操作。
+
+English: RESULT.json contains exact source files, Git blobs and working-byte hashes. Git e7d050d preserves the prior source; source rollback reverts only the two new offline files. No production rollback ran; the formal design still removes only a Disabled registration while retaining code/state/journals, never deleting databases or overwriting history. Next: pinned independent review, protected handles/directory identity binding, formal lease and contracts before real OS-adapter integration. Published-but-unreceipted operations must not be replayed.
+
+中文：WB main仍7414098294e6e32dd0939cbfe9bd68049cf655c6，沿用已有逐字回读消费回执6535746968，不重复申请backend合同或发布回执。8791无人登录/跨调用持久性、7877非交互出口仍未验收。未修改生产代码、DB、SMTP、城市、配额、服务、ACL、代理、调度，未采集/发信/部署。四总体状态false，增长UNKNOWN；生产及取消派发关闭。
+
+English: WB main remains7414098294e6e32dd0939cbfe9bd68049cf655c6 with existing exactly read-back receipt6535746968; no repeated backend request/receipt.8791 unattended/cross-call persistence and7877 noninteractive egress remain unaccepted. No production code/database/SMTP/city/quota/service/ACL/proxy/scheduler mutation, collection, mail or deployment. All four overall completion/release/deployment/acceptance states remain false; business growth UNKNOWN. Production/cancellation dispatch remains closed.
+
+DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false; BUSINESS_GROWTH=UNKNOWN.
