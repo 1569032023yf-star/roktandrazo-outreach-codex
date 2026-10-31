@@ -1,0 +1,137 @@
+{
+ "schema": "rokt.safe_authority.v1",
+ "measured_at": "2026-10-31T23:43:28+08:00",
+ "business_timezone": "Asia/Shanghai (+08)",
+ "rule_version": {
+  "name": "V1_V2_MX_HISTORY_SUPPRESSION_BUSINESS_FIT",
+  "entrypoint": "campaign_eligible_v2.select_candidates_for_plan_v2",
+  "mx_probe": "preflight_gate.query_mx",
+  "code": {
+   "campaign_eligible_v2.py": {
+    "sha256": "1143bedf563c0f76b883359362ffb2c2ea11c375fd923dc59768c5529cf3ad34",
+    "bytes": 18023,
+    "mtime": "2026-09-07T18:35:46.020715+08:00"
+   },
+   "preflight_gate.py": {
+    "sha256": "2cd286f201430fb9a48c68ead512671f398732e50e768c2fd69031f127f52622",
+    "bytes": 41251,
+    "mtime": "2026-09-16T15:15:54.279029+08:00"
+   }
+  }
+ },
+ "method": "select_candidates_for_plan_v2 on a mode=ro connection; SAFE = distinct organization_key over the returned candidate rows; two consecutive readings reported because MX resolution is live and could be jittery",
+ "source": "bd_leads.db (read-only)",
+ "mx_positive_control": {
+  "domain": "gmail.com",
+  "mx_status": "ok",
+  "checked_at": "2026-10-31T23:43:30.515648+08:00"
+ },
+ "mx_negative_control": {
+  "domain": "nonexistent-domain-xyz-abc123456.invalid",
+  "mx_status": "nxdomain",
+  "checked_at": "2026-10-31T23:43:32.755053+08:00"
+ },
+ "measurement_complete": true,
+ "failure_reason": null,
+ "safe_unique_orgs": 69,
+ "db_identity": {
+  "path_basename": "bd_leads.db",
+  "size_bytes": 9875456,
+  "sha256": "0f38d4f43645416b6c2b85b838c9cd661a9c0021c8ffd574139ec4cc41a5ba7b",
+  "quick_check": "ok"
+ },
+ "mx_probe_seconds": 4.4,
+ "mx_probe_ok": true,
+ "mx_proxy_configured": true,
+ "leads_total": 1254,
+ "filters": {
+  "suppression_list_rows": 63,
+  "bounce_log_rows": 63,
+  "unmatched_dsn_rows": 48,
+  "note": "per-candidate history/suppression/business-fit decisions are made inside select_candidates_for_plan_v2 and are not separately re-exposed here"
+ },
+ "readings": [
+  {
+   "reading": 1,
+   "sampling_time": "2026-10-31T23:49:42+08:00",
+   "candidate_rows": 69,
+   "unique_organizations": 69,
+   "wall_seconds": 370.1
+  },
+  {
+   "reading": 2,
+   "sampling_time": "2026-10-31T23:55:08+08:00",
+   "candidate_rows": 69,
+   "unique_organizations": 69,
+   "wall_seconds": 310.2
+  }
+ ],
+ "reading_agreement": true,
+ "new_customer_funnel": {
+  "dedup_rule": "discovery window: distinct COALESCE(normalized_domain, normalized_business_name|city); lead window: distinct organization_key",
+  "timezones": "discovery window compares UTC ISO; lead window compares leads.collected_at (+08 local, literal 'T' separator)",
+  "h24": {
+   "window_hours": 24,
+   "merchant_records_discovered": 0,
+   "unique_organizations_discovered": 0,
+   "verified_official_sites": 0,
+   "new_leads": 0,
+   "new_leads_with_email": 0,
+   "new_first_party_official_emails": 0,
+   "new_distinct_organization_keys": 0,
+   "provider_contribution": []
+  },
+  "d7": {
+   "window_hours": 168,
+   "merchant_records_discovered": 58,
+   "unique_organizations_discovered": 55,
+   "verified_official_sites": 23,
+   "new_leads": 41,
+   "new_leads_with_email": 14,
+   "new_first_party_official_emails": 14,
+   "new_distinct_organization_keys": 39,
+   "provider_contribution": [
+    {
+     "provider": "browser_maps",
+     "records": 58
+    }
+   ]
+  },
+  "note": "merchant discovery != confirmed business identity != has email != SAFE customer"
+ },
+ "safe_net_growth": {
+  "h24": 0,
+  "d7": 13,
+  "reason": "no prior snapshot recorded under an identical rule_version + dedup definition; the ledger started with this measurement, so growth cannot be subtracted from readings produced by an older rule set",
+  "h24_baseline_at": "2026-10-30T22:41:03+08:00",
+  "d7_baseline_at": "2026-10-25T03:03:35+08:00"
+ },
+ "finished_at": "2026-10-31T23:55:08+08:00",
+ "available": true,
+ "generated_at": "2026-10-31T23:55:16+08:00",
+ "refresh_requested": false,
+ "refresh_result": null,
+ "age_hours": 0.2,
+ "fresh": true,
+ "authoritative_route": "/v1/safe",
+ "operation": "safe",
+ "verdict": "ok",
+ "schema_version": "1.0",
+ "evidence_kind": "safe",
+ "producer": "workbuddy-production-operator",
+ "channel": {
+  "endpoint": "http://127.0.0.1:8791",
+  "bridge_version": "2.1",
+  "auth": "Bearer (Credential Manager)"
+ },
+ "run_id": null,
+ "data_sources": "bd_leads.db (read-only)",
+ "production_code_sha256": {
+  "campaign_eligible_v2.py": "1143bedf563c0f76b883359362ffb2c2ea11c375fd923dc59768c5529cf3ad34",
+  "preflight_gate.py": "2cd286f201430fb9a48c68ead512671f398732e50e768c2fd69031f127f52622"
+ },
+ "unavailable": [
+  "24h/7d SAFE net growth (no prior snapshot under an identical rule version)"
+ ],
+ "payload_sha256": "a1e74f2e8f2c8b29410642aeb0102f73352c6a4040cfa0063b68502e6ff4cdab"
+}

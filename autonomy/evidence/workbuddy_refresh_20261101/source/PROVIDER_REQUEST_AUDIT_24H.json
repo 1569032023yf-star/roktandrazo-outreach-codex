@@ -1,0 +1,74 @@
+{
+ "city22_24h": {
+  "schema": "rokt.provider_audit.v1",
+  "generated_at": "2026-10-31T23:55:16+08:00",
+  "business_timezone": "Asia/Shanghai (+08)",
+  "window_hours": 24,
+  "window_start_utc": "2026-10-30T15:55:16+00:00",
+  "city_id": 22,
+  "source": "bd_leads.db:provider_request_audit + job_runs + lead_discovery_query_state",
+  "verdict": "ZERO_REQUESTS_CONFIRMED",
+  "verdict_basis": "no audit row in window AND all query families for the city/provider are already completed, so discovery had no request to issue",
+  "audit_rows": 0,
+  "per_provider": [],
+  "inventory_runs_in_window": 2,
+  "query_matrix": {
+   "total": 20,
+   "completed": 20,
+   "exhausted": true
+  },
+  "distinction": {
+   "zero_real_requests": "ZERO_REQUESTS_CONFIRMED",
+   "no_evidence": "UNKNOWN_NO_RECORD"
+  },
+  "operation": "provider_audit"
+ },
+ "all_cities_7d": {
+  "schema": "rokt.provider_audit.v1",
+  "generated_at": "2026-10-31T23:55:16+08:00",
+  "business_timezone": "Asia/Shanghai (+08)",
+  "window_hours": 168,
+  "window_start_utc": "2026-10-24T15:55:16+00:00",
+  "city_id": null,
+  "source": "bd_leads.db:provider_request_audit + job_runs + lead_discovery_query_state",
+  "verdict": "REAL_REQUESTS",
+  "verdict_basis": "provider_request_audit rows present in window",
+  "audit_rows": 48,
+  "per_provider": [
+   {
+    "provider": "browser_maps",
+    "requests": 47,
+    "success": 46,
+    "failed": 2,
+    "timeout": 2,
+    "rate_limited": 0,
+    "last_requested_at": "2026-10-31T09:07:51.480659+08:00",
+    "audit_rows": 48
+   }
+  ],
+  "inventory_runs_in_window": 21,
+  "query_matrix": {
+   "total": null,
+   "completed": null,
+   "exhausted": null
+  },
+  "distinction": {
+   "zero_real_requests": "ZERO_REQUESTS_CONFIRMED",
+   "no_evidence": "UNKNOWN_NO_RECORD"
+  },
+  "operation": "provider_audit"
+ },
+ "schema_version": "1.0",
+ "evidence_kind": "provider_audit",
+ "generated_at": "2026-10-31T23:55:16+08:00",
+ "business_timezone": "Asia/Shanghai (+08)",
+ "producer": "workbuddy-production-operator",
+ "channel": {
+  "endpoint": "http://127.0.0.1:8791",
+  "bridge_version": "2.1",
+  "auth": "Bearer (Credential Manager)"
+ },
+ "run_id": "inventory:2026-10-31:d52e84fd",
+ "data_sources": "bd_leads.db:provider_request_audit + job_runs + lead_discovery_query_state",
+ "payload_sha256": "13f49384410c6a48e6cfd339a28c24a17acfb1fc090e53bfe838b9fc111f3a5a"
+}
