@@ -924,6 +924,12 @@
         "seconds": 4.593,
         "review": "PENDING",
         "report": "autonomy/evidence/workbuddy_refresh_20261101/REPORT.md"
+      },
+      "workbuddy_latest_consumption": {
+        "commit": "3033463370e7adf62943e642632955c74394bc7c",
+        "receipt_comment_id": 6546897497,
+        "CODEX_HANDOFF_CONSUMED": true,
+        "unattended_accepted": false
       }
     },
     {
@@ -2759,11 +2765,11 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-10-31T17:40:46.001561+00:00",
+  "updated_at": "2026-10-31T17:41:55.921603+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
-    "CODEX_HANDOFF_CONSUMED": false,
+    "CODEX_HANDOFF_CONSUMED": true,
     "files": [
       {
         "name": "CITY_STAGE_TRACE.json",
@@ -2965,7 +2971,12 @@
     "smtp_enabled": false,
     "unattended_accepted": false,
     "allow_dispatch": false,
-    "allow_cancel_dispatch": false
+    "allow_cancel_dispatch": false,
+    "receipt_comment_id": 6546897497,
+    "receipt_url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6546897497",
+    "independent_readback": true,
+    "publication_readback_at": "2026-10-31T17:41:55.921603+00:00",
+    "published_evidence_commit": "7c1056610564f12d09877e1eea2456521306071a"
   },
   "u1_p0_latest": {
     "source_commit": "d7d424c120281981e70753ea1c15fe130134929f",
