@@ -58,3 +58,5 @@ Existing Issue2 only; no duplicate backend request/channel. Consumption becomes 
 Next: audit child-journal identity/content and process-exit fault contracts, pinned independent review. Formal lease/ACL/trusted adapter and successful held-source publication remain blocked. Existing versioned cancellation/reserve-before-intent implementation preserved. Release scope is offline files only; recovery baseline182d4f2, reviewed revert if needed, no UNKNOWN effect replay or production rollback authority.
 
 DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false; BUSINESS_GROWTH=UNKNOWN. allow_install=false; allow_dispatch=false; allow_cancel_dispatch=false.
+
+正式消费完成 / Formal consumption completed: Issue2 comment6561646296 independently read back exactly. CODEX_HANDOFF_CONSUMED=true. See CONSUMPTION_RECEIPT.json; prepublication false in VERIFICATION.json remains historical. 本轮结束前保留原恢复guard，仅释放所属cycle锁。

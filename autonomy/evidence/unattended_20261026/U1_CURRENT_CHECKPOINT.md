@@ -1,6 +1,6 @@
 # 当前恢复点 / Current recovery point — 2026-11-02 01:46+08
 
-源码 / Source: 832f2198e384ccba12828350181415a1049f6f22；审计目录绑定3新增、20定向、115组合PASS9.518s，独审PENDING。Audit-directory binding tested, review pending. WorkBuddy13d061a8文件已验，回执待发布/回读；SAFE68，严格增长/零漏跑UNKNOWN，5真实run/7firing。生产派发/取消/安装关闭，无人登录未通过。Receipt pending publication/readback; unattended acceptance unverified.
+源码 / Source: 832f2198e384ccba12828350181415a1049f6f22；审计目录绑定3新增、20定向、115组合PASS9.518s，独审PENDING。Audit-directory binding tested, review pending. WorkBuddy13d061a8文件已验，回执6561646296已发布并独立逐字回读，CODEX_HANDOFF_CONSUMED=true；SAFE68，严格增长/零漏跑UNKNOWN，5真实run/7firing。生产派发/取消/安装关闭，无人登录未通过。Receipt6561646296 published and exact independent readback verified; unattended acceptance unverified.
 
 报告 / Report: autonomy/evidence/audit_binding_20261102/REPORT.md。下一项 / Next: audit child-journal identity/content and process-exit fault contracts; formal lease/ACL/trusted adapter blocked.
 
