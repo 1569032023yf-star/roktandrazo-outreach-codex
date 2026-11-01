@@ -1,0 +1,47 @@
+{
+  "schema": "codex.u1.guard-invalidation.v1",
+  "summary_zh": "源复核任何失败/中断即单向停用，恢复原对象不复用；保留句柄供明确清理。",
+  "summary_en": "Any source-validation failure/interruption irreversibly deactivates the context; restoring original objects does not reactivate it, and handles remain for explicit cleanup.",
+  "source_commit": "2fe05bb1114cbf09944baa28a1a9aed1bc2f58a6",
+  "actual_start": "2026-11-01T19:44:47.8292126+08:00",
+  "triggered_at": "2026-11-01T11:44:37.936Z",
+  "recorded_at": "2026-11-01T11:46:24.124116+00:00",
+  "remote_head_at_start": "eb35c8648b435f6511f424d791b8d4ef8b7bdf48",
+  "tests": {
+    "new": 4,
+    "targeted": 32,
+    "targeted_seconds": 0.93,
+    "combined": 109,
+    "combined_seconds": 6.173,
+    "result": "PASS",
+    "subprocess_timeout_seconds": 120
+  },
+  "review": "PENDING",
+  "full_regression": "NOT_RUN_ISOLATED_OFFLINE_GUARD_CHANGE_OLD833_NOT_INHERITED",
+  "DEVELOPMENT_COMPLETE": false,
+  "RELEASE_READY": false,
+  "PRODUCTION_DEPLOYED": false,
+  "PRODUCTION_ACCEPTED": false,
+  "BUSINESS_GROWTH": "UNKNOWN",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "successful_publication_verified": false,
+  "namespace_immutable_verified": false,
+  "workbuddy_commit": "3033463370e7adf62943e642632955c74394bc7c",
+  "workbuddy_remote_unchanged": true,
+  "existing_receipt_comment": 6546897497,
+  "new_receipt": false,
+  "next_action_zh": "继续离线验证安装前源检查与日志意图的跨进程失败边界，固定候选独审PENDING；正式租约/ACL/可信适配和成功持源发布仍未通过。",
+  "next_action_en": "Continue offline cross-process failure boundaries between pre-install source checks and journal intents; pinned review PENDING, formal lease/ACL/trusted adapter and successful held-source publication remain unaccepted.",
+  "source_files": {
+    "autonomy/source_identity.py": {
+      "git_blob": "b00fdf8213c25d92e0ca80cb89c105ea040a3746",
+      "working_sha256": "e28baf1061f31dae8f8fe62679ce074671fa6091d7675d99604b2dc70885b84f"
+    },
+    "test_source_guard_invalidation.py": {
+      "git_blob": "1bf3ba4231b568fc2b436b036457a24041ff2cea",
+      "working_sha256": "00ad4a4d29983e3242769c1ce581e60946db26022c06e4055db2c233cea6c327"
+    }
+  }
+}

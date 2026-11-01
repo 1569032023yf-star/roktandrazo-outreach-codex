@@ -576,14 +576,14 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/namespace_journal_20261101/REPORT.md",
-      "next_action": "Complete source-guard invalidation/reuse contracts after validation failure and cross-boundary faults; formal lease/ACL/trusted adapter and successful held-source publication remain blocked, pinned review PENDING.",
+      "checkpoint": "autonomy/evidence/guard_invalidation_20261101/REPORT.md",
+      "next_action": "Continue offline cross-process failure boundaries between pre-install source checks and journal intents; pinned review PENDING, formal lease/ACL/trusted adapter and successful held-source publication remain unaccepted.",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
-      "review_status": "PENDING_CURRENT_NAMESPACE_JOURNAL_CANDIDATE",
+      "review_status": "PENDING_CURRENT_GUARD_INVALIDATION_CANDIDATE",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "b0eac7720aa21400874bc18c92b0c451413dc785",
+      "candidate_commit": "2fe05bb1114cbf09944baa28a1a9aed1bc2f58a6",
       "trust_boundary_review": "SCOPED_PASS",
       "schedule_contract_review": "SCOPED_PASS",
       "regression_runner_candidate": "b69214d",
@@ -1106,8 +1106,8 @@
           }
         }
       },
-      "next_action_zh": "补齐源身份guard复核失败后的停用/复用合同和跨边界故障覆盖；正式租约/ACL/可信适配与成功持源发布仍阻塞，固定独审PENDING。",
-      "next_action_en": "Complete source-guard invalidation/reuse contracts after validation failure and cross-boundary faults; formal lease/ACL/trusted adapter and successful held-source publication remain blocked, pinned review PENDING.",
+      "next_action_zh": "继续离线验证安装前源检查与日志意图的跨进程失败边界，固定候选独审PENDING；正式租约/ACL/可信适配和成功持源发布仍未通过。",
+      "next_action_en": "Continue offline cross-process failure boundaries between pre-install source checks and journal intents; pinned review PENDING, formal lease/ACL/trusted adapter and successful held-source publication remain unaccepted.",
       "namespace_revalidation_latest": {
         "schema": "codex.u1.namespace-revalidation.v1",
         "summary_zh": "源身份复核在hash前后核对名字对象ID，拒绝同内容替换；返回后窗口仍未锁定。",
@@ -1215,6 +1215,53 @@
           "autonomy/install_journal.py": {
             "git_blob": "cb09911b7cad91b7034cf3ddce63699354804658",
             "working_sha256": "1481bda71821344b59c07cc664e3cbec7577dd1d56f9fa934194351bc70896f9"
+          }
+        }
+      },
+      "guard_invalidation_latest": {
+        "schema": "codex.u1.guard-invalidation.v1",
+        "summary_zh": "源复核任何失败/中断即单向停用，恢复原对象不复用；保留句柄供明确清理。",
+        "summary_en": "Any source-validation failure/interruption irreversibly deactivates the context; restoring original objects does not reactivate it, and handles remain for explicit cleanup.",
+        "source_commit": "2fe05bb1114cbf09944baa28a1a9aed1bc2f58a6",
+        "actual_start": "2026-11-01T19:44:47.8292126+08:00",
+        "triggered_at": "2026-11-01T11:44:37.936Z",
+        "recorded_at": "2026-11-01T11:46:24.124116+00:00",
+        "remote_head_at_start": "eb35c8648b435f6511f424d791b8d4ef8b7bdf48",
+        "tests": {
+          "new": 4,
+          "targeted": 32,
+          "targeted_seconds": 0.93,
+          "combined": 109,
+          "combined_seconds": 6.173,
+          "result": "PASS",
+          "subprocess_timeout_seconds": 120
+        },
+        "review": "PENDING",
+        "full_regression": "NOT_RUN_ISOLATED_OFFLINE_GUARD_CHANGE_OLD833_NOT_INHERITED",
+        "DEVELOPMENT_COMPLETE": false,
+        "RELEASE_READY": false,
+        "PRODUCTION_DEPLOYED": false,
+        "PRODUCTION_ACCEPTED": false,
+        "BUSINESS_GROWTH": "UNKNOWN",
+        "allow_install": false,
+        "allow_dispatch": false,
+        "allow_cancel_dispatch": false,
+        "successful_publication_verified": false,
+        "namespace_immutable_verified": false,
+        "workbuddy_commit": "3033463370e7adf62943e642632955c74394bc7c",
+        "workbuddy_remote_unchanged": true,
+        "existing_receipt_comment": 6546897497,
+        "new_receipt": false,
+        "next_action_zh": "继续离线验证安装前源检查与日志意图的跨进程失败边界，固定候选独审PENDING；正式租约/ACL/可信适配和成功持源发布仍未通过。",
+        "next_action_en": "Continue offline cross-process failure boundaries between pre-install source checks and journal intents; pinned review PENDING, formal lease/ACL/trusted adapter and successful held-source publication remain unaccepted.",
+        "source_files": {
+          "autonomy/source_identity.py": {
+            "git_blob": "b00fdf8213c25d92e0ca80cb89c105ea040a3746",
+            "working_sha256": "e28baf1061f31dae8f8fe62679ce074671fa6091d7675d99604b2dc70885b84f"
+          },
+          "test_source_guard_invalidation.py": {
+            "git_blob": "1bf3ba4231b568fc2b436b036457a24041ff2cea",
+            "working_sha256": "00ad4a4d29983e3242769c1ce581e60946db26022c06e4055db2c233cea6c327"
           }
         }
       }
@@ -3052,7 +3099,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-01T08:43:19.720138+00:00",
+  "updated_at": "2026-11-01T11:46:24.124116+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
