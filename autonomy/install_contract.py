@@ -69,6 +69,7 @@ def exercise_install_contract(audit_root, operation_id, manifest_sha256,
             # pending intent even when no effect was invoked.
             if continue_offline() is not True:
                 raise ValueError('OFFLINE_CONDITION_LOST')
+            journal.revalidate()
             adapter.apply(step, dict(binding))
             observation = adapter.readback(step, dict(binding))
             expected = dict(binding, step=step, outcome='OBSERVED_IN_SANDBOX')

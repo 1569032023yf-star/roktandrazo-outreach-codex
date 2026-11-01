@@ -27,11 +27,14 @@ class InstallJournal:
             if not isinstance(value, str) or not re.fullmatch('[0-9a-f]{64}', value):
                 raise ValueError('EXACT_DIGEST_REQUIRED')
         self.path = Path(audit_root) / (operation_id + '.jsonl')
-        self._file = self.path.open('xb', buffering=0)
+        self._file = self.path.open('x+b', buffering=0)
+        self._expected = b''
         self._count = 0
         self._pending = None
         self._failed = False
         try:
+            identity = os.fstat(self._file.fileno())
+            self._identity = (identity.st_dev, identity.st_ino)
             self._write(dict(schema='rokt.install-journal.v1', operation_id=operation_id,
                              manifest_sha256=manifest_sha256, lease_binding=lease_binding,
                              before='ABSENT', kind='PREPARED'))
@@ -41,10 +44,35 @@ class InstallJournal:
 
     def _write(self, record):
         try:
+            self.revalidate()
             data = _line(record)
             if self._file.write(data) != len(data):
                 raise OSError('SHORT_JOURNAL_WRITE')
             os.fsync(self._file.fileno())
+            self._expected += data
+            self.revalidate()
+        except BaseException:
+            self._failed = True
+            raise
+
+    def revalidate(self):
+        """Detect observed mutation, not an ACL or concurrent-writer exclusion.
+
+        检测已观察到的替换/内容修改；失败后不可恢复写入，不授权重放。
+        Checks cannot eliminate mutation races between checks and effects.
+        """
+        if self._failed:
+            raise ValueError('STOP_AND_PRESERVE')
+        try:
+            for identity in (os.fstat(self._file.fileno()), self.path.stat()):
+                if ((identity.st_dev, identity.st_ino) != self._identity or
+                        identity.st_nlink != 1):
+                    raise ValueError('JOURNAL_IDENTITY_CHANGED')
+            self._file.seek(0)
+            observed = self._file.read(len(self._expected) + 1)
+            self._file.seek(0, os.SEEK_END)
+            if observed != self._expected:
+                raise ValueError('JOURNAL_CONTENT_CHANGED')
         except BaseException:
             self._failed = True
             raise
