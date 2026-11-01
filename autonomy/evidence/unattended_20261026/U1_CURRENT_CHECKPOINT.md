@@ -1,3 +1,9 @@
+# 当前恢复点 / Current recovery point — 2026-11-02 01:46+08
+
+源码 / Source: 832f2198e384ccba12828350181415a1049f6f22；审计目录绑定3新增、20定向、115组合PASS9.518s，独审PENDING。Audit-directory binding tested, review pending. WorkBuddy13d061a8文件已验，回执待发布/回读；SAFE68，严格增长/零漏跑UNKNOWN，5真实run/7firing。生产派发/取消/安装关闭，无人登录未通过。Receipt pending publication/readback; unattended acceptance unverified.
+
+报告 / Report: autonomy/evidence/audit_binding_20261102/REPORT.md。下一项 / Next: audit child-journal identity/content and process-exit fault contracts; formal lease/ACL/trusted adapter blocked.
+
 2026-11-01 22:46周期：固定候选ac0e9af1694447027ab4cb9128e4bcaca085e824新增3项真实持源进程边界1.624s、112组合8.688s通过。意图后exit42无效果/pending，回执后exit43保留1回执/整体UNKNOWN；活跃另一进程同operation认领拒、源写入拒，释放后exit44仍不重放。运行源码未改、独审PENDING、不继承833，非正式租约/真实安装。WB30334633不变/回执6546897497不重发。推进固定离线安装原语差异审阅及保护审计根的失败合同，正式租约/ACL/可信适配和成功持源发布仍阻塞；独审PENDING。 四总体false，生产/取消关闭，增长UNKNOWN。
 
 Cycle22:46 Nov1: pin ac0e9af1694447027ab4cb9128e4bcaca085e824 adds3 actual held-source process tests1.624s/112 combined8.688s pass. Exit42 after intent leaves pending/no effect;exit43 after receipt preserves one receipt/overall UNKNOWN. Live competing process cannot claim same operation and source writes blocked;exit44 after release does not replay. Runtime unchanged, review PENDING,833 not inherited; not formal lease/installation. WB30334633 unchanged/receipt6546897497 not reposted. Continue pinned offline installation primitive diff review and protected-audit-root failure contracts; formal lease/ACL/trusted adapter and successful held-source publication remain blocked, independent review PENDING. Four overall states false, dispatch/cancel closed, growth UNKNOWN.

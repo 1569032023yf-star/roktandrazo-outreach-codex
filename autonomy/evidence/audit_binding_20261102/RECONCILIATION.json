@@ -1,0 +1,64 @@
+{
+  "pairs": [
+    {
+      "firing_id": "automation-1784775229336:1793525463561",
+      "run_id": "inventory:2026-11-01:92b9d406",
+      "inventory_execution_verified": true,
+      "reason": "VERIFIED_INVENTORY_ROW",
+      "calculated_drift_seconds": 24.35,
+      "within_declared_tolerance": true
+    },
+    {
+      "firing_id": "automation-1784775229336:1793502321368",
+      "run_id": "inventory:2026-11-01:493f7e5c",
+      "inventory_execution_verified": true,
+      "reason": "VERIFIED_INVENTORY_ROW",
+      "calculated_drift_seconds": 744.59,
+      "within_declared_tolerance": false
+    },
+    {
+      "firing_id": "automation-1784775229336:1793478085216",
+      "run_id": "inventory:2026-11-01:f2830908",
+      "inventory_execution_verified": true,
+      "reason": "VERIFIED_INVENTORY_ROW",
+      "calculated_drift_seconds": 27.412,
+      "within_declared_tolerance": true
+    },
+    {
+      "firing_id": "automation-1784775229336:1793455336270",
+      "run_id": null,
+      "inventory_execution_verified": false,
+      "reason": "ONE_TO_ONE_FIRING_RUN_REQUIRED",
+      "calculated_drift_seconds": 48.362,
+      "within_declared_tolerance": true
+    },
+    {
+      "firing_id": "automation-1784775229336:1793431544244",
+      "run_id": "inventory:2026-10-31:d52e84fd",
+      "inventory_execution_verified": true,
+      "reason": "VERIFIED_INVENTORY_ROW",
+      "calculated_drift_seconds": 29.533,
+      "within_declared_tolerance": true
+    },
+    {
+      "firing_id": "automation-1784775229336:1793407709407",
+      "run_id": "inventory:2026-10-31:2e419944",
+      "inventory_execution_verified": true,
+      "reason": "VERIFIED_INVENTORY_ROW",
+      "calculated_drift_seconds": 674.95,
+      "within_declared_tolerance": false
+    },
+    {
+      "firing_id": "automation-1784775229336:1793384283084",
+      "run_id": null,
+      "inventory_execution_verified": false,
+      "reason": "ONE_TO_ONE_FIRING_RUN_REQUIRED",
+      "calculated_drift_seconds": 10.078,
+      "within_declared_tolerance": true
+    }
+  ],
+  "verified_inventory_executions": 5,
+  "zero_missed_runs": "UNKNOWN",
+  "production_accepted": false,
+  "allow_dispatch": false
+}

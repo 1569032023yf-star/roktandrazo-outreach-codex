@@ -1,0 +1,21 @@
+{
+  "source_commit": "832f2198e384ccba12828350181415a1049f6f22",
+  "files": {
+    "autonomy/install_contract.py": {
+      "git_blob": "e89e36503d987399915cc9266dd2133f6181f04a",
+      "working_sha256": "5d7cc276fbcbcfeb0f37431a6479f65d5f3d1cdb09366887743d646200a3533c"
+    },
+    "test_bound_audit_contract.py": {
+      "git_blob": "2c6bf676f9304af5a7a8f32612bfb0c68a1e4cfd",
+      "working_sha256": "d9e2464c0a7c8c12430b55a674b74b50fcbecdfe6f144356443084c23a4ba47f"
+    },
+    "autonomy/directory_identity.py": {
+      "git_blob": "88b0882c7f1b9a1cae2b91e67043d07eaade0dfa",
+      "working_sha256": "081ecaca13b7e04530d28f2d528e77d149b68112295ccb1150715e0a343141bb"
+    },
+    "autonomy/install_journal.py": {
+      "git_blob": "cb09911b7cad91b7034cf3ddce63699354804658",
+      "working_sha256": "1481bda71821344b59c07cc664e3cbec7577dd1d56f9fa934194351bc70896f9"
+    }
+  }
+}
