@@ -1,0 +1,51 @@
+{
+  "schema": "codex.u1.source-binding-experiment.v1",
+  "source_commit": "7f083ff3d9bee5361ae90596c92fa518c4382a15",
+  "actual_start": "2026-11-01T10:43:09.0286978+08:00",
+  "triggered_at": "2026-11-01T02:42:59.661Z",
+  "recorded_at": "2026-11-01T02:45:20.728641+00:00",
+  "summary_zh": "隔离READ|DELETE共享实验仍错误5；子文件可移动，同内容替换能绕过保留句柄hash但被名字到对象ID读回检测。",
+  "summary_en": "Isolated READ|DELETE sharing still yields error5; child rename is possible, and equal-byte replacement evades held-handle hashes but is detected by name-to-object ID readback.",
+  "tests": {
+    "new": 4,
+    "new_seconds": 0.029,
+    "combined": 98,
+    "combined_seconds": 6.692,
+    "result": "PASS",
+    "timeout_seconds": 120,
+    "initial_expectation_errors": 2
+  },
+  "review": "PENDING",
+  "runtime_sources_modified": false,
+  "successful_publication_verified": false,
+  "namespace_immutable": false,
+  "DEVELOPMENT_COMPLETE": false,
+  "RELEASE_READY": false,
+  "PRODUCTION_DEPLOYED": false,
+  "PRODUCTION_ACCEPTED": false,
+  "BUSINESS_GROWTH": "UNKNOWN",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "workbuddy_commit": "3033463370e7adf62943e642632955c74394bc7c",
+  "workbuddy_remote_unchanged": true,
+  "existing_receipt_comment": 6546897497,
+  "new_receipt": false,
+  "next_action_zh": "离线实现受限命名空间验证合同，明确身份读回后的替换窗口与租约/ACL依赖；成功发布仍阻塞，固定候选独审PENDING。",
+  "next_action_en": "Implement an offline constrained-namespace validation contract, including post-readback replacement windows and lease/ACL dependencies; successful publication remains blocked and pinned review PENDING.",
+  "full_regression": "NOT_RUN_TEST_ONLY_CHANGE_OLD833_NOT_INHERITED",
+  "source_files": {
+    "test_source_binding_experiment.py": {
+      "git_blob": "62aefff3e935be8b73bd52715a80e3aba3618fb6",
+      "working_sha256": "9c16eb08e8f51487b54a676155a5dc3bf66fbc7f7f9fa7af3ab7036f07c850cc"
+    },
+    "autonomy/source_publication.py": {
+      "git_blob": "c68679de4d9517c8e2b0eb039096b3536fe69c0c",
+      "working_sha256": "fc971365cf28cc25661334399ff87e7b9a5aeb17df4bb3128f4cd459f5cfa523"
+    },
+    "autonomy/source_identity.py": {
+      "git_blob": "b530a2e2df5ac4bb92de713357bf470c4c749180",
+      "working_sha256": "89efe5237f4021b2cbacfd045e347883d6a82b65ce81ce062f935fddf5a8cdfd"
+    }
+  }
+}
