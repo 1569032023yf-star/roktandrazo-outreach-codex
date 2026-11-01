@@ -1,3 +1,9 @@
+# 当前恢复点 / Current recovery point — 2026-11-02 04:48+08
+
+源码 / Source: 41ab0b70c464f494281b2d8dc61a4ac3470e745c。审计子日志观察到修改即永久停写；3新增、118组合PASS8.121s，独审PENDING，不是ACL/排他保护。Observed-mutation detection tested, not ACL/exclusion. WB13d061a不变，回执6561646296不重发，生产/安装/取消派发关闭。Unattended persistence unaccepted.
+
+下一项 / Next: named journal replacement/hard-link and child-exit-after-corruption/status contracts. 报告 / Report: autonomy/evidence/journal_content_20261102/REPORT.md.
+
 # 当前恢复点 / Current recovery point — 2026-11-02 01:46+08
 
 源码 / Source: 832f2198e384ccba12828350181415a1049f6f22；审计目录绑定3新增、20定向、115组合PASS9.518s，独审PENDING。Audit-directory binding tested, review pending. WorkBuddy13d061a8文件已验，回执6561646296已发布并独立逐字回读，CODEX_HANDOFF_CONSUMED=true；SAFE68，严格增长/零漏跑UNKNOWN，5真实run/7firing。生产派发/取消/安装关闭，无人登录未通过。Receipt6561646296 published and exact independent readback verified; unattended acceptance unverified.

@@ -1,0 +1,47 @@
+{
+  "schema": "codex.u1.journal-content.v1",
+  "source_commit": "41ab0b70c464f494281b2d8dc61a4ac3470e745c",
+  "actual_start": "2026-11-02T04:48:52.9848331+08:00",
+  "triggered_at": "2026-11-01T20:48:46.024Z",
+  "recorded_at": "2026-11-01T20:51:06.281664+00:00",
+  "remote_head_at_start": "3a433f082a2be34f30ae6ff69b3e7d9adcbfebfd",
+  "source_files": {
+    "autonomy/install_journal.py": {
+      "git_blob": "fd1adda1d4b2ed7591378e4535c3df3b99b8dea2",
+      "sha256": "d26b1bb404eabad315223dfc6d81fe44a2f86b68605682808ee916386faf093a"
+    },
+    "autonomy/install_contract.py": {
+      "git_blob": "6461275e143b93ed99640fbe4d9321c14ba9ab69",
+      "sha256": "b1b0f5646901bf6b595fdb53e35e0a92d3dc49d2c6c6336e062c96403b334f8d"
+    },
+    "test_journal_content.py": {
+      "git_blob": "01d9b91cfca0c874fcdbc8c59175ffa3c385f85e",
+      "sha256": "d9076a1ca2bb90cb583795d0d2c65274356f93f1ecee7b5bfa46945d51dd8380"
+    }
+  },
+  "tests": {
+    "new": 3,
+    "targeted": 17,
+    "targeted_seconds": 1.356,
+    "combined": 118,
+    "combined_seconds": 8.121,
+    "result": "PASS",
+    "timeout_seconds": 120
+  },
+  "review": "PENDING",
+  "full_regression": "NOT_RUN_OFFLINE_INSTALL_PRIMITIVE_ONLY_OLD833_NOT_INHERITED",
+  "workbuddy_commit": "13d061a82568bc147efa689742a61b3e06d95a31",
+  "workbuddy_remote_unchanged": true,
+  "existing_receipt_comment": 6561646296,
+  "new_receipt": false,
+  "DEVELOPMENT_COMPLETE": false,
+  "RELEASE_READY": false,
+  "PRODUCTION_DEPLOYED": false,
+  "PRODUCTION_ACCEPTED": false,
+  "BUSINESS_GROWTH": "UNKNOWN",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "summary_zh": "离线日志写入前后及外部效果前复核对象身份/精确内容，已观察修改即永久停写。",
+  "summary_en": "Offline journal identity/exact-content checks before/after writes and before effects; observed mutation permanently stops the writer."
+}
