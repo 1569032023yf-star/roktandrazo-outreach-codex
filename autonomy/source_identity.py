@@ -147,6 +147,16 @@ class SourceIdentityGuard:
     def revalidate(self):
         if not self._active:
             raise ValueError('NO_ACTIVE_SOURCE_HANDLES')
+        try:
+            return self._revalidate_active()
+        except BaseException:
+            # A failed observation permanently invalidates this context, even
+            # if names/bytes are later repaired. Preserve handles for close().
+            # 复核失败即停用本上下文；修复名字/内容不恢复，句柄留待明确清理。
+            self._active = False
+            raise
+
+    def _revalidate_active(self):
         directory = self._directory.revalidate()
         self._exact_names()
         self._check_named_files()
