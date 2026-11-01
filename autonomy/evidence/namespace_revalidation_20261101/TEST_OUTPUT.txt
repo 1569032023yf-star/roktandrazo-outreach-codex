@@ -1,0 +1,6 @@
+命名空间复核组合测试 / Namespace revalidation combined tests
+Command: C:\Users\15690\AppData\Local\Programs\Python\Python313\python.exe -B -m unittest test_namespace_revalidation test_source_binding_experiment test_source_publication test_source_identity test_handoff_safe_growth test_directory_identity test_first_publication test_audit_root_policy test_install_contract test_install_journal test_independent_install_plan test_disabled_host_package test_handoff_inventory_attribution test_host_readonly_http test_recovery_status -q
+----------------------------------------------------------------------
+Ran 101 tests in 5.687s
+
+OK

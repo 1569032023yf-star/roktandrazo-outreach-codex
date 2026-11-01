@@ -576,14 +576,14 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/handoff_one_to_one_20261031/REPORT.md",
-      "next_action": "Review pinned source-publication failure contract; design and fault-test rename-compatible child-name/retained-ID binding and replacement-race detection without blindly relaxing sharing. Current held-child publication fails WinError5; formal lease/ACL/Windows installer/backend missing; Execute/dispatch disabled.",
+      "checkpoint": "autonomy/evidence/namespace_revalidation_20261101/REPORT.md",
+      "next_action": "Continue offline constrained-namespace/lease-dependency contracts and replacement-window fault injection; pinned review PENDING and successful held-source directory publication still blocked by error5.",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
-      "review_status": "PASS_SCOPED_OFFLINE_STATUS_ONLY",
+      "review_status": "PENDING_CURRENT_NAMESPACE_CANDIDATE",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "079792aa848aba979e2c0680eee73ec91b7f0b3a",
+      "candidate_commit": "b642f595c7c97904556126df0e5c2b2d8427295c",
       "trust_boundary_review": "SCOPED_PASS",
       "schedule_contract_review": "SCOPED_PASS",
       "regression_runner_candidate": "b69214d",
@@ -1106,8 +1106,61 @@
           }
         }
       },
-      "next_action_zh": "离线实现受限命名空间验证合同，明确身份读回后的替换窗口与租约/ACL依赖；成功发布仍阻塞，固定候选独审PENDING。",
-      "next_action_en": "Implement an offline constrained-namespace validation contract, including post-readback replacement windows and lease/ACL dependencies; successful publication remains blocked and pinned review PENDING."
+      "next_action_zh": "继续离线受限命名空间/租约依赖合同及替换窗口故障注入；固定源码独审PENDING，成功持源目录发布仍错误5阻塞。",
+      "next_action_en": "Continue offline constrained-namespace/lease-dependency contracts and replacement-window fault injection; pinned review PENDING and successful held-source directory publication still blocked by error5.",
+      "namespace_revalidation_latest": {
+        "schema": "codex.u1.namespace-revalidation.v1",
+        "summary_zh": "源身份复核在hash前后核对名字对象ID，拒绝同内容替换；返回后窗口仍未锁定。",
+        "summary_en": "Source revalidation checks named object IDs before and after hashing, rejecting equal-byte substitution; the post-return window remains unlocked.",
+        "source_commit": "b642f595c7c97904556126df0e5c2b2d8427295c",
+        "actual_start": "2026-11-01T13:41:40.3376939+08:00",
+        "triggered_at": "2026-11-01T05:41:32.465Z",
+        "recorded_at": "2026-11-01T05:44:04.759662+00:00",
+        "remote_head_at_start": "ab009d1d3896b41dd64b1fe462c97dc9b29ad6c6",
+        "tests": {
+          "new": 3,
+          "targeted": 24,
+          "targeted_seconds": 0.492,
+          "combined": 101,
+          "combined_seconds": 5.687,
+          "result": "PASS",
+          "subprocess_timeout_seconds": 120,
+          "initial_targeted_count": 28,
+          "initial_count_included_duplicate_imported_testcase": true
+        },
+        "review": "PENDING",
+        "successful_publication_verified": false,
+        "namespace_immutable_verified": false,
+        "allow_install": false,
+        "allow_dispatch": false,
+        "allow_cancel_dispatch": false,
+        "DEVELOPMENT_COMPLETE": false,
+        "RELEASE_READY": false,
+        "PRODUCTION_DEPLOYED": false,
+        "PRODUCTION_ACCEPTED": false,
+        "BUSINESS_GROWTH": "UNKNOWN",
+        "workbuddy_commit": "3033463370e7adf62943e642632955c74394bc7c",
+        "workbuddy_remote_unchanged": true,
+        "existing_receipt_comment": 6546897497,
+        "new_receipt": false,
+        "full_regression": "NOT_RUN_ISOLATED_OFFLINE_GUARD_ONLY_OLD833_NOT_INHERITED",
+        "next_action_zh": "继续离线受限命名空间/租约依赖合同及替换窗口故障注入；固定源码独审PENDING，成功持源目录发布仍错误5阻塞。",
+        "next_action_en": "Continue offline constrained-namespace/lease-dependency contracts and replacement-window fault injection; pinned review PENDING and successful held-source directory publication still blocked by error5.",
+        "source_files": {
+          "autonomy/source_identity.py": {
+            "git_blob": "7e0554ca5e78cfe7b0dae886d968134bb477ee0f",
+            "working_sha256": "84dbd92395042e64a53fc64da195a3b9a79deb274b569dbe7f97e242464fbd73"
+          },
+          "test_source_binding_experiment.py": {
+            "git_blob": "7ef322f293d4e975c27247cfcf3459a3203752c6",
+            "working_sha256": "2a787b17b57e905581bb83ed3c8b57277b2f15d8f926908ab6b903967ab70346"
+          },
+          "test_namespace_revalidation.py": {
+            "git_blob": "4e249f4c90e8a4a086eaff3d062d3a18480bc303",
+            "working_sha256": "a3da695b804fe388213c7d93801d171e26d0e01b67d66b6be08d906d27647b36"
+          }
+        }
+      }
     },
     {
       "id": "A-u1-host-contract-integration-20261030",
@@ -2942,7 +2995,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-01T02:45:20.728641+00:00",
+  "updated_at": "2026-11-01T05:44:04.759662+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",

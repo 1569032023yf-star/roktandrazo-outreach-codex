@@ -1,0 +1,53 @@
+{
+  "schema": "codex.u1.namespace-revalidation.v1",
+  "summary_zh": "源身份复核在hash前后核对名字对象ID，拒绝同内容替换；返回后窗口仍未锁定。",
+  "summary_en": "Source revalidation checks named object IDs before and after hashing, rejecting equal-byte substitution; the post-return window remains unlocked.",
+  "source_commit": "b642f595c7c97904556126df0e5c2b2d8427295c",
+  "actual_start": "2026-11-01T13:41:40.3376939+08:00",
+  "triggered_at": "2026-11-01T05:41:32.465Z",
+  "recorded_at": "2026-11-01T05:44:04.759662+00:00",
+  "remote_head_at_start": "ab009d1d3896b41dd64b1fe462c97dc9b29ad6c6",
+  "tests": {
+    "new": 3,
+    "targeted": 24,
+    "targeted_seconds": 0.492,
+    "combined": 101,
+    "combined_seconds": 5.687,
+    "result": "PASS",
+    "subprocess_timeout_seconds": 120,
+    "initial_targeted_count": 28,
+    "initial_count_included_duplicate_imported_testcase": true
+  },
+  "review": "PENDING",
+  "successful_publication_verified": false,
+  "namespace_immutable_verified": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "DEVELOPMENT_COMPLETE": false,
+  "RELEASE_READY": false,
+  "PRODUCTION_DEPLOYED": false,
+  "PRODUCTION_ACCEPTED": false,
+  "BUSINESS_GROWTH": "UNKNOWN",
+  "workbuddy_commit": "3033463370e7adf62943e642632955c74394bc7c",
+  "workbuddy_remote_unchanged": true,
+  "existing_receipt_comment": 6546897497,
+  "new_receipt": false,
+  "full_regression": "NOT_RUN_ISOLATED_OFFLINE_GUARD_ONLY_OLD833_NOT_INHERITED",
+  "next_action_zh": "继续离线受限命名空间/租约依赖合同及替换窗口故障注入；固定源码独审PENDING，成功持源目录发布仍错误5阻塞。",
+  "next_action_en": "Continue offline constrained-namespace/lease-dependency contracts and replacement-window fault injection; pinned review PENDING and successful held-source directory publication still blocked by error5.",
+  "source_files": {
+    "autonomy/source_identity.py": {
+      "git_blob": "7e0554ca5e78cfe7b0dae886d968134bb477ee0f",
+      "working_sha256": "84dbd92395042e64a53fc64da195a3b9a79deb274b569dbe7f97e242464fbd73"
+    },
+    "test_source_binding_experiment.py": {
+      "git_blob": "7ef322f293d4e975c27247cfcf3459a3203752c6",
+      "working_sha256": "2a787b17b57e905581bb83ed3c8b57277b2f15d8f926908ab6b903967ab70346"
+    },
+    "test_namespace_revalidation.py": {
+      "git_blob": "4e249f4c90e8a4a086eaff3d062d3a18480bc303",
+      "working_sha256": "a3da695b804fe388213c7d93801d171e26d0e01b67d66b6be08d906d27647b36"
+    }
+  }
+}
