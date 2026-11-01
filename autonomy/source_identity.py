@@ -97,6 +97,26 @@ class SourceIdentityGuard:
         if set(p.name for p in self.path.iterdir()) != set(self.expected):
             raise ValueError('EXACT_FILE_SET_REQUIRED')
 
+    def _check_named_files(self):
+        """Snapshot name-to-object binding; not a lease or future immutability.
+
+        名字读回只代表检查时点，不证明后续命名空间不可变。
+        """
+        for name, expected in self._identities.items():
+            handle = self._api.CreateFileW(str(self.path / name), 0x80,
+                                           7, None, 3, 0x00200000, None)
+            if handle == ctypes.c_void_p(-1).value:
+                raise ctypes.WinError(ctypes.get_last_error())
+            try:
+                if self._info(handle) != expected:
+                    raise ValueError('NAMED_SOURCE_IDENTITY_MISMATCH')
+            finally:
+                if not self._api.CloseHandle(handle):
+                    # Preserve a failed close for explicit cleanup, never hide it.
+                    self._handles['__named_' + name] = handle
+                    self._active = False
+                    raise ctypes.WinError(ctypes.get_last_error())
+
     def __enter__(self):
         if self._entered:
             raise ValueError('GUARD_SINGLE_USE')
@@ -129,6 +149,7 @@ class SourceIdentityGuard:
             raise ValueError('NO_ACTIVE_SOURCE_HANDLES')
         directory = self._directory.revalidate()
         self._exact_names()
+        self._check_named_files()
         files = {}
         for name, handle in self._handles.items():
             info = self._info(handle)
@@ -141,10 +162,12 @@ class SourceIdentityGuard:
                 raise ValueError('OPEN_FILE_IDENTITY_CHANGED')
             files[name] = dict(info, sha256=digest)
         self._exact_names()
+        self._check_named_files()
         self._directory.revalidate()
         return dict(directory=directory, files=files, allow_install=False,
                     allow_dispatch=False, production_execution=False,
                     publication_integrated=False, acl_trust_verified=False,
+                    namespace_immutable_verified=False,
                     preexisting_writable_mappings_verified=False)
 
     def close(self):

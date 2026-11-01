@@ -63,8 +63,11 @@ class SourceBindingExperimentTests(unittest.TestCase):
             leaf = self.source / 'host.bin'
             os.rename(leaf, self.root / 'retained-original')
             leaf.write_bytes(b'candidate')
-            # Same names + retained object hash are insufficient for namespace trust.
-            self.assertEqual(guard.revalidate(), before)
+            # Retained hash alone misses substitution; the repaired guard rejects it.
+            original = guard._handles['host.bin']
+            self.assertEqual(guard._hash(original, len(b'candidate')), MANIFEST['host.bin'])
+            with self.assertRaisesRegex(ValueError, 'NAMED_SOURCE_IDENTITY_MISMATCH'):
+                guard.revalidate()
             with self.assertRaisesRegex(ValueError, 'DESTINATION_IDENTITY_MISMATCH'):
                 _verify_named_objects(guard, before)
             self.assertEqual((self.root / 'retained-original').read_bytes(), b'candidate')
