@@ -1,0 +1,57 @@
+{
+  "schema": "codex.u1.namespace-journal-integration.v1",
+  "summary_zh": "真实源身份复核与既有安装日志接合，替换/注入条件丢失/进程exit37均保留未决且拒重放。",
+  "summary_en": "Real source validation joins existing install journal; replacement, injected-condition loss and process exit37 preserve pending operations without replay.",
+  "source_commit": "b0eac7720aa21400874bc18c92b0c451413dc785",
+  "actual_start": "2026-11-01T16:41:14.6014706+08:00",
+  "triggered_at": "2026-11-01T08:41:05.350Z",
+  "recorded_at": "2026-11-01T08:43:19.720138+00:00",
+  "remote_head_at_start": "6dcd4248c52c6481d67dc5e41ae200d1db99d493",
+  "tests": {
+    "new": 4,
+    "new_seconds": 0.424,
+    "combined": 105,
+    "combined_seconds": 6.528,
+    "result": "PASS",
+    "subprocess_timeout_seconds": 120,
+    "child_timeout_seconds": 20,
+    "actual_child_exit_code": 37
+  },
+  "review": "PENDING",
+  "runtime_sources_modified": false,
+  "formal_lease_verified": false,
+  "successful_publication_verified": false,
+  "DEVELOPMENT_COMPLETE": false,
+  "RELEASE_READY": false,
+  "PRODUCTION_DEPLOYED": false,
+  "PRODUCTION_ACCEPTED": false,
+  "BUSINESS_GROWTH": "UNKNOWN",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "full_regression": "NOT_RUN_TEST_ONLY_INCREMENT_OLD833_NOT_INHERITED",
+  "workbuddy_commit": "3033463370e7adf62943e642632955c74394bc7c",
+  "workbuddy_remote_unchanged": true,
+  "existing_receipt_comment": 6546897497,
+  "new_receipt": false,
+  "next_action_zh": "补齐源身份guard复核失败后的停用/复用合同和跨边界故障覆盖；正式租约/ACL/可信适配与成功持源发布仍阻塞，固定独审PENDING。",
+  "next_action_en": "Complete source-guard invalidation/reuse contracts after validation failure and cross-boundary faults; formal lease/ACL/trusted adapter and successful held-source publication remain blocked, pinned review PENDING.",
+  "source_files": {
+    "test_namespace_journal_integration.py": {
+      "git_blob": "3b7365f0c8581a433f79bb934035c8eee2f2f8ca",
+      "working_sha256": "c799c88682c441931719d9e9af643d8d79da7bc67ff28795e7d0876aa8610d91"
+    },
+    "autonomy/source_identity.py": {
+      "git_blob": "7e0554ca5e78cfe7b0dae886d968134bb477ee0f",
+      "working_sha256": "84dbd92395042e64a53fc64da195a3b9a79deb274b569dbe7f97e242464fbd73"
+    },
+    "autonomy/install_contract.py": {
+      "git_blob": "7e5358d7fb0cdf3c48195eb3844af7eb6d92ba6e",
+      "working_sha256": "bf03c6e740a7426bf0f4d2ffe862f8d71103f268c4d129522e5fb48c8fb195df"
+    },
+    "autonomy/install_journal.py": {
+      "git_blob": "cb09911b7cad91b7034cf3ddce63699354804658",
+      "working_sha256": "1481bda71821344b59c07cc664e3cbec7577dd1d56f9fa934194351bc70896f9"
+    }
+  }
+}
