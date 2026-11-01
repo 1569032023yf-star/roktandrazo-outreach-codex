@@ -577,7 +577,7 @@
       "status": "in_progress",
       "executor": "current_authorized_chat",
       "checkpoint": "autonomy/evidence/source_process_20261101/REPORT.md",
-      "next_action": "Offline named journal replacement/hard-link and child-exit-after-corruption/status contracts; pinned independent review PENDING; formal lease/ACL/backend and unattended persistence unaccepted.",
+      "next_action": "Offline inspect_install operation/manifest/lease binding, malformed-field and bounded-read contracts; pinned independent review PENDING; formal Windows identity/ACL/lease/backend and unattended acceptance blocked.",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "PENDING_CURRENT_SOURCE_PROCESS_CANDIDATE",
@@ -1583,6 +1583,57 @@
         "allow_cancel_dispatch": false,
         "summary_zh": "离线日志写入前后及外部效果前复核对象身份/精确内容，已观察修改即永久停写。",
         "summary_en": "Offline journal identity/exact-content checks before/after writes and before effects; observed mutation permanently stops the writer."
+      },
+      "journal_identity_process_latest": {
+        "schema": "codex.u1.journal-identity-process.v1",
+        "source_commit": "23c872eab5e8138ca8f42596508223251af7e21b",
+        "runtime_source_base": "41ab0b70c464f494281b2d8dc61a4ac3470e745c",
+        "runtime_sources_modified": false,
+        "actual_start": "2026-11-02T07:48:25.6906209+08:00",
+        "triggered_at": "2026-11-01T23:48:18.892Z",
+        "recorded_at": "2026-11-01T23:50:09.618196+00:00",
+        "remote_head_at_start": "5eabe5cb92d96c1b4500185706ba8eb5dc4fa8a6",
+        "source_files": {
+          "test_journal_identity_process.py": {
+            "git_blob": "d3eb061f4c8c7c4664f6bacdc3c8df94d168994e",
+            "sha256": "f9863e2a79d13625450c69ca90286721258b93f6a28869ab591d5fa3470cbf36"
+          },
+          "autonomy/install_journal.py": {
+            "git_blob": "fd1adda1d4b2ed7591378e4535c3df3b99b8dea2",
+            "sha256": "d26b1bb404eabad315223dfc6d81fe44a2f86b68605682808ee916386faf093a"
+          },
+          "autonomy/install_contract.py": {
+            "git_blob": "6461275e143b93ed99640fbe4d9321c14ba9ab69",
+            "sha256": "b1b0f5646901bf6b595fdb53e35e0a92d3dc49d2c6c6336e062c96403b334f8d"
+          }
+        },
+        "tests": {
+          "new": 3,
+          "targeted": 20,
+          "targeted_seconds": 1.089,
+          "combined": 121,
+          "combined_seconds": 7.497,
+          "result": "PASS",
+          "timeout_seconds": 120,
+          "child_timeout_seconds": 20,
+          "child_exit": 47
+        },
+        "review": "PENDING",
+        "full_regression": "NOT_RUN_TEST_ONLY_INCREMENT_OLD833_NOT_INHERITED",
+        "workbuddy_commit": "13d061a82568bc147efa689742a61b3e06d95a31",
+        "workbuddy_remote_unchanged": true,
+        "existing_receipt_comment": 6561646296,
+        "new_receipt": false,
+        "DEVELOPMENT_COMPLETE": false,
+        "RELEASE_READY": false,
+        "PRODUCTION_DEPLOYED": false,
+        "PRODUCTION_ACCEPTED": false,
+        "BUSINESS_GROWTH": "UNKNOWN",
+        "allow_install": false,
+        "allow_dispatch": false,
+        "allow_cancel_dispatch": false,
+        "summary_zh": "真实Windows验证命名替换拒、硬链接停写和损坏子进程退出后UNKNOWN不重放。",
+        "summary_en": "Actual Windows named replacement denial, hardlink invalidation and UNKNOWN no replay after corrupted child exit."
       }
     },
     {

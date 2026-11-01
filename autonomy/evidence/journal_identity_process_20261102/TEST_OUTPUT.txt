@@ -1,0 +1,6 @@
+真实日志对象与进程测试 / Actual journal object and process tests
+Command: python -B -m unittest test_journal_identity_process test_journal_content test_bound_audit_contract test_source_process_boundaries test_source_guard_invalidation test_namespace_journal_integration test_namespace_revalidation test_source_binding_experiment test_source_publication test_source_identity test_handoff_safe_growth test_directory_identity test_first_publication test_audit_root_policy test_install_contract test_install_journal test_independent_install_plan test_disabled_host_package test_handoff_inventory_attribution test_host_readonly_http test_recovery_status -q
+Ran121 tests in7.497s OK
+Targeted: test_journal_identity_process test_journal_content test_bound_audit_contract test_install_journal test_install_contract:20tests1.089s OK
+Outer timeout120s; child timeout20s; actual child exit47.
+Initial targeted20 failed1: test incorrectly expected pending STAGE from malformed JSON stream; corrected assertion to UNKNOWN/null prefix, retaining raw INTENT bytes. Runtime implementation unchanged.
