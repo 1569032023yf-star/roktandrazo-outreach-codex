@@ -6,9 +6,34 @@ security boundary or proof of authorization.
 """
 import hashlib
 import json
+import os
 from typing import Protocol
 
 from autonomy.install_journal import InstallJournal, STEPS, inspect_install
+from autonomy.directory_identity import DirectoryIdentityGuard
+
+
+def exercise_bound_audit_contract_offline(audit_root, operation_id, manifest_sha256,
+                                          lease_binding, adapter, continue_offline,
+                                          *, offline_only=False):
+    """Hold audit-root ancestors through writer close and final status read.
+
+    Directory identity is not ACL protection of child journals or a formal lease.
+    离线目录句柄绑定，不代表子日志ACL或正式租约，不授权安装。
+    """
+    if offline_only is not True or os.name != 'nt':
+        raise ValueError('WINDOWS_OFFLINE_ONLY')
+    with DirectoryIdentityGuard(audit_root, offline_only=True) as guard:
+        def condition():
+            guard.revalidate()
+            result = continue_offline()
+            guard.revalidate()
+            return result
+        result = exercise_install_contract(audit_root, operation_id, manifest_sha256,
+                                           lease_binding, adapter, condition)
+        guard.revalidate()
+        return dict(result, audit_directory_identity_held=True,
+                    audit_acl_trust_verified=False, formal_lease_verified=False)
 
 
 class OfflineInstallAdapter(Protocol):
