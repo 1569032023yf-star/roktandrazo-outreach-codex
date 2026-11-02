@@ -583,7 +583,7 @@
       "review_status": "PENDING_FOR_CURRENT_PIN",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "cc9b7a7b672eb2098fa02d7e57c266b4ec57d76e",
+      "candidate_commit": "dcbddc3fe5535b39d789eba61df94f651aa2bd34",
       "trust_boundary_review": "SCOPED_PASS",
       "schedule_contract_review": "SCOPED_PASS",
       "regression_runner_candidate": "b69214d",
@@ -1767,6 +1767,18 @@
         "publication": "REMOTE_SOURCE_AND_PACKAGE_VERIFIED",
         "remote_verified_head": "93681827d2dde1c97d16dea6d54bccec117f381f",
         "remote_verified_at": "2026-11-02T08:41:35.333236+00:00"
+      },
+      "u1_ownership_receipt_latest": {
+        "updated_at": "2026-11-02T08:49:26.631992+00:00",
+        "source_commit": "dcbddc3fe5535b39d789eba61df94f651aa2bd34",
+        "report": "autonomy\\evidence\\u1_ownership_receipt_20261102\\REPORT.md",
+        "tests": {
+          "passed": 8,
+          "seconds": 2.725
+        },
+        "review": "PENDING",
+        "package_rebuilt": false,
+        "production_action": false
       }
     },
     {
@@ -3602,7 +3614,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-02T08:41:35.333236+00:00",
+  "updated_at": "2026-11-02T08:49:26.631992+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",

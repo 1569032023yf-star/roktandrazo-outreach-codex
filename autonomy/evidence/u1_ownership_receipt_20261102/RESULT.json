@@ -1,0 +1,12 @@
+{
+  "updated_at": "2026-11-02T08:49:26.631992+00:00",
+  "source_commit": "dcbddc3fe5535b39d789eba61df94f651aa2bd34",
+  "report": "autonomy\\evidence\\u1_ownership_receipt_20261102\\REPORT.md",
+  "tests": {
+    "passed": 8,
+    "seconds": 2.725
+  },
+  "review": "PENDING",
+  "package_rebuilt": false,
+  "production_action": false
+}
