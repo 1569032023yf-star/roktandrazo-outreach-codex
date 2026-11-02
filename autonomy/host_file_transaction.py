@@ -71,7 +71,7 @@ class HostFileTransaction:
     def __init__(self, root, journal, *, fault=lambda phase, item: None):
         self.root = ordinary(root)
         self.journal = ordinary(journal)
-        if not self.root.is_dir() or not self.journal.parent.is_dir():
+        if (not self.root.is_dir() and not self.journal.exists()) or not self.journal.parent.is_dir():
             raise ValueError('PREPROVISIONED_ROOT_REQUIRED')
         self.fault = fault
 
@@ -99,9 +99,16 @@ class HostFileTransaction:
         if self._rows()[-1] != row:
             raise ValueError('STOP_AND_PRESERVE_JOURNAL_READBACK')
 
-    def prepare(self, files, *, manifest_sha256, previous_receipt=None, previous_receipt_sha256=None):
+    def prepare(self, files, *, manifest_sha256, previous_receipt=None, previous_receipt_sha256=None, root_created=False, state_root=None):
         if self._rows():
             raise ValueError('EXISTING_OPERATION_RECONCILE_ONLY')
+        if type(root_created) is not bool or (root_created and any(self.root.iterdir())):
+            raise ValueError('NEW_EMPTY_ROOT_REQUIRED')
+        state=None
+        if state_root is not None:
+            state=ordinary(state_root)
+            if not root_created or not state.is_dir() or any(state.iterdir()):
+                raise ValueError('NEW_EMPTY_STATE_REQUIRED')
         if not re.fullmatch('[0-9a-f]{64}', manifest_sha256 or ''):
             raise ValueError('APPROVED_MANIFEST_REQUIRED')
         owned = {}
@@ -152,12 +159,23 @@ class HostFileTransaction:
                              backup=None if old is None else base64.b64encode(old).decode(),
                              content=None if new is None else base64.b64encode(new).decode()))
         self._append(phase='PREPARED', root=str(self.root), manifest_sha256=manifest_sha256,
+                     root_identity=[self.root.stat().st_dev,self.root.stat().st_ino],root_created=root_created,
+                     state_root=None if state is None else str(state),state_identity=None if state is None else [state.stat().st_dev,state.stat().st_ino],
+                     directories={str(p.relative_to(self.root)).replace('\\','/'):
+                                  ('PRESENT' if p.is_dir() else 'ABSENT')
+                                  for n in names for p in (self.root/n).parents if p!=self.root and self.root in p.parents},
                      previous_receipt_sha256=previous_receipt_sha256, plan=plan)
 
     def _plan(self):
+        ordinary(self.root)
         rows = self._rows()
         if not rows or rows[0].get('phase') != 'PREPARED' or rows[0].get('root') != str(self.root):
             raise ValueError('STOP_AND_PRESERVE_PLAN_BINDING')
+        if self.root.exists():
+            if [self.root.stat().st_dev,self.root.stat().st_ino]!=rows[0]['root_identity']:
+                raise ValueError('STOP_AND_PRESERVE_ROOT_CHANGED')
+        elif not (rows[0]['root_created'] and rows[-1]['phase'] in ('ROOT_REMOVE_INTENT','ROOT_REMOVED','STATE_REMOVE_INTENT','STATE_REMOVED') and all(i['before']=='ABSENT' for i in rows[0]['plan'])):
+            raise ValueError('STOP_AND_PRESERVE_ROOT_MISSING')
         for item in rows[0]['plan']:
             name(item['path'])
             for field, blob in (('before','backup'),('after','content')):
@@ -179,7 +197,11 @@ class HostFileTransaction:
             # Deterministic sibling staging is recorded by intent. Never adopt
             # an unexpected staging artifact after a prior process exits.
             stage = ordinary(p.with_name(p.name+'.u1-new'))
-            p.parent.mkdir(parents=True, exist_ok=True)
+            for parent in reversed(tuple(p.parents)):
+                if self.root not in parent.parents or parent.exists():continue
+                self._append(phase='DIRECTORY_CREATE_INTENT',path=parent.relative_to(self.root).as_posix())
+                parent.mkdir()
+                self._append(phase='DIRECTORY_CREATED',path=parent.relative_to(self.root).as_posix(),identity=[parent.stat().st_dev,parent.stat().st_ino])
             with stage.open('xb') as f:
                 f.write(base64.b64decode(raw)); f.flush(); os.fsync(f.fileno())
             if fingerprint(read(p)) != expected:
@@ -216,9 +238,10 @@ class HostFileTransaction:
 
     def check_rollback(self):
         rows, plan = self._plan()
-        if rows[-1]['phase'] == 'ROLLED_BACK':
+        if rows[-1]['phase'] in ('ROLLED_BACK','ROOT_REMOVE_INTENT','ROOT_REMOVED','DIRECTORY_REMOVE_INTENT','DIRECTORY_REMOVED','DIRECTORIES_PRUNED','STATE_REMOVE_INTENT','STATE_REMOVED'):
             if any(fingerprint(read(self.root/i['path'])) != i['before'] for i in plan):
                 raise ValueError('STOP_AND_PRESERVE_FILE_CHANGED')
+            self._check_directories(rows,plan)
             return rows, plan
         touched = {r['path'] for r in rows if r['phase'] in ('APPLY_INTENT','ROLLBACK_INTENT')}
         # Validate the entire observation before compensating any file.
@@ -228,11 +251,33 @@ class HostFileTransaction:
                 raise ValueError('STOP_AND_PRESERVE_UNKNOWN_FILE')
             if (self.root/i['path']).with_name(Path(i['path']).name+'.u1-new').exists():
                 raise ValueError('STOP_AND_PRESERVE_STAGING_ARTIFACT')
+        self._check_directories(rows,plan)
         return rows, plan
+
+    def _check_directories(self,rows,plan):
+        if rows[0]['state_root'] is not None:
+            state=ordinary(rows[0]['state_root'])
+            if not state.exists() and not any(r['phase']=='STATE_REMOVE_INTENT' for r in rows):
+                raise ValueError('STOP_AND_PRESERVE_STATE_MISSING')
+            if state.exists() and (not state.is_dir() or [state.stat().st_dev,state.stat().st_ino]!=rows[0]['state_identity'] or any(state.iterdir())):
+                raise ValueError('STOP_AND_PRESERVE_STATE_NOT_EMPTY_OR_CHANGED')
+        created={r['path']:r['identity'] for r in rows if r['phase']=='DIRECTORY_CREATED'}
+        targets={i['path'] for i in plan}
+        for relative,before in rows[0]['directories'].items():
+            p=ordinary(self.root/relative)
+            if before=='ABSENT' and p.exists():
+                if not p.is_dir() or relative not in created or [p.stat().st_dev,p.stat().st_ino]!=created[relative]:
+                    raise ValueError('STOP_AND_PRESERVE_DIRECTORY_UNKNOWN')
+        if self.root.exists():
+            for p in self.root.rglob('*'):
+                ordinary(p);relative=p.relative_to(self.root).as_posix()
+                in_scope=rows[0]['root_created'] or any(relative==d or relative.startswith(d+'/') for d in created)
+                if in_scope and ((p.is_file() and relative not in targets) or (p.is_dir() and relative not in created)):
+                    raise ValueError('STOP_AND_PRESERVE_UNOWNED_ROOT_CONTENT')
 
     def rollback(self):
         rows, plan = self.check_rollback()
-        if rows[-1]['phase'] == 'ROLLED_BACK':
+        if rows[-1]['phase'] in ('ROLLED_BACK','ROOT_REMOVE_INTENT','ROOT_REMOVED','DIRECTORY_REMOVE_INTENT','DIRECTORY_REMOVED','DIRECTORIES_PRUNED','STATE_REMOVE_INTENT','STATE_REMOVED'):
             return
         for i in reversed(plan):
             if fingerprint(read(self.root/i['path'])) == i['before']:
@@ -243,29 +288,87 @@ class HostFileTransaction:
             self._append(phase='ROLLBACK_VERIFIED', path=i['path'])
         self._append(phase='ROLLED_BACK')
 
+    def prune_created_directories(self):
+        rows,plan=self.check_rollback()
+        if rows[-1]['phase'] not in ('ROLLED_BACK','DIRECTORY_REMOVE_INTENT','DIRECTORY_REMOVED','DIRECTORIES_PRUNED'):
+            raise ValueError('VERIFIED_DIRECTORY_ROLLBACK_REQUIRED')
+        if self.root.exists():
+            directories=sorted(rows[0]['directories'],key=lambda n:(n.count('/'),n),reverse=True)
+            for relative in directories:
+                p=ordinary(self.root/relative)
+                if not p.exists() or rows[0]['directories'][relative]!='ABSENT':continue
+                if any(p.iterdir()):
+                    raise ValueError('STOP_AND_PRESERVE_DIRECTORY_NOT_EMPTY')
+                self._append(phase='DIRECTORY_REMOVE_INTENT',path=relative)
+                self.fault('DIRECTORY_REMOVE_INTENT',relative)
+                p.rmdir()
+                self.fault('DIRECTORY_REMOVE_EFFECT',relative)
+                self._append(phase='DIRECTORY_REMOVED',path=relative)
+        self._append(phase='DIRECTORIES_PRUNED')
+
+    def prune_created_root(self):
+        rows,plan=self.check_rollback()
+        if not rows[0]['root_created'] or rows[-1]['phase'] not in ('ROLLED_BACK','DIRECTORY_REMOVE_INTENT','DIRECTORY_REMOVED','DIRECTORIES_PRUNED','ROOT_REMOVE_INTENT','ROOT_REMOVED','STATE_REMOVE_INTENT','STATE_REMOVED'):
+            raise ValueError('VERIFIED_NEW_ROOT_ROLLBACK_REQUIRED')
+        if rows[-1]['phase']=='ROOT_REMOVED':return
+        if self.root.exists():
+            if rows[-1]['phase']!='ROOT_REMOVE_INTENT':self.prune_created_directories()
+            if any(self.root.iterdir()):raise ValueError('STOP_AND_PRESERVE_ROOT_NOT_EMPTY')
+            self._append(phase='ROOT_REMOVE_INTENT')
+            self.fault('ROOT_REMOVE_INTENT',str(self.root))
+            self.root.rmdir()
+            self.fault('ROOT_REMOVE_EFFECT',str(self.root))
+        if rows[0]['state_root'] is not None:
+            state=ordinary(rows[0]['state_root'])
+            if state.exists():
+                self._append(phase='STATE_REMOVE_INTENT')
+                self.fault('STATE_REMOVE_INTENT',str(state))
+                state.rmdir()
+                self.fault('STATE_REMOVE_EFFECT',str(state))
+                self._append(phase='STATE_REMOVED')
+        self._append(phase='ROOT_REMOVED')
+
 
 def main():
     """Pinned installer helper: roots are constants, not caller-controlled paths."""
     import argparse
     import sys
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('action', choices=('prepare-apply', 'check-rollback', 'rollback', 'status'))
+    p.add_argument('action', choices=('prepare-apply', 'check-rollback', 'rollback', 'prune-created-root','prune-created-directories', 'status','observe-roots','check-empty-roots','remove-empty-code-root','remove-empty-state-root'))
     p.add_argument('--operation', required=True)
     a = p.parse_args()
     if not re.fullmatch('[0-9a-f]{64}', a.operation):
         raise ValueError('OPERATION_HASH_REQUIRED')
     if os.name != 'nt':
         raise ValueError('WINDOWS_ONLY')
+    roots={'code':ordinary(r'C:\Program Files\RoktU1Bridge\v1'),'state':ordinary(r'C:\ProgramData\RoktU1Bridge')}
+    if a.action=='observe-roots':
+        print(json.dumps({k:None if not v.exists() else [v.stat().st_dev,v.stat().st_ino] for k,v in roots.items()}));return
+    if a.action in ('check-empty-roots','remove-empty-code-root','remove-empty-state-root'):
+        expected=json.loads(sys.stdin.buffer.read(4096))
+        if set(expected)!= {'code','state','absent_allowed'} or type(expected['absent_allowed']) is not list:
+            raise ValueError('EXACT_ROOT_IDENTITIES_REQUIRED')
+        for key,path in roots.items():
+            if path.exists():
+                if expected[key] is None or not path.is_dir() or [path.stat().st_dev,path.stat().st_ino]!=expected[key] or any(path.iterdir()):
+                    raise ValueError('STOP_AND_PRESERVE_ROOT_UNKNOWN_OR_NOT_EMPTY')
+            elif expected[key] is not None and key not in expected['absent_allowed']:
+                raise ValueError('STOP_AND_PRESERVE_ROOT_MISSING')
+        if a.action!='check-empty-roots':
+            key='code' if a.action=='remove-empty-code-root' else 'state'
+            if roots[key].exists():roots[key].rmdir()
+        print(json.dumps(dict(observation='KNOWN',allow_dispatch=False)));return
     transaction = HostFileTransaction(r'C:\Program Files\RoktU1Bridge\v1',
         Path(r'C:\ProgramData\RoktU1InstallAudit')/('files-'+a.operation+'.jsonl'))
     if a.action == 'prepare-apply':
         request = json.loads(sys.stdin.buffer.read(32*1024*1024+1))
-        if set(request) != {'files','previous_receipt','manifest_sha256','previous_receipt_sha256'}:
+        if set(request) != {'files','previous_receipt','manifest_sha256','previous_receipt_sha256','root_created'}:
             raise ValueError('EXACT_REQUEST_REQUIRED')
         files = {name(k):base64.b64decode(v,validate=True) for k,v in request['files'].items()}
         previous = None if request['previous_receipt'] is None else base64.b64decode(request['previous_receipt'],validate=True)
         transaction.prepare(files, manifest_sha256=request['manifest_sha256'],previous_receipt=previous,
-                            previous_receipt_sha256=request['previous_receipt_sha256'])
+                            previous_receipt_sha256=request['previous_receipt_sha256'],root_created=request['root_created'],
+                            state_root=r'C:\ProgramData\RoktU1Bridge' if request['root_created'] else None)
         print(json.dumps(transaction.apply()))
     elif a.action == 'check-rollback':
         transaction.check_rollback()
@@ -273,6 +376,12 @@ def main():
     elif a.action == 'rollback':
         transaction.rollback()
         print(json.dumps(dict(outcome='ROLLED_BACK',allow_dispatch=False)))
+    elif a.action == 'prune-created-root':
+        transaction.prune_created_root()
+        print(json.dumps(dict(root='ABSENT',allow_dispatch=False)))
+    elif a.action == 'prune-created-directories':
+        transaction.prune_created_directories()
+        print(json.dumps(dict(created_directories='ABSENT',allow_dispatch=False)))
     else:
         rows, _ = transaction._plan()
         if rows[-1]['phase'] == 'FILES_APPLIED':

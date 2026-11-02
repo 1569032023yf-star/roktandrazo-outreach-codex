@@ -102,5 +102,17 @@ class FileTransactionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'TORN_JOURNAL'):t.rollback()
         self.assertEqual((self.root/'service/bridge.exe').read_bytes(),before)
 
+    def test_created_roots_prune_process_exit_recovery(self):
+        state=Path(self.temp.name)/'state'
+        for phase in ('DIRECTORY_REMOVE_INTENT','DIRECTORY_REMOVE_EFFECT','ROOT_REMOVE_INTENT','ROOT_REMOVE_EFFECT','STATE_REMOVE_INTENT','STATE_REMOVE_EFFECT'):
+            with self.subTest(phase=phase):
+                self.root.mkdir(exist_ok=True);state.mkdir(exist_ok=True)
+                t=self.tx(phase);t.prepare(self.files(),manifest_sha256='a'*64,root_created=True,state_root=state);t.apply();t.rollback()
+                code='from autonomy.host_file_transaction import HostFileTransaction; import os; t=HostFileTransaction('+repr(str(self.root))+','+repr(str(self.audit/(phase+'.jsonl')))+',fault=lambda p,n: os._exit(29) if p=='+repr(phase)+' else None); t.prune_created_root()'
+                r=subprocess.run([sys.executable,'-B','-c',code],timeout=20,capture_output=True)
+                self.assertEqual(r.returncode,29,r.stderr)
+                recovered=self.tx(phase);recovered.prune_created_root();recovered.prune_created_root()
+                self.assertFalse(self.root.exists());self.assertFalse(state.exists())
+
 
 if __name__=='__main__':unittest.main()

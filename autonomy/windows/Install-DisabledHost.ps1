@@ -9,6 +9,7 @@ param(
     [switch]$Upgrade,
     [switch]$RecoverInstall,
     [switch]$Rollback,
+    [ValidatePattern('^[0-9a-f]{64}$')][string]$OperationId,
     [ValidatePattern('^[0-9a-f]{64}$')][string]$ApprovedPreviousReceiptSha256,
     [switch]$Execute
 )
@@ -145,6 +146,6 @@ if ($RecoverAcl) {
     } finally { if ($held) { $recoveryMutex.ReleaseMutex() }; $recoveryMutex.Dispose() }
 }
 . (Join-Path $package 'Host-InstallTransaction.ps1')
-Invoke-HostInstallTransaction -Upgrade:$Upgrade -RecoverInstall:$RecoverInstall -Rollback:$Rollback -ApprovedPreviousReceiptSha256 $ApprovedPreviousReceiptSha256 -Execute:$Execute
+Invoke-HostInstallTransaction -Upgrade:$Upgrade -RecoverInstall:$RecoverInstall -Rollback:$Rollback -OperationId $OperationId -ApprovedPreviousReceiptSha256 $ApprovedPreviousReceiptSha256 -Execute:$Execute
 
 } finally { foreach ($pin in $dependencyPins) { $pin.Dispose() } }

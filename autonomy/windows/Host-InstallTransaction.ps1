@@ -2,9 +2,10 @@
 # No StartService, scheduler, Inventory or production database operation.
 function Invoke-HostInstallTransaction {
     param([switch]$Upgrade,[switch]$RecoverInstall,[switch]$Rollback,
-          [string]$ApprovedPreviousReceiptSha256,[switch]$Execute)
+          [string]$ApprovedPreviousReceiptSha256,[string]$OperationId,[switch]$Execute)
     if (-not $RuntimePlan) { throw 'EXACT_RUNTIME_PLAN_REQUIRED' }
-    $operation=$ApprovedManifestSha256
+    $operation=if ($OperationId) {$OperationId} else {$ApprovedManifestSha256}
+    if ($operation -cnotmatch '^[0-9a-f]{64}$') {throw 'EXACT_OPERATION_REQUIRED'}
     $audit='C:\ProgramData\RoktU1InstallAudit'
     $journal=Join-Path $audit ('install-'+$operation+'.jsonl')
     $fileJournal=Join-Path $audit ('files-'+$operation+'.jsonl')
@@ -28,18 +29,29 @@ function Invoke-HostInstallTransaction {
     }
     function Write-HostPhase([string]$Phase,$Extra=@{}) {
         if ($log.Length -gt 0) {$null=Read-AclRecords $log}
-        Write-AclRecord $log @{phase=$Phase;manifest=$operation;extra=$Extra}
+        Write-AclRecord $log @{phase=$Phase;manifest=$ApprovedManifestSha256;operation_id=$operation;extra=$Extra}
+    }
+    function Get-CreatedRootObservations($Rows) {
+        $expected=@{code=$null;state=$null;absent_allowed=@()}
+        foreach ($key in @('code','state')) {
+            $created=@($Rows | Where-Object {$_.phase -ceq ($key.ToUpperInvariant()+'_CREATE_VERIFIED')})
+            if ($created.Count) {$expected[$key]=$created[-1].extra.identity}
+            if (@($Rows | Where-Object {$_.phase -ceq ($key.ToUpperInvariant()+'_REMOVE_INTENT')}).Count) {$expected.absent_allowed+=@($key)}
+        }
+        return $expected
     }
     function Restore-HostInstall {
         $service=Get-HostService
         $rows=@(Read-AclRecords $log)
         if (-not $rows.Count) {throw 'STOP_AND_PRESERVE_EMPTY_INSTALL'}
         $header=$rows[0]
-        if ($header.phase -cne 'PREPARED' -or $header.manifest -cne $operation -or $header.extra.image -cne $image) { throw 'STOP_AND_PRESERVE_INSTALL_BINDING' }
+        if ($header.phase -cne 'PREPARED' -or $header.manifest -cne $ApprovedManifestSha256 -or $header.operation_id -cne $operation -or $header.extra.image -cne $image) { throw 'STOP_AND_PRESERVE_INSTALL_BINDING' }
         if ($header.extra.upgrade -and -not $service) {throw 'STOP_AND_PRESERVE_MISSING_OLD_SERVICE'}
         # Validate every affected file before touching ACL or registration.
         # In particular, an old committed journal cannot remove a newer service.
-        if (Test-Path -LiteralPath $fileJournal) {$null=Invoke-HostFiles 'check-rollback' $null}
+        $hasFilePlan=Test-Path -LiteralPath $fileJournal
+        if ($hasFilePlan) {$null=Invoke-HostFiles 'check-rollback' $null}
+        elseif (-not $header.extra.upgrade) {$null=Invoke-HostFiles 'check-empty-roots' (Get-CreatedRootObservations $rows)}
         if ($rows[-1].phase -ceq 'ROLLED_BACK') {
             if (-not $header.extra.upgrade -and $service) {throw 'STOP_AND_PRESERVE_UNEXPECTED_SERVICE'}
             if (Test-Path -LiteralPath $fileJournal) {$null=Invoke-HostFiles 'rollback' $null}
@@ -49,9 +61,11 @@ function Invoke-HostInstallTransaction {
         Write-HostPhase 'ROLLBACK_INTENT'
         # Compensate ACL before files. Both helpers observe known bytes/DACL
         # and refuse unknown state. Neither helper repeats forward effects.
-        if (Test-Path -LiteralPath $operationAcl) {
-            $null=Invoke-AclTransaction -Code $code -State $state -Journal $operationAcl -ManifestHash $operation -Recover
+        if ((Test-Path -LiteralPath $operationAcl) -and (Test-Path -LiteralPath $code)) {
+            $null=Invoke-AclTransaction -Code $code -State $state -Journal $operationAcl -ManifestHash $ApprovedManifestSha256 -Recover
             Write-HostPhase 'ACL_ROLLBACK_VERIFIED'
+        } elseif ((Test-Path -LiteralPath $operationAcl) -and -not @($rows | Where-Object {$_.phase -ceq 'ACL_ROLLBACK_VERIFIED'}).Count) {
+            throw 'STOP_AND_PRESERVE_MISSING_ACL_TARGET'
         }
         if (-not $header.extra.upgrade -and $service) {
             if (-not @($rows | Where-Object {$_.phase -ceq 'SERVICE_CREATE_INTENT'}).Count) { throw 'STOP_AND_PRESERVE_UNOWNED_SERVICE' }
@@ -63,9 +77,25 @@ function Invoke-HostInstallTransaction {
         if (Test-Path -LiteralPath $fileJournal) {
             $null=Invoke-HostFiles 'rollback' $null
             Write-HostPhase 'FILES_ROLLBACK_VERIFIED'
+            if (-not $header.extra.upgrade) {
+                Write-HostPhase 'ROOTS_REMOVE_INTENT'
+                $null=Invoke-HostFiles 'prune-created-root' $null
+                Write-HostPhase 'ROOTS_REMOVED'
+            } else {
+                Write-HostPhase 'CREATED_DIRECTORIES_REMOVE_INTENT'
+                $null=Invoke-HostFiles 'prune-created-directories' $null
+                Write-HostPhase 'CREATED_DIRECTORIES_REMOVED'
+            }
+        } elseif (-not $header.extra.upgrade) {
+            foreach ($key in @('state','code')) {
+                $observations=Get-CreatedRootObservations (@(Read-AclRecords $log))
+                Write-HostPhase ($key.ToUpperInvariant()+'_REMOVE_INTENT') @{identity=$observations[$key]}
+                $null=Invoke-HostFiles ('remove-empty-'+$key+'-root') $observations
+                Write-HostPhase ($key.ToUpperInvariant()+'_REMOVED')
+            }
         }
-        Write-HostPhase 'ROLLED_BACK' @{state_preserved=$true;directories_preserved=$true}
-        @{outcome='ROLLED_BACK';allow_start=$false;state_preserved=$true} | ConvertTo-Json
+        Write-HostPhase 'ROLLED_BACK' @{state_preserved=[bool]$header.extra.upgrade;fresh_roots_restored_absent=(-not $header.extra.upgrade)}
+        @{outcome='ROLLED_BACK';allow_start=$false;state_preserved=[bool]$header.extra.upgrade;fresh_roots_restored_absent=(-not $header.extra.upgrade)} | ConvertTo-Json
     }
     if (-not $Execute) {
         @{outcome='PLAN_ONLY';upgrade=[bool]$Upgrade;allow_start=$false;allow_dispatch=$false;state_preserved=$true} | ConvertTo-Json
@@ -114,9 +144,11 @@ function Invoke-HostInstallTransaction {
         if (-not $Upgrade) {
             Write-HostPhase 'CODE_CREATE_INTENT'
             New-Item -ItemType Directory -Path $code | Out-Null
-            Write-HostPhase 'CODE_CREATE_VERIFIED'
-            New-RecordedAclStateRoot -Path $state -Journal $operationAcl -ManifestHash $operation
-            Write-HostPhase 'STATE_CREATE_VERIFIED'
+            $observed=Invoke-HostFiles 'observe-roots' $null
+            Write-HostPhase 'CODE_CREATE_VERIFIED' @{identity=$observed.code}
+            New-RecordedAclStateRoot -Path $state -Journal $operationAcl -ManifestHash $ApprovedManifestSha256
+            $observed=Invoke-HostFiles 'observe-roots' $null
+            Write-HostPhase 'STATE_CREATE_VERIFIED' @{identity=$observed.state}
         }
         $fileBytes=@{}; $fileHashes=@{}
         foreach ($f in $m.files) {
@@ -129,9 +161,9 @@ function Invoke-HostInstallTransaction {
             $hasher=[Security.Cryptography.SHA256]::Create()
             try {$fileHashes[$relative]=([BitConverter]::ToString($hasher.ComputeHash($bytes))).Replace('-','').ToLowerInvariant()} finally {$hasher.Dispose()}
         }
-        $receipt=@{schema='rokt.disabled-host-install-receipt.v2';manifest_sha256=$operation;service_name=$name;account=$account;image=$image;wrapper_sha256=$fileHashes['service/RoktU1Bridge.exe'];files=$fileHashes;state_preserved=$true}
+        $receipt=@{schema='rokt.disabled-host-install-receipt.v2';manifest_sha256=$ApprovedManifestSha256;operation_id=$operation;service_name=$name;account=$account;image=$image;wrapper_sha256=$fileHashes['service/RoktU1Bridge.exe'];files=$fileHashes;state_preserved=$true}
         $fileBytes['config/installation.json']=[Convert]::ToBase64String([Text.UTF8Encoding]::new($false).GetBytes(($receipt | ConvertTo-Json -Depth 8 -Compress)))
-        $request=@{files=$fileBytes;manifest_sha256=$operation;previous_receipt=$(if ($previous) {[Convert]::ToBase64String($previous)} else {$null});previous_receipt_sha256=$(if ($Upgrade) {$ApprovedPreviousReceiptSha256} else {$null})}
+        $request=@{files=$fileBytes;manifest_sha256=$ApprovedManifestSha256;root_created=(-not $Upgrade);previous_receipt=$(if ($previous) {[Convert]::ToBase64String($previous)} else {$null});previous_receipt_sha256=$(if ($Upgrade) {$ApprovedPreviousReceiptSha256} else {$null})}
         Write-HostPhase 'FILES_INTENT'
         $null=Invoke-HostFiles 'prepare-apply' $request
         Write-HostPhase 'FILES_VERIFIED'
@@ -145,7 +177,7 @@ function Invoke-HostInstallTransaction {
         }
         $sid=(New-Object Security.Principal.NTAccount($account)).Translate([Security.Principal.SecurityIdentifier])
         Write-HostPhase 'ACL_INTENT'
-        $null=Invoke-AclTransaction -Code $code -State $state -ServiceSid $sid.Value -Journal $operationAcl -ManifestHash $operation
+        $null=Invoke-AclTransaction -Code $code -State $state -ServiceSid $sid.Value -Journal $operationAcl -ManifestHash $ApprovedManifestSha256
         Write-HostPhase 'ACL_VERIFIED'
         if (-not (Get-HostService)) { throw 'SERVICE_FINAL_READBACK_FAILED' }
         $null=Invoke-HostFiles 'status' $null

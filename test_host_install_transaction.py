@@ -14,16 +14,16 @@ class HostInstallTests(unittest.TestCase):
         self.root=Path(self.temp.name);self.code=self.root/'code';self.state=self.root/'state';self.audit=self.root/'audit';self.audit.mkdir()
         self.package=self.root/'package';self.package.mkdir()
         helper=Path('autonomy/host_file_transaction.py').read_text(encoding='utf-8')
-        helper=helper.replace("r'C:\\Program Files\\RoktU1Bridge\\v1'",repr(str(self.code))).replace("r'C:\\ProgramData\\RoktU1InstallAudit'",repr(str(self.audit)))
+        helper=helper.replace("r'C:\\Program Files\\RoktU1Bridge\\v1'",repr(str(self.code))).replace("r'C:\\ProgramData\\RoktU1InstallAudit'",repr(str(self.audit))).replace("r'C:\\ProgramData\\RoktU1Bridge'",repr(str(self.state)))
         (self.package/'host_file_transaction.py').write_text(helper,encoding='utf-8')
 
-    def run_coordinator(self, *, upgrade=False, recover=False, rollback=False, fail='', death='', manifest='a', previous=None):
+    def run_coordinator(self, *, upgrade=False, recover=False, rollback=False, fail='', death='', manifest='a', previous=None, operation=None):
         source=Path('autonomy/windows/Host-InstallTransaction.ps1').read_text(encoding='utf-8')
         source=source.replace("$audit='C:\\ProgramData\\RoktU1InstallAudit'","$audit="+self.q(self.audit))
         source=source.replace("$mutex=New-Object Threading.Mutex($false,'Global\\RoktU1BridgeInstall')", "$mutex=New-Object Threading.Mutex($false,'Local\\U1Test"+hashlib.sha256(str(self.root).encode()).hexdigest()+"')")
         source=source.replace("    $principal=New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())\n    if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { throw 'ADMINISTRATOR_REQUIRED' }",'    # Isolated fixture replaces only elevation admission; production source retains it.')
         source=source.replace("$sid=(New-Object Security.Principal.NTAccount($account)).Translate([Security.Principal.SecurityIdentifier])","$sid=[pscustomobject]@{Value='isolated-service-sid'}")
-        source=source.replace("Write-AclRecord $log @{phase=$Phase;manifest=$operation;extra=$Extra}","Write-AclRecord $log @{phase=$Phase;manifest=$operation;extra=$Extra}; if ($Phase -ceq $death) {[Environment]::Exit(31)}")
+        source=source.replace("Write-AclRecord $log @{phase=$Phase;manifest=$ApprovedManifestSha256;operation_id=$operation;extra=$Extra}","Write-AclRecord $log @{phase=$Phase;manifest=$ApprovedManifestSha256;operation_id=$operation;extra=$Extra}; if ($Phase -ceq $death) {[Environment]::Exit(31)}")
         service_file=self.root/'service.json'
         pre="$ErrorActionPreference='Stop'\n$code="+self.q(self.code)+"; $state="+self.q(self.state)+"; $package="+self.q(self.package)+"; $serviceFile="+self.q(service_file)+"; $RuntimePlan='isolated'; $name='RoktU1Bridge'; $account='NT SERVICE\\RoktU1Bridge'; $ApprovedManifestSha256='"+manifest*64+"'; $plan=@{python="+self.q(sys.executable)+"}; $generated=@{}; $fail="+self.q(fail)+"; $death="+self.q(death)+"\n"
         pre+=r'''
@@ -48,6 +48,7 @@ function Invoke-CimMethod {param($ClassName,$MethodName,$Arguments,$InputObject)
         call='\nInvoke-HostInstallTransaction -Execute'
         for flag,value in (('Upgrade',upgrade),('RecoverInstall',recover),('Rollback',rollback)):
             if value:call+=' -'+flag
+        if operation:call+=' -OperationId '+operation
         if previous:call+=' -ApprovedPreviousReceiptSha256 '+previous
         path=self.root/'run.ps1';path.write_text(pre+source+call,encoding='utf-8-sig')
         return subprocess.run(['pwsh','-NoProfile','-File',str(path)],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
@@ -73,7 +74,10 @@ function Invoke-CimMethod {param($ClassName,$MethodName,$Arguments,$InputObject)
         self.assertEqual((self.code/'service/RoktU1Bridge.exe').read_bytes(),b'MZ-a')
         self.assertFalse((self.code/'runtime/new.json').exists())
         self.assert_ok(self.run_coordinator(rollback=True))
-        self.assertFalse((self.root/'service.json').exists());self.assertFalse(any(p.is_file() for p in self.code.rglob('*')))
+        self.assertFalse((self.root/'service.json').exists());self.assertFalse(self.code.exists());self.assertFalse(self.state.exists())
+
+        self.assert_ok(self.run_coordinator(operation='f'*64))
+        self.assertTrue((self.code/'service/RoktU1Bridge.exe').exists())
 
     def test_acl_failure_compensates_actual_files_and_registration(self):
         r=self.run_coordinator(fail='ACL');self.assertNotEqual(r.returncode,0)
@@ -87,6 +91,22 @@ function Invoke-CimMethod {param($ClassName,$MethodName,$Arguments,$InputObject)
         self.assertNotEqual(self.run_coordinator().returncode,0)
         self.assert_ok(self.run_coordinator(recover=True))
         self.assertFalse(any(p.is_file() for p in self.code.rglob('*')))
+
+    def test_early_root_creation_process_exit_restores_absent(self):
+        for n,phase in enumerate(('CODE_CREATE_VERIFIED','STATE_CREATE_VERIFIED'),start=1):
+            operation=format(n,'064x')
+            with self.subTest(phase=phase):
+                self.assertEqual(self.run_coordinator(death=phase,operation=operation).returncode,31)
+                self.assert_ok(self.run_coordinator(recover=True,operation=operation))
+                self.assertFalse(self.code.exists());self.assertFalse(self.state.exists())
+
+    def test_unknown_state_content_preserved_before_registration_or_acl_rollback(self):
+        self.assert_ok(self.run_coordinator())
+        marker=self.state/'unknown.sqlite';marker.write_bytes(b'unmanaged-state')
+        receipt=(self.code/'config/installation.json').read_bytes()
+        self.assertNotEqual(self.run_coordinator(rollback=True).returncode,0)
+        self.assertTrue((self.root/'service.json').exists());self.assertEqual(marker.read_bytes(),b'unmanaged-state')
+        self.assertEqual((self.code/'config/installation.json').read_bytes(),receipt)
 
 
 if __name__=='__main__':unittest.main()
