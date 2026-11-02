@@ -4840,5 +4840,13 @@
       "PRODUCTION_ACCEPTED": false,
       "BUSINESS_GROWTH": "UNKNOWN"
     }
+  },
+  "u1_file_identity_engineering_receipt": {
+    "kind": "ENGINEERING_RECEIPT_NOT_DUPLICATE_CONSUMPTION",
+    "id": 6588433431,
+    "url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6588433431",
+    "readback_exact": true,
+    "source_commit": "57bb0d1ccdd320e4c22d6a1e6e9982106b440ea1",
+    "evidence_commit": "94609ae42e5dcf1d06566ac56baaea5852d00dc7"
   }
 }
