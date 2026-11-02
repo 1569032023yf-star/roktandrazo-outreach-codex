@@ -1,0 +1,36 @@
+{
+  "schema": "rokt.u1-acl-independent-review.v1",
+  "reviewer": "independent acl_review agent",
+  "date": "2026-11-02",
+  "source_commit": "0db17b51d8ce464f1f57dd5ef40d0df266dcf3f8",
+  "review_passed": true,
+  "scope": "OFFLINE_ACL_TRANSACTION_ONLY",
+  "runs": [
+    {
+      "command": "python -m unittest test_windows_acl_transaction test_disabled_host_package test_install_journal test_install_contract test_independent_install_plan -q",
+      "tests": 39,
+      "seconds": 37.646,
+      "exit_code": 0
+    },
+    {
+      "command": "python -m unittest test_u1_provision -q",
+      "tests": 2,
+      "seconds": 1.954,
+      "exit_code": 0
+    }
+  ],
+  "files": {
+    "autonomy/windows/Install-DisabledHost.ps1": "306a89462050375130460827d72a4bb687ee3d87c6e2bbbbb9a855c5e21b8483",
+    "autonomy/windows/Acl-Transaction.ps1": "a3fb4ab1fa251bc80e9d6a9f682b6efa48a628ed96a2253492d89af4ccfe8057",
+    "autonomy/disabled_host_package.py": "f5591d625d98be8a8043e24f59ed7c08fb13a605761188588aa0e098b87b8625",
+    "test_windows_acl_transaction.py": "1fd4f9865d2d9aea040b06e8ee670ded5ee82cac8c59501677d5194790b67d0c",
+    "test_disabled_host_package.py": "dd103ed6769bcf3d763904cdd4b679204061394f0790ce97bd03001fc03684ed",
+    "test_u1_provision.py": "f116689bc05081d08daf526893cff70709d6fc0f48ed1d3c7fb6593631a4138f"
+  },
+  "production_execution": false,
+  "production_deployed": false,
+  "production_accepted": false,
+  "allow_install": false,
+  "limitations_zh": "临时用户SID替代服务SID；非提权集成测试替换审计根与文件信任门禁，另行真实负例及合成正反例检查。未执行生产ACL或真实服务安装。",
+  "limitations_en": "Temporary user SID substitutes for the service SID; unprivileged integration fixtures replace audit-root/file trust gates, with separate real negative and synthetic positive/negative checks. No production ACL or real service installation was executed."
+}

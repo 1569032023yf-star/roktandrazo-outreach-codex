@@ -1,0 +1,78 @@
+{
+  "schema": "rokt.u1-acl-offline-release-checklist.v1",
+  "description_zh": "非执行的离线ACL候选清单，不授权安装。",
+  "description_en": "Non-executable offline ACL candidate checklist; no install authority.",
+  "source_commit": "0db17b51d8ce464f1f57dd5ef40d0df266dcf3f8",
+  "acl_discrepancy_resolved_by": 6520202418,
+  "comment_body_self_id": 6520177690,
+  "supersedes": "U1_P1_COMPAT_EVIDENCE_20261030:1g:SUGGESTION_ONLY",
+  "decision": "ACCEPTED",
+  "files": [
+    {
+      "path": "autonomy/windows/Install-DisabledHost.ps1",
+      "sha256": "306a89462050375130460827d72a4bb687ee3d87c6e2bbbbb9a855c5e21b8483",
+      "git_blob_sha256": "23ed338fe32f86f32513410c31b86602896f16072c35ccc1997ad687d813fcfc",
+      "working_tree_line_endings": "CRLF",
+      "git_line_endings": "LF",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/windows/Acl-Transaction.ps1",
+      "sha256": "a3fb4ab1fa251bc80e9d6a9f682b6efa48a628ed96a2253492d89af4ccfe8057",
+      "git_blob_sha256": "cbc1eec9c2455301b3f3bfaf7bf5ca2f03bdc05b13303da3443dee5ad162e5cd",
+      "working_tree_line_endings": "CRLF",
+      "git_line_endings": "LF",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "autonomy/disabled_host_package.py",
+      "sha256": "f5591d625d98be8a8043e24f59ed7c08fb13a605761188588aa0e098b87b8625",
+      "git_blob_sha256": "d83620afa4e8e31dadc75d35a4042a72e897f7122c9172aed208aa7ef715b797",
+      "working_tree_line_endings": "CRLF",
+      "git_line_endings": "LF",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "test_windows_acl_transaction.py",
+      "sha256": "1fd4f9865d2d9aea040b06e8ee670ded5ee82cac8c59501677d5194790b67d0c",
+      "git_blob_sha256": "0a81759714a5a1b5ce81e5a1460434b0285a6fd204a98260f9b5fe6aca2b1728",
+      "working_tree_line_endings": "CRLF",
+      "git_line_endings": "LF",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "test_disabled_host_package.py",
+      "sha256": "dd103ed6769bcf3d763904cdd4b679204061394f0790ce97bd03001fc03684ed",
+      "git_blob_sha256": "e9bce2b69452545f22d4f3cc3e8bb8d9e43df3adc76f955a7f6581517f0e7293",
+      "working_tree_line_endings": "CRLF",
+      "git_line_endings": "LF",
+      "production_target": "UNAPPROVED"
+    },
+    {
+      "path": "test_u1_provision.py",
+      "sha256": "f116689bc05081d08daf526893cff70709d6fc0f48ed1d3c7fb6593631a4138f",
+      "git_blob_sha256": "fecaaf0723bff722c8754050810a4efa0facfb26737a324549746ce5672e5d4f",
+      "working_tree_line_endings": "CRLF",
+      "git_line_endings": "LF",
+      "production_target": "UNAPPROVED"
+    }
+  ],
+  "validation": "VALIDATION.json",
+  "independent_review": "INDEPENDENT_REVIEW.md",
+  "scoped_development_complete": true,
+  "scoped_review_passed": true,
+  "release_ready": false,
+  "production_deployed": false,
+  "production_accepted": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "production_execution": false,
+  "existing_inventory": "1784775229336",
+  "journal_root": "C:\\ProgramData\\RoktU1InstallAudit",
+  "journal_root_provisioned": false,
+  "creation_recovery": "OBSERVE_RECONCILE_ONLY_NO_RECREATE",
+  "acl_recovery": "EXPLICIT_KNOWN_STATE_COMPENSATION_ONLY_NO_APPLY_REPLAY",
+  "rollback_preserves_state": true,
+  "full_regression": "NOT_RUN_THIS_SCOPE"
+}

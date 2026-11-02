@@ -1,3 +1,19 @@
+# U1 ACL 非对称裁决与持久事务 / Asymmetric ACL ruling and durable transaction
+
+日期 / Date: 2026-11-02（Asia/Taipei）
+固定源码 / Fixed source: `0db17b51d8ce464f1f57dd5ef40d0df266dcf3f8`
+裁决 / Ruling: `6520202418`，接受 / ACCEPTED。
+
+中文：Code Root保留继承加服务RX；State Root保护并保留SYSTEM/Admin Full、服务Modify。安装器已增加原ACL持久记录、逐步意图/回读、补偿回滚、显式突退出恢复及UNKNOWN禁止重放。状态根原子受限创建有独立持久记录。组合61项、独审39+2项通过；见../u1_acl_transaction_20261102/REPORT.md、VALIDATION.json、INDEPENDENT_REVIEW.md、RELEASE_CHECKLIST.json。工作树CRLF与Git LF分别固定SHA。未操作生产ACL/目录/服务/Inventory/数据库；旧包和旧全量回归不代表本候选验收。
+
+English: Preserve code inheritance plus service RX; protect state with SYSTEM/Admin Full and service Modify. The installer now persists before ACLs, per-step intent/readback, compensation, explicit crash recovery and no UNKNOWN replay. Atomic restrictive state creation has a separate durable record. All61 combined and39+2 independent tests passed; see the report, validation, review and checklist. Worktree CRLF/Git LF hashes are recorded separately. No production ACL/directory/service/Inventory/database mutation occurred; historical packages/full regression do not accept this candidate.
+
+SCOPED_DEVELOPMENT_COMPLETE=true; SCOPED_REVIEW_PASSED=true; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false; allow_install=false; allow_dispatch=false.
+
+后续 / Next: 保留离线候选；实际安装须另行授权并通过门禁，不重复索要已有环境证据。Retain the offline candidate; actual installation needs separate authority and gates, without duplicate environment-evidence requests.
+
+---
+
 # U1 发布中断恢复接线 / Publication interruption recovery wiring
 
 时间 / Time: 2026-11-02T09:01:44.396442+00:00
