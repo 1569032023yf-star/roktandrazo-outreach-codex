@@ -42,7 +42,7 @@ def resolve_release(root):
         if any(lower==x or lower.startswith(x+'/') or x.startswith(lower+'/') for x in seen):raise ValueError('PATH_COLLISION')
         seen.add(lower);data=read(folder/'payload'/name,128*1024*1024);total+=len(data)
         if total>128*1024*1024 or hashlib.sha256(data).hexdigest()!=digest:raise ValueError('ARTIFACT_HASH')
-    required={'python/autonomy/__init__.py','python/autonomy/u1_host_runtime.py'}
+    required={'python/autonomy/u1_host_runtime.py','python/autonomy/host_readonly_http.py','python/autonomy/release_store.py'}
     if not required<=set(m['files']):raise ValueError('HOST_MISSING')
     # Reject unmanifested importable files before putting this directory on sys.path.
     actual=set()
