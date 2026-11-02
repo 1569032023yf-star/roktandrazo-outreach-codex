@@ -815,6 +815,10 @@ def acquire_run_lock(date_str: str = None, holder: str = 'daily_operator', stale
     conn = get_db()
     try:
         conn.execute('BEGIN IMMEDIATE')
+        from autonomy.inventory_maintenance import blocked as maintenance_blocked
+        if maintenance_blocked(conn):
+            conn.rollback()
+            return False
         row = conn.execute("SELECT value FROM system_config WHERE key=?", (lock_key,)).fetchone()
         existing = row[0] if row else ''
         stamp_row = conn.execute("SELECT value FROM system_config WHERE key=?", (acquired_key,)).fetchone()
