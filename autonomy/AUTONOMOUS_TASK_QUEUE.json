@@ -1711,7 +1711,7 @@
         "production_deployed": false,
         "next_action": "Integrate bounded execution backend with existing signed SingleSlotAdapter admission and original Inventory lease; close installer upgrade/rollback, dependency ACL and TOCTOU blockers before independent review. No service install/start."
       },
-      "updated_at": "2026-11-02T08:40:48.546343+00:00",
+      "updated_at": "2026-11-02T08:41:35.333236+00:00",
       "u1_execution_wiring_latest": {
         "updated_at": "2026-11-02T08:40:48.546343+00:00",
         "source_commit": "cc9b7a7b672eb2098fa02d7e57c266b4ec57d76e",
@@ -1764,7 +1764,9 @@
         "allow_cancel_dispatch": false,
         "smtp_enabled": false,
         "next_action": "Wire the existing Inventory owner to the service event consumer with closed dispatch gates; finish identity/ACL/dependency protection and SCM upgrade/full-file rollback, then independently review the frozen candidate before installation.",
-        "publication": "AWAITING_REMOTE_VERIFICATION"
+        "publication": "REMOTE_SOURCE_AND_PACKAGE_VERIFIED",
+        "remote_verified_head": "93681827d2dde1c97d16dea6d54bccec117f381f",
+        "remote_verified_at": "2026-11-02T08:41:35.333236+00:00"
       }
     },
     {
@@ -3116,7 +3118,7 @@
     "uncommitted_files": []
   },
   "final_report_commit": "a38defa3454e431b45eb4960f6b4807283bda01d",
-  "remote_verified_commit": "a38defa3454e431b45eb4960f6b4807283bda01d",
+  "remote_verified_commit": "93681827d2dde1c97d16dea6d54bccec117f381f",
   "final_worktree_clean": true,
   "last_read_only_reconciliation": {
     "task_id": "BD-FULL-HEARTBEAT-20261023T050757",
@@ -3600,7 +3602,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-02T08:40:48.546343+00:00",
+  "updated_at": "2026-11-02T08:41:35.333236+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",

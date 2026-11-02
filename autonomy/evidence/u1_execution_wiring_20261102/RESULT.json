@@ -50,5 +50,7 @@
   "allow_cancel_dispatch": false,
   "smtp_enabled": false,
   "next_action": "Wire the existing Inventory owner to the service event consumer with closed dispatch gates; finish identity/ACL/dependency protection and SCM upgrade/full-file rollback, then independently review the frozen candidate before installation.",
-  "publication": "AWAITING_REMOTE_VERIFICATION"
+  "publication": "REMOTE_SOURCE_AND_PACKAGE_VERIFIED",
+  "remote_verified_head": "93681827d2dde1c97d16dea6d54bccec117f381f",
+  "remote_verified_at": "2026-11-02T08:41:35.333236+00:00"
 }
