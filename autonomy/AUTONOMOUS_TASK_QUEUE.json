@@ -1684,7 +1684,9 @@
         "formal_backend_integrated": false,
         "original_inventory_integrated": false,
         "production_service_installed": false,
-        "report": "autonomy/evidence/u1_scm_integration_20261102/REPORT.md"
+        "report": "autonomy/evidence/u1_scm_integration_20261102/REPORT.md",
+        "publication": "LOCAL_COMMITTED_PUSH_BLOCKED_CONFIGURED_PROXY_UNREACHABLE",
+        "local_delivery_commit": "f1ec5bda1a6c57a4aedec85fa40becd64c371ae5"
       }
     },
     {

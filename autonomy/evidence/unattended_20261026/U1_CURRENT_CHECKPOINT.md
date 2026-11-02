@@ -1,3 +1,5 @@
+发布恢复 / Publication recovery: f1ec5bda local delivery committed; PUSH_BLOCKED (configured 127.0.0.1 proxy unreachable), remote current UNKNOWN after failure. 未修改代理；下一次先重试push并核验远端SHA，再继续集成。
+
 # 当前交付恢复点 / Current delivery checkpoint — SCM integration 2026-11-02
 
 固定源码 / Fixed source: d1e613cdb64f957907812b87c5a0c867531c6d4f。RoktU1Bridge已接入固定Python引导器、挂起创建/Job绑定/恢复、整树终止及清理核验；引导器核验active版本全文件后加载Python宿主。36定向PASS11.384s；真实Windows父子进程清理通过；59文件固定包解析/篡改拒绝/首装回滚PASS。Fixed package resolves namespace modules after correcting HOST_MISSING; independent review PENDING. 未安装/启动SCM服务，正式backend和原Inventory持久锁未接线，无人登录未验收，生产派发关闭。
