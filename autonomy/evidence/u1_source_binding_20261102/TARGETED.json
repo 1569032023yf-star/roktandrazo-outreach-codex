@@ -1,0 +1,7 @@
+{
+  "command": "python -B -m unittest test_disabled_host_package test_u1_provision test_host_install_transaction test_host_file_transaction",
+  "tests_run": 23,
+  "passed": true,
+  "seconds": 94.476,
+  "scope": "offline actual installer gate and isolated file/coordinator tests; not production acceptance"
+}

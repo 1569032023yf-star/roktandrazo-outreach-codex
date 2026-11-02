@@ -1,0 +1,216 @@
+{
+  "commit": "10e269e814dbe7b7a4801fa99ca4cec11d5a67b2",
+  "files": [
+    {
+      "path": "handoff/workbuddy/production/CITY_STAGE_TRACE.json",
+      "git_blob_sha": "36d74f1be0c13fdb71ef1cef2e713ca60300658e",
+      "json_parse": true,
+      "schema": null,
+      "generated_at": "2026-11-02T22:53:12+08:00",
+      "measured_at": null,
+      "producer": "workbuddy-production-operator",
+      "producer_verified": true,
+      "schema_version": "1.0",
+      "nested_schema_markers": {
+        "active": "rokt.city.v1",
+        "next": "rokt.city.v1"
+      },
+      "source_present": true,
+      "payload_hash_status": "PRODUCER_ASSERTED_NOT_RECOMPUTED_CANONICALIZATION_UNSPECIFIED"
+    },
+    {
+      "path": "handoff/workbuddy/production/INVENTORY_SCHEDULER_RECONCILIATION.json",
+      "git_blob_sha": "a7d0280f02f94e5477cfc80b27c709d2533c6d88",
+      "json_parse": true,
+      "schema": "rokt.scheduler.v1",
+      "generated_at": "2026-11-02T22:53:12+08:00",
+      "measured_at": null,
+      "producer": "workbuddy-production-operator",
+      "producer_verified": true,
+      "schema_version": "1.0",
+      "nested_schema_markers": {},
+      "source_present": true,
+      "payload_hash_status": "PRODUCER_ASSERTED_NOT_RECOMPUTED_CANONICALIZATION_UNSPECIFIED"
+    },
+    {
+      "path": "handoff/workbuddy/production/PRODUCTION_RUNTIME_LATEST.json",
+      "git_blob_sha": "94df84ff99c654be169549fe29d706c8e7add46b",
+      "json_parse": true,
+      "schema": "rokt.runtime.v1",
+      "generated_at": "2026-11-02T22:53:12+08:00",
+      "measured_at": null,
+      "producer": "workbuddy-production-operator",
+      "producer_verified": true,
+      "schema_version": "1.0",
+      "nested_schema_markers": {},
+      "source_present": true,
+      "payload_hash_status": "PRODUCER_ASSERTED_NOT_RECOMPUTED_CANONICALIZATION_UNSPECIFIED"
+    },
+    {
+      "path": "handoff/workbuddy/production/PROVIDER_REQUEST_AUDIT_24H.json",
+      "git_blob_sha": "7e67abe9ebf18cf1cc05dcd75a289ed1c00f349b",
+      "json_parse": true,
+      "schema": null,
+      "generated_at": "2026-11-02T22:53:12+08:00",
+      "measured_at": null,
+      "producer": "workbuddy-production-operator",
+      "producer_verified": true,
+      "schema_version": "1.0",
+      "nested_schema_markers": {
+        "city22_24h": "rokt.provider_audit.v1",
+        "all_cities_7d": "rokt.provider_audit.v1"
+      },
+      "source_present": true,
+      "payload_hash_status": "PRODUCER_ASSERTED_NOT_RECOMPUTED_CANONICALIZATION_UNSPECIFIED"
+    },
+    {
+      "path": "handoff/workbuddy/production/RELEASE_REGISTRY_SNAPSHOT.json",
+      "git_blob_sha": "514099a8157632b109adff18445cf8c02ac2b8b6",
+      "json_parse": true,
+      "schema": null,
+      "generated_at": "2026-11-02T22:53:12+08:00",
+      "measured_at": null,
+      "producer": "workbuddy-production-operator",
+      "producer_verified": true,
+      "schema_version": "1.0",
+      "nested_schema_markers": {},
+      "source_present": true,
+      "payload_hash_status": "PRODUCER_ASSERTED_NOT_RECOMPUTED_CANONICALIZATION_UNSPECIFIED"
+    },
+    {
+      "path": "handoff/workbuddy/production/SAFE_AUTHORITY_SNAPSHOT.json",
+      "git_blob_sha": "5a9f79681d3f07136b4a37c620b6403ccbe748d8",
+      "json_parse": true,
+      "schema": "rokt.safe_authority.v1",
+      "generated_at": "2026-11-02T22:53:12+08:00",
+      "measured_at": "2026-11-02T22:41:27+08:00",
+      "producer": "workbuddy-production-operator",
+      "producer_verified": true,
+      "schema_version": "1.0",
+      "nested_schema_markers": {},
+      "source_present": true,
+      "payload_hash_status": "PRODUCER_ASSERTED_NOT_RECOMPUTED_CANONICALIZATION_UNSPECIFIED"
+    },
+    {
+      "path": "handoff/workbuddy/production/WORKBUDDY_LONG_TERM_OPERATIONS.json",
+      "git_blob_sha": "09fc4a48fcb48ca2321d992eb406e1f51ce703f6",
+      "json_parse": true,
+      "schema": null,
+      "generated_at": "2026-11-02T22:53:12+08:00",
+      "measured_at": null,
+      "producer": "NOT_RECORDED",
+      "producer_verified": false,
+      "schema_version": "1.0",
+      "nested_schema_markers": {},
+      "source_present": true,
+      "payload_hash_status": "NOT_RECORDED"
+    }
+  ],
+  "structural_only": true,
+  "independent_schema_supplied": false,
+  "git_commit_time": "2026-11-02T22:53:26+08:00",
+  "report_generated_at": "2026-11-02T22:53:12+08:00",
+  "safe_sampling_times": [
+    "2026-11-02T22:47:34+08:00",
+    "2026-11-02T22:52:59+08:00"
+  ],
+  "safe": 69,
+  "strict_h24_growth": "UNKNOWN",
+  "strict_d7_growth": "UNKNOWN",
+  "producer_growth": {
+    "h24": 1,
+    "d7": 9
+  },
+  "inventory_pairs": [
+    {
+      "firing_id": "automation-1784775229336:1793618757758",
+      "run_id": "inventory:2026-11-02:4924e03a",
+      "inventory_stage_in_runtime": true,
+      "within_tolerance": true
+    },
+    {
+      "firing_id": "automation-1784775229336:1793595195300",
+      "run_id": "inventory:2026-11-02:4e451423",
+      "inventory_stage_in_runtime": true,
+      "within_tolerance": true
+    },
+    {
+      "firing_id": "automation-1784775229336:1793571764197",
+      "run_id": "inventory:2026-11-02:c8663f39",
+      "inventory_stage_in_runtime": true,
+      "within_tolerance": true
+    },
+    {
+      "firing_id": "automation-1784775229336:1793548629232",
+      "run_id": "post-send:2026-11-01:fb2500c0",
+      "inventory_stage_in_runtime": false,
+      "within_tolerance": true
+    },
+    {
+      "firing_id": "automation-1784775229336:1793525463561",
+      "run_id": "inventory:2026-11-01:92b9d406",
+      "inventory_stage_in_runtime": true,
+      "within_tolerance": true
+    },
+    {
+      "firing_id": "automation-1784775229336:1793502321368",
+      "run_id": "inventory:2026-11-01:493f7e5c",
+      "inventory_stage_in_runtime": true,
+      "within_tolerance": false
+    },
+    {
+      "firing_id": "automation-1784775229336:1793478085216",
+      "run_id": "inventory:2026-11-01:f2830908",
+      "inventory_stage_in_runtime": true,
+      "within_tolerance": true
+    }
+  ],
+  "inventory_zero_misses": "NEEDS_RECONCILIATION",
+  "next_run_at": "2026-11-03T01:55:58.202000+08:00",
+  "stage_traces": [
+    {
+      "run_id": "inventory:2026-11-02:4924e03a",
+      "events": 16
+    },
+    {
+      "run_id": "inventory:2026-11-02:4e451423",
+      "events": 16
+    },
+    {
+      "run_id": "inventory:2026-11-02:c8663f39",
+      "events": 16
+    },
+    {
+      "run_id": "inventory:2026-11-01:784b352d",
+      "events": 16
+    },
+    {
+      "run_id": "inventory:2026-11-01:92b9d406",
+      "events": 16
+    },
+    {
+      "run_id": "inventory:2026-11-01:493f7e5c",
+      "events": 16
+    },
+    {
+      "run_id": "inventory:2026-11-01:f2830908",
+      "events": 16
+    },
+    {
+      "run_id": "inventory:2026-10-31:d52e84fd",
+      "events": 16
+    }
+  ],
+  "conflicts": [
+    "SAFE numeric growth contradicts reason/unavailable and lacks baseline raw snapshots",
+    "one scheduler pairing names post-send rather than inventory",
+    "744.6-second drift exceeds declared600-second tolerance",
+    "runtime contains stage events but field_notes/current_step_note still deny them",
+    "Cooperstown closed=true contradicts stale NEXT_AUTOMATIC_ACTION saying it will not close",
+    "Ithaca is absent from this refresh, so earlier completion conflict remains unresolved"
+  ],
+  "bridge": "UP_SESSION_SCOPED",
+  "boot_persistence": false,
+  "unattended_7877": "UNKNOWN",
+  "smtp_enabled": false
+}

@@ -1,0 +1,9 @@
+{
+  "source_commit": "5c4002003cfdcbb1c1f0f6370b7c07e89823ba0e",
+  "files_verified": 65,
+  "archives_exact": true,
+  "machine": "AMD64",
+  "installer_version": "1.1.0",
+  "host_manifest_sha256": "1dc39e6b2162165f3ba79df6321f9b78bf058fbbd2203ce6bfb32b5b2334e4ba",
+  "passed": true
+}
