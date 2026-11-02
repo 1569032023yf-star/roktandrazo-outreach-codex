@@ -110,7 +110,8 @@ def run_tree(args, *, timeout, cwd=None, stdout_limit_bytes=4*1024*1024,
     capture = _Capture(stdout_limit_bytes, stderr_limit_bytes, event_limit_bytes)
     if stdin_bytes is not None and (type(stdin_bytes) is not bytes or len(stdin_bytes)>65536):
         raise ValueError('Bounded bytes input required')
-    # Unnamed temporary handle: no operation tokens in argv or named files.
+    # Bounded temporary stdin handle, deleted on close; no tokens in argv.
+    # Windows may back this with a named temporary file; production ACL remains required.
     with tempfile.TemporaryFile() as input_stream:
         if stdin_bytes is not None:
             input_stream.write(stdin_bytes);input_stream.seek(0)
