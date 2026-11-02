@@ -25,7 +25,7 @@ class DisabledPackageTests(unittest.TestCase):
         self.assertEqual(result['manifest']['account'],r'NT SERVICE\RoktU1Bridge')
         raw=(self.root/'package'/'manifest.json').read_bytes()
         self.assertEqual(hashlib.sha256(raw).hexdigest(),result['manifest_sha256'])
-        self.assertEqual(len(list((self.root/'package').rglob('*.*'))),6)
+        self.assertEqual(len(list((self.root/'package').rglob('*.*'))),7)
         with self.assertRaises(FileExistsError):build_package(self.root/'package',self.artifacts,self.hashes,source_commit='a'*40)
     def test_missing_or_changed_dependency_rejected_before_writes(self):
         for missing in self.artifacts:
