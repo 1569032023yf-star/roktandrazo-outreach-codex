@@ -1,0 +1,35 @@
+{
+  "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
+  "files": [
+    {
+      "path": "autonomy/release_store.py",
+      "git_blob_sha": "83b9a7ab2cac26ffc2362bdc39d19fc699bf7192",
+      "sha256": "7cf6c42a5dd3724af9d2f7986ecb02eea7368eff49dc62ed6784c0ac15755d99",
+      "bytes": 15039
+    },
+    {
+      "path": "autonomy/u1_host_runtime.py",
+      "git_blob_sha": "10029047d850b1d15db01de93cfcec595d2fa3eb",
+      "sha256": "241b99c0bccf9eb0e102e10278e74566d6a80b728cc030d2b601ecf70cee4a39",
+      "bytes": 2202
+    },
+    {
+      "path": "autonomy/windows/u1_bootstrap.py",
+      "git_blob_sha": "49a722ddfca61b16e7c57b3c9673eaa6b25560ee",
+      "sha256": "be2c7d9b179d106a5b18e743fd4b7f1e920063186de57c1f6bed51d7c7a5cbf9",
+      "bytes": 4486
+    },
+    {
+      "path": "test_release_store.py",
+      "git_blob_sha": "a9e1f01ad699d51dc7aeb33a5c879e1e19edbda7",
+      "sha256": "04a66f41f5e31e0f27b7985d349f98654dcb8cff702277abfb6d5631ffd3a94b",
+      "bytes": 5808
+    },
+    {
+      "path": "test_u1_host_runtime.py",
+      "git_blob_sha": "cc0f5b0fd44d085605758d4de93b85b9f36ddc2e",
+      "sha256": "1719043d121659a1eb4504a697cce2742da0c3e173b8151350aac10471f8d5d0",
+      "bytes": 3032
+    }
+  ]
+}

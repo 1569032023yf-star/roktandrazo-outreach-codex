@@ -576,23 +576,23 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy\\evidence\\u1_execution_wiring_20261102\\REPORT.md",
-      "next_action": "Wire the existing Inventory owner to the service event consumer with closed dispatch gates; finish identity/ACL/dependency protection and SCM upgrade/full-file rollback, then independently review the frozen candidate before installation.",
+      "checkpoint": "autonomy/evidence/u1_publication_recovery_20261102/REPORT.md",
+      "next_action": "Implement the disabled-service upgrade and exact owned-file rollback path with durable recovery records; keep dispatch closed.",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "PENDING_FOR_CURRENT_PIN",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "dcbddc3fe5535b39d789eba61df94f651aa2bd34",
+      "candidate_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
       "trust_boundary_review": "SCOPED_PASS",
       "schedule_contract_review": "SCOPED_PASS",
       "regression_runner_candidate": "b69214d",
-      "full_regression": "833_IDENTICAL_37_FAILURES_17_ERRORS_REFRESH_20261028",
+      "full_regression": "FRESH_58B5094_VS_82031AC_833_EACH_IDENTICAL_37_FAILURES_17_ERRORS_NOT_ALL_GREEN",
       "adapter_review": "SCOPED_PASS_E3F3220",
       "bridge_candidate": "68802d5",
       "bridge_review": "SCOPED_PASS_68802D5",
       "handoff_comment": 6435605069,
-      "targeted_tests": 114,
+      "targeted_tests": 89,
       "snapshot_review": "SCOPED_PASS_DA443FD",
       "history_import_review": "SCOPED_PASS_DBDC424",
       "manifest_closure_review": "SCOPED_PASS_TEST621D3E4_PACKAGE_DBDC424",
@@ -1106,8 +1106,8 @@
           }
         }
       },
-      "next_action_zh": "接通原Inventory拥有者与宿主事件消费入口，保持派发门禁关闭；补齐身份/ACL/依赖保护及SCM升级和完整文件回滚，固定候选独审后才安装。",
-      "next_action_en": "Wire the existing Inventory owner to the service event consumer with closed dispatch gates; finish identity/ACL/dependency protection and SCM upgrade/full-file rollback, then independently review the frozen candidate before installation.",
+      "next_action_zh": "实现禁用服务升级与精确自有文件回滚路径，接入持久恢复记录；生产派发保持关闭。",
+      "next_action_en": "Implement the disabled-service upgrade and exact owned-file rollback path with durable recovery records; keep dispatch closed.",
       "namespace_revalidation_latest": {
         "schema": "codex.u1.namespace-revalidation.v1",
         "summary_zh": "源身份复核在hash前后核对名字对象ID，拒绝同内容替换；返回后窗口仍未锁定。",
@@ -1651,24 +1651,58 @@
         "allow_cancel_dispatch": false
       },
       "u1_actual_delivery_latest": {
-        "source_commit": "fb6f667a1456a7d81e432e7cc87727697ef9fb9f",
+        "updated_at": "2026-11-02T09:01:44.396442+00:00",
+        "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
+        "checkpoint": "autonomy/evidence/u1_publication_recovery_20261102/REPORT.md",
         "scope_frozen": true,
         "real_code_changes": [
-          "versioned_file_publisher",
-          "actual_package_builder",
-          "authenticated_python_host_bootstrap"
+          "durable_publication_intent_and_receipt",
+          "uncertain_publication_fences_all_mutating_entries",
+          "host_and_standalone_bootstrap_pending_gate"
         ],
-        "tests_passed": 35,
-        "installed_package_http_pass": true,
-        "package_files": 57,
-        "package_build": "autonomy/evidence/u1_delivery_20261102/fixed-package/BUILD.json",
+        "targeted_tests": {
+          "count": 89,
+          "passed": true,
+          "seconds": 31.079
+        },
+        "comparable_regression": {
+          "baseline_commit": "58b50947ea96f876b19b97bd1c4516daac0c5e6b",
+          "candidate_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
+          "baseline_run": 833,
+          "candidate_run": 833,
+          "baseline_failures": 37,
+          "candidate_failures": 37,
+          "baseline_errors": 17,
+          "candidate_errors": 17,
+          "identical_failure_ids": true,
+          "identical_error_ids": true,
+          "all_green": false,
+          "no_new_regression": true
+        },
+        "package_build": {
+          "artifacts": {
+            "install.zip": "9a08ac645484ce0f9186e5e812890b18a1ae140cd132bd98c76b1f17a55818d3",
+            "rollback-tools.zip": "db38adab6842a1ed1eba941324565f44accd0d172c02d99c6caf3b0de1c82cb4"
+          },
+          "files": 60,
+          "independent_review": "PENDING",
+          "manifest_sha256": "9d3ad9f5490d3467a57038642004555045e4af7f08def1b26c673fa2add02fe2",
+          "production_ready": false,
+          "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78"
+        },
         "independent_review": "PENDING",
-        "scm_python_supervision_complete": false,
         "formal_backend_integrated": false,
         "original_inventory_integrated": false,
-        "allow_dispatch": false,
+        "development_complete": false,
+        "release_ready": false,
         "production_deployed": false,
-        "release_ready": false
+        "production_accepted": false,
+        "business_growth": "UNKNOWN",
+        "allow_dispatch": false,
+        "allow_cancel_dispatch": false,
+        "smtp_enabled": false,
+        "next_action": "Implement the disabled-service upgrade and exact owned-file rollback path with durable recovery records; keep dispatch closed.",
+        "next_action_zh": "实现禁用服务升级与精确自有文件回滚路径，接入持久恢复记录；生产派发保持关闭。"
       },
       "u1_scm_integration_latest": {
         "source_commit": "d1e613cdb64f957907812b87c5a0c867531c6d4f",
@@ -1711,7 +1745,7 @@
         "production_deployed": false,
         "next_action": "Integrate bounded execution backend with existing signed SingleSlotAdapter admission and original Inventory lease; close installer upgrade/rollback, dependency ACL and TOCTOU blockers before independent review. No service install/start."
       },
-      "updated_at": "2026-11-02T08:41:35.333236+00:00",
+      "updated_at": "2026-11-02T09:01:44.396442+00:00",
       "u1_execution_wiring_latest": {
         "updated_at": "2026-11-02T08:40:48.546343+00:00",
         "source_commit": "cc9b7a7b672eb2098fa02d7e57c266b4ec57d76e",
@@ -1779,6 +1813,60 @@
         "review": "PENDING",
         "package_rebuilt": false,
         "production_action": false
+      },
+      "u1_publication_recovery_latest": {
+        "updated_at": "2026-11-02T09:01:44.396442+00:00",
+        "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
+        "checkpoint": "autonomy/evidence/u1_publication_recovery_20261102/REPORT.md",
+        "scope_frozen": true,
+        "real_code_changes": [
+          "durable_publication_intent_and_receipt",
+          "uncertain_publication_fences_all_mutating_entries",
+          "host_and_standalone_bootstrap_pending_gate"
+        ],
+        "targeted_tests": {
+          "count": 89,
+          "passed": true,
+          "seconds": 31.079
+        },
+        "comparable_regression": {
+          "baseline_commit": "58b50947ea96f876b19b97bd1c4516daac0c5e6b",
+          "candidate_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
+          "baseline_run": 833,
+          "candidate_run": 833,
+          "baseline_failures": 37,
+          "candidate_failures": 37,
+          "baseline_errors": 17,
+          "candidate_errors": 17,
+          "identical_failure_ids": true,
+          "identical_error_ids": true,
+          "all_green": false,
+          "no_new_regression": true
+        },
+        "package_build": {
+          "artifacts": {
+            "install.zip": "9a08ac645484ce0f9186e5e812890b18a1ae140cd132bd98c76b1f17a55818d3",
+            "rollback-tools.zip": "db38adab6842a1ed1eba941324565f44accd0d172c02d99c6caf3b0de1c82cb4"
+          },
+          "files": 60,
+          "independent_review": "PENDING",
+          "manifest_sha256": "9d3ad9f5490d3467a57038642004555045e4af7f08def1b26c673fa2add02fe2",
+          "production_ready": false,
+          "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78"
+        },
+        "independent_review": "PENDING",
+        "formal_backend_integrated": false,
+        "original_inventory_integrated": false,
+        "development_complete": false,
+        "release_ready": false,
+        "production_deployed": false,
+        "production_accepted": false,
+        "business_growth": "UNKNOWN",
+        "allow_dispatch": false,
+        "allow_cancel_dispatch": false,
+        "smtp_enabled": false,
+        "next_action": "Implement the disabled-service upgrade and exact owned-file rollback path with durable recovery records; keep dispatch closed.",
+        "next_action_zh": "实现禁用服务升级与精确自有文件回滚路径，接入持久恢复记录；生产派发保持关闭。"
       }
     },
     {
@@ -3614,7 +3702,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-02T08:49:26.631992+00:00",
+  "updated_at": "2026-11-02T09:01:44.396442+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -3912,5 +4000,59 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "autonomy\\evidence\\u1_execution_wiring_20261102\\REPORT.md"
+  "checkpoint": "autonomy/evidence/u1_publication_recovery_20261102/REPORT.md",
+  "u1_publication_recovery_latest": {
+    "updated_at": "2026-11-02T09:01:44.396442+00:00",
+    "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
+    "checkpoint": "autonomy/evidence/u1_publication_recovery_20261102/REPORT.md",
+    "scope_frozen": true,
+    "real_code_changes": [
+      "durable_publication_intent_and_receipt",
+      "uncertain_publication_fences_all_mutating_entries",
+      "host_and_standalone_bootstrap_pending_gate"
+    ],
+    "targeted_tests": {
+      "count": 89,
+      "passed": true,
+      "seconds": 31.079
+    },
+    "comparable_regression": {
+      "baseline_commit": "58b50947ea96f876b19b97bd1c4516daac0c5e6b",
+      "candidate_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
+      "baseline_run": 833,
+      "candidate_run": 833,
+      "baseline_failures": 37,
+      "candidate_failures": 37,
+      "baseline_errors": 17,
+      "candidate_errors": 17,
+      "identical_failure_ids": true,
+      "identical_error_ids": true,
+      "all_green": false,
+      "no_new_regression": true
+    },
+    "package_build": {
+      "artifacts": {
+        "install.zip": "9a08ac645484ce0f9186e5e812890b18a1ae140cd132bd98c76b1f17a55818d3",
+        "rollback-tools.zip": "db38adab6842a1ed1eba941324565f44accd0d172c02d99c6caf3b0de1c82cb4"
+      },
+      "files": 60,
+      "independent_review": "PENDING",
+      "manifest_sha256": "9d3ad9f5490d3467a57038642004555045e4af7f08def1b26c673fa2add02fe2",
+      "production_ready": false,
+      "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78"
+    },
+    "independent_review": "PENDING",
+    "formal_backend_integrated": false,
+    "original_inventory_integrated": false,
+    "development_complete": false,
+    "release_ready": false,
+    "production_deployed": false,
+    "production_accepted": false,
+    "business_growth": "UNKNOWN",
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "smtp_enabled": false,
+    "next_action": "Implement the disabled-service upgrade and exact owned-file rollback path with durable recovery records; keep dispatch closed.",
+    "next_action_zh": "实现禁用服务升级与精确自有文件回滚路径，接入持久恢复记录；生产派发保持关闭。"
+  }
 }

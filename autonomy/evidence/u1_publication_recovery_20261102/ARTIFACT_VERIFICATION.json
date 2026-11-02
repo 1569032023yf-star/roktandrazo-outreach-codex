@@ -1,0 +1,10 @@
+{
+  "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
+  "zip_hashes_verified": true,
+  "manifest_sha256": "9d3ad9f5490d3467a57038642004555045e4af7f08def1b26c673fa2add02fe2",
+  "exact_file_count": 60,
+  "all_file_hashes_verified": true,
+  "pe_machine": "AMD64_0x8664",
+  "previous_receipt_fix_included": true,
+  "pending_fence_in_package_and_bootstrap": true
+}

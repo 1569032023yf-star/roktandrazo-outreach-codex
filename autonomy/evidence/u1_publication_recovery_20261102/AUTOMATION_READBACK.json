@@ -1,0 +1,9 @@
+{
+  "id": "rokt-razo",
+  "name": "ROKT&RAZO 自主工程总控",
+  "rrule": "FREQ=HOURLY;INTERVAL=3",
+  "status": "ACTIVE",
+  "prompt_sha256": "0e61d66affd96889ba921a73e60aa23180ade5d37d78f7797b8dd24e34aeaf42",
+  "hard_timeout_available": false,
+  "changed_this_cycle": false
+}

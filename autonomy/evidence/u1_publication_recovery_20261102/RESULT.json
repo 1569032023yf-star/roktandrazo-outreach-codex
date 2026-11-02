@@ -1,0 +1,54 @@
+{
+  "updated_at": "2026-11-02T09:01:44.396442+00:00",
+  "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
+  "checkpoint": "autonomy/evidence/u1_publication_recovery_20261102/REPORT.md",
+  "scope_frozen": true,
+  "real_code_changes": [
+    "durable_publication_intent_and_receipt",
+    "uncertain_publication_fences_all_mutating_entries",
+    "host_and_standalone_bootstrap_pending_gate"
+  ],
+  "targeted_tests": {
+    "count": 89,
+    "passed": true,
+    "seconds": 31.079
+  },
+  "comparable_regression": {
+    "baseline_commit": "58b50947ea96f876b19b97bd1c4516daac0c5e6b",
+    "candidate_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
+    "baseline_run": 833,
+    "candidate_run": 833,
+    "baseline_failures": 37,
+    "candidate_failures": 37,
+    "baseline_errors": 17,
+    "candidate_errors": 17,
+    "identical_failure_ids": true,
+    "identical_error_ids": true,
+    "all_green": false,
+    "no_new_regression": true
+  },
+  "package_build": {
+    "artifacts": {
+      "install.zip": "9a08ac645484ce0f9186e5e812890b18a1ae140cd132bd98c76b1f17a55818d3",
+      "rollback-tools.zip": "db38adab6842a1ed1eba941324565f44accd0d172c02d99c6caf3b0de1c82cb4"
+    },
+    "files": 60,
+    "independent_review": "PENDING",
+    "manifest_sha256": "9d3ad9f5490d3467a57038642004555045e4af7f08def1b26c673fa2add02fe2",
+    "production_ready": false,
+    "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78"
+  },
+  "independent_review": "PENDING",
+  "formal_backend_integrated": false,
+  "original_inventory_integrated": false,
+  "development_complete": false,
+  "release_ready": false,
+  "production_deployed": false,
+  "production_accepted": false,
+  "business_growth": "UNKNOWN",
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "next_action": "Implement the disabled-service upgrade and exact owned-file rollback path with durable recovery records; keep dispatch closed.",
+  "next_action_zh": "实现禁用服务升级与精确自有文件回滚路径，接入持久恢复记录；生产派发保持关闭。"
+}

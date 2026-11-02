@@ -1,0 +1,14 @@
+{
+  "baseline_commit": "58b50947ea96f876b19b97bd1c4516daac0c5e6b",
+  "candidate_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
+  "baseline_run": 833,
+  "candidate_run": 833,
+  "baseline_failures": 37,
+  "candidate_failures": 37,
+  "baseline_errors": 17,
+  "candidate_errors": 17,
+  "identical_failure_ids": true,
+  "identical_error_ids": true,
+  "all_green": false,
+  "no_new_regression": true
+}

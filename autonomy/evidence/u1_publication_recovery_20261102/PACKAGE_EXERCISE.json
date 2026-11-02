@@ -1,0 +1,12 @@
+{
+  "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
+  "manifest_sha256": "9d3ad9f5490d3467a57038642004555045e4af7f08def1b26c673fa2add02fe2",
+  "package_module_loaded": true,
+  "stage_activate_verified": true,
+  "rollback_to_absent_verified": true,
+  "child_exit_code": 27,
+  "unknown_after_real_commit": true,
+  "bootstrap_blocked": true,
+  "rollback_replay_blocked": true,
+  "production_action": false
+}
