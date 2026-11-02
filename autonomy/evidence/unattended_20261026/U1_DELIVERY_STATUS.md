@@ -325,3 +325,5 @@ NEXT_AUTOMATIC_ACTION=FORMAL_BACKEND_RUNTIME_AND_PUBLISHER_CONTRACT_INTEGRATION
 Issue2最新仍6435605069，不重复申请。旧833项比较只覆盖b69214d，同37失败17错误，非全绿；不能扩大到最新候选。回滚门禁签名只证明声明来源，不能证明OS事实；allow_dispatch始终false。 / Issue2 still ends at6435605069; no duplicate requests. The old833-test comparison applies only to b69214d, with identical37 failures/17 errors, not all green. Signatures establish provenance rather than OS truth; allow_dispatch remains false.
 
 报告自检：中英双语，实际测试与限制、未执行项和下一步明确，无客户资料或凭据。 / Self-check: bilingual, explicit actual tests, limits, exclusions and next steps; no customer information or credentials.
+
+工程回执已发布并逐字回读核验 / Engineering receipt published and exact readback verified: https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6584492957

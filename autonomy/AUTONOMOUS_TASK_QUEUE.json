@@ -4768,5 +4768,13 @@
     },
     "next_action": "Implement the original production Inventory authority maintenance adapter in offline source, then hold exclusion throughout installer mutation and verification; hard rejection alone is not completed maintenance integration.",
     "next_action_zh": "在离线源码中实现原生产 Inventory 权威持有的维护排斥适配器，再将安装入口接入整个写入与核验期间持续持有的排斥；不能把本轮硬拒绝当作维护集成完成。"
+  },
+  "u1_maintenance_engineering_receipt": {
+    "id": 6584492957,
+    "url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6584492957",
+    "readback_exact": true,
+    "source_commit": "a20ba1e67b0633e8a588ec90db981b9a99d3a3fa",
+    "evidence_commit": "29766098486ca95a646248ad7a4d5cf6ebd5ed9c",
+    "kind": "ENGINEERING_RECEIPT_NOT_DUPLICATE_CONSUMPTION"
   }
 }
