@@ -6,6 +6,10 @@ param(
     [string]$RuntimePlan,
     [ValidatePattern('^[0-9a-f]{64}$')][string]$ApprovedRuntimePlanSha256,
     [switch]$RecoverAcl,
+    [switch]$Upgrade,
+    [switch]$RecoverInstall,
+    [switch]$Rollback,
+    [ValidatePattern('^[0-9a-f]{64}$')][string]$ApprovedPreviousReceiptSha256,
     [switch]$Execute
 )
 $ErrorActionPreference='Stop'
@@ -48,6 +52,7 @@ if ($m.schema -cne 'rokt.disabled-host-package.v1' -or $m.inventory_id -cne '178
     $m.allow_cancel_dispatch -isnot [bool] -or $m.allow_cancel_dispatch -or
     $m.scheduler_created -isnot [bool] -or $m.scheduler_created -or $m.rollback_preserves_state -cne $true) { throw 'UNSAFE_MANIFEST' }
 $entries=@($m.files)+@($m.scripts)
+if (@($m.files | Where-Object {$_.path.ToLowerInvariant() -in @('config/installation.json','config/runtime.json','config/supervisor.json') -or $_.path -match '(^|/)[^/]*[.]u1-new(/|$)'}).Count) {throw 'INSTALLER_RESERVED_PATH'}
 $seen=@{}
 foreach ($f in $entries) {
     if ($f.path -isnot [string] -or $f.path -cnotmatch '^[A-Za-z0-9_./-]+$' -or $f.path.Contains('..') -or $f.path.StartsWith('/') -or $seen.ContainsKey($f.path.ToLowerInvariant())) { throw 'UNSAFE_PACKAGE_PATH' }
@@ -59,7 +64,7 @@ foreach ($f in $entries) {
         (Get-FileHash -LiteralPath $p -Algorithm SHA256).Hash.ToLowerInvariant() -cne $f.sha256) { throw 'ARTIFACT_MISMATCH' }
     Pin-Reference $p $f.sha256
 }
-foreach ($required in @('service/RoktU1Bridge.exe','runtime/dependencies.json','config/host.json','Install-DisabledHost.ps1','Rollback-DisabledHost.ps1','Acl-Transaction.ps1')) {
+foreach ($required in @('service/RoktU1Bridge.exe','runtime/dependencies.json','config/host.json','Install-DisabledHost.ps1','Rollback-DisabledHost.ps1','Acl-Transaction.ps1','Host-InstallTransaction.ps1','host_file_transaction.py')) {
     if (-not $seen.ContainsKey($required.ToLowerInvariant())) { throw 'MISSING_DEPENDENCY' }
 }
 $deps=Get-Content -LiteralPath (Join-Path $package 'runtime/dependencies.json') -Raw | ConvertFrom-Json
@@ -90,6 +95,11 @@ if ($RuntimePlan) {
     Pin-Reference $RuntimePlan $ApprovedRuntimePlanSha256
     $plan=Get-Content -LiteralPath $RuntimePlan -Raw | ConvertFrom-Json
     $keys=@('schema','inventory_id','python','python_sha256','release_root','token_file','token_sha256','credential_expires_at','snapshot','snapshot_sha256')
+    if ($plan.PSObject.Properties.Name -ccontains 'event_runtime') {
+        $keys+=@('event_runtime')
+        if ($plan.event_runtime -isnot [string] -or -not [IO.Path]::IsPathRooted($plan.event_runtime) -or [IO.Path]::GetFullPath($plan.event_runtime) -cne $plan.event_runtime -or -not (Test-Path -LiteralPath $plan.event_runtime -PathType Container)) {throw 'EVENT_RUNTIME_REQUIRED'}
+        Assert-NoReparseAncestors $plan.event_runtime
+    }
     if (@($plan.PSObject.Properties.Name).Count -ne $keys.Count -or @($plan.PSObject.Properties.Name | Where-Object {$_ -cnotin $keys}).Count -ne 0 -or $plan.schema -cne 'rokt.u1-provision-plan.v1' -or $plan.inventory_id -cne '1784775229336') { throw 'RUNTIME_PLAN_SCHEMA' }
     foreach ($key in @('python','token_file','snapshot','release_root')) {
         $value=$plan.$key
@@ -106,6 +116,7 @@ if ($RuntimePlan) {
     $bootstrapEntry=@($m.files | Where-Object {$_.path -ceq 'service/u1_bootstrap.py'})
     if ($bootstrapEntry.Count -ne 1) { throw 'BOOTSTRAP_REQUIRED' }
     $runtime=[ordered]@{schema='rokt.u1-python-runtime.v1';inventory_id='1784775229336';release_root=$plan.release_root;state_root=$state;token_file=$plan.token_file;credential_expires_at=$plan.credential_expires_at;snapshot=$plan.snapshot;snapshot_sha256=$plan.snapshot_sha256;allow_dispatch=$false;allow_cancel_dispatch=$false;smtp_enabled=$false}
+    if ($keys -ccontains 'event_runtime') {$runtime['event_runtime']=$plan.event_runtime}
     $utf8=New-Object Text.UTF8Encoding($false)
     $runtimeBytes=$utf8.GetBytes(($runtime | ConvertTo-Json -Compress))
     $hasher=[Security.Cryptography.SHA256]::Create()
@@ -133,84 +144,7 @@ if ($RecoverAcl) {
         return
     } finally { if ($held) { $recoveryMutex.ReleaseMutex() }; $recoveryMutex.Dispose() }
 }
-if ($Execute -and -not $RuntimePlan) { throw 'EXACT_RUNTIME_PLAN_REQUIRED' }
-if (Get-CimInstance Win32_Service -Filter "Name='$name'") { throw 'SERVICE_ALREADY_EXISTS' }
-if ((Test-Path -LiteralPath $code) -or (Test-Path -LiteralPath $state)) { throw 'TARGET_ALREADY_EXISTS' }
-$result=[ordered]@{schema='rokt.disabled-host-install-result.v1';preflight=$true;installed=$false;start_type='Disabled';allow_start=$false;allow_dispatch=$false;allow_cancel_dispatch=$false;state_preserved=$true}
-if (-not $Execute) { $result | ConvertTo-Json; return }
-$principal=New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { throw 'ADMINISTRATOR_REQUIRED' }
-# The invoking formal publisher must hold its approved maintenance/exclusion lease.
-# A hash argument is an exact-byte gate, not a substitute for publisher authority.
-$mutex=New-Object Threading.Mutex($false,'Global\RoktU1BridgeInstall')
-if (-not $mutex.WaitOne(0)) { $mutex.Dispose(); throw 'INSTALLATION_LOCKED' }
-$created=$false
-$aclCommitted=$false
-try {
-    # Repeat mutable preconditions under the installation mutex. Never adopt old services.
-    if ((Get-CimInstance Win32_Service -Filter "Name='$name'") -or (Test-Path -LiteralPath $code) -or (Test-Path -LiteralPath $state)) { throw 'TARGET_CHANGED' }
-    foreach ($p in @($package,$code,$state)) { Assert-NoReparseAncestors $p }
-    # Audit root must be separately provisioned and approved; never create or repair it implicitly.
-    Assert-AclAuditRoot ([IO.Path]::GetDirectoryName($aclJournal))
-    if ((Test-Path -LiteralPath $aclJournal) -or (Test-Path -LiteralPath ($aclJournal+'.state-create.jsonl'))) { throw 'ACL_EXISTING_OPERATION_RECONCILE_ONLY' }
-    New-Item -ItemType Directory -Path $code -Force | Out-Null
-    New-RecordedAclStateRoot -Path $state -Journal $aclJournal -ManifestHash $ApprovedManifestSha256
-    foreach ($f in $m.files) {
-        $source=Join-Path $package $f.path
-        Assert-NoReparseAncestors $source
-        if ((Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash.ToLowerInvariant() -cne $f.sha256) { throw 'SOURCE_CHANGED' }
-        $dest=Join-Path $code $f.path
-        Assert-NoReparseAncestors $dest
-        New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($dest)) -Force | Out-Null
-        Copy-Item -LiteralPath $source -Destination $dest
-        if ((Get-FileHash -LiteralPath $dest -Algorithm SHA256).Hash.ToLowerInvariant() -cne $f.sha256) { throw 'COPY_MISMATCH' }
-    }
-    foreach ($relative in $generated.Keys) {
-        $destination=Join-Path $code $relative
-        Assert-NoReparseAncestors $destination
-        # CreateNew refuses an unexpected artifact; never overwrite on retry.
-        $stream=New-Object IO.FileStream($destination,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
-        try { $stream.Write($generated[$relative],0,$generated[$relative].Length); $stream.Flush($true) } finally { $stream.Dispose() }
-        $actual=[IO.File]::ReadAllBytes($destination)
-        if ([Convert]::ToBase64String($actual) -cne [Convert]::ToBase64String($generated[$relative])) { throw 'GENERATED_CONFIG_READBACK' }
-    }
-    $args=@{Name=$name;DisplayName='Rokt U1 Bridge (disabled candidate)';PathName=('"'+$code+'\service\RoktU1Bridge.exe"');ServiceType=[uint32]16;ErrorControl=[uint32]1;StartMode='Disabled';DesktopInteract=$false;StartName=$account;StartPassword=''}
-    $reply=Invoke-CimMethod -ClassName Win32_Service -MethodName Create -Arguments $args
-    if ($reply.ReturnValue -ne 0) { throw 'SERVICE_CREATE_REJECTED' }
-    $created=$true
-    $sid=(New-Object Security.Principal.NTAccount($account)).Translate([Security.Principal.SecurityIdentifier])
-    $null=Invoke-AclTransaction -Code $code -State $state -ServiceSid $sid.Value -Journal $aclJournal -ManifestHash $ApprovedManifestSha256
-    $aclCommitted=$true
-    $svc=Get-CimInstance Win32_Service -Filter "Name='$name'"
-    if ($svc.StartMode -cne 'Disabled' -or $svc.State -cne 'Stopped' -or $svc.StartName -ine $account -or $svc.PathName -cne $args.PathName) { throw 'DISABLED_SERVICE_READBACK_FAILED' }
-    $receipt=[ordered]@{schema='rokt.disabled-host-install-receipt.v1';manifest_sha256=$ApprovedManifestSha256;service_name=$name;account=$account;image=$args.PathName;wrapper_sha256=($m.files | Where-Object {$_.path -ceq 'service/RoktU1Bridge.exe'}).sha256;state_preserved=$true}
-    # Ownership evidence belongs to the administrator-controlled code tree,
-    # never the service-writable durable state tree. Refuse replacement on retry.
-    $receiptPath=Join-Path $code 'config/installation.json'
-    Assert-NoReparseAncestors $receiptPath
-    $receiptBytes=[Text.UTF8Encoding]::new($false).GetBytes(($receipt | ConvertTo-Json -Compress))
-    $receiptStream=[IO.FileStream]::new($receiptPath,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
-    try { $receiptStream.Write($receiptBytes,0,$receiptBytes.Length); $receiptStream.Flush($true) } finally { $receiptStream.Dispose() }
-    if ([Convert]::ToBase64String([IO.File]::ReadAllBytes($receiptPath)) -cne [Convert]::ToBase64String($receiptBytes)) { throw 'INSTALLATION_RECEIPT_READBACK_FAILED' }
-    $result.installed=$true
-    $result['runtime_configured']=($generated.Count -eq 2)
-    $result | ConvertTo-Json
-} catch {
-    $installFailure=$_
-    if ($aclCommitted) {
-        # Observe/compensate only; never repeat an uncertain ACL application.
-        $null=Invoke-AclTransaction -Code $code -State $state -Journal $aclJournal -ManifestHash $ApprovedManifestSha256 -Recover
-    }
-    # Only this invocation's fresh registration may be removed. Keep binaries and
-    # every state byte after failure for audit; never restore a database snapshot.
-    if ($created) {
-        $svc=Get-CimInstance Win32_Service -Filter "Name='$name'"
-        if ($svc -and $svc.State -ceq 'Stopped' -and $svc.PathName -ceq $args.PathName) {
-            Invoke-CimMethod -InputObject $svc -MethodName ChangeStartMode -Arguments @{StartMode='Disabled'} | Out-Null
-            Invoke-CimMethod -InputObject $svc -MethodName Delete | Out-Null
-        }
-    }
-    throw $installFailure
-} finally { $mutex.ReleaseMutex(); $mutex.Dispose() }
+. (Join-Path $package 'Host-InstallTransaction.ps1')
+Invoke-HostInstallTransaction -Upgrade:$Upgrade -RecoverInstall:$RecoverInstall -Rollback:$Rollback -ApprovedPreviousReceiptSha256 $ApprovedPreviousReceiptSha256 -Execute:$Execute
 
 } finally { foreach ($pin in $dependencyPins) { $pin.Dispose() } }

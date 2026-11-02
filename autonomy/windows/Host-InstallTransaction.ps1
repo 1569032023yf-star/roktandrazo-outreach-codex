@@ -1,0 +1,172 @@
+# Shared lifecycle coordinator. Caller has pinned manifest, Python and helpers.
+# No StartService, scheduler, Inventory or production database operation.
+function Invoke-HostInstallTransaction {
+    param([switch]$Upgrade,[switch]$RecoverInstall,[switch]$Rollback,
+          [string]$ApprovedPreviousReceiptSha256,[switch]$Execute)
+    if (-not $RuntimePlan) { throw 'EXACT_RUNTIME_PLAN_REQUIRED' }
+    $operation=$ApprovedManifestSha256
+    $audit='C:\ProgramData\RoktU1InstallAudit'
+    $journal=Join-Path $audit ('install-'+$operation+'.jsonl')
+    $fileJournal=Join-Path $audit ('files-'+$operation+'.jsonl')
+    $operationAcl=Join-Path $audit ('acl-'+$operation+'.jsonl')
+    $image='"'+$code+'\service\RoktU1Bridge.exe"'
+    $receiptPath=Join-Path $code 'config/installation.json'
+    $pythonHelper=Join-Path $package 'host_file_transaction.py'
+    function Get-HostService {
+        $s=Get-CimInstance Win32_Service -Filter "Name='$name'"
+        if ($s -and ($s.StartMode -cne 'Disabled' -or $s.State -cne 'Stopped' -or $s.StartName -ine $account -or $s.PathName -cne $image)) { throw 'OWNED_DISABLED_STOPPED_SERVICE_REQUIRED' }
+        return $s
+    }
+    function Invoke-HostFiles([string]$Action,$Request) {
+        if ($null -ne $Request) {
+            $reply=($Request | ConvertTo-Json -Depth 12 -Compress) | & $plan.python -I -B $pythonHelper $Action --operation $operation
+        } else {
+            $reply=& $plan.python -I -B $pythonHelper $Action --operation $operation
+        }
+        if ($LASTEXITCODE -ne 0) { throw 'STOP_AND_PRESERVE_FILE_TRANSACTION' }
+        return ($reply | ConvertFrom-Json)
+    }
+    function Write-HostPhase([string]$Phase,$Extra=@{}) {
+        if ($log.Length -gt 0) {$null=Read-AclRecords $log}
+        Write-AclRecord $log @{phase=$Phase;manifest=$operation;extra=$Extra}
+    }
+    function Restore-HostInstall {
+        $service=Get-HostService
+        $rows=@(Read-AclRecords $log)
+        if (-not $rows.Count) {throw 'STOP_AND_PRESERVE_EMPTY_INSTALL'}
+        $header=$rows[0]
+        if ($header.phase -cne 'PREPARED' -or $header.manifest -cne $operation -or $header.extra.image -cne $image) { throw 'STOP_AND_PRESERVE_INSTALL_BINDING' }
+        if ($header.extra.upgrade -and -not $service) {throw 'STOP_AND_PRESERVE_MISSING_OLD_SERVICE'}
+        # Validate every affected file before touching ACL or registration.
+        # In particular, an old committed journal cannot remove a newer service.
+        if (Test-Path -LiteralPath $fileJournal) {$null=Invoke-HostFiles 'check-rollback' $null}
+        if ($rows[-1].phase -ceq 'ROLLED_BACK') {
+            if (-not $header.extra.upgrade -and $service) {throw 'STOP_AND_PRESERVE_UNEXPECTED_SERVICE'}
+            if (Test-Path -LiteralPath $fileJournal) {$null=Invoke-HostFiles 'rollback' $null}
+            return
+        }
+        if ($rows[-1].phase -ceq 'COMMITTED' -and -not $Rollback) { throw 'COMMITTED_REQUIRES_EXPLICIT_ROLLBACK' }
+        Write-HostPhase 'ROLLBACK_INTENT'
+        # Compensate ACL before files. Both helpers observe known bytes/DACL
+        # and refuse unknown state. Neither helper repeats forward effects.
+        if (Test-Path -LiteralPath $operationAcl) {
+            $null=Invoke-AclTransaction -Code $code -State $state -Journal $operationAcl -ManifestHash $operation -Recover
+            Write-HostPhase 'ACL_ROLLBACK_VERIFIED'
+        }
+        if (-not $header.extra.upgrade -and $service) {
+            if (-not @($rows | Where-Object {$_.phase -ceq 'SERVICE_CREATE_INTENT'}).Count) { throw 'STOP_AND_PRESERVE_UNOWNED_SERVICE' }
+            Write-HostPhase 'SERVICE_DELETE_INTENT'
+            $r=Invoke-CimMethod -InputObject $service -MethodName Delete
+            if ($r.ReturnValue -ne 0 -or (Get-CimInstance Win32_Service -Filter "Name='$name'")) { throw 'STOP_AND_PRESERVE_SERVICE_DELETE' }
+            Write-HostPhase 'SERVICE_DELETE_VERIFIED'
+        }
+        if (Test-Path -LiteralPath $fileJournal) {
+            $null=Invoke-HostFiles 'rollback' $null
+            Write-HostPhase 'FILES_ROLLBACK_VERIFIED'
+        }
+        Write-HostPhase 'ROLLED_BACK' @{state_preserved=$true;directories_preserved=$true}
+        @{outcome='ROLLED_BACK';allow_start=$false;state_preserved=$true} | ConvertTo-Json
+    }
+    if (-not $Execute) {
+        @{outcome='PLAN_ONLY';upgrade=[bool]$Upgrade;allow_start=$false;allow_dispatch=$false;state_preserved=$true} | ConvertTo-Json
+        return
+    }
+    $principal=New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+    if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { throw 'ADMINISTRATOR_REQUIRED' }
+    $mutex=New-Object Threading.Mutex($false,'Global\RoktU1BridgeInstall')
+    $held=$false; $log=$null
+    try {
+        try { $held=$mutex.WaitOne(0) } catch [Threading.AbandonedMutexException] { $held=$true }
+        if (-not $held) { throw 'INSTALLATION_LOCKED' }
+        Assert-AclAuditRoot $audit
+        foreach ($p in @($code,$state,$journal,$fileJournal,$operationAcl)) { Assert-NoReparseAncestors $p }
+        foreach ($other in @(Get-ChildItem -LiteralPath $audit -Filter 'install-*.jsonl' -File)) {
+            if ($other.FullName -ceq $journal) {continue}
+            Assert-NoReparseAncestors $other.FullName
+            $otherLog=[IO.FileStream]::new($other.FullName,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+            try {
+                Assert-AclJournalFile $otherLog
+                $otherRows=@(Read-AclRecords $otherLog)
+                if (-not $otherRows.Count -or $otherRows[0].phase -cne 'PREPARED' -or $otherRows[-1].phase -cnotin @('COMMITTED','ROLLED_BACK')) {throw 'STOP_AND_PRESERVE_OTHER_INSTALL_PENDING'}
+            } finally {$otherLog.Dispose()}
+        }
+        $service=Get-HostService
+        $recovering=$RecoverInstall -or $Rollback
+        if (-not $recovering) {
+        $previous=$null
+        if ($Upgrade) {
+            if (-not $service -or -not (Test-Path -LiteralPath $state) -or $ApprovedPreviousReceiptSha256 -cnotmatch '^[0-9a-f]{64}$') { throw 'EXACT_UPGRADE_OWNERSHIP_REQUIRED' }
+            $previous=[IO.File]::ReadAllBytes($receiptPath)
+            if ((Get-FileHash -LiteralPath $receiptPath -Algorithm SHA256).Hash.ToLowerInvariant() -cne $ApprovedPreviousReceiptSha256) { throw 'PREVIOUS_RECEIPT_HASH_MISMATCH' }
+            $old=[Text.Encoding]::UTF8.GetString($previous) | ConvertFrom-Json
+            if ($old.schema -cne 'rokt.disabled-host-install-receipt.v2' -or $old.service_name -cne $name -or $old.account -cne $account -or $old.image -cne $image -or -not $old.files) { throw 'EXACT_UPGRADE_OWNERSHIP_REQUIRED' }
+        } elseif ($service -or (Test-Path -LiteralPath $code) -or (Test-Path -LiteralPath $state)) { throw 'TARGET_ALREADY_EXISTS' }
+        }
+        $mode=if ($recovering) {[IO.FileMode]::Open} else {[IO.FileMode]::CreateNew}
+        $log=[IO.FileStream]::new($journal,$mode,[IO.FileAccess]::ReadWrite,[IO.FileShare]::Read,4096,[IO.FileOptions]::WriteThrough)
+        Assert-AclJournalFile $log
+        $openedLength=$log.Length
+        if ($recovering) {
+            Restore-HostInstall
+            return
+        }
+        Write-HostPhase 'PREPARED' @{image=$image;upgrade=[bool]$Upgrade;previous_receipt_sha256=$ApprovedPreviousReceiptSha256;code_before=$(if ($Upgrade) {'PRESENT'} else {'ABSENT'});state_before=$(if ($Upgrade) {'PRESENT'} else {'ABSENT'})}
+        if (-not $Upgrade) {
+            Write-HostPhase 'CODE_CREATE_INTENT'
+            New-Item -ItemType Directory -Path $code | Out-Null
+            Write-HostPhase 'CODE_CREATE_VERIFIED'
+            New-RecordedAclStateRoot -Path $state -Journal $operationAcl -ManifestHash $operation
+            Write-HostPhase 'STATE_CREATE_VERIFIED'
+        }
+        $fileBytes=@{}; $fileHashes=@{}
+        foreach ($f in $m.files) {
+            $bytes=[IO.File]::ReadAllBytes((Join-Path $package $f.path))
+            $fileBytes[$f.path]=[Convert]::ToBase64String($bytes); $fileHashes[$f.path]=$f.sha256
+        }
+        foreach ($relative in $generated.Keys) {
+            $bytes=$generated[$relative]
+            $fileBytes[$relative]=[Convert]::ToBase64String($bytes)
+            $hasher=[Security.Cryptography.SHA256]::Create()
+            try {$fileHashes[$relative]=([BitConverter]::ToString($hasher.ComputeHash($bytes))).Replace('-','').ToLowerInvariant()} finally {$hasher.Dispose()}
+        }
+        $receipt=@{schema='rokt.disabled-host-install-receipt.v2';manifest_sha256=$operation;service_name=$name;account=$account;image=$image;wrapper_sha256=$fileHashes['service/RoktU1Bridge.exe'];files=$fileHashes;state_preserved=$true}
+        $fileBytes['config/installation.json']=[Convert]::ToBase64String([Text.UTF8Encoding]::new($false).GetBytes(($receipt | ConvertTo-Json -Depth 8 -Compress)))
+        $request=@{files=$fileBytes;manifest_sha256=$operation;previous_receipt=$(if ($previous) {[Convert]::ToBase64String($previous)} else {$null});previous_receipt_sha256=$(if ($Upgrade) {$ApprovedPreviousReceiptSha256} else {$null})}
+        Write-HostPhase 'FILES_INTENT'
+        $null=Invoke-HostFiles 'prepare-apply' $request
+        Write-HostPhase 'FILES_VERIFIED'
+        if (-not $Upgrade) {
+            Write-HostPhase 'SERVICE_CREATE_INTENT'
+            $createArguments=@{Name=$name;DisplayName='Rokt U1 Bridge (disabled candidate)';PathName=$image;ServiceType=[uint32]16;ErrorControl=[uint32]1;StartMode='Disabled';DesktopInteract=$false;StartName=$account;StartPassword=''}
+            $r=Invoke-CimMethod -ClassName Win32_Service -MethodName Create -Arguments $createArguments
+            if ($r.ReturnValue -ne 0) { throw 'SERVICE_CREATE_REJECTED' }
+            if (-not (Get-HostService)) { throw 'SERVICE_CREATE_READBACK_FAILED' }
+            Write-HostPhase 'SERVICE_CREATE_VERIFIED'
+        }
+        $sid=(New-Object Security.Principal.NTAccount($account)).Translate([Security.Principal.SecurityIdentifier])
+        Write-HostPhase 'ACL_INTENT'
+        $null=Invoke-AclTransaction -Code $code -State $state -ServiceSid $sid.Value -Journal $operationAcl -ManifestHash $operation
+        Write-HostPhase 'ACL_VERIFIED'
+        if (-not (Get-HostService)) { throw 'SERVICE_FINAL_READBACK_FAILED' }
+        $null=Invoke-HostFiles 'status' $null
+        Write-HostPhase 'COMMITTED' @{service_start='Disabled';service_state='Stopped';allow_dispatch=$false}
+        @{outcome='COMMITTED';upgrade=[bool]$Upgrade;installed=$true;allow_start=$false;allow_dispatch=$false;allow_cancel_dispatch=$false;state_preserved=$true} | ConvertTo-Json
+    } catch {
+        # Never guess which cross-resource effect completed. Persist the failure
+        # when possible; explicit RecoverInstall performs known compensation.
+        $originalFailure=$_
+        if ($log) {
+            try {
+                $records=@(Read-AclRecords $log)
+                if ($records.Count -and $records[0].phase -ceq 'PREPARED' -and -not $recovering) {
+                    Write-HostPhase 'FAILURE_COMPENSATION_INTENT'
+                    Restore-HostInstall
+                } elseif (-not $recovering -or $log.Length -ne $openedLength) {Write-HostPhase 'STOP_AND_PRESERVE'}
+            } catch {if (-not $recovering -or $log.Length -ne $openedLength) {try {Write-HostPhase 'STOP_AND_PRESERVE'} catch {}}}
+        }
+        throw $originalFailure
+    } finally {
+        if ($log) {$log.Dispose()}
+        if ($held) {$mutex.ReleaseMutex()}; $mutex.Dispose()
+    }
+}

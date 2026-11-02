@@ -17,7 +17,8 @@ def build(output, source_commit):
     build_inputs=('autonomy/windows/RoktU1Bridge.cs','autonomy/windows/u1_bootstrap.py',
                   'autonomy/windows/Install-DisabledHost.ps1','autonomy/windows/Rollback-DisabledHost.ps1',
                   'autonomy/build_dev_disabled_host.py','autonomy/disabled_host_package.py',
-                  'autonomy/build_u1_delivery.py')
+                  'autonomy/build_u1_delivery.py','autonomy/windows/Acl-Transaction.ps1',
+                  'autonomy/windows/Host-InstallTransaction.ps1','autonomy/host_file_transaction.py')
     for name in build_inputs:
         pinned=subprocess.check_output(['git','show',resolved+':'+name],cwd=repo)
         if (repo/name).read_bytes().replace(b'\r\n',b'\n') != pinned.replace(b'\r\n',b'\n'):
@@ -39,7 +40,10 @@ def build(output, source_commit):
     tools=out/'rollback-tools';tools.mkdir()
     for name in ('release_store.py',):
         (tools/name).write_bytes(subprocess.check_output(['git','show',resolved+':autonomy/'+name],cwd=repo))
-    (tools/'README.md').write_text('回滚工具 / Rollback tools\n\nUse release_store.py --root STORE rollback TRANSACTION --expected-current VERSION.\n回滚必须同时保留STORE中的backups记录和versions旧版本；此包不是生产状态备份。\nRetain both backups and versions; this archive alone is not a state backup. No service or Inventory changes.\n',encoding='utf-8')
+    for name,raw in files.items():
+        if name.startswith('host/'):
+            target=tools/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(raw)
+    (tools/'README.md').write_text('回滚工具 / Rollback tools\n\n文件发布指针：release_store.py --root STORE rollback TRANSACTION --expected-current VERSION。\nFile publication pointer: use that command with retained versions/backups.\n\n禁用宿主完整文件/注册回滚：从host/调用 Install-DisabledHost.ps1 -Rollback -PackageRoot HOST -ApprovedManifestSha256 HASH -RuntimePlan PLAN -ApprovedRuntimePlanSha256 PLAN_HASH -Execute。未决操作使用-RecoverInstall；两者仅补偿已知状态，禁止自动重放。\nDisabled-host file/registration compensation: use the above exact manifest and runtime plan. Use -RecoverInstall for interrupted operations; neither action replays forward effects.\n\n旧Rollback-DisabledHost.ps1只撤销注册，不是完整文件回滚。保留管理员审计目录全部日志；状态目录与空目录保留。新部署还需要正式维护租约与身份门禁。此包不是数据库或现场状态备份。\nThe legacy Rollback-DisabledHost.ps1 is registration-only. Retain all administrator audit journals; durable state and empty directories are preserved. Formal maintenance/identity gates remain required before installation. This archive is not a database/site-state backup.\n',encoding='utf-8')
     for folder in (bundle,tools):
         with zipfile.ZipFile(out/(folder.name+'.zip'),'x',compression=zipfile.ZIP_DEFLATED) as z:
             for p in sorted(folder.rglob('*')):

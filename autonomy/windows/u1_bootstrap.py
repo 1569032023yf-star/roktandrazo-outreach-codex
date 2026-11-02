@@ -63,13 +63,17 @@ def resolve_release(root):
 def main(config):
     c=json.loads(read(config,8192))
     keys={'schema','inventory_id','release_root','state_root','token_file','credential_expires_at','snapshot','snapshot_sha256','allow_dispatch','allow_cancel_dispatch','smtp_enabled'}
-    if (set(c)!=keys or c['schema']!='rokt.u1-python-runtime.v1' or c['inventory_id']!='1784775229336' or
+    if (set(c) not in (keys,keys|{'event_runtime'}) or c['schema']!='rokt.u1-python-runtime.v1' or c['inventory_id']!='1784775229336' or
         any(c[k] is not False for k in ('allow_dispatch','allow_cancel_dispatch','smtp_enabled')) or
         type(c['credential_expires_at']) is not int):raise ValueError('RUNTIME_CONFIG_REJECTED')
     folder=resolve_release(c['release_root']);sys.path.insert(0,str(folder))
     sys.argv=['autonomy.u1_host_runtime','--release-root',c['release_root'],'--state-root',c['state_root'],
               '--token-file',c['token_file'],'--credential-expires-at',str(c['credential_expires_at']),
               '--snapshot',c['snapshot'],'--snapshot-sha256',c['snapshot_sha256']]
+    if 'event_runtime' in c:
+        if type(c['event_runtime']) is not str or not Path(c['event_runtime']).is_absolute():
+            raise ValueError('EVENT_RUNTIME_REQUIRED')
+        sys.argv+=['--event-runtime',c['event_runtime']]
     runpy.run_module('autonomy.u1_host_runtime',run_name='__main__')
 
 
