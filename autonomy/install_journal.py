@@ -96,19 +96,48 @@ class InstallJournal:
         self._file.close()
 
 
-def inspect_install(path):
+MAX_JOURNAL_BYTES = 16384
+
+
+def _unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError('DUPLICATE_FIELD')
+        result[key] = value
+    return result
+
+
+def inspect_install(path, *, expected_binding=None):
     """Never reconstruct a writer or authorize any installation/replay."""
-    raw = Path(path).read_bytes()
+    with Path(path).open('rb') as stream:
+        raw = stream.read(MAX_JOURNAL_BYTES + 1)
+    oversized = len(raw) > MAX_JOURNAL_BYTES
     complete = False
     count = 0
     pending = None
+    binding_verified = False
     try:
-        if not raw.endswith(b'\n'):
+        if oversized or not raw.endswith(b'\n'):
             raise ValueError('TORN_LOG')
-        rows = [json.loads(line) for line in raw.splitlines()]
+        rows = [json.loads(line, object_pairs_hook=_unique_object) for line in raw.splitlines()]
+        if not all(type(row) is dict for row in rows):
+            raise ValueError('OBJECT_ROWS_REQUIRED')
         header = rows[0]
         if header['schema'] != 'rokt.install-journal.v1' or header['kind'] != 'PREPARED' or header['before'] != 'ABSENT':
             raise ValueError('BAD_HEADER')
+        if (not isinstance(header.get('operation_id'), str) or
+                not re.fullmatch(r'[a-zA-Z0-9_-]{1,80}', header['operation_id']) or
+                any(not isinstance(header.get(key), str) or
+                    not re.fullmatch('[0-9a-f]{64}', header[key])
+                    for key in ('manifest_sha256', 'lease_binding'))):
+            raise ValueError('BAD_BINDING')
+        if expected_binding is not None:
+            keys = {'operation_id', 'manifest_sha256', 'lease_binding'}
+            if (type(expected_binding) is not dict or set(expected_binding) != keys or
+                    any(header[key] != expected_binding[key] for key in keys)):
+                raise ValueError('BINDING_MISMATCH')
+            binding_verified = True
         for row in rows[1:]:
             if count >= len(STEPS) or row['step'] != STEPS[count]:
                 raise ValueError('BAD_ORDER')
@@ -120,10 +149,11 @@ def inspect_install(path):
             else:
                 raise ValueError('BAD_RECEIPT')
         complete = count == len(STEPS) and pending is None
-    except (ValueError, KeyError, IndexError, TypeError):
+    except (ValueError, KeyError, IndexError, TypeError, RecursionError):
         pass
     return dict(observed='ALL_RECEIPTS_RECORDED' if complete else 'UNKNOWN',
                 completed_steps=count, pending_step=pending,
-                journal_sha256=hashlib.sha256(raw).hexdigest(),
+                journal_sha256=None if oversized else hashlib.sha256(raw).hexdigest(),
+                oversized=oversized, binding_verified=binding_verified,
                 action='STOP_AND_PRESERVE', allow_replay=False, allow_install=False,
                 allow_dispatch=False, production_execution=False)

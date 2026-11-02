@@ -82,4 +82,4 @@ def exercise_install_contract(audit_root, operation_id, manifest_sha256,
             journal.receipt(step, digest)
     finally:
         journal.close()
-    return inspect_install(journal.path)
+    return inspect_install(journal.path, expected_binding=binding)
