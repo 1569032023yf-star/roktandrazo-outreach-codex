@@ -1666,7 +1666,7 @@
         "allow_cancel_dispatch": false
       },
       "u1_actual_delivery_latest": {
-        "updated_at": "2026-11-02T15:03:21.302808+00:00",
+        "updated_at": "2026-11-02T15:04:26.064739+00:00",
         "checkpoint": "autonomy/evidence/u1_source_binding_20261102/REPORT.md",
         "source_commit": "5c4002003cfdcbb1c1f0f6370b7c07e89823ba0e",
         "report": "autonomy/evidence/u1_source_binding_20261102/REPORT.md",
@@ -1941,7 +1941,18 @@
           "unattended_7877": "UNKNOWN",
           "smtp_enabled": false
         },
-        "consumption_receipt": "PENDING_PUBLICATION",
+        "consumption_receipt": {
+          "comment_id": 6580465343,
+          "url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6580465343",
+          "readback_verified": true,
+          "body_exact_match": true,
+          "workbuddy_commit": "10e269e814dbe7b7a4801fa99ca4cec11d5a67b2",
+          "files": 7,
+          "CODEX_HANDOFF_CONSUMED": true,
+          "source_commit": "5c4002003cfdcbb1c1f0f6370b7c07e89823ba0e",
+          "published_evidence_commit": "2ab3d994456ba8e36c3b0fa52d62de1887ee257f",
+          "verified_at": "2026-11-02T15:04:26.064739+00:00"
+        },
         "next_action": "Implement installer maintenance admission shared with the sole existing Inventory owner, keeping installation gated; then complete the formal backend integration.",
         "next_action_zh": "在现有安装器实现与唯一原 Inventory owner 共享的正式维护排斥准入，保持安装门禁关闭；随后完成正式 backend 接入。"
       },
@@ -1986,7 +1997,7 @@
         "production_deployed": false,
         "next_action": "Integrate bounded execution backend with existing signed SingleSlotAdapter admission and original Inventory lease; close installer upgrade/rollback, dependency ACL and TOCTOU blockers before independent review. No service install/start."
       },
-      "updated_at": "2026-11-02T15:03:21.302808+00:00",
+      "updated_at": "2026-11-02T15:04:26.064739+00:00",
       "u1_execution_wiring_latest": {
         "updated_at": "2026-11-02T08:40:48.546343+00:00",
         "source_commit": "cc9b7a7b672eb2098fa02d7e57c266b4ec57d76e",
@@ -4021,7 +4032,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-02T15:03:21.302808+00:00",
+  "updated_at": "2026-11-02T15:04:26.064739+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -4583,7 +4594,7 @@
     }
   },
   "u1_source_binding_latest": {
-    "updated_at": "2026-11-02T15:03:21.302808+00:00",
+    "updated_at": "2026-11-02T15:04:26.064739+00:00",
     "checkpoint": "autonomy/evidence/u1_source_binding_20261102/REPORT.md",
     "source_commit": "5c4002003cfdcbb1c1f0f6370b7c07e89823ba0e",
     "report": "autonomy/evidence/u1_source_binding_20261102/REPORT.md",
@@ -4858,7 +4869,18 @@
       "unattended_7877": "UNKNOWN",
       "smtp_enabled": false
     },
-    "consumption_receipt": "PENDING_PUBLICATION",
+    "consumption_receipt": {
+      "comment_id": 6580465343,
+      "url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6580465343",
+      "readback_verified": true,
+      "body_exact_match": true,
+      "workbuddy_commit": "10e269e814dbe7b7a4801fa99ca4cec11d5a67b2",
+      "files": 7,
+      "CODEX_HANDOFF_CONSUMED": true,
+      "source_commit": "5c4002003cfdcbb1c1f0f6370b7c07e89823ba0e",
+      "published_evidence_commit": "2ab3d994456ba8e36c3b0fa52d62de1887ee257f",
+      "verified_at": "2026-11-02T15:04:26.064739+00:00"
+    },
     "next_action": "Implement installer maintenance admission shared with the sole existing Inventory owner, keeping installation gated; then complete the formal backend integration.",
     "next_action_zh": "在现有安装器实现与唯一原 Inventory owner 共享的正式维护排斥准入，保持安装门禁关闭；随后完成正式 backend 接入。"
   }

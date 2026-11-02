@@ -37,7 +37,7 @@ English: SAFE readings agree69/69. Numeric growth+1/+9 contradicts the same file
 中文：Cooperstown正式关闭；operations下一动作仍说不会关闭，属于残留矛盾。Lake Placid20/20但web pending、completed_at=null，不能报正式关闭；本批无Ithaca，旧冲突未解除。Provider城市22过去24h零请求；全城市7d39请求39成功，仅该范围。8791 UP_SESSION_SCOPED不等于无人登录持久运行；启动持久性未通过，7877真实注销/重启出口UNKNOWN。producer称SMTP=false、未授权邮件0、sendlog今日0；本轮仅Git/离线临时测试，无生产DB/账本/配置写入或手动采集。
 English: Cooperstown is closed, contradicting stale next-action prose. Lake Placid20/20 remains web-pending with null completion; Ithaca is absent and its earlier conflict remains. Provider scope: city22 has zero requests in24h; all cities have39 successful requests in7d. Session-scoped8791 health does not prove unattended persistence; boot persistence remains unaccepted and actual7877 logoff/reboot egressUNKNOWN. SMTP is off, unauthorized mail0 and today's sendlog0 per producer. This round performed only Git/offline operations.
 
-消费回执 / Consumption receipt: PENDING_PUBLICATION (update only after Issue2 readback).
+消费回执 / Consumption receipt: https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6580465343; exact readback verified; CODEX_HANDOFF_CONSUMED=true (7 files at10e269 only).
 下一动作 / Next: 在现有安装器实现与唯一原 Inventory owner 共享的正式维护排斥准入，保持安装门禁关闭；随后完成正式 backend 接入。
 Implement installer maintenance admission shared with the sole existing Inventory owner, keeping installation gated; then complete the formal backend integration.
 
