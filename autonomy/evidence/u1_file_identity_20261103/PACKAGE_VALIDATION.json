@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "files": 65,
+  "architecture": "AMD64",
+  "host_helper_matches_source": true,
+  "source_commit": "57bb0d1ccdd320e4c22d6a1e6e9982106b440ea1"
+}

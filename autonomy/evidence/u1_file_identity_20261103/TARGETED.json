@@ -1,0 +1,17 @@
+{
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "unittest",
+    "test_host_file_transaction",
+    "test_host_install_transaction",
+    "test_disabled_host_package"
+  ],
+  "returncode": 0,
+  "passed": true,
+  "seconds": 105.477,
+  "tests_run": 24,
+  "runner_seconds": 105.19,
+  "source_commit": "57bb0d1ccdd320e4c22d6a1e6e9982106b440ea1"
+}

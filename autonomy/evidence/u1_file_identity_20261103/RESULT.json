@@ -1,0 +1,76 @@
+{
+  "updated_at": "2026-11-02T21:04:43.642376+00:00",
+  "checkpoint": "C:/Users/15690/Documents/ChatGPT/线下/roktandrazo-outreach-autonomy/autonomy/evidence/u1_file_identity_20261103/REPORT.md",
+  "source_commit": "57bb0d1ccdd320e4c22d6a1e6e9982106b440ea1",
+  "build": {
+    "artifacts": {
+      "install.zip": "dbf21de5f7b1c88d4e26a69fd04995c552e6be824e34f2dd2888909ed47ff026",
+      "rollback-tools.zip": "613ba94564509c33dbe93f85a487475473f937320ffe1302fc03c29fd5778978"
+    },
+    "files": 65,
+    "independent_review": "PENDING",
+    "manifest_sha256": "10630101294a1d685bac7586957ef78e9b718d2a57f931ce240a23ae3b27dadb",
+    "production_ready": false,
+    "source_commit": "57bb0d1ccdd320e4c22d6a1e6e9982106b440ea1"
+  },
+  "targeted_tests": {
+    "command": [
+      "python",
+      "-B",
+      "-m",
+      "unittest",
+      "test_host_file_transaction",
+      "test_host_install_transaction",
+      "test_disabled_host_package"
+    ],
+    "returncode": 0,
+    "passed": true,
+    "seconds": 105.477,
+    "tests_run": 24,
+    "runner_seconds": 105.19,
+    "source_commit": "57bb0d1ccdd320e4c22d6a1e6e9982106b440ea1"
+  },
+  "full_regression": {
+    "baseline_commit": "9eeeb88454255d9500761b5d6a6ded2fe31612aa",
+    "candidate_commit": "57bb0d1ccdd320e4c22d6a1e6e9982106b440ea1",
+    "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-7eklyl4k",
+    "complete": true,
+    "baseline_run": 833,
+    "candidate_run": 833,
+    "baseline_failures": 37,
+    "candidate_failures": 37,
+    "baseline_errors": 17,
+    "candidate_errors": 17,
+    "failure_ids_identical": true,
+    "error_ids_identical": true,
+    "all_green": false,
+    "no_new_regression": true
+  },
+  "package_validation": {
+    "passed": true,
+    "files": 65,
+    "architecture": "AMD64",
+    "host_helper_matches_source": true,
+    "source_commit": "57bb0d1ccdd320e4c22d6a1e6e9982106b440ea1"
+  },
+  "packaged_tests": {
+    "passed": true,
+    "run": 2,
+    "actual_helper": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-autonomy\\autonomy\\evidence\\u1_file_identity_20261103\\package\\install\\payload\\host\\host_file_transaction.py"
+  },
+  "independent_review": "PENDING_FOR_CURRENT_PIN",
+  "formal_maintenance_integrated": false,
+  "formal_backend_integrated": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "next_action": "Continue the original production Inventory maintenance exclusion adapter; public installation remains rejected, maintenance and formal backend integration remain incomplete.",
+  "next_action_zh": "继续实现原生产 Inventory 权威维护排斥适配器；公开安装执行仍硬拒绝，维护集成和正式backend不声明完成。",
+  "states": {
+    "DEVELOPMENT_COMPLETE": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "BUSINESS_GROWTH": "UNKNOWN"
+  }
+}
