@@ -44,6 +44,54 @@ class ReleaseStoreTests(unittest.TestCase):
         self.assertFalse(self.store._version(v2).exists())
         (self.store._version(v1)/'payload/app/a.py').write_bytes(b'bad')
         with self.assertRaises(ValueError):self.store.status()
+    def assert_fenced(self, version, transaction):
+        for action in (
+            lambda: self.store.activate(version,expected_current=version),
+            lambda: self.store.rollback(transaction,expected_current=version),
+            lambda: self.store.delete_inactive(version),
+            lambda: self.store.stage(self.root/'one',version)):
+            with self.assertRaisesRegex(ValueError,'STOP_AND_PRESERVE'): action()
+
+    def test_failed_pointer_commit_is_inspect_only_and_all_writers_fenced(self):
+        version=self.package('one',{'app/a.py':b'one'})
+        with patch('autonomy.release_store.os.replace',side_effect=OSError('fault')):
+            with self.assertRaises(OSError):self.store.activate(version,expected_current=None)
+        before={str(p):p.read_bytes() for p in (self.root/'store').rglob('*') if p.is_file()}
+        result=self.store.recovery_status();item=result['pending'][0]
+        self.assertEqual(item['pointer_relation'],'SOURCE_CURRENT')
+        self.assertEqual(item['observed'],'UNKNOWN');self.assertFalse(result['allow_replay'])
+        self.assert_fenced(version,item['transaction'])
+        self.assertEqual(before,{str(p):p.read_bytes() for p in (self.root/'store').rglob('*') if p.is_file()})
+
+    def test_process_exit_after_real_commit_keeps_unknown_and_does_not_replay(self):
+        import subprocess,sys
+        version=self.package('one',{'app/a.py':b'one'})
+        code="""import os,sys
+from autonomy.release_store import ReleaseStore
+replace=os.replace
+def commit_then_die(*args):
+ replace(*args)
+ os._exit(23)
+os.replace=commit_then_die
+ReleaseStore(sys.argv[1]).activate(sys.argv[2],expected_current=None)
+"""
+        run=subprocess.run([sys.executable,'-B','-c',code,str(self.root/'store'),version],timeout=15)
+        self.assertEqual(run.returncode,23)
+        self.assertEqual(self.store.status()['version'],version)
+        result=self.store.recovery_status();item=result['pending'][0]
+        self.assertEqual(item['pointer_relation'],'TARGET_CURRENT')
+        self.assertEqual(item['observed'],'UNKNOWN')
+        self.assert_fenced(version,item['transaction'])
+
+    def test_torn_intent_blocks_publication_without_clearing_evidence(self):
+        version=self.package('one',{'app/a.py':b'one'})
+        transactions=self.root/'store/transactions';transactions.mkdir()
+        marker=transactions/(('a'*32)+'.pending.json');marker.write_bytes(b'{')
+        status=self.store.recovery_status()
+        self.assertEqual(status['pending'][0]['pointer_relation'],'UNKNOWN')
+        self.assert_fenced(version,'a'*32)
+        self.assertEqual(marker.read_bytes(),b'{')
+
     def test_namespace_paths_rejected(self):
         for name in ['../a','/root','app/CON.py','app/a.','app//a']:
             with self.assertRaises(ValueError):build_bundle(self.root/'bad',{name:b'x'},'a'*40)

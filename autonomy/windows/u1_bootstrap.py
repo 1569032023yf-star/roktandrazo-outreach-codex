@@ -22,7 +22,14 @@ def read(path,limit):
 
 
 def resolve_release(root):
-    root=Path(root);pointer=json.loads(read(root/'active.json',4096))
+    root=Path(root)
+    transactions=root/'transactions'
+    if transactions.exists() or transactions.is_symlink():
+        if transactions.is_symlink() or transactions.stat().st_file_attributes & 0x400:
+            raise ValueError('REPARSE_PATH')
+        if not transactions.is_dir() or any(transactions.glob('*.pending.json')):
+            raise ValueError('STOP_AND_PRESERVE_PENDING_PUBLICATION')
+    pointer=json.loads(read(root/'active.json',4096))
     if (set(pointer)!={'schema','inventory_id','version'} or pointer['schema']!='rokt.release-store.v1' or
         pointer['inventory_id']!='1784775229336' or not re.fullmatch('[0-9a-f]{64}',pointer['version'] or '')):
         raise ValueError('ACTIVE_RELEASE_REQUIRED')

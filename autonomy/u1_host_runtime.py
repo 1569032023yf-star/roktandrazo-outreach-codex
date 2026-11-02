@@ -16,6 +16,8 @@ from autonomy.growth_snapshot import MAX_SNAPSHOT_BYTES
 def open_host(release_root, state_root, token, credential_expires_at,
               snapshot, snapshot_sha256, *, port=8791):
     release=ReleaseStore(release_root)
+    if release.recovery_status()['pending']:
+        raise ValueError('STOP_AND_PRESERVE_PENDING_PUBLICATION')
     version=release.status()['version']
     if version is None: raise ValueError('NO_ACTIVE_RELEASE')
     handler=readonly_handler(token,snapshot_status_reader(snapshot,snapshot_sha256),

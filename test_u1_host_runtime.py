@@ -9,6 +9,23 @@ from autonomy.release_store import ReleaseStore,build_bundle,sha
 from autonomy.u1_host_runtime import open_host
 
 class HostRuntimeTests(unittest.TestCase):
+    def test_uncertain_publication_blocks_host_and_standalone_bootstrap(self):
+        import importlib.util
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);release=root/'release';state=root/'state';release.mkdir();state.mkdir()
+            version=build_bundle(root/'package',{'app/main.py':b'pass\n'},'a'*40)
+            store=ReleaseStore(release);store.stage(root/'package',version)
+            with patch('autonomy.release_store.os.replace',side_effect=OSError('fault')):
+                with self.assertRaises(OSError):store.activate(version,expected_current=None)
+            with self.assertRaisesRegex(ValueError,'STOP_AND_PRESERVE'):
+                with open_host(release,state,'a'*40,int(time.time())+60,b'{}',sha(b'{}'),port=0):pass
+            spec=importlib.util.spec_from_file_location('isolated_bootstrap',Path('autonomy/windows/u1_bootstrap.py'))
+            module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+            with self.assertRaisesRegex(ValueError,'STOP_AND_PRESERVE'):
+                module.resolve_release(release)
+            self.assertFalse((state/'publisher.lock').exists())
+
     def test_authenticated_listener_and_exclusive_lifetime(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp);release=root/'release';state=root/'state';release.mkdir();state.mkdir()

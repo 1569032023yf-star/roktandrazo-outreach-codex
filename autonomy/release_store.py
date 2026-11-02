@@ -155,9 +155,50 @@ class ReleaseStore:
             for parent in (target.parent,*target.parent.parents):
                 if units(parent)>=248:raise ValueError('WINDOWS_TARGET_DIRECTORY_TOO_LONG')
 
+    def _assert_no_pending(self):
+        transactions = ordinary(self.root/'transactions')
+        if transactions.exists() and any(transactions.glob('*.pending.json')):
+            raise ValueError('STOP_AND_PRESERVE_PENDING_PUBLICATION')
+
+    def recovery_status(self):
+        """Inspect uncertain publications; pointer equality never authorizes replay.
+
+        A crash after the pointer commit but before the receipt remains UNKNOWN.
+        This is an inspection entry point, not an automatic recovery writer.
+        """
+        with self.locked():
+            transactions = ordinary(self.root/'transactions')
+            pending = []
+            for path in sorted(transactions.glob('*.pending.json')) if transactions.exists() else []:
+                item = dict(transaction=path.name.removesuffix('.pending.json'),
+                            observed='UNKNOWN', pointer_relation='UNKNOWN')
+                try:
+                    raw = read_file(path, 4096)
+                    record = json.loads(raw)
+                    if (not re.fullmatch('[0-9a-f]{32}', item['transaction']) or
+                        type(record) is not dict or
+                        set(record) != {'schema','inventory_id','before','after','reason'} or
+                        record['schema'] != SCHEMA or record['inventory_id'] != INVENTORY or
+                        record['reason'] not in ('ACTIVATE','ROLLBACK') or raw != canonical(record)):
+                        raise ValueError('INVALID_TRANSACTION')
+                    for version in (record['before'],record['after']):
+                        if version is not None: self._verify(self._version(version),version)
+                    pointer = self._pointer()
+                    current = pointer['version'] if pointer else None
+                    item.update(before=record['before'],after=record['after'],
+                                pointer_relation=('TARGET_CURRENT' if current == record['after'] else
+                                                  'SOURCE_CURRENT' if current == record['before'] else 'DIVERGED'))
+                except (ValueError,OSError,TypeError,KeyError,RecursionError):
+                    pass
+                pending.append(item)
+            return dict(schema=SCHEMA,inventory_id=INVENTORY,pending=pending,
+                        action='STOP_AND_PRESERVE' if pending else 'NO_PENDING_PUBLICATION_RECORDED',
+                        allow_replay=False,allow_dispatch=False,production_accepted=False)
+
     def stage(self, package, approved_manifest_sha256):
         """Copy new or upgraded file sets into a fresh immutable version."""
         with self.locked():
+            self._assert_no_pending()
             package = ordinary(package); m = self._verify(package, approved_manifest_sha256)
             dest = self._version(approved_manifest_sha256)
             self._validate_layout(dest,m)
@@ -173,18 +214,27 @@ class ReleaseStore:
             return approved_manifest_sha256
 
     def _switch(self, version, expected, reason):
+        self._assert_no_pending()
         current = self._pointer(); actual = current['version'] if current else None
         if actual != expected: raise ValueError('CURRENT_VERSION_CHANGED')
         if actual is not None: self._verify(self._version(actual), actual)
         if version is not None: self._verify(self._version(version), version)
         record = dict(schema=SCHEMA, inventory_id=INVENTORY, before=actual, after=version, reason=reason)
         tx = uuid.uuid4().hex
+        transactions = ordinary(self.root/'transactions'); transactions.mkdir(exist_ok=True)
+        pending = ordinary(transactions/(tx+'.pending.json'))
+        # Persist uncertainty BEFORE any publication side effect. Never clear this
+        # intent in an exception handler: lost receipts require status inspection.
+        durable_new(pending, canonical(record))
         backups = ordinary(self.root/'backups'); backups.mkdir(exist_ok=True)
         durable_new(backups/(tx+'.json'), canonical(record))
         temp = self.root/('pointer-'+tx+'.tmp')
         durable_new(temp, canonical(dict(schema=SCHEMA,inventory_id=INVENTORY,version=version)))
         # Sole commit point. Crash after replace: inspect pointer; do not replay.
         os.replace(temp, ordinary(self.root/'active.json'))
+        # A rename failure or abrupt exit leaves the pending marker intact and
+        # fences every subsequent mutating entry point. Do not infer a receipt.
+        os.rename(pending, ordinary(transactions/(tx+'.receipt.json')))
         return dict(record, transaction=tx, outcome='POINTER_COMMITTED', service_changed=False)
 
     def activate(self, version, *, expected_current):
@@ -193,6 +243,7 @@ class ReleaseStore:
     def rollback(self, transaction, *, expected_current):
         if not re.fullmatch('[0-9a-f]{32}', transaction): raise ValueError('INVALID_TRANSACTION')
         with self.locked():
+            self._assert_no_pending()
             record = json.loads(read_file(self.root/'backups'/(transaction+'.json'), 4096))
             if (set(record) != {'schema','inventory_id','before','after','reason'} or
                 record['schema'] != SCHEMA or record['inventory_id'] != INVENTORY or
@@ -209,6 +260,7 @@ class ReleaseStore:
     def delete_inactive(self, version):
         """Explicit removal only; reject active or backup-referenced versions."""
         with self.locked():
+            self._assert_no_pending()
             p = self._pointer()
             if p and p['version'] == version: raise ValueError('ACTIVE_VERSION')
             backups = ordinary(self.root/'backups')
@@ -232,9 +284,11 @@ def main():
     rollback = sub.add_parser('rollback'); rollback.add_argument('transaction'); rollback.add_argument('--expected-current',required=True)
     delete = sub.add_parser('delete-inactive'); delete.add_argument('version')
     sub.add_parser('status')
+    sub.add_parser('recovery-status')
     args = parser.parse_args(); store = ReleaseStore(args.root)
     if args.command == 'stage': result = store.stage(args.package,args.manifest_sha256)
     elif args.command == 'status': result = store.status()
+    elif args.command == 'recovery-status': result = store.recovery_status()
     elif args.command == 'delete-inactive': result = store.delete_inactive(args.version)
     else:
         expected = None if args.expected_current == 'ABSENT' else args.expected_current
