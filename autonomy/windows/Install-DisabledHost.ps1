@@ -8,6 +8,18 @@ param(
     [switch]$Execute
 )
 $ErrorActionPreference='Stop'
+$dependencyPins=New-Object Collections.ArrayList
+function Pin-Reference([string]$Path,[string]$Expected) {
+    Assert-NoReparseAncestors $Path
+    $stream=New-Object IO.FileStream($Path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+    try {
+        $hash=[Security.Cryptography.SHA256]::Create()
+        try { $actual=([BitConverter]::ToString($hash.ComputeHash($stream))).Replace('-','').ToLowerInvariant() } finally { $hash.Dispose() }
+        if ($actual -cne $Expected) { throw 'PINNED_REFERENCE_HASH' }
+        [void]$dependencyPins.Add($stream)
+    } catch { $stream.Dispose(); throw }
+}
+try {
 $name='RoktU1Bridge'
 $account='NT SERVICE\RoktU1Bridge'
 $code='C:\Program Files\RoktU1Bridge\v1'
@@ -26,6 +38,7 @@ foreach ($p in @($PackageRoot,$code,$state)) { Assert-NoReparseAncestors $p }
 $package=(Get-Item -LiteralPath $PackageRoot).FullName
 $manifestPath=Join-Path $package 'manifest.json'
 if ((Get-FileHash -LiteralPath $manifestPath -Algorithm SHA256).Hash.ToLowerInvariant() -cne $ApprovedManifestSha256) { throw 'MANIFEST_HASH_MISMATCH' }
+Pin-Reference $manifestPath $ApprovedManifestSha256
 $m=Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
 if ($m.schema -cne 'rokt.disabled-host-package.v1' -or $m.inventory_id -cne '1784775229336' -or
     $m.service_name -cne $name -or $m.account -cne $account -or $m.start_type -cne 'Disabled' -or
@@ -43,6 +56,7 @@ foreach ($f in $entries) {
     $item=Get-Item -LiteralPath $p
     if ($item.PSIsContainer -or ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -or $item.Length -ne $f.size -or
         (Get-FileHash -LiteralPath $p -Algorithm SHA256).Hash.ToLowerInvariant() -cne $f.sha256) { throw 'ARTIFACT_MISMATCH' }
+    Pin-Reference $p $f.sha256
 }
 foreach ($required in @('service/RoktU1Bridge.exe','runtime/dependencies.json','config/host.json','Install-DisabledHost.ps1','Rollback-DisabledHost.ps1')) {
     if (-not $seen.ContainsKey($required.ToLowerInvariant())) { throw 'MISSING_DEPENDENCY' }
@@ -72,6 +86,7 @@ $generated=@{}
 if ($RuntimePlan) {
     Assert-NoReparseAncestors $RuntimePlan
     if (-not $ApprovedRuntimePlanSha256 -or (Get-FileHash -LiteralPath $RuntimePlan -Algorithm SHA256).Hash.ToLowerInvariant() -cne $ApprovedRuntimePlanSha256) { throw 'RUNTIME_PLAN_HASH' }
+    Pin-Reference $RuntimePlan $ApprovedRuntimePlanSha256
     $plan=Get-Content -LiteralPath $RuntimePlan -Raw | ConvertFrom-Json
     $keys=@('schema','inventory_id','python','python_sha256','release_root','token_file','token_sha256','credential_expires_at','snapshot','snapshot_sha256')
     if (@($plan.PSObject.Properties.Name).Count -ne $keys.Count -or @($plan.PSObject.Properties.Name | Where-Object {$_ -cnotin $keys}).Count -ne 0 -or $plan.schema -cne 'rokt.u1-provision-plan.v1' -or $plan.inventory_id -cne '1784775229336') { throw 'RUNTIME_PLAN_SCHEMA' }
@@ -83,6 +98,7 @@ if ($RuntimePlan) {
     foreach ($key in @('python','token_file','snapshot')) {
         $hashKey=if ($key -ceq 'token_file') {'token_sha256'} else {$key+'_sha256'}
         if ($plan.$hashKey -cnotmatch '^[0-9a-f]{64}$' -or (Get-FileHash -LiteralPath $plan.$key -Algorithm SHA256).Hash.ToLowerInvariant() -cne $plan.$hashKey) { throw 'RUNTIME_REFERENCE_HASH' }
+        Pin-Reference $plan.$key $plan.$hashKey
     }
     if ($plan.credential_expires_at -isnot [long] -and $plan.credential_expires_at -isnot [int]) { throw 'CREDENTIAL_EXPIRY_TYPE' }
     if ($plan.credential_expires_at -le [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) { throw 'CREDENTIAL_EXPIRED' }
@@ -169,3 +185,5 @@ try {
     }
     throw
 } finally { $mutex.ReleaseMutex(); $mutex.Dispose() }
+
+} finally { foreach ($pin in $dependencyPins) { $pin.Dispose() } }

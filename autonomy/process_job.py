@@ -4,6 +4,7 @@ import os
 import subprocess
 import threading
 import time
+import tempfile
 
 
 class OutputLimitExceeded(RuntimeError):
@@ -100,16 +101,22 @@ def _finish(primary, cleanup_errors):
 
 def run_tree(args, *, timeout, cwd=None, stdout_limit_bytes=4*1024*1024,
              stderr_limit_bytes=1024*1024, event_limit_bytes=256*1024,
-             cleanup_timeout=10):
+             cleanup_timeout=10, stdin_bytes=None):
     for value in (stdout_limit_bytes, stderr_limit_bytes, event_limit_bytes):
         if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
             raise ValueError('Output byte limits must be positive integers')
     if timeout <= 0 or cleanup_timeout <= 0:
         raise ValueError('Timeouts must be positive')
     capture = _Capture(stdout_limit_bytes, stderr_limit_bytes, event_limit_bytes)
-    if os.name == 'nt':
-        return _windows_job(args, timeout, cwd, capture, cleanup_timeout)
-    return _posix_tree(args, timeout, cwd, capture, cleanup_timeout)
+    if stdin_bytes is not None and (type(stdin_bytes) is not bytes or len(stdin_bytes)>65536):
+        raise ValueError('Bounded bytes input required')
+    # Unnamed temporary handle: no operation tokens in argv or named files.
+    with tempfile.TemporaryFile() as input_stream:
+        if stdin_bytes is not None:
+            input_stream.write(stdin_bytes);input_stream.seek(0)
+        if os.name == 'nt':
+            return _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream)
+        return _posix_tree(args, timeout, cwd, capture, cleanup_timeout, input_stream)
 
 
 def _posix_cleanup(process, timeout):
@@ -130,8 +137,8 @@ def _posix_cleanup(process, timeout):
         time.sleep(0.02)
 
 
-def _posix_tree(args, timeout, cwd, capture, cleanup_timeout):
-    process = subprocess.Popen(args, cwd=cwd, stdin=subprocess.DEVNULL,
+def _posix_tree(args, timeout, cwd, capture, cleanup_timeout, input_stream):
+    process = subprocess.Popen(args, cwd=cwd, stdin=input_stream,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
     primary = None
     errors = []
@@ -159,7 +166,7 @@ def _posix_tree(args, timeout, cwd, capture, cleanup_timeout):
     return result
 
 
-def _windows_job(args, timeout, cwd, capture, cleanup_timeout):
+def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream):
     import ctypes as c
     from ctypes import wintypes as w
     import msvcrt
@@ -241,7 +248,7 @@ def _windows_job(args, timeout, cwd, capture, cleanup_timeout):
         limits = EXTENDED_LIMIT()
         limits.BasicLimitInformation.LimitFlags = 0x2000
         checked(k.SetInformationJobObject(job, 9, c.byref(limits), c.sizeof(limits)))
-        input_file = open(os.devnull, 'rb')
+        input_file = input_stream
         for _ in range(2):
             read_fd, write_fd = os.pipe()
             streams.append(os.fdopen(read_fd, 'rb', buffering=0))

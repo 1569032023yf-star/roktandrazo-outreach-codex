@@ -14,7 +14,8 @@ class ProvisionTests(unittest.TestCase):
    block=source[source.index('# Generate exact supervisor'):source.index('if (Get-CimInstance Win32_Service -Filter')]
    script=root/'check.ps1'
    pre="param($RuntimePlan,$ApprovedRuntimePlanSha256)\n$ErrorActionPreference='Stop'\nfunction Assert-NoReparseAncestors($p) {}\n$code='C:\\Program Files\\RoktU1Bridge\\v1'\n$state='C:\\ProgramData\\RoktU1Bridge'\n$m=@{files=@(@{path='service/u1_bootstrap.py';sha256=('a'*64)})}\n"
-   script.write_text(pre+block+"\n[Text.Encoding]::UTF8.GetString($generated['config/runtime.json'])\n[Text.Encoding]::UTF8.GetString($generated['config/supervisor.json'])",encoding='utf-8-sig')
+   helper=source[source.index('$dependencyPins='):source.index("try {\n$name=")]
+   script.write_text(pre+helper+block+"\n[Text.Encoding]::UTF8.GetString($generated['config/runtime.json'])\n[Text.Encoding]::UTF8.GetString($generated['config/supervisor.json'])\n$blocked=$false; try {[IO.File]::WriteAllBytes($plan.snapshot,[byte[]]@(1))} catch [IO.IOException] {$blocked=$true}; if (-not $blocked) {throw 'PIN_WRITE_NOT_BLOCKED'}\nforeach ($pin in $dependencyPins) {$pin.Dispose()}",encoding='utf-8-sig')
    def run(digest):return subprocess.run(['pwsh','-NoProfile','-Command', '& { '+script.read_text(encoding='utf-8-sig')+" } '"+str(path).replace("'","''")+"' '"+digest+"'"],capture_output=True,text=True,encoding="utf-8",errors="replace",timeout=15)
    good=run(sha);self.assertEqual(good.returncode,0,good.stderr)
    runtime,supervisor=map(json.loads,good.stdout.strip().splitlines())
