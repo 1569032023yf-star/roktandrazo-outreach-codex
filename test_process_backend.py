@@ -39,11 +39,13 @@ class BackendTests(unittest.TestCase):
    c.execute('insert into executions values (?,?,?,NULL)',(o['idempotency_key'],binding,'IN_FLIGHT'));c.commit()
   with self.assertRaises(ExecutionUnknown):self.backend().execute_once(o,deadline_monotonic=time.monotonic()+.8)
   self.assertFalse(self.marker.exists())
+  status=self.backend().status(o['idempotency_key']);self.assertEqual(status['transport_state'],'IN_FLIGHT');self.assertFalse(status['replay_authorized'])
  def test_lost_or_invalid_receipt_blocks_retry(self):
   self.worker.write_text('import sys\nsys.stdin.read()\nprint("{}")')
   b=self.backend();o=self.operation()
   with self.assertRaises(ExecutionUnknown):b.execute_once(o,deadline_monotonic=time.monotonic()+.8)
   with self.assertRaisesRegex(ExecutionUnknown,'UNKNOWN_NO_REPLAY'):self.backend().execute_once(o,deadline_monotonic=time.monotonic()+.8)
+  self.assertEqual(self.backend().status(o['idempotency_key'])['outcome'],'UNKNOWN')
  def test_timeout_kills_child_and_no_replay(self):
   self.worker.write_text('import time,sys\nsys.stdin.read()\ntime.sleep(60)')
   b=self.backend();o=self.operation()
@@ -51,6 +53,7 @@ class BackendTests(unittest.TestCase):
   with self.assertRaises(subprocess.TimeoutExpired) as caught:b.execute_once(o,deadline_monotonic=time.monotonic()+.15)
   self.assertTrue(caught.exception.cleanup_verified)
   with self.assertRaisesRegex(ExecutionUnknown,'UNKNOWN_NO_REPLAY'):self.backend().execute_once(o,deadline_monotonic=time.monotonic()+.8)
+  self.assertEqual(self.backend().status(o['idempotency_key'])['outcome'],'UNKNOWN')
  def test_foreign_inventory_and_no_lease_rejected(self):
   with self.assertRaises(ValueError):consume_existing_inventory_event(self.f.adapter,dict(inventory_id='other'))
   event=dict(inventory_id=INVENTORY,admission={},schedule={},idle={},budget_request={})

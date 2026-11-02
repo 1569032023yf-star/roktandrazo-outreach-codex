@@ -46,6 +46,22 @@ class ProcessBackend:
         c.execute('PRAGMA synchronous=FULL')
         return closing(c)
 
+    def status(self, idempotency_key):
+        """Read-only transport status; never makes UNKNOWN replayable.
+        只读状态，不签发重放、终态或预算退款权限。
+        """
+        import re
+        if type(idempotency_key) is not str or not re.fullmatch('[0-9a-f]{64}',idempotency_key):
+            raise ValueError('IDEMPOTENCY_KEY_REJECTED')
+        ordinary(self.path)
+        if self.path.stat().st_nlink!=1:raise ValueError('JOURNAL_HARDLINK')
+        with closing(sqlite3.connect(self.path.resolve().as_uri()+'?mode=ro',uri=True)) as c:
+            row=c.execute('SELECT state FROM executions WHERE key=?',(idempotency_key,)).fetchone()
+        state='NOT_RECORDED' if row is None else row[0]
+        if state not in {'NOT_RECORDED','IN_FLIGHT','UNKNOWN','OUTPUT_RECORDED'}:raise ValueError('JOURNAL_STATE_REJECTED')
+        return dict(transport_state=state,outcome='OUTPUT_RECORDED' if state=='OUTPUT_RECORDED' else 'UNKNOWN',
+                    replay_authorized=False,terminal_accepted=False,production_execution=False)
+
     def execute_once(self,operation,*,deadline_monotonic):
         if (type(operation) is not dict or operation.get('scope')!='isolated_offline' or
             operation.get('production_execution') is not False or operation.get('inventory_id')!=INVENTORY or
