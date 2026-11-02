@@ -6,6 +6,8 @@ import threading
 import time
 import unittest
 import urllib.error
+from unittest.mock import patch
+import io
 from autonomy.inventory_event_bridge import ExistingOwnerBridge,EventMailbox,owner_observer
 from autonomy.lock_recovery import exclusive_lock
 from autonomy.release_store import ReleaseStore,build_bundle,sha
@@ -103,6 +105,31 @@ class EventBridgeTests(unittest.TestCase):
                 self.assertEqual(caught.exception.code,401)
                 self.assertEqual(mailbox.status(identity)['transport_state'],'RESERVED')
             finally:server.shutdown();worker.join(3)
+
+    def test_ambiguous_or_open_response_never_reaches_executor(self):
+        from autonomy.inventory_event_bridge import MAX_EVENT
+        envelope=dict(schema='rokt.offline-host-readonly.v1',inventory_id=INVENTORY,
+            allow_dispatch=False,allow_cancel_dispatch=False,allow_reconcile=False,
+            production_accepted=False,replay_allowed=False,event_id='a'*64)
+        raw=json.dumps(envelope).encode()
+        invalid=[b'[]',b'{}',b' '*MAX_EVENT+raw,
+                 raw[:-1]+b',"allow_dispatch":false}',
+                 raw[:-1]+b',"unknown":NaN}']
+        for key in ('schema','inventory_id','allow_dispatch','allow_cancel_dispatch',
+                    'allow_reconcile','production_accepted','replay_allowed'):
+            value=dict(envelope);value.pop(key);invalid.append(json.dumps(value).encode())
+            value=dict(envelope);value[key]=True;invalid.append(json.dumps(value).encode())
+        bridge=ExistingOwnerBridge(self.f.adapter,port=8791,token=self.token)
+        with exclusive_lock(self.f.runtime):
+            event=self.event()
+            for reply in invalid:
+                with self.subTest(reply=reply[:120]),patch('urllib.request.build_opener') as opener:
+                    opener.return_value.open.return_value=io.BytesIO(reply)
+                    with self.assertRaises(ValueError):bridge.consume(event)
+                    self.assertFalse(self.backend_fixture.marker.exists())
+        with patch('urllib.request.build_opener') as opener:
+            opener.return_value.open.return_value=io.BytesIO(raw)
+            self.assertEqual(bridge.request('/v1/inventory-events',{}),envelope)
 
 
 if __name__=='__main__':unittest.main()

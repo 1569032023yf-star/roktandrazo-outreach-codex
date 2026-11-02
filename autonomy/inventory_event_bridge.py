@@ -160,8 +160,23 @@ class ExistingOwnerBridge:
         class NoRedirect(urllib.request.HTTPRedirectHandler):
             def redirect_request(self,*args):return None
         with urllib.request.build_opener(urllib.request.ProxyHandler({}),NoRedirect()).open(request,timeout=5) as response:
-            result=json.loads(response.read(MAX_EVENT+1))
-        if result.get('inventory_id')!=INVENTORY or result.get('allow_dispatch') is not False:
+            reply=response.read(MAX_EVENT+1)
+        # A reserved event is never released to the executor on an ambiguous
+        # transport envelope. In particular, Python's JSON decoder otherwise
+        # accepts duplicate keys and non-finite constants.
+        def unique_object(pairs):
+            value={}
+            for key,item in pairs:
+                if key in value:raise ValueError('DUPLICATE_RESPONSE_KEY')
+                value[key]=item
+            return value
+        def reject_constant(_):raise ValueError('NONFINITE_RESPONSE')
+        if len(reply)>MAX_EVENT:raise ValueError('SERVICE_RESPONSE_TOO_LARGE')
+        result=json.loads(reply,object_pairs_hook=unique_object,parse_constant=reject_constant)
+        if (type(result) is not dict or result.get('schema')!='rokt.offline-host-readonly.v1' or
+                result.get('inventory_id')!=INVENTORY or
+                any(result.get(key) is not False for key in
+                    ('allow_dispatch','allow_cancel_dispatch','allow_reconcile','production_accepted','replay_allowed'))):
             raise ValueError('SERVICE_RESPONSE_REJECTED')
         return result
 
