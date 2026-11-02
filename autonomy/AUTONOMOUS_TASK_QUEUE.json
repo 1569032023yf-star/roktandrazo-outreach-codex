@@ -576,8 +576,8 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/u1_scm_integration_20261102/REPORT.md",
-      "next_action": "Provision and read back exact disabled SCM supervisor/runtime configs in installer; integrate existing durable backend Slot/GrowthLedger/CancellationJournal and original Inventory admission/lock. Fixed-source independent review and unattended acceptance pending. No production service install/start without authorization.",
+      "checkpoint": "autonomy/evidence/u1_provision_20261102/REPORT.md",
+      "next_action": "Integrate bounded execution backend with existing signed SingleSlotAdapter admission and original Inventory lease; close installer upgrade/rollback, dependency ACL and TOCTOU blockers before independent review. No service install/start.",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "PENDING_FIXED_SCM_CANDIDATE",
@@ -1685,9 +1685,33 @@
         "original_inventory_integrated": false,
         "production_service_installed": false,
         "report": "autonomy/evidence/u1_scm_integration_20261102/REPORT.md",
-        "publication": "LOCAL_COMMITTED_PUSH_BLOCKED_CONFIGURED_PROXY_UNREACHABLE",
+        "publication": "REMOTE_VERIFIED_24b20a3_BEFORE_CURRENT_INCREMENT",
         "local_delivery_commit": "f1ec5bda1a6c57a4aedec85fa40becd64c371ae5"
-      }
+      },
+      "u1_provision_latest": {
+        "updated_at": "2026-11-02T06:58:13.090340+00:00",
+        "source_commit": "a5751e8e67ceeac6e9568571ecf7c69c074ec952",
+        "tests": "37 PASS / 11.385s",
+        "independent_review": "PENDING",
+        "package": {
+          "artifacts": {
+            "install.zip": "36616471b9f09707649c34e5335c1c18f19d7d326af88d3ecf29740bc88b3a03",
+            "rollback-tools.zip": "9672e93d1b19f4040bfaf5871d44f7131b825a6319a3898c83a7a6665c9d9216"
+          },
+          "files": 59,
+          "independent_review": "PENDING",
+          "manifest_sha256": "a205e30534780af9c8ca2169e25ea91656015a9e6d7636408df62188e7677deb",
+          "production_ready": false,
+          "source_commit": "a5751e8e67ceeac6e9568571ecf7c69c074ec952"
+        },
+        "automation_id": "rokt-razo",
+        "prompt_sha256": "0e61d66affd96889ba921a73e60aa23180ade5d37d78f7797b8dd24e34aeaf42",
+        "allow_dispatch": false,
+        "allow_cancel_dispatch": false,
+        "production_deployed": false,
+        "next_action": "Integrate bounded execution backend with existing signed SingleSlotAdapter admission and original Inventory lease; close installer upgrade/rollback, dependency ACL and TOCTOU blockers before independent review. No service install/start."
+      },
+      "updated_at": "2026-11-02T06:58:13.090340+00:00"
     },
     {
       "id": "A-u1-host-contract-integration-20261030",
@@ -3522,7 +3546,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-01T14:49:02.796094+00:00",
+  "updated_at": "2026-11-02T06:58:13.090340+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -3819,5 +3843,6 @@
     "allow_install": false,
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
-  }
+  },
+  "checkpoint": "autonomy/evidence/u1_provision_20261102/REPORT.md"
 }

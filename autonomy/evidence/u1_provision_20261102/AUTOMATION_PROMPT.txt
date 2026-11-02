@@ -1,0 +1,16 @@
+ROKT&RAZO Phase U1 正式交付持续开发。每3小时运行；每轮最多45分钟；最多两条重型工作线。实际启动先检查现有任务与锁，避免重叠；接近45分钟停止领取工作并保存恢复点。若平台没有硬超时字段，如实记录，不宣称已强制配置。
+
+工作树 C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy；分支 codex/autonomous-bd-supervisor。
+授权与冻结范围：读取 https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6567493676 的A部分，仅推进两条P0线：
+A. 正式安装/发布/回滚：先读取现有publisher真实调用链；实现固定源码/清单/逐文件SHA256/精确目标绝对路径/版本/身份绑定的安装器。支持ABSENT首装、新文件升级、备份、原子创建替换删除、中断恢复、幂等、旧文件恢复与删除本次新建文件；UNKNOWN必须STOP_AND_PRESERVE。拒绝任意路径、reparse、硬链接与TOCTOU。生成真实x64禁用包、只读preflight/dry-run、安装/回滚脚本，自动生成并核验后台所需配置。
+B. 正式执行宿主：接通RoktU1Bridge、8791认证、Python executor、正式backend、持久slot/lease、唯一原Inventory及锁；复用Job Object、预算和取消日志，不另建调度器。明确身份、ACL、生命周期、恢复、超时取消、迟到回执与UNKNOWN不重放。
+
+每轮执行：
+1. 核实远端分支HEAD、dirty、代理与锁；读AGENTS及工程规范、本地canonical autonomy/runtime/queue.json、最新checkpoint、WorkBuddy证据及独审。保留他人工作，不凭Git投影猜canonical。
+2. 复用已消费WorkBuddy P1兼容commit0b09694855e37eb366c10b3b6571282b60b5a19c与生产刷新13d061a82568bc147efa689742a61b3e06d95a31/既有回执6561646296，不重复索要同批资料或合同。不等待WorkBuddy才能离线开发；真实注销/重启、非交互出口、管理员ACL和服务安装留在授权验证阶段。
+3. 每轮优先交付实际源码集成、修复或可运行发布包，禁止连续仅加测试/报告。测试只验证具体改动风险；相同SHA/相同风险不机械重复。仅P0交付阻断项阻塞发布，P1增强进入backlog，事实缺失记UNKNOWN。
+4. 固定源码与包SHA，执行必要定向与基线/候选比较，不继承旧833结果。独审针对固定版本；不可用记PENDING，不以自审替代。
+5. 每轮结束同步canonical queue、checkpoint、DELIVERY_STATUS，顶层updated_at/checkpoint与嵌套任务一致；保存HEAD、文件、测试命令结果、审核、包SHA、门禁、唯一下一动作。提交push并核验远端，失败保存准确待推送恢复点。报告中英双语。
+6. 分开记录DEVELOPMENT_COMPLETE、RELEASE_READY、PRODUCTION_DEPLOYED、PRODUCTION_ACCEPTED；BUSINESS_GROWTH无可靠证据为UNKNOWN。
+7. 原Inventory1784775229336唯一；无第二调度器、无手动生产采集、无生产DB/账本写入、SMTP关闭、无配额调整、无来源/Job/权限/网络绕过。allow_dispatch=false、allow_cancel_dispatch=false。未经明确授权不安装/启用/切换生产服务，不默认LocalSystem。
+8. 正常开发下一步自主执行。仅固定候选独审完成且确需管理员/维护窗口时，准备精确身份、路径、哈希、权限、操作范围、备份、验证和回滚，再提交一次具体授权请求；不要求用户搬运日志。
