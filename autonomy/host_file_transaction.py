@@ -49,10 +49,18 @@ def read(path):
         raise ValueError('ORDINARY_FILE_REQUIRED')
     with p.open('rb') as f:
         before = os.fstat(f.fileno())
+        # Bind the opened handle to the validated name before consuming bytes.
+        # A name can be swapped between stat and open, including to a hardlink.
+        identity = lambda v: (v.st_dev, v.st_ino, v.st_size, v.st_mtime_ns, v.st_nlink)
+        if (not stat.S_ISREG(before.st_mode) or before.st_nlink != 1 or
+                identity(s) != identity(before)):
+            raise ValueError('FILE_CHANGED')
+        ordinary(p)
         raw = f.read(256*1024*1024+1)
         after = os.fstat(f.fileno())
-    if (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) != (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns):
-        raise ValueError('FILE_CHANGED')
+        observed = ordinary(p).stat()
+        if identity(before) != identity(after) or identity(after) != identity(observed):
+            raise ValueError('FILE_CHANGED')
     if len(raw) > 256*1024*1024:
         raise ValueError('FILE_TOO_LARGE')
     return raw

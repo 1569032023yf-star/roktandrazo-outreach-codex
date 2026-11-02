@@ -7,10 +7,34 @@ import subprocess
 import sys
 import tempfile
 import unittest
-from autonomy.host_file_transaction import HostFileTransaction, canonical, digest
+from unittest.mock import patch
+from autonomy.host_file_transaction import HostFileTransaction, canonical, digest, read
 
 
 class FileTransactionTests(unittest.TestCase):
+    def test_read_rejects_name_swap_before_open(self):
+        with tempfile.TemporaryDirectory() as d:
+            target=Path(d)/'target'; other=Path(d)/'other'
+            target.write_bytes(b'original'); other.write_bytes(b'replacement')
+            original_open=Path.open
+            def swapped(path,*args,**kwargs):
+                if path==target:
+                    os.replace(other,target)
+                return original_open(path,*args,**kwargs)
+            with patch.object(Path,'open',swapped):
+                with self.assertRaisesRegex(ValueError,'FILE_CHANGED'):read(target)
+
+    def test_read_rejects_hardlink_created_before_open(self):
+        with tempfile.TemporaryDirectory() as d:
+            target=Path(d)/'target'; alias=Path(d)/'alias'
+            target.write_bytes(b'original')
+            original_open=Path.open
+            def linked(path,*args,**kwargs):
+                if path==target:os.link(target,alias)
+                return original_open(path,*args,**kwargs)
+            with patch.object(Path,'open',linked):
+                with self.assertRaisesRegex(ValueError,'FILE_CHANGED'):read(target)
+
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory(prefix='u1-owned-files-');self.addCleanup(self.temp.cleanup)
         self.root=Path(self.temp.name)/'code';self.root.mkdir()
