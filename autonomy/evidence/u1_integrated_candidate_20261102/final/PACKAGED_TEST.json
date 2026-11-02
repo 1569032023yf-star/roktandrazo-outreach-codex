@@ -1,0 +1,11 @@
+{
+  "source_commit": "70ee72177a40408d5b03a415b3eef3fb51059589",
+  "returncode": 0,
+  "seconds": 84.518,
+  "modules": [
+    "test_host_file_transaction",
+    "test_inventory_event_bridge"
+  ],
+  "import_root": "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\autonomy\\evidence\\u1_integrated_candidate_20261102\\final\\package\\install\\payload\\python",
+  "passed": true
+}

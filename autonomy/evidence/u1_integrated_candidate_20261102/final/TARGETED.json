@@ -1,0 +1,30 @@
+{
+  "source_commit": "70ee72177a40408d5b03a415b3eef3fb51059589",
+  "modules": [
+    "test_windows_acl_transaction",
+    "test_disabled_host_package",
+    "test_install_journal",
+    "test_install_contract",
+    "test_independent_install_plan",
+    "test_u1_provision",
+    "test_u1_manifest_closure",
+    "test_u1_host_runtime",
+    "test_host_remediation",
+    "test_host_preparation",
+    "test_release_store",
+    "test_process_backend",
+    "test_single_slot_adapter",
+    "test_host_readonly_http",
+    "test_host_file_transaction",
+    "test_host_install_transaction",
+    "test_inventory_event_bridge"
+  ],
+  "tests_run": 138,
+  "failures": [],
+  "errors": [],
+  "skips": [],
+  "seconds": 226.794,
+  "passed": true,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false
+}

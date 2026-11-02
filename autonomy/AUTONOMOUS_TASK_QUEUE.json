@@ -576,23 +576,23 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/u1_publication_recovery_20261102/REPORT.md",
-      "next_action": "Implement the disabled-service upgrade and exact owned-file rollback path with durable recovery records; keep dispatch closed.",
+      "checkpoint": "autonomy/evidence/u1_integrated_candidate_20261102/REPORT.md",
+      "next_action": "Implement enforced formal maintenance-lease admission and formal backend protocol adaptation; then connect the existing owner through its supported entry point and freeze a new candidate. No production execution.",
       "phase": "U1",
-      "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
-      "review_status": "PENDING_FOR_CURRENT_PIN",
+      "baseline_commit": "91aa60c6cf52b0c0a9c9e0ff2ddfb5ee39a7f7fc",
+      "review_status": "OFFLINE_REVIEW_PASSED",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
+      "candidate_commit": "70ee72177a40408d5b03a415b3eef3fb51059589",
       "trust_boundary_review": "SCOPED_PASS",
       "schedule_contract_review": "SCOPED_PASS",
       "regression_runner_candidate": "b69214d",
-      "full_regression": "FRESH_58B5094_VS_82031AC_833_EACH_IDENTICAL_37_FAILURES_17_ERRORS_NOT_ALL_GREEN",
+      "full_regression": "FRESH_833_EACH_37_FAILURES_17_ERRORS_NOT_ALL_GREEN",
       "adapter_review": "SCOPED_PASS_E3F3220",
       "bridge_candidate": "68802d5",
       "bridge_review": "SCOPED_PASS_68802D5",
       "handoff_comment": 6435605069,
-      "targeted_tests": 89,
+      "targeted_tests": 138,
       "snapshot_review": "SCOPED_PASS_DA443FD",
       "history_import_review": "SCOPED_PASS_DBDC424",
       "manifest_closure_review": "SCOPED_PASS_TEST621D3E4_PACKAGE_DBDC424",
@@ -1106,8 +1106,8 @@
           }
         }
       },
-      "next_action_zh": "实现禁用服务升级与精确自有文件回滚路径，接入持久恢复记录；生产派发保持关闭。",
-      "next_action_en": "Implement the disabled-service upgrade and exact owned-file rollback path with durable recovery records; keep dispatch closed.",
+      "next_action_zh": "补齐正式维护租约强制验证和正式backend适配，再通过原所有者支持入口接入并冻结新候选；不执行生产操作。",
+      "next_action_en": "Implement enforced formal maintenance-lease admission and formal backend protocol adaptation; then connect the existing owner through its supported entry point and freeze a new candidate. No production execution.",
       "namespace_revalidation_latest": {
         "schema": "codex.u1.namespace-revalidation.v1",
         "summary_zh": "源身份复核在hash前后核对名字对象ID，拒绝同内容替换；返回后窗口仍未锁定。",
@@ -1651,58 +1651,80 @@
         "allow_cancel_dispatch": false
       },
       "u1_actual_delivery_latest": {
-        "updated_at": "2026-11-02T09:01:44.396442+00:00",
-        "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
-        "checkpoint": "autonomy/evidence/u1_publication_recovery_20261102/REPORT.md",
-        "scope_frozen": true,
-        "real_code_changes": [
-          "durable_publication_intent_and_receipt",
-          "uncertain_publication_fences_all_mutating_entries",
-          "host_and_standalone_bootstrap_pending_gate"
-        ],
-        "targeted_tests": {
-          "count": 89,
+        "description_zh": "安装文件与恢复、现有所有者事件通道的固定离线集成候选；正式执行集成未完成。",
+        "description_en": "Pinned offline integration of owned-file recovery and existing-owner event transport; formal execution integration remains incomplete.",
+        "source_commit": "70ee72177a40408d5b03a415b3eef3fb51059589",
+        "updated_at": "2026-11-02T10:20:36.442750+00:00",
+        "report": "autonomy/evidence/u1_integrated_candidate_20261102/REPORT.md",
+        "independent_review": "OFFLINE_REVIEW_PASSED",
+        "tests": {
+          "source_commit": "70ee72177a40408d5b03a415b3eef3fb51059589",
+          "modules": [
+            "test_windows_acl_transaction",
+            "test_disabled_host_package",
+            "test_install_journal",
+            "test_install_contract",
+            "test_independent_install_plan",
+            "test_u1_provision",
+            "test_u1_manifest_closure",
+            "test_u1_host_runtime",
+            "test_host_remediation",
+            "test_host_preparation",
+            "test_release_store",
+            "test_process_backend",
+            "test_single_slot_adapter",
+            "test_host_readonly_http",
+            "test_host_file_transaction",
+            "test_host_install_transaction",
+            "test_inventory_event_bridge"
+          ],
+          "tests_run": 138,
+          "failures": [],
+          "errors": [],
+          "skips": [],
+          "seconds": 226.794,
           "passed": true,
-          "seconds": 31.079
+          "allow_dispatch": false,
+          "allow_cancel_dispatch": false
         },
-        "comparable_regression": {
-          "baseline_commit": "58b50947ea96f876b19b97bd1c4516daac0c5e6b",
-          "candidate_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
+        "regression": {
+          "baseline_commit": "91aa60c6cf52b0c0a9c9e0ff2ddfb5ee39a7f7fc",
+          "candidate_commit": "70ee72177a40408d5b03a415b3eef3fb51059589",
+          "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-uaolpgr5",
+          "complete": true,
           "baseline_run": 833,
           "candidate_run": 833,
           "baseline_failures": 37,
           "candidate_failures": 37,
           "baseline_errors": 17,
           "candidate_errors": 17,
-          "identical_failure_ids": true,
-          "identical_error_ids": true,
+          "failure_ids_identical": true,
+          "error_ids_identical": true,
           "all_green": false,
           "no_new_regression": true
         },
-        "package_build": {
-          "artifacts": {
-            "install.zip": "9a08ac645484ce0f9186e5e812890b18a1ae140cd132bd98c76b1f17a55818d3",
-            "rollback-tools.zip": "db38adab6842a1ed1eba941324565f44accd0d172c02d99c6caf3b0de1c82cb4"
-          },
-          "files": 60,
-          "independent_review": "PENDING",
-          "manifest_sha256": "9d3ad9f5490d3467a57038642004555045e4af7f08def1b26c673fa2add02fe2",
-          "production_ready": false,
-          "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78"
+        "package_validation": "final/PACKAGE_VALIDATION.json",
+        "artifacts": {
+          "install.zip": "7b9fc838bce274e3a320bc6189b45969ed21c1850385b883cbdf01e03b92e5f5",
+          "rollback-tools.zip": "57d0e1694530e816ad435d93478f1d88f8568b49433bf5b9efa083cc80c73030"
         },
-        "independent_review": "PENDING",
+        "manifest_sha256": "53df0d45b0d66dd701447ab94fe67a23cd962da3cee4e3c7bf6c9f43f0efd647",
+        "host_manifest_sha256": "d2cca34a1266122612c83561cdcb4d9a912df9932f9a3eee65bae00180113811",
+        "states": {
+          "DEVELOPMENT_COMPLETE": false,
+          "RELEASE_READY": false,
+          "PRODUCTION_DEPLOYED": false,
+          "PRODUCTION_ACCEPTED": false
+        },
+        "offline_file_lifecycle_verified": true,
+        "offline_event_chain_verified": true,
         "formal_backend_integrated": false,
-        "original_inventory_integrated": false,
-        "development_complete": false,
-        "release_ready": false,
-        "production_deployed": false,
-        "production_accepted": false,
-        "business_growth": "UNKNOWN",
+        "formal_maintenance_lease_enforced": false,
+        "production_owner_configuration_changed": false,
         "allow_dispatch": false,
         "allow_cancel_dispatch": false,
         "smtp_enabled": false,
-        "next_action": "Implement the disabled-service upgrade and exact owned-file rollback path with durable recovery records; keep dispatch closed.",
-        "next_action_zh": "实现禁用服务升级与精确自有文件回滚路径，接入持久恢复记录；生产派发保持关闭。"
+        "inventory_id": "1784775229336"
       },
       "u1_scm_integration_latest": {
         "source_commit": "d1e613cdb64f957907812b87c5a0c867531c6d4f",
@@ -1745,7 +1767,7 @@
         "production_deployed": false,
         "next_action": "Integrate bounded execution backend with existing signed SingleSlotAdapter admission and original Inventory lease; close installer upgrade/rollback, dependency ACL and TOCTOU blockers before independent review. No service install/start."
       },
-      "updated_at": "2026-11-02T09:01:44.396442+00:00",
+      "updated_at": "2026-11-02T10:20:36.442750+00:00",
       "u1_execution_wiring_latest": {
         "updated_at": "2026-11-02T08:40:48.546343+00:00",
         "source_commit": "cc9b7a7b672eb2098fa02d7e57c266b4ec57d76e",
@@ -1867,6 +1889,84 @@
         "smtp_enabled": false,
         "next_action": "Implement the disabled-service upgrade and exact owned-file rollback path with durable recovery records; keep dispatch closed.",
         "next_action_zh": "实现禁用服务升级与精确自有文件回滚路径，接入持久恢复记录；生产派发保持关闭。"
+      },
+      "development_complete": false,
+      "production_accepted": false,
+      "u1_integrated_delivery_latest": {
+        "description_zh": "安装文件与恢复、现有所有者事件通道的固定离线集成候选；正式执行集成未完成。",
+        "description_en": "Pinned offline integration of owned-file recovery and existing-owner event transport; formal execution integration remains incomplete.",
+        "source_commit": "70ee72177a40408d5b03a415b3eef3fb51059589",
+        "updated_at": "2026-11-02T10:20:36.442750+00:00",
+        "report": "autonomy/evidence/u1_integrated_candidate_20261102/REPORT.md",
+        "independent_review": "OFFLINE_REVIEW_PASSED",
+        "tests": {
+          "source_commit": "70ee72177a40408d5b03a415b3eef3fb51059589",
+          "modules": [
+            "test_windows_acl_transaction",
+            "test_disabled_host_package",
+            "test_install_journal",
+            "test_install_contract",
+            "test_independent_install_plan",
+            "test_u1_provision",
+            "test_u1_manifest_closure",
+            "test_u1_host_runtime",
+            "test_host_remediation",
+            "test_host_preparation",
+            "test_release_store",
+            "test_process_backend",
+            "test_single_slot_adapter",
+            "test_host_readonly_http",
+            "test_host_file_transaction",
+            "test_host_install_transaction",
+            "test_inventory_event_bridge"
+          ],
+          "tests_run": 138,
+          "failures": [],
+          "errors": [],
+          "skips": [],
+          "seconds": 226.794,
+          "passed": true,
+          "allow_dispatch": false,
+          "allow_cancel_dispatch": false
+        },
+        "regression": {
+          "baseline_commit": "91aa60c6cf52b0c0a9c9e0ff2ddfb5ee39a7f7fc",
+          "candidate_commit": "70ee72177a40408d5b03a415b3eef3fb51059589",
+          "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-uaolpgr5",
+          "complete": true,
+          "baseline_run": 833,
+          "candidate_run": 833,
+          "baseline_failures": 37,
+          "candidate_failures": 37,
+          "baseline_errors": 17,
+          "candidate_errors": 17,
+          "failure_ids_identical": true,
+          "error_ids_identical": true,
+          "all_green": false,
+          "no_new_regression": true
+        },
+        "package_validation": "final/PACKAGE_VALIDATION.json",
+        "artifacts": {
+          "install.zip": "7b9fc838bce274e3a320bc6189b45969ed21c1850385b883cbdf01e03b92e5f5",
+          "rollback-tools.zip": "57d0e1694530e816ad435d93478f1d88f8568b49433bf5b9efa083cc80c73030"
+        },
+        "manifest_sha256": "53df0d45b0d66dd701447ab94fe67a23cd962da3cee4e3c7bf6c9f43f0efd647",
+        "host_manifest_sha256": "d2cca34a1266122612c83561cdcb4d9a912df9932f9a3eee65bae00180113811",
+        "states": {
+          "DEVELOPMENT_COMPLETE": false,
+          "RELEASE_READY": false,
+          "PRODUCTION_DEPLOYED": false,
+          "PRODUCTION_ACCEPTED": false
+        },
+        "offline_file_lifecycle_verified": true,
+        "offline_event_chain_verified": true,
+        "formal_backend_integrated": false,
+        "formal_maintenance_lease_enforced": false,
+        "production_owner_configuration_changed": false,
+        "allow_dispatch": false,
+        "allow_cancel_dispatch": false,
+        "smtp_enabled": false,
+        "inventory_id": "1784775229336"
       }
     },
     {
@@ -3702,7 +3802,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-02T09:01:44.396442+00:00",
+  "updated_at": "2026-11-02T10:20:36.442750+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -4000,7 +4100,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "autonomy/evidence/u1_publication_recovery_20261102/REPORT.md",
+  "checkpoint": "autonomy/evidence/u1_integrated_candidate_20261102/REPORT.md",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
@@ -4054,5 +4154,81 @@
     "smtp_enabled": false,
     "next_action": "Implement the disabled-service upgrade and exact owned-file rollback path with durable recovery records; keep dispatch closed.",
     "next_action_zh": "实现禁用服务升级与精确自有文件回滚路径，接入持久恢复记录；生产派发保持关闭。"
+  },
+  "u1_integrated_delivery_latest": {
+    "description_zh": "安装文件与恢复、现有所有者事件通道的固定离线集成候选；正式执行集成未完成。",
+    "description_en": "Pinned offline integration of owned-file recovery and existing-owner event transport; formal execution integration remains incomplete.",
+    "source_commit": "70ee72177a40408d5b03a415b3eef3fb51059589",
+    "updated_at": "2026-11-02T10:20:36.442750+00:00",
+    "report": "autonomy/evidence/u1_integrated_candidate_20261102/REPORT.md",
+    "independent_review": "OFFLINE_REVIEW_PASSED",
+    "tests": {
+      "source_commit": "70ee72177a40408d5b03a415b3eef3fb51059589",
+      "modules": [
+        "test_windows_acl_transaction",
+        "test_disabled_host_package",
+        "test_install_journal",
+        "test_install_contract",
+        "test_independent_install_plan",
+        "test_u1_provision",
+        "test_u1_manifest_closure",
+        "test_u1_host_runtime",
+        "test_host_remediation",
+        "test_host_preparation",
+        "test_release_store",
+        "test_process_backend",
+        "test_single_slot_adapter",
+        "test_host_readonly_http",
+        "test_host_file_transaction",
+        "test_host_install_transaction",
+        "test_inventory_event_bridge"
+      ],
+      "tests_run": 138,
+      "failures": [],
+      "errors": [],
+      "skips": [],
+      "seconds": 226.794,
+      "passed": true,
+      "allow_dispatch": false,
+      "allow_cancel_dispatch": false
+    },
+    "regression": {
+      "baseline_commit": "91aa60c6cf52b0c0a9c9e0ff2ddfb5ee39a7f7fc",
+      "candidate_commit": "70ee72177a40408d5b03a415b3eef3fb51059589",
+      "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-uaolpgr5",
+      "complete": true,
+      "baseline_run": 833,
+      "candidate_run": 833,
+      "baseline_failures": 37,
+      "candidate_failures": 37,
+      "baseline_errors": 17,
+      "candidate_errors": 17,
+      "failure_ids_identical": true,
+      "error_ids_identical": true,
+      "all_green": false,
+      "no_new_regression": true
+    },
+    "package_validation": "final/PACKAGE_VALIDATION.json",
+    "artifacts": {
+      "install.zip": "7b9fc838bce274e3a320bc6189b45969ed21c1850385b883cbdf01e03b92e5f5",
+      "rollback-tools.zip": "57d0e1694530e816ad435d93478f1d88f8568b49433bf5b9efa083cc80c73030"
+    },
+    "manifest_sha256": "53df0d45b0d66dd701447ab94fe67a23cd962da3cee4e3c7bf6c9f43f0efd647",
+    "host_manifest_sha256": "d2cca34a1266122612c83561cdcb4d9a912df9932f9a3eee65bae00180113811",
+    "states": {
+      "DEVELOPMENT_COMPLETE": false,
+      "RELEASE_READY": false,
+      "PRODUCTION_DEPLOYED": false,
+      "PRODUCTION_ACCEPTED": false
+    },
+    "offline_file_lifecycle_verified": true,
+    "offline_event_chain_verified": true,
+    "formal_backend_integrated": false,
+    "formal_maintenance_lease_enforced": false,
+    "production_owner_configuration_changed": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "smtp_enabled": false,
+    "inventory_id": "1784775229336"
   }
 }

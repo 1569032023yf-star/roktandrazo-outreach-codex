@@ -1,0 +1,211 @@
+{
+  "schema": "rokt.u1-independent-review.v1",
+  "reviewed_at": "2026-11-02T10:15:21.927142+00:00",
+  "source_commit": "70ee72177a40408d5b03a415b3eef3fb51059589",
+  "status": "OFFLINE_REVIEW_PASSED",
+  "release_ready": false,
+  "development_complete": false,
+  "new_actionable_findings": [],
+  "closed_findings": [
+    {
+      "id": "owned_file_authority",
+      "zh": "旧凭据真实字节、独立批准哈希及磁盘字节一致；不接受调用者 owned 字典。",
+      "en": "Actual previous receipt bytes, independent approved hash and on-disk bytes must agree; caller-supplied ownership maps are removed."
+    },
+    {
+      "id": "staging_and_generated_paths",
+      "zh": "逐组件拒绝 .u1-new，包与安装器拒绝自生成配置路径；拒绝大小写与祖先碰撞。",
+      "en": "Reject staging components, installer-generated payload paths and case/ancestor collisions."
+    },
+    {
+      "id": "verified_receipts_and_backup_bound",
+      "zh": "receipt 仅实际 FILES_APPLIED 回读后可用；新内容与备份各限 16 MiB。",
+      "en": "Receipts require verified applied bytes; payload and backups each have a 16 MiB aggregate bound."
+    },
+    {
+      "id": "historical_rollback",
+      "zh": "旧 A 在 B 升级后回滚先全量只读检查，拒绝前不修改 ACL、SCM 或历史日志。",
+      "en": "Historical A rollback after B is rejected by full read-only file preflight before ACL, SCM or historical-journal changes."
+    },
+    {
+      "id": "credential_expiry",
+      "zh": "mailbox 操作返回后再次验证凭据；reserve 期间过期返回 401，保持 RESERVED 且不释放事件。",
+      "en": "Authentication is repeated after mailbox operations; expiry during reserve returns 401 and preserves RESERVED without releasing event bytes."
+    },
+    {
+      "id": "fresh_roots_absent",
+      "zh": "仅按记录身份清理本事务新建空目录和 Code/State 新根；升级保留原根状态；早期未准备文件计划也由安装日志补偿。",
+      "en": "Only identity-recorded empty transaction directories and fresh roots are removed; upgrades preserve old roots/state; install-journal compensation handles early exits before file preparation."
+    },
+    {
+      "id": "cleanup_intent_exit_recovery",
+      "zh": "目录、Code 与 State 删除意图和效果后共六个真实进程退出点恢复通过；ROOT_REMOVE_INTENT 下根尚存在可继续安全补偿。",
+      "en": "Six actual process-exit cut points at directory/Code/State removal intent and effect recover successfully, including ROOT_REMOVE_INTENT with a still-present root."
+    },
+    {
+      "id": "explicit_new_operation",
+      "zh": "相同包回滚完成后可用新显式 OperationId 再首装；UNKNOWN 未决操作仍全局封锁。",
+      "en": "A fresh explicit OperationId permits the same package after confirmed rollback; pending UNKNOWN operations remain globally fenced."
+    }
+  ],
+  "tests": {
+    "command": "python -m unittest test_windows_acl_transaction test_disabled_host_package test_install_journal test_install_contract test_independent_install_plan test_u1_provision test_u1_manifest_closure test_u1_host_runtime test_host_remediation test_host_preparation test_release_store test_process_backend test_single_slot_adapter test_host_readonly_http test_host_file_transaction test_host_install_transaction test_inventory_event_bridge -q",
+    "modules": [
+      "test_windows_acl_transaction",
+      "test_disabled_host_package",
+      "test_install_journal",
+      "test_install_contract",
+      "test_independent_install_plan",
+      "test_u1_provision",
+      "test_u1_manifest_closure",
+      "test_u1_host_runtime",
+      "test_host_remediation",
+      "test_host_preparation",
+      "test_release_store",
+      "test_process_backend",
+      "test_single_slot_adapter",
+      "test_host_readonly_http",
+      "test_host_file_transaction",
+      "test_host_install_transaction",
+      "test_inventory_event_bridge"
+    ],
+    "tests_run": 138,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "duration_seconds": 228.526,
+    "exit_code": 0,
+    "output": "Ran 138 tests in 228.526s\nOK",
+    "independently_rerun": true
+  },
+  "delivery_blockers": [
+    {
+      "zh": "正式维护排斥租约尚未由安装器强制校验。",
+      "en": "Formal maintenance/exclusion lease enforcement is not implemented in the installer."
+    },
+    {
+      "zh": "生产 backend 协议适配尚未闭合；本轮签名 worker 是隔离测试。",
+      "en": "Production backend protocol adaptation remains incomplete; the signed worker is an isolated fixture."
+    },
+    {
+      "zh": "原生产 Inventory owner 配置未修改，实际生产事件链未验证。",
+      "en": "The original production Inventory owner configuration is unchanged; the production event chain is unverified."
+    }
+  ],
+  "evidence_scope": {
+    "zh": "仅离线读取、临时目录真实文件/DACL和回环 HTTP；SCM 为替身，未测试生产服务与生产数据库。",
+    "en": "Offline reads, temporary real files/DACLs and loopback HTTP only; SCM uses doubles. No production service or production database was exercised."
+  },
+  "files": [
+    {
+      "path": "autonomy/build_u1_delivery.py",
+      "working_tree_sha256": "42f8dab3ea345382953a6f0a4eb8b595fab8b291be3da5e6a0c26fdb41365e9b",
+      "git_blob_sha256": "cb45e0f8f4784a2f00106afdc7b692f212fafe932b6e4d2bc52e6e64e826c124",
+      "matches_fixed_commit_after_line_ending_normalization": true
+    },
+    {
+      "path": "autonomy/disabled_host_package.py",
+      "working_tree_sha256": "991a13b47f43a3f29cd2daf8220b18eb484aa2c0b22ad96c419bb952a8d9bf35",
+      "git_blob_sha256": "7d68de9a1e908b3acd36c4b8806207c0f9052960fbf3b6ce2a90288694648000",
+      "matches_fixed_commit_after_line_ending_normalization": true
+    },
+    {
+      "path": "autonomy/host_file_transaction.py",
+      "working_tree_sha256": "6c0965a15667a4b2675180ad60072dea0e281c8829e6493e003363675cc2136f",
+      "git_blob_sha256": "6c0965a15667a4b2675180ad60072dea0e281c8829e6493e003363675cc2136f",
+      "matches_fixed_commit_after_line_ending_normalization": true
+    },
+    {
+      "path": "autonomy/inventory_event_bridge.py",
+      "working_tree_sha256": "0c2355bdb15bfba4252a26e034372a866e1d0e21a83367e0ba87c5a7312a7045",
+      "git_blob_sha256": "0c2355bdb15bfba4252a26e034372a866e1d0e21a83367e0ba87c5a7312a7045",
+      "matches_fixed_commit_after_line_ending_normalization": true
+    },
+    {
+      "path": "autonomy/u1_host_runtime.py",
+      "working_tree_sha256": "6b25980bdeff64f11301dfacee581088881554dd693be4905ab70d383dadc229",
+      "git_blob_sha256": "9cb9ddd736b98766d58cbbc1e9a33a1322074dca627b4d4042e22fd46e0d4243",
+      "matches_fixed_commit_after_line_ending_normalization": true
+    },
+    {
+      "path": "autonomy/windows/Host-InstallTransaction.ps1",
+      "working_tree_sha256": "ab627de9fcb356a620227aa95abdfc3088f0ded0f2801339d1e1d818ca19b0b4",
+      "git_blob_sha256": "d7df44df2bf7b29eeae6793abcb232e696ab907867ba72f3fcf231eb51cc250c",
+      "matches_fixed_commit_after_line_ending_normalization": true
+    },
+    {
+      "path": "autonomy/windows/Install-DisabledHost.ps1",
+      "working_tree_sha256": "f872da7fb2f3b5b5a8e8a27476ea0ff088f49f14a8b33671abde850fe0d62503",
+      "git_blob_sha256": "cae8747f88c0a40d6a7494f5cb33ed24f4303cc5aa25558f3bccce6d36a97bf1",
+      "matches_fixed_commit_after_line_ending_normalization": true
+    },
+    {
+      "path": "autonomy/windows/u1_bootstrap.py",
+      "working_tree_sha256": "6fe5ceeae26a91008cc5f73a48e176052a01004bfc8858a52169354c864bc63f",
+      "git_blob_sha256": "1f0ab7d233c53b57a60d9f9b98aa1ebb32c2e1944b52b5b9028c6942286b4c21",
+      "matches_fixed_commit_after_line_ending_normalization": true
+    },
+    {
+      "path": "docs/U1_DISABLED_HOST_LIFECYCLE.md",
+      "working_tree_sha256": "6ab6d44073bda28b3bfb1c0c078c4af7252f74a02ae393ce9b87cef039b00864",
+      "git_blob_sha256": "8becc30cedccea419dc19690bcb5ff38405daabb868cf0861cfb0e9d514fccff",
+      "matches_fixed_commit_after_line_ending_normalization": true
+    },
+    {
+      "path": "test_disabled_host_package.py",
+      "working_tree_sha256": "530dc0899220fed4d867a28973d8a8d35aedd5e2543bcbc44d01021dd68de644",
+      "git_blob_sha256": "cfc3938408e4c5483a0b74a6e29f926576e4cd1ce314ce358455fd9eea088d65",
+      "matches_fixed_commit_after_line_ending_normalization": true
+    },
+    {
+      "path": "test_host_file_transaction.py",
+      "working_tree_sha256": "cff254c0f1c5b2dc76687ea400abd81fd73ed8012459510537a10072603e5961",
+      "git_blob_sha256": "cff254c0f1c5b2dc76687ea400abd81fd73ed8012459510537a10072603e5961",
+      "matches_fixed_commit_after_line_ending_normalization": true
+    },
+    {
+      "path": "test_host_install_transaction.py",
+      "working_tree_sha256": "03c69da7962c394e4bc5921a9987b5d7c1ca3724cd6593bb847d8a84b1fcb44d",
+      "git_blob_sha256": "9481bc34a59c1fe93d4314638f08021bb0b9d26bd1ce5a83f763a2b2277cd526",
+      "matches_fixed_commit_after_line_ending_normalization": true
+    },
+    {
+      "path": "test_inventory_event_bridge.py",
+      "working_tree_sha256": "e2beeb2974f7c1aa7454caebc9a1ddf5e2eed00e76c846e2129e0ae035865424",
+      "git_blob_sha256": "be205d342bfc0478c466446221a84f7ac7d621e944418ac786011e0491c9628b",
+      "matches_fixed_commit_after_line_ending_normalization": true
+    },
+    {
+      "path": "test_u1_provision.py",
+      "working_tree_sha256": "56a6eee356a14580f9da87125cd3e63baa16c0c5cfbca1fc04e1f26f0bae4aca",
+      "git_blob_sha256": "fccaab2f8ac4e9cedb4a9f02beda7c0b5334038882051cb5470056c580fe2781",
+      "matches_fixed_commit_after_line_ending_normalization": true
+    },
+    {
+      "path": "tools/validate_u1_candidate.py",
+      "working_tree_sha256": "a89ba940468a04fadbca81a17130deb874f61c9737c94119c93204885eb6a6f5",
+      "git_blob_sha256": "a89ba940468a04fadbca81a17130deb874f61c9737c94119c93204885eb6a6f5",
+      "matches_fixed_commit_after_line_ending_normalization": true
+    },
+    {
+      "path": "autonomy/windows/Acl-Transaction.ps1",
+      "working_tree_sha256": "a3fb4ab1fa251bc80e9d6a9f682b6efa48a628ed96a2253492d89af4ccfe8057",
+      "git_blob_sha256": "cbc1eec9c2455301b3f3bfaf7bf5ca2f03bdc05b13303da3443dee5ad162e5cd",
+      "matches_fixed_commit_after_line_ending_normalization": true
+    },
+    {
+      "path": "test_windows_acl_transaction.py",
+      "working_tree_sha256": "1fd4f9865d2d9aea040b06e8ee670ded5ee82cac8c59501677d5194790b67d0c",
+      "git_blob_sha256": "0a81759714a5a1b5ce81e5a1460434b0285a6fd204a98260f9b5fe6aca2b1728",
+      "matches_fixed_commit_after_line_ending_normalization": true
+    }
+  ],
+  "new_candidate_pending": false,
+  "intermediate_review": {
+    "source_commit": "995b10947ac21c56b43eee0b08fc710ce6cd6701",
+    "status": "SUPERSEDED_INTERMEDIATE_REVIEW",
+    "tests_run": 135,
+    "duration_seconds": 116.753,
+    "independently_rerun": true
+  }
+}

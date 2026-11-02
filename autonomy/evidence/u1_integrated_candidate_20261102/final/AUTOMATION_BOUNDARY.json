@@ -1,0 +1,10 @@
+{
+  "description_zh": "复用既有自动化，本轮未修改频率或创建新任务。",
+  "description_en": "Reuse existing automation; no cadence changes or new tasks in this run.",
+  "id": "rokt-razo",
+  "rrule": "FREQ=HOURLY;INTERVAL=3",
+  "status": "ACTIVE",
+  "prompt_sha256": "0e61d66affd96889ba921a73e60aa23180ade5d37d78f7797b8dd24e34aeaf42",
+  "modified_this_run": false,
+  "next_run": "NOT_RETURNED_BY_VIEW_API"
+}

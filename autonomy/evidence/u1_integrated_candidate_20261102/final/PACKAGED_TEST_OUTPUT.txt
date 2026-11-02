@@ -1,0 +1,20 @@
+C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\autonomy\evidence\u1_integrated_candidate_20261102\final\package\install\payload\python\autonomy\host_file_transaction.py
+test_created_roots_prune_process_exit_recovery (test_host_file_transaction.FileTransactionTests.test_created_roots_prune_process_exit_recovery) ... ok
+test_fault_at_every_apply_and_rollback_boundary (test_host_file_transaction.FileTransactionTests.test_fault_at_every_apply_and_rollback_boundary) ... ok
+test_first_install_repeat_and_absent_rollback (test_host_file_transaction.FileTransactionTests.test_first_install_repeat_and_absent_rollback) ... ok
+test_real_process_exit_after_effect_and_during_rollback (test_host_file_transaction.FileTransactionTests.test_real_process_exit_after_effect_and_during_rollback) ... ok
+test_receipt_requires_verified_actual_bytes (test_host_file_transaction.FileTransactionTests.test_receipt_requires_verified_actual_bytes) ... ok
+test_reserved_staging_and_case_collisions_rejected (test_host_file_transaction.FileTransactionTests.test_reserved_staging_and_case_collisions_rejected) ... ok
+test_torn_journal_and_unexpected_stage_preserved (test_host_file_transaction.FileTransactionTests.test_torn_journal_and_unexpected_stage_preserved) ... ok
+test_unowned_and_forged_receipt_rejected_before_intent (test_host_file_transaction.FileTransactionTests.test_unowned_and_forged_receipt_rejected_before_intent) ... ok
+test_upgrade_new_replace_delete_and_restore_previous_receipt (test_host_file_transaction.FileTransactionTests.test_upgrade_new_replace_delete_and_restore_previous_receipt) ... ok
+test_actual_service_event_existing_owner_child_and_settlement (test_inventory_event_bridge.EventBridgeTests.test_actual_service_event_existing_owner_child_and_settlement) ... ok
+test_expiry_during_reserve_withholds_event_and_preserves_reservation (test_inventory_event_bridge.EventBridgeTests.test_expiry_during_reserve_withholds_event_and_preserves_reservation) ... ok
+test_lost_report_does_not_repeat_completed_child (test_inventory_event_bridge.EventBridgeTests.test_lost_report_does_not_repeat_completed_child) ... ok
+test_no_lease_foreign_owner_bad_auth_and_bad_admission (test_inventory_event_bridge.EventBridgeTests.test_no_lease_foreign_owner_bad_auth_and_bad_admission) ... ok
+test_reserved_after_process_loss_reopen_cannot_dispatch (test_inventory_event_bridge.EventBridgeTests.test_reserved_after_process_loss_reopen_cannot_dispatch) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 84.125s
+
+OK

@@ -1,3 +1,20 @@
+# U1 固定集成候选 / Pinned integrated candidate
+
+固定源码 / Fixed source: `70ee72177a40408d5b03a415b3eef3fb51059589`
+更新时间 / Updated: 2026-11-02T10:20:36.442750+00:00
+
+中文：真实 AMD64 包 65 文件校验通过；当前组合 138 PASS、独审 138 PASS、包内模块 14 PASS。已补首次安装/升级/精确文件与目录恢复、ABSENT、故障补偿与进程退出恢复、现有所有者到服务事件邮箱的离线链。原 ACL 裁决继续接受。全量回归基线/候选各 833 项，均 37 failures/17 errors，失败/错误 ID 一致=True，不是全绿。
+
+English: Verified actual AMD64 package/65 files; 138 combined, 138 independent and 14 packaged-import tests passed. First install/upgrades/exact file-directory recovery, ABSENT, compensation/crash recovery and offline existing-owner/service-event transport are integrated. The accepted ACL ruling remains in force. Fresh full baseline/candidate runs are not all green; see recorded counts/IDs.
+
+未完成 / Remaining: 正式 backend 适配、安装维护租约强制验证及生产原 owner 接入配置。Formal backend adaptation, enforced maintenance-lease admission and production-owner connection configuration remain. Codex continues engineering; do not request repeated WorkBuddy P1 evidence or install this candidate in production.
+
+报告 / Report: [REPORT.md](../u1_integrated_candidate_20261102/REPORT.md)
+`DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false`
+`allow_dispatch=false; allow_cancel_dispatch=false; SMTP=false`
+
+---
+
 # U1 发布中断恢复接线 / Publication interruption recovery wiring
 
 时间 / Time: 2026-11-02T09:01:44.396442+00:00
