@@ -1,0 +1,16 @@
+{
+  "command": [
+    "C:\\Users\\15690\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+    "-B",
+    "-m",
+    "unittest",
+    "test_disabled_host_package",
+    "test_inventory_event_bridge",
+    "test_host_install_transaction",
+    "test_host_file_transaction"
+  ],
+  "returncode": 0,
+  "passed": true,
+  "seconds": 105.11,
+  "initial_harness_failure": "Script-file invocation was blocked by existing execution policy. Corrected to run exact source as EncodedCommand; no system policy changed."
+}

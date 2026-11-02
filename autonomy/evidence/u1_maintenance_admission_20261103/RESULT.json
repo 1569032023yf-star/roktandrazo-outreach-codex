@@ -1,0 +1,88 @@
+{
+  "updated_at": "2026-11-02T18:03:22.176387+00:00",
+  "checkpoint": "autonomy/evidence/u1_maintenance_admission_20261103/REPORT.md",
+  "source_commit": "a20ba1e67b0633e8a588ec90db981b9a99d3a3fa",
+  "report": "autonomy/evidence/u1_maintenance_admission_20261103/REPORT.md",
+  "targeted_tests": {
+    "command": [
+      "C:\\Users\\15690\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "-B",
+      "-m",
+      "unittest",
+      "test_disabled_host_package",
+      "test_inventory_event_bridge",
+      "test_host_install_transaction",
+      "test_host_file_transaction"
+    ],
+    "returncode": 0,
+    "passed": true,
+    "seconds": 105.11,
+    "initial_harness_failure": "Script-file invocation was blocked by existing execution policy. Corrected to run exact source as EncodedCommand; no system policy changed."
+  },
+  "packaged_tests": {
+    "returncode": 0,
+    "passed": true,
+    "seconds": 5.201,
+    "module_import_root": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-autonomy\\autonomy\\evidence\\u1_maintenance_admission_20261103\\package\\install\\payload\\python",
+    "source": "actual package Python modules with isolated fixture tests"
+  },
+  "package_validation": {
+    "source_commit": "a20ba1e67b0633e8a588ec90db981b9a99d3a3fa",
+    "files_verified": 65,
+    "archives_exact": true,
+    "machine": "AMD64",
+    "installer_version": "1.1.1",
+    "host_manifest_sha256": "03f0497713e6908f7b9fd10acd82c5fc09c9a6580d00ccab07cc43b4d97e6b2b",
+    "allow_install": false,
+    "formal_maintenance_integrated": false,
+    "passed": true
+  },
+  "build": {
+    "artifacts": {
+      "install.zip": "185d08c02cdef3e334d4b0fa0d6bf4b90f77b6ce89fb506fec1c31b69957bf0e",
+      "rollback-tools.zip": "2c676e3f1402b678e9cc6fdb957d4c339a9cce932d42f67cd2395182d5406584"
+    },
+    "files": 65,
+    "independent_review": "PENDING",
+    "manifest_sha256": "a26c14bb8a39f5f8b25f1a34533e4cd7da43de55032cc1412ec6ea7e7c75eb01",
+    "production_ready": false,
+    "source_commit": "a20ba1e67b0633e8a588ec90db981b9a99d3a3fa"
+  },
+  "full_regression": {
+    "baseline_commit": "fe1ec08a3c6a392f81305c2f732992a6e352c3f0",
+    "candidate_commit": "a20ba1e67b0633e8a588ec90db981b9a99d3a3fa",
+    "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-e2nhhobv",
+    "complete": true,
+    "baseline_run": 833,
+    "candidate_run": 833,
+    "baseline_failures": 37,
+    "candidate_failures": 37,
+    "baseline_errors": 17,
+    "candidate_errors": 17,
+    "failure_ids_identical": true,
+    "error_ids_identical": true,
+    "all_green": false,
+    "no_new_regression": true
+  },
+  "independent_review": "PENDING_FOR_CURRENT_PIN",
+  "states": {
+    "DEVELOPMENT_COMPLETE": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "BUSINESS_GROWTH": "UNKNOWN"
+  },
+  "formal_maintenance_integrated": false,
+  "formal_backend_integrated": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "workbuddy_reference": {
+    "commit": "10e269e814dbe7b7a4801fa99ca4cec11d5a67b2",
+    "existing_receipt": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6580465343",
+    "new_consumption_receipt_created": false
+  },
+  "next_action": "Implement the original production Inventory authority maintenance adapter in offline source, then hold exclusion throughout installer mutation and verification; hard rejection alone is not completed maintenance integration.",
+  "next_action_zh": "在离线源码中实现原生产 Inventory 权威持有的维护排斥适配器，再将安装入口接入整个写入与核验期间持续持有的排斥；不能把本轮硬拒绝当作维护集成完成。"
+}

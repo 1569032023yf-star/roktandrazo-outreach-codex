@@ -1,0 +1,12 @@
+test_actual_service_event_existing_owner_child_and_settlement (test_inventory_event_bridge.EventBridgeTests.test_actual_service_event_existing_owner_child_and_settlement) ... ok
+test_ambiguous_or_open_response_never_reaches_executor (test_inventory_event_bridge.EventBridgeTests.test_ambiguous_or_open_response_never_reaches_executor) ... ok
+test_ambiguous_request_cannot_create_or_reserve_event (test_inventory_event_bridge.EventBridgeTests.test_ambiguous_request_cannot_create_or_reserve_event) ... ok
+test_expiry_during_reserve_withholds_event_and_preserves_reservation (test_inventory_event_bridge.EventBridgeTests.test_expiry_during_reserve_withholds_event_and_preserves_reservation) ... ok
+test_lost_report_does_not_repeat_completed_child (test_inventory_event_bridge.EventBridgeTests.test_lost_report_does_not_repeat_completed_child) ... ok
+test_no_lease_foreign_owner_bad_auth_and_bad_admission (test_inventory_event_bridge.EventBridgeTests.test_no_lease_foreign_owner_bad_auth_and_bad_admission) ... ok
+test_reserved_after_process_loss_reopen_cannot_dispatch (test_inventory_event_bridge.EventBridgeTests.test_reserved_after_process_loss_reopen_cannot_dispatch) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 4.849s
+
+OK

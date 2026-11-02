@@ -1,0 +1,16 @@
+{
+  "baseline_commit": "fe1ec08a3c6a392f81305c2f732992a6e352c3f0",
+  "candidate_commit": "a20ba1e67b0633e8a588ec90db981b9a99d3a3fa",
+  "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-e2nhhobv",
+  "complete": true,
+  "baseline_run": 833,
+  "candidate_run": 833,
+  "baseline_failures": 37,
+  "candidate_failures": 37,
+  "baseline_errors": 17,
+  "candidate_errors": 17,
+  "failure_ids_identical": true,
+  "error_ids_identical": true,
+  "all_green": false,
+  "no_new_regression": true
+}

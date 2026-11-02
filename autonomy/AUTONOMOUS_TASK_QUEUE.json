@@ -576,21 +576,21 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/u1_source_binding_20261102/REPORT.md",
-      "next_action": "Implement installer maintenance admission shared with the sole existing Inventory owner, keeping installation gated; then complete the formal backend integration.",
+      "checkpoint": "autonomy/evidence/u1_maintenance_admission_20261103/REPORT.md",
+      "next_action": "Implement the original production Inventory authority maintenance adapter in offline source, then hold exclusion throughout installer mutation and verification; hard rejection alone is not completed maintenance integration.",
       "phase": "U1",
       "baseline_commit": "91aa60c6cf52b0c0a9c9e0ff2ddfb5ee39a7f7fc",
       "review_status": "PENDING_FOR_CURRENT_PIN",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "5c4002003cfdcbb1c1f0f6370b7c07e89823ba0e",
+      "candidate_commit": "a20ba1e67b0633e8a588ec90db981b9a99d3a3fa",
       "trust_boundary_review": "SCOPED_PASS",
       "schedule_contract_review": "SCOPED_PASS",
       "regression_runner_candidate": "b69214d",
       "full_regression": {
-        "baseline_commit": "7dfd82bcff3d56d48620bdeb1a50ff99ec316f7a",
-        "candidate_commit": "5c4002003cfdcbb1c1f0f6370b7c07e89823ba0e",
-        "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-d974ldqo",
+        "baseline_commit": "fe1ec08a3c6a392f81305c2f732992a6e352c3f0",
+        "candidate_commit": "a20ba1e67b0633e8a588ec90db981b9a99d3a3fa",
+        "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-e2nhhobv",
         "complete": true,
         "baseline_run": 833,
         "candidate_run": 833,
@@ -607,7 +607,7 @@
       "bridge_candidate": "68802d5",
       "bridge_review": "SCOPED_PASS_68802D5",
       "handoff_comment": 6435605069,
-      "targeted_tests": 23,
+      "targeted_tests": 29,
       "snapshot_review": "SCOPED_PASS_DA443FD",
       "history_import_review": "SCOPED_PASS_DBDC424",
       "manifest_closure_review": "SCOPED_PASS_TEST621D3E4_PACKAGE_DBDC424",
@@ -1121,8 +1121,8 @@
           }
         }
       },
-      "next_action_zh": "在现有安装器实现与唯一原 Inventory owner 共享的正式维护排斥准入，保持安装门禁关闭；随后完成正式 backend 接入。",
-      "next_action_en": "Implement installer maintenance admission shared with the sole existing Inventory owner, keeping installation gated; then complete the formal backend integration.",
+      "next_action_zh": "在离线源码中实现原生产 Inventory 权威持有的维护排斥适配器，再将安装入口接入整个写入与核验期间持续持有的排斥；不能把本轮硬拒绝当作维护集成完成。",
+      "next_action_en": "Implement the original production Inventory authority maintenance adapter in offline source, then hold exclusion throughout installer mutation and verification; hard rejection alone is not completed maintenance integration.",
       "namespace_revalidation_latest": {
         "schema": "codex.u1.namespace-revalidation.v1",
         "summary_zh": "源身份复核在hash前后核对名字对象ID，拒绝同内容替换；返回后窗口仍未锁定。",
@@ -1666,19 +1666,59 @@
         "allow_cancel_dispatch": false
       },
       "u1_actual_delivery_latest": {
-        "updated_at": "2026-11-02T15:04:26.064739+00:00",
-        "checkpoint": "autonomy/evidence/u1_source_binding_20261102/REPORT.md",
-        "source_commit": "5c4002003cfdcbb1c1f0f6370b7c07e89823ba0e",
-        "report": "autonomy/evidence/u1_source_binding_20261102/REPORT.md",
+        "updated_at": "2026-11-02T18:03:22.176387+00:00",
+        "checkpoint": "autonomy/evidence/u1_maintenance_admission_20261103/REPORT.md",
+        "source_commit": "a20ba1e67b0633e8a588ec90db981b9a99d3a3fa",
+        "report": "autonomy/evidence/u1_maintenance_admission_20261103/REPORT.md",
         "targeted_tests": {
-          "run": 23,
+          "command": [
+            "C:\\Users\\15690\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+            "-B",
+            "-m",
+            "unittest",
+            "test_disabled_host_package",
+            "test_inventory_event_bridge",
+            "test_host_install_transaction",
+            "test_host_file_transaction"
+          ],
+          "returncode": 0,
           "passed": true,
-          "seconds": 94.476
+          "seconds": 105.11,
+          "initial_harness_failure": "Script-file invocation was blocked by existing execution policy. Corrected to run exact source as EncodedCommand; no system policy changed."
         },
-        "comparison": {
-          "baseline_commit": "7dfd82bcff3d56d48620bdeb1a50ff99ec316f7a",
-          "candidate_commit": "5c4002003cfdcbb1c1f0f6370b7c07e89823ba0e",
-          "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-d974ldqo",
+        "packaged_tests": {
+          "returncode": 0,
+          "passed": true,
+          "seconds": 5.201,
+          "module_import_root": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-autonomy\\autonomy\\evidence\\u1_maintenance_admission_20261103\\package\\install\\payload\\python",
+          "source": "actual package Python modules with isolated fixture tests"
+        },
+        "package_validation": {
+          "source_commit": "a20ba1e67b0633e8a588ec90db981b9a99d3a3fa",
+          "files_verified": 65,
+          "archives_exact": true,
+          "machine": "AMD64",
+          "installer_version": "1.1.1",
+          "host_manifest_sha256": "03f0497713e6908f7b9fd10acd82c5fc09c9a6580d00ccab07cc43b4d97e6b2b",
+          "allow_install": false,
+          "formal_maintenance_integrated": false,
+          "passed": true
+        },
+        "build": {
+          "artifacts": {
+            "install.zip": "185d08c02cdef3e334d4b0fa0d6bf4b90f77b6ce89fb506fec1c31b69957bf0e",
+            "rollback-tools.zip": "2c676e3f1402b678e9cc6fdb957d4c339a9cce932d42f67cd2395182d5406584"
+          },
+          "files": 65,
+          "independent_review": "PENDING",
+          "manifest_sha256": "a26c14bb8a39f5f8b25f1a34533e4cd7da43de55032cc1412ec6ea7e7c75eb01",
+          "production_ready": false,
+          "source_commit": "a20ba1e67b0633e8a588ec90db981b9a99d3a3fa"
+        },
+        "full_regression": {
+          "baseline_commit": "fe1ec08a3c6a392f81305c2f732992a6e352c3f0",
+          "candidate_commit": "a20ba1e67b0633e8a588ec90db981b9a99d3a3fa",
+          "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-e2nhhobv",
           "complete": true,
           "baseline_run": 833,
           "candidate_run": 833,
@@ -1691,30 +1731,7 @@
           "all_green": false,
           "no_new_regression": true
         },
-        "build": {
-          "artifacts": {
-            "install.zip": "36680ea74fb9374d4fdb8f145ecca4bd0dc5985fdbad93788b384cae52883741",
-            "rollback-tools.zip": "0a6e912c344af343e14f3f02ffd14d257bec507d9310d6f4c21d987087d57c01"
-          },
-          "files": 65,
-          "independent_review": "PENDING",
-          "manifest_sha256": "1b2428b8215dd30f57166f02f24228e4d12fb9522c4a1a2cd10d55c460491ad8",
-          "production_ready": false,
-          "source_commit": "5c4002003cfdcbb1c1f0f6370b7c07e89823ba0e"
-        },
-        "package_verification": {
-          "source_commit": "5c4002003cfdcbb1c1f0f6370b7c07e89823ba0e",
-          "files_verified": 65,
-          "archives_exact": true,
-          "machine": "AMD64",
-          "installer_version": "1.1.0",
-          "host_manifest_sha256": "1dc39e6b2162165f3ba79df6321f9b78bf058fbbd2203ce6bfb32b5b2334e4ba",
-          "passed": true
-        },
         "independent_review": "PENDING_FOR_CURRENT_PIN",
-        "formal_maintenance_lease_enforced": false,
-        "formal_backend_integrated": false,
-        "production_owner_configuration_changed": false,
         "states": {
           "DEVELOPMENT_COMPLETE": false,
           "RELEASE_READY": false,
@@ -1722,239 +1739,19 @@
           "PRODUCTION_ACCEPTED": false,
           "BUSINESS_GROWTH": "UNKNOWN"
         },
+        "formal_maintenance_integrated": false,
+        "formal_backend_integrated": false,
+        "allow_install": false,
         "allow_dispatch": false,
         "allow_cancel_dispatch": false,
         "smtp_enabled": false,
-        "workbuddy_evidence": {
+        "workbuddy_reference": {
           "commit": "10e269e814dbe7b7a4801fa99ca4cec11d5a67b2",
-          "files": [
-            {
-              "path": "handoff/workbuddy/production/CITY_STAGE_TRACE.json",
-              "git_blob_sha": "36d74f1be0c13fdb71ef1cef2e713ca60300658e",
-              "json_parse": true,
-              "schema": null,
-              "generated_at": "2026-11-02T22:53:12+08:00",
-              "measured_at": null,
-              "producer": "workbuddy-production-operator",
-              "producer_verified": true,
-              "schema_version": "1.0",
-              "nested_schema_markers": {
-                "active": "rokt.city.v1",
-                "next": "rokt.city.v1"
-              },
-              "source_present": true,
-              "payload_hash_status": "PRODUCER_ASSERTED_NOT_RECOMPUTED_CANONICALIZATION_UNSPECIFIED"
-            },
-            {
-              "path": "handoff/workbuddy/production/INVENTORY_SCHEDULER_RECONCILIATION.json",
-              "git_blob_sha": "a7d0280f02f94e5477cfc80b27c709d2533c6d88",
-              "json_parse": true,
-              "schema": "rokt.scheduler.v1",
-              "generated_at": "2026-11-02T22:53:12+08:00",
-              "measured_at": null,
-              "producer": "workbuddy-production-operator",
-              "producer_verified": true,
-              "schema_version": "1.0",
-              "nested_schema_markers": {},
-              "source_present": true,
-              "payload_hash_status": "PRODUCER_ASSERTED_NOT_RECOMPUTED_CANONICALIZATION_UNSPECIFIED"
-            },
-            {
-              "path": "handoff/workbuddy/production/PRODUCTION_RUNTIME_LATEST.json",
-              "git_blob_sha": "94df84ff99c654be169549fe29d706c8e7add46b",
-              "json_parse": true,
-              "schema": "rokt.runtime.v1",
-              "generated_at": "2026-11-02T22:53:12+08:00",
-              "measured_at": null,
-              "producer": "workbuddy-production-operator",
-              "producer_verified": true,
-              "schema_version": "1.0",
-              "nested_schema_markers": {},
-              "source_present": true,
-              "payload_hash_status": "PRODUCER_ASSERTED_NOT_RECOMPUTED_CANONICALIZATION_UNSPECIFIED"
-            },
-            {
-              "path": "handoff/workbuddy/production/PROVIDER_REQUEST_AUDIT_24H.json",
-              "git_blob_sha": "7e67abe9ebf18cf1cc05dcd75a289ed1c00f349b",
-              "json_parse": true,
-              "schema": null,
-              "generated_at": "2026-11-02T22:53:12+08:00",
-              "measured_at": null,
-              "producer": "workbuddy-production-operator",
-              "producer_verified": true,
-              "schema_version": "1.0",
-              "nested_schema_markers": {
-                "city22_24h": "rokt.provider_audit.v1",
-                "all_cities_7d": "rokt.provider_audit.v1"
-              },
-              "source_present": true,
-              "payload_hash_status": "PRODUCER_ASSERTED_NOT_RECOMPUTED_CANONICALIZATION_UNSPECIFIED"
-            },
-            {
-              "path": "handoff/workbuddy/production/RELEASE_REGISTRY_SNAPSHOT.json",
-              "git_blob_sha": "514099a8157632b109adff18445cf8c02ac2b8b6",
-              "json_parse": true,
-              "schema": null,
-              "generated_at": "2026-11-02T22:53:12+08:00",
-              "measured_at": null,
-              "producer": "workbuddy-production-operator",
-              "producer_verified": true,
-              "schema_version": "1.0",
-              "nested_schema_markers": {},
-              "source_present": true,
-              "payload_hash_status": "PRODUCER_ASSERTED_NOT_RECOMPUTED_CANONICALIZATION_UNSPECIFIED"
-            },
-            {
-              "path": "handoff/workbuddy/production/SAFE_AUTHORITY_SNAPSHOT.json",
-              "git_blob_sha": "5a9f79681d3f07136b4a37c620b6403ccbe748d8",
-              "json_parse": true,
-              "schema": "rokt.safe_authority.v1",
-              "generated_at": "2026-11-02T22:53:12+08:00",
-              "measured_at": "2026-11-02T22:41:27+08:00",
-              "producer": "workbuddy-production-operator",
-              "producer_verified": true,
-              "schema_version": "1.0",
-              "nested_schema_markers": {},
-              "source_present": true,
-              "payload_hash_status": "PRODUCER_ASSERTED_NOT_RECOMPUTED_CANONICALIZATION_UNSPECIFIED"
-            },
-            {
-              "path": "handoff/workbuddy/production/WORKBUDDY_LONG_TERM_OPERATIONS.json",
-              "git_blob_sha": "09fc4a48fcb48ca2321d992eb406e1f51ce703f6",
-              "json_parse": true,
-              "schema": null,
-              "generated_at": "2026-11-02T22:53:12+08:00",
-              "measured_at": null,
-              "producer": "NOT_RECORDED",
-              "producer_verified": false,
-              "schema_version": "1.0",
-              "nested_schema_markers": {},
-              "source_present": true,
-              "payload_hash_status": "NOT_RECORDED"
-            }
-          ],
-          "structural_only": true,
-          "independent_schema_supplied": false,
-          "git_commit_time": "2026-11-02T22:53:26+08:00",
-          "report_generated_at": "2026-11-02T22:53:12+08:00",
-          "safe_sampling_times": [
-            "2026-11-02T22:47:34+08:00",
-            "2026-11-02T22:52:59+08:00"
-          ],
-          "safe": 69,
-          "strict_h24_growth": "UNKNOWN",
-          "strict_d7_growth": "UNKNOWN",
-          "producer_growth": {
-            "h24": 1,
-            "d7": 9
-          },
-          "inventory_pairs": [
-            {
-              "firing_id": "automation-1784775229336:1793618757758",
-              "run_id": "inventory:2026-11-02:4924e03a",
-              "inventory_stage_in_runtime": true,
-              "within_tolerance": true
-            },
-            {
-              "firing_id": "automation-1784775229336:1793595195300",
-              "run_id": "inventory:2026-11-02:4e451423",
-              "inventory_stage_in_runtime": true,
-              "within_tolerance": true
-            },
-            {
-              "firing_id": "automation-1784775229336:1793571764197",
-              "run_id": "inventory:2026-11-02:c8663f39",
-              "inventory_stage_in_runtime": true,
-              "within_tolerance": true
-            },
-            {
-              "firing_id": "automation-1784775229336:1793548629232",
-              "run_id": "post-send:2026-11-01:fb2500c0",
-              "inventory_stage_in_runtime": false,
-              "within_tolerance": true
-            },
-            {
-              "firing_id": "automation-1784775229336:1793525463561",
-              "run_id": "inventory:2026-11-01:92b9d406",
-              "inventory_stage_in_runtime": true,
-              "within_tolerance": true
-            },
-            {
-              "firing_id": "automation-1784775229336:1793502321368",
-              "run_id": "inventory:2026-11-01:493f7e5c",
-              "inventory_stage_in_runtime": true,
-              "within_tolerance": false
-            },
-            {
-              "firing_id": "automation-1784775229336:1793478085216",
-              "run_id": "inventory:2026-11-01:f2830908",
-              "inventory_stage_in_runtime": true,
-              "within_tolerance": true
-            }
-          ],
-          "inventory_zero_misses": "NEEDS_RECONCILIATION",
-          "next_run_at": "2026-11-03T01:55:58.202000+08:00",
-          "stage_traces": [
-            {
-              "run_id": "inventory:2026-11-02:4924e03a",
-              "events": 16
-            },
-            {
-              "run_id": "inventory:2026-11-02:4e451423",
-              "events": 16
-            },
-            {
-              "run_id": "inventory:2026-11-02:c8663f39",
-              "events": 16
-            },
-            {
-              "run_id": "inventory:2026-11-01:784b352d",
-              "events": 16
-            },
-            {
-              "run_id": "inventory:2026-11-01:92b9d406",
-              "events": 16
-            },
-            {
-              "run_id": "inventory:2026-11-01:493f7e5c",
-              "events": 16
-            },
-            {
-              "run_id": "inventory:2026-11-01:f2830908",
-              "events": 16
-            },
-            {
-              "run_id": "inventory:2026-10-31:d52e84fd",
-              "events": 16
-            }
-          ],
-          "conflicts": [
-            "SAFE numeric growth contradicts reason/unavailable and lacks baseline raw snapshots",
-            "one scheduler pairing names post-send rather than inventory",
-            "744.6-second drift exceeds declared600-second tolerance",
-            "runtime contains stage events but field_notes/current_step_note still deny them",
-            "Cooperstown closed=true contradicts stale NEXT_AUTOMATIC_ACTION saying it will not close",
-            "Ithaca is absent from this refresh, so earlier completion conflict remains unresolved"
-          ],
-          "bridge": "UP_SESSION_SCOPED",
-          "boot_persistence": false,
-          "unattended_7877": "UNKNOWN",
-          "smtp_enabled": false
+          "existing_receipt": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6580465343",
+          "new_consumption_receipt_created": false
         },
-        "consumption_receipt": {
-          "comment_id": 6580465343,
-          "url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6580465343",
-          "readback_verified": true,
-          "body_exact_match": true,
-          "workbuddy_commit": "10e269e814dbe7b7a4801fa99ca4cec11d5a67b2",
-          "files": 7,
-          "CODEX_HANDOFF_CONSUMED": true,
-          "source_commit": "5c4002003cfdcbb1c1f0f6370b7c07e89823ba0e",
-          "published_evidence_commit": "2ab3d994456ba8e36c3b0fa52d62de1887ee257f",
-          "verified_at": "2026-11-02T15:04:26.064739+00:00"
-        },
-        "next_action": "Implement installer maintenance admission shared with the sole existing Inventory owner, keeping installation gated; then complete the formal backend integration.",
-        "next_action_zh": "在现有安装器实现与唯一原 Inventory owner 共享的正式维护排斥准入，保持安装门禁关闭；随后完成正式 backend 接入。"
+        "next_action": "Implement the original production Inventory authority maintenance adapter in offline source, then hold exclusion throughout installer mutation and verification; hard rejection alone is not completed maintenance integration.",
+        "next_action_zh": "在离线源码中实现原生产 Inventory 权威持有的维护排斥适配器，再将安装入口接入整个写入与核验期间持续持有的排斥；不能把本轮硬拒绝当作维护集成完成。"
       },
       "u1_scm_integration_latest": {
         "source_commit": "d1e613cdb64f957907812b87c5a0c867531c6d4f",
@@ -1997,7 +1794,7 @@
         "production_deployed": false,
         "next_action": "Integrate bounded execution backend with existing signed SingleSlotAdapter admission and original Inventory lease; close installer upgrade/rollback, dependency ACL and TOCTOU blockers before independent review. No service install/start."
       },
-      "updated_at": "2026-11-02T15:04:26.064739+00:00",
+      "updated_at": "2026-11-02T18:03:22.176387+00:00",
       "u1_execution_wiring_latest": {
         "updated_at": "2026-11-02T08:40:48.546343+00:00",
         "source_commit": "cc9b7a7b672eb2098fa02d7e57c266b4ec57d76e",
@@ -4032,7 +3829,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-02T15:04:26.064739+00:00",
+  "updated_at": "2026-11-02T18:03:22.176387+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -4330,7 +4127,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "autonomy/evidence/u1_source_binding_20261102/REPORT.md",
+  "checkpoint": "autonomy/evidence/u1_maintenance_admission_20261103/REPORT.md",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
@@ -4883,5 +4680,93 @@
     },
     "next_action": "Implement installer maintenance admission shared with the sole existing Inventory owner, keeping installation gated; then complete the formal backend integration.",
     "next_action_zh": "在现有安装器实现与唯一原 Inventory owner 共享的正式维护排斥准入，保持安装门禁关闭；随后完成正式 backend 接入。"
+  },
+  "u1_maintenance_admission_latest": {
+    "updated_at": "2026-11-02T18:03:22.176387+00:00",
+    "checkpoint": "autonomy/evidence/u1_maintenance_admission_20261103/REPORT.md",
+    "source_commit": "a20ba1e67b0633e8a588ec90db981b9a99d3a3fa",
+    "report": "autonomy/evidence/u1_maintenance_admission_20261103/REPORT.md",
+    "targeted_tests": {
+      "command": [
+        "C:\\Users\\15690\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "-B",
+        "-m",
+        "unittest",
+        "test_disabled_host_package",
+        "test_inventory_event_bridge",
+        "test_host_install_transaction",
+        "test_host_file_transaction"
+      ],
+      "returncode": 0,
+      "passed": true,
+      "seconds": 105.11,
+      "initial_harness_failure": "Script-file invocation was blocked by existing execution policy. Corrected to run exact source as EncodedCommand; no system policy changed."
+    },
+    "packaged_tests": {
+      "returncode": 0,
+      "passed": true,
+      "seconds": 5.201,
+      "module_import_root": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-autonomy\\autonomy\\evidence\\u1_maintenance_admission_20261103\\package\\install\\payload\\python",
+      "source": "actual package Python modules with isolated fixture tests"
+    },
+    "package_validation": {
+      "source_commit": "a20ba1e67b0633e8a588ec90db981b9a99d3a3fa",
+      "files_verified": 65,
+      "archives_exact": true,
+      "machine": "AMD64",
+      "installer_version": "1.1.1",
+      "host_manifest_sha256": "03f0497713e6908f7b9fd10acd82c5fc09c9a6580d00ccab07cc43b4d97e6b2b",
+      "allow_install": false,
+      "formal_maintenance_integrated": false,
+      "passed": true
+    },
+    "build": {
+      "artifacts": {
+        "install.zip": "185d08c02cdef3e334d4b0fa0d6bf4b90f77b6ce89fb506fec1c31b69957bf0e",
+        "rollback-tools.zip": "2c676e3f1402b678e9cc6fdb957d4c339a9cce932d42f67cd2395182d5406584"
+      },
+      "files": 65,
+      "independent_review": "PENDING",
+      "manifest_sha256": "a26c14bb8a39f5f8b25f1a34533e4cd7da43de55032cc1412ec6ea7e7c75eb01",
+      "production_ready": false,
+      "source_commit": "a20ba1e67b0633e8a588ec90db981b9a99d3a3fa"
+    },
+    "full_regression": {
+      "baseline_commit": "fe1ec08a3c6a392f81305c2f732992a6e352c3f0",
+      "candidate_commit": "a20ba1e67b0633e8a588ec90db981b9a99d3a3fa",
+      "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-e2nhhobv",
+      "complete": true,
+      "baseline_run": 833,
+      "candidate_run": 833,
+      "baseline_failures": 37,
+      "candidate_failures": 37,
+      "baseline_errors": 17,
+      "candidate_errors": 17,
+      "failure_ids_identical": true,
+      "error_ids_identical": true,
+      "all_green": false,
+      "no_new_regression": true
+    },
+    "independent_review": "PENDING_FOR_CURRENT_PIN",
+    "states": {
+      "DEVELOPMENT_COMPLETE": false,
+      "RELEASE_READY": false,
+      "PRODUCTION_DEPLOYED": false,
+      "PRODUCTION_ACCEPTED": false,
+      "BUSINESS_GROWTH": "UNKNOWN"
+    },
+    "formal_maintenance_integrated": false,
+    "formal_backend_integrated": false,
+    "allow_install": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "smtp_enabled": false,
+    "workbuddy_reference": {
+      "commit": "10e269e814dbe7b7a4801fa99ca4cec11d5a67b2",
+      "existing_receipt": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6580465343",
+      "new_consumption_receipt_created": false
+    },
+    "next_action": "Implement the original production Inventory authority maintenance adapter in offline source, then hold exclusion throughout installer mutation and verification; hard rejection alone is not completed maintenance integration.",
+    "next_action_zh": "在离线源码中实现原生产 Inventory 权威持有的维护排斥适配器，再将安装入口接入整个写入与核验期间持续持有的排斥；不能把本轮硬拒绝当作维护集成完成。"
   }
 }
