@@ -14,10 +14,14 @@ def build(output, source_commit):
     repo=Path(__file__).resolve().parent.parent
     resolved=subprocess.check_output(['git','rev-parse',source_commit+'^{commit}'],cwd=repo,text=True).strip()
     # Compiler consumes working source: require equality with this pinned commit.
-    bridge='autonomy/windows/RoktU1Bridge.cs'
-    pinned=subprocess.check_output(['git','show',resolved+':'+bridge],cwd=repo)
-    if (repo/bridge).read_bytes().replace(b'\r\n',b'\n') != pinned.replace(b'\r\n',b'\n'):
-        raise ValueError('BRIDGE_SOURCE_NOT_PINNED')
+    build_inputs=('autonomy/windows/RoktU1Bridge.cs','autonomy/windows/u1_bootstrap.py',
+                  'autonomy/windows/Install-DisabledHost.ps1','autonomy/windows/Rollback-DisabledHost.ps1',
+                  'autonomy/build_dev_disabled_host.py','autonomy/disabled_host_package.py',
+                  'autonomy/build_u1_delivery.py')
+    for name in build_inputs:
+        pinned=subprocess.check_output(['git','show',resolved+':'+name],cwd=repo)
+        if (repo/name).read_bytes().replace(b'\r\n',b'\n') != pinned.replace(b'\r\n',b'\n'):
+            raise ValueError('BUILD_INPUT_NOT_PINNED')
     out=Path(output);out.mkdir()
     with tempfile.TemporaryDirectory(prefix='u1-delivery-') as temp:
         dev=Path(temp)/'bridge'

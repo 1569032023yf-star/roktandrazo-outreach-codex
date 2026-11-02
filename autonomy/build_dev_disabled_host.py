@@ -32,6 +32,7 @@ def build_development(destination, source_commit):
         artifacts={
             'service/RoktU1Bridge.exe':wrapper.read_bytes(),
             'service/RoktU1Bridge.cs':source.read_bytes(),
+            'service/u1_bootstrap.py':(source.parent/'u1_bootstrap.py').read_bytes(),
             'runtime/dependencies.json':canonical(dependencies),
             'runtime/build.json':canonical(dict(schema='rokt.local-development-build.v1',
                 compiler_sha256=hashlib.sha256(compiler.read_bytes()).hexdigest(),
