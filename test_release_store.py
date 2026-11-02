@@ -11,6 +11,16 @@ class ReleaseStoreTests(unittest.TestCase):
         self.root=Path(self.tmp.name);(self.root/'store').mkdir();self.store=ReleaseStore(self.root/'store')
     def package(self,name,files):
         p=self.root/name;v=build_bundle(p,files,'a'*40);self.store.stage(p,v);return v
+    @unittest.skipUnless(__import__('os').name=='nt','Windows path contract')
+    def test_final_sha_layout_rejected_before_staging(self):
+        deep=self.root/('x'*60);deep.mkdir();store=ReleaseStore(deep)
+        package=self.root/'short-package'
+        version=build_bundle(package,{'python/'+('a'*120)+'.py':b'bounded'},'a'*40)
+        with self.assertRaisesRegex(ValueError,'WINDOWS_TARGET_PATH_TOO_LONG'):
+            store.stage(package,version)
+        self.assertFalse((deep/'versions').exists())
+        self.assertFalse((deep/'active.json').exists())
+
     def test_first_install_upgrade_and_complete_pointer_rollback(self):
         v1=self.package('one',{'app/old.py':b'old'});a=self.store.activate(v1,expected_current=None)
         v2=self.package('two',{'app/new.py':b'new','app/other.py':b'other'})

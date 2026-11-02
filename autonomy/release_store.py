@@ -144,11 +144,23 @@ class ReleaseStore:
         if value['version'] is not None: self._version(value['version'])
         return value
 
+    def _validate_layout(self, folder, manifest):
+        # Staging uses a shorter UUID than the final SHA directory. Validate the
+        # final spelling before creating anything, without assuming LongPathsEnabled.
+        if os.name != 'nt': return
+        def units(path): return len(str(path.absolute()).encode('utf-16-le'))//2
+        for relative in ['manifest.json']+['payload/'+n for n in manifest['files']]:
+            target=folder/relative
+            if units(target)>=260:raise ValueError('WINDOWS_TARGET_PATH_TOO_LONG')
+            for parent in (target.parent,*target.parent.parents):
+                if units(parent)>=248:raise ValueError('WINDOWS_TARGET_DIRECTORY_TOO_LONG')
+
     def stage(self, package, approved_manifest_sha256):
         """Copy new or upgraded file sets into a fresh immutable version."""
         with self.locked():
             package = ordinary(package); m = self._verify(package, approved_manifest_sha256)
             dest = self._version(approved_manifest_sha256)
+            self._validate_layout(dest,m)
             if dest.exists(): self._verify(dest, approved_manifest_sha256); return approved_manifest_sha256
             versions = ordinary(self.root/'versions'); versions.mkdir(exist_ok=True)
             stage = ordinary(versions/('staging-'+uuid.uuid4().hex)); stage.mkdir()
