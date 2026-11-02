@@ -1,0 +1,54 @@
+{
+  "updated_at": "2026-11-02T08:40:48.546343+00:00",
+  "source_commit": "cc9b7a7b672eb2098fa02d7e57c266b4ec57d76e",
+  "source_manifest": "autonomy\\evidence\\u1_execution_wiring_20261102\\SOURCE_MANIFEST.json",
+  "checkpoint": "autonomy\\evidence\\u1_execution_wiring_20261102\\REPORT.md",
+  "combined_tests": {
+    "count": 84,
+    "passed": true,
+    "seconds": 47.799
+  },
+  "packaged_backend_tests": {
+    "count": 5,
+    "passed": true
+  },
+  "comparable_regression": {
+    "baseline_commit": "fc469411e18965c774c3d2d870399796c4ff04b1",
+    "candidate_commit": "cc9b7a7b672eb2098fa02d7e57c266b4ec57d76e",
+    "baseline_run": 833,
+    "candidate_run": 833,
+    "baseline_failures": 37,
+    "candidate_failures": 37,
+    "baseline_errors": 17,
+    "candidate_errors": 17,
+    "identical_failure_ids": true,
+    "identical_error_ids": true,
+    "new_failures": [],
+    "new_errors": [],
+    "scope": "tests/",
+    "all_green": false
+  },
+  "build": {
+    "artifacts": {
+      "install.zip": "046cfd72d783bf09dac704a5b359b03421933f90d1078c2a8dd297a3f89e33be",
+      "rollback-tools.zip": "8cfec97c4bafd5a200ab2a5f3147edb58d2da66dd104697a95586003080cf76e"
+    },
+    "files": 60,
+    "independent_review": "PENDING",
+    "manifest_sha256": "11481e186c7556bf406eb41ed1c0589daf560906ff1b23e6c6c7468cb870e219",
+    "production_ready": false,
+    "source_commit": "cc9b7a7b672eb2098fa02d7e57c266b4ec57d76e"
+  },
+  "independent_review": "PENDING",
+  "formal_inventory_service_integration": false,
+  "production_deployed": false,
+  "production_accepted": false,
+  "development_complete": false,
+  "release_ready": false,
+  "business_growth": "UNKNOWN",
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "next_action": "Wire the existing Inventory owner to the service event consumer with closed dispatch gates; finish identity/ACL/dependency protection and SCM upgrade/full-file rollback, then independently review the frozen candidate before installation.",
+  "publication": "AWAITING_REMOTE_VERIFICATION"
+}

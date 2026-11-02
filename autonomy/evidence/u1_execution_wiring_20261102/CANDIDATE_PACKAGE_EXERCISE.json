@@ -1,0 +1,19 @@
+{
+  "source_commit": "cc9b7a7b672eb2098fa02d7e57c266b4ec57d76e",
+  "manifest_sha256": "11481e186c7556bf406eb41ed1c0589daf560906ff1b23e6c6c7468cb870e219",
+  "files": 60,
+  "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-pkg-61nbqaif",
+  "bootstrap_verified": true,
+  "packaged_backend_tests": 5,
+  "rollback_to_absent": {
+    "schema": "rokt.release-store.v1",
+    "inventory_id": "1784775229336",
+    "before": "11481e186c7556bf406eb41ed1c0589daf560906ff1b23e6c6c7468cb870e219",
+    "after": null,
+    "reason": "ROLLBACK",
+    "transaction": "c6d0125ff99946bcba5dc7ed0cd315af",
+    "outcome": "POINTER_COMMITTED",
+    "service_changed": false
+  },
+  "production_deployed": false
+}

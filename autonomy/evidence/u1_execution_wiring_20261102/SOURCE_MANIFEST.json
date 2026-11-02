@@ -1,0 +1,47 @@
+{
+  "source_commit": "cc9b7a7b672eb2098fa02d7e57c266b4ec57d76e",
+  "files": [
+    {
+      "path": "autonomy/process_backend.py",
+      "git_blob_sha": "df34c5dfe927db4fd1a4323c128ebffcd798d207",
+      "sha256": "52acaa7473a8f4acc30d602add8c847f8b0377b2c3dbf65792c9293dbe471c4f",
+      "bytes": 7025
+    },
+    {
+      "path": "autonomy/process_job.py",
+      "git_blob_sha": "c0d31adc0302fc952b54bfeaed6fa305c55befe8",
+      "sha256": "f76ab591917337a82c09c1114010df7793bcab46856314ca9097906ced0336d5",
+      "bytes": 14605
+    },
+    {
+      "path": "autonomy/release_store.py",
+      "git_blob_sha": "4fd1e553c5a5883e0be81b1a46e7f7d3b0619d1c",
+      "sha256": "5db74d6d52152e37e117c265e6c6c8da7520c9dd4228e69a85979dff85019724",
+      "bytes": 11683
+    },
+    {
+      "path": "autonomy/windows/Install-DisabledHost.ps1",
+      "git_blob_sha": "5fe0ebee1e5fc0e35212da803df652c841db5b71",
+      "sha256": "e892f105a422e0a0633627abff9443c71112abc358b1ae152e24df5130786a77",
+      "bytes": 13817
+    },
+    {
+      "path": "test_process_backend.py",
+      "git_blob_sha": "88bf8686f5c0ac03b52c1533dd07d338b659ec21",
+      "sha256": "d3fd93942c22332ab4bf8b61e196d53c611b558c172f471ef09ccf8fba13c4de",
+      "bytes": 5240
+    },
+    {
+      "path": "test_release_store.py",
+      "git_blob_sha": "1971c5b2f2c06d265d59eef6dcf07d4eed89b970",
+      "sha256": "a9ae7470d761a1593be5e0f1a5275c07d6264e711bb1970234f600e6f38db823",
+      "bytes": 3174
+    },
+    {
+      "path": "test_u1_provision.py",
+      "git_blob_sha": "aa3d22d14a19c444755400d1b860e29bc4eb18d4",
+      "sha256": "6b6a5034d5cdfc086451c8c1bd925630f0f82b0023855c9d7b8b657f0df0d6ab",
+      "bytes": 2596
+    }
+  ]
+}

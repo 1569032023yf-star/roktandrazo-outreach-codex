@@ -1,0 +1,3 @@
+python -B -m unittest test_process_backend test_single_slot_adapter test_u1_provision autonomy.test_process_job test_service_child test_u1_host_runtime test_release_store test_host_readonly_http test_disabled_host_package test_install_contract test_install_journal -q
+Ran 84 tests in 47.799s
+OK

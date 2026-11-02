@@ -1,0 +1,11 @@
+{
+  "observed_at": "2026-11-02T08:36:25.635480+00:00",
+  "source_commit": "6002a5be6a9698ca3a42db76d10440e6a106f59f",
+  "operation": "isolated package activate",
+  "outcome": "FAILED_BEFORE_ACTIVE_POINTER",
+  "exception": "FileNotFoundError WinError3",
+  "cause": "final SHA directory is longer than staging UUID and crosses Windows legacy path limit",
+  "fix_commit": "cc9b7a7",
+  "production_effect": false,
+  "partial_isolated_files_preserved": true
+}
