@@ -1,5 +1,5 @@
 """Actual host HTTP to existing lease/backend / 真实宿主到原锁与后端链。"""
-from contextlib import contextmanager
+from contextlib import contextmanager, closing
 import json
 from pathlib import Path
 import threading
@@ -17,6 +17,24 @@ import test_process_backend as backend_fixtures
 
 
 class EventBridgeTests(unittest.TestCase):
+    def test_ambiguous_request_cannot_create_or_reserve_event(self):
+        import urllib.request
+        with self.host() as bridge,exclusive_lock(self.f.runtime):
+            event=json.dumps(self.event(),separators=(',',':'))
+            owner=json.dumps(self.f.adapter._lock(),separators=(',',':'))
+            bodies=[('{"event":'+event+',"event":'+event+',"owner":'+owner+'}'),
+                    ('{"event":'+event.replace('"admission":{','"admission":{"ambiguous":0,"ambiguous":1,')+',"owner":'+owner+'}'),
+                    ('{"event":'+event+',"owner":'+owner+',"invalid":NaN}')]
+            for body in bodies:
+                request=urllib.request.Request('http://127.0.0.1:'+str(bridge.port)+'/v1/inventory-events',data=body.encode(),headers={'Authorization':'Bearer '+self.token},method='POST')
+                with self.assertRaises(urllib.error.HTTPError) as caught:
+                    urllib.request.build_opener(urllib.request.ProxyHandler({})).open(request,timeout=5)
+                self.assertEqual(caught.exception.code,409)
+            import sqlite3
+            with closing(sqlite3.connect(self.state/'inventory-events.sqlite')) as c:
+                self.assertEqual(c.execute('SELECT count(*) FROM events').fetchone()[0],0)
+            self.assertFalse(self.backend_fixture.marker.exists())
+
     def setUp(self):
         self.backend_fixture=backend_fixtures.BackendTests('runTest');self.backend_fixture.setUp();self.addCleanup(self.backend_fixture.doCleanups)
         self.f=self.backend_fixture.f

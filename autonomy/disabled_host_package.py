@@ -9,7 +9,7 @@ import re
 from pathlib import Path, PurePosixPath
 
 SCHEMA = 'rokt.disabled-host-package.v1'
-INSTALLER_VERSION = '1.1.0'
+INSTALLER_VERSION = '1.1.1'
 INVENTORY = '1784775229336'
 SERVICE = 'RoktU1Bridge'
 ACCOUNT = r'NT SERVICE\RoktU1Bridge'
@@ -101,7 +101,8 @@ def validate_inputs(artifacts, approved_hashes, *, source_commit):
                 service_name=SERVICE,account=ACCOUNT,start_type='Disabled',
                 code_root=CODE_ROOT,state_root=STATE_ROOT,files=rows,
                 allow_start=False,allow_dispatch=False,allow_cancel_dispatch=False,
-                scheduler_created=False,rollback_preserves_state=True)
+                scheduler_created=False,rollback_preserves_state=True,
+                formal_maintenance_integrated=False,allow_install=False)
 
 
 def build_package(destination, artifacts, approved_hashes, *, source_commit, script_root=None):

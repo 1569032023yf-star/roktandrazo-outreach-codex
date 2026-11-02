@@ -35,6 +35,7 @@ def build(output, source_commit):
     files['DELIVERY.json']=canonical(dict(schema='rokt.u1-delivery.v1',source_commit=resolved,
         inventory_id='1784775229336',python_runtime='External CPython 3.11+ required; not bundled',
         service_start='Disabled',formal_backend_integrated=False,production_ready=False,
+        formal_maintenance_integrated=False,allow_install=False,
         allow_dispatch=False,allow_cancel_dispatch=False,smtp_enabled=False,scheduler_created=False))
     bundle=out/'install';digest=build_bundle(bundle,files,resolved)
     tools=out/'rollback-tools';tools.mkdir()

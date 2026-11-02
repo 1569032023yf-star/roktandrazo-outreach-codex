@@ -10,6 +10,20 @@ from autonomy.disabled_host_package import build_package, validate_inputs, Packa
 
 
 class DisabledPackageTests(unittest.TestCase):
+    @unittest.skipUnless(os.name=='nt','Actual Windows installer entrypoints')
+    def test_execute_cannot_bypass_missing_formal_maintenance(self):
+        import base64
+        root=Path(__file__).parent/'autonomy/windows'
+        for mode in ('','-Upgrade','-RecoverInstall','-Rollback','-RecoverAcl'):
+            command="& {"+(root/'Install-DisabledHost.ps1').read_text(encoding='utf-8')+"} -PackageRoot 'C:\\missing-u1-package' -ApprovedManifestSha256 "+'a'*64+" -ApprovedSourceCommit "+'b'*40+" -Execute "+mode
+            p=subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-EncodedCommand',base64.b64encode(command.encode('utf-16-le')).decode()],capture_output=True,timeout=15)
+            self.assertNotEqual(p.returncode,0)
+            self.assertIn(b'FORMAL_INVENTORY_MAINTENANCE_REQUIRED_STOP_AND_PRESERVE',p.stderr)
+        command="& {"+(root/'Rollback-DisabledHost.ps1').read_text(encoding='utf-8')+"} -ApprovedManifestSha256 "+'a'*64+" -Execute"
+        p=subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-EncodedCommand',base64.b64encode(command.encode('utf-16-le')).decode()],capture_output=True,timeout=15)
+        self.assertNotEqual(p.returncode,0)
+        self.assertIn(b'FORMAL_INVENTORY_MAINTENANCE_REQUIRED_STOP_AND_PRESERVE',p.stderr)
+
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory(prefix='u1-disabled-package-')
         self.addCleanup(self.temp.cleanup);self.root=Path(self.temp.name)
@@ -22,7 +36,7 @@ class DisabledPackageTests(unittest.TestCase):
         result=build_package(self.root/'package',self.artifacts,self.hashes,source_commit='a'*40)
         self.assertFalse(result['allow_install']);self.assertFalse(result['production_ready'])
         self.assertEqual(result['manifest']['start_type'],'Disabled')
-        self.assertEqual(result['manifest']['installer_version'],'1.1.0')
+        self.assertEqual(result['manifest']['installer_version'],'1.1.1')
         self.assertEqual(result['manifest']['account'],r'NT SERVICE\RoktU1Bridge')
         raw=(self.root/'package'/'manifest.json').read_bytes()
         self.assertEqual(hashlib.sha256(raw).hexdigest(),result['manifest_sha256'])
@@ -54,8 +68,8 @@ class DisabledPackageTests(unittest.TestCase):
         import base64
         source=(Path(__file__).parent/'autonomy/windows/Install-DisabledHost.ps1').read_text(encoding='utf-8')
         gate=source[source.index('# This approval is independent'):source.index("if ($m.schema")]
-        for commit,version,accepted in [('a'*40,'1.1.0',True),('b'*40,'1.1.0',False),
-                                        ('A'*40,'1.1.0',False),('', '1.1.0',False),
+        for commit,version,accepted in [('a'*40,'1.1.1',True),('b'*40,'1.1.1',False),
+                                        ('A'*40,'1.1.1',False),('', '1.1.1',False),
                                         ('a'*40,'1.0.0',False),('a'*40,None,False)]:
             with self.subTest(commit=commit,version=version):
                 raw=json.dumps(dict(source_commit=commit,installer_version=version))

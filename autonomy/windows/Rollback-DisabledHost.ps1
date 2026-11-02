@@ -2,6 +2,8 @@
 [CmdletBinding()]
 param([Parameter(Mandatory=$true)][ValidatePattern('^[0-9a-f]{64}$')][string]$ApprovedManifestSha256,[switch]$Execute)
 $ErrorActionPreference='Stop'
+# The legacy registration-only path cannot bypass the formal maintenance gate.
+if ($Execute) { throw 'FORMAL_INVENTORY_MAINTENANCE_REQUIRED_STOP_AND_PRESERVE' }
 $name='RoktU1Bridge'
 $image='"C:\Program Files\RoktU1Bridge\v1\service\RoktU1Bridge.exe"'
 function Assert-NoReparseAncestors([string]$Path) {

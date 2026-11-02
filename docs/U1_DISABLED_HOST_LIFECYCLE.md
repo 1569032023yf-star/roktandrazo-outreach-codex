@@ -38,3 +38,7 @@ Use an explicit 64-character lowercase hex OperationId per approved operation. R
 
 安装器版本 / Installer version: `1.1.0`. 新安装、升级与恢复均要求独立批准的 `-ApprovedSourceCommit` 与包内 source_commit 完全一致；清单版本不匹配在任何变更前拒绝。
 First install, upgrade and recovery require independent `-ApprovedSourceCommit` matching the package source exactly; installer-version mismatch is rejected before effects. Existing receipt v2 remains readable for upgrade ownership; new receipts record source/version. This does not establish formal maintenance authority.
+# 1.1.1 维护门禁 / Maintenance gate
+
+中文：当前固定版本尚未接入原生产 Inventory 的实时维护排斥。所有公开安装/升级/恢复/回滚入口的 Execute 在任何目标访问与写入前拒绝；旧仅撤注册脚本亦不能绕过。只读检查和隔离协调器验证保留。安装互斥、历史快照或包SHA不是正式维护权。此修复关闭不安全执行缺口，不代表维护集成已完成或已获安装授权。
+English: This pin lacks production-authoritative exclusion with the original Inventory. All public Execute installation, upgrade, recovery and rollback paths reject before target access/effects, including legacy registration-only rollback. Read-only checks and isolated coordinator exercises remain available. Installer mutexes, snapshots and package hashes are not maintenance authority. This closes unsafe admission; it does not complete maintenance integration or authorize installation.

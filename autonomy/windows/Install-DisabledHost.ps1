@@ -15,6 +15,10 @@ param(
     [switch]$Execute
 )
 $ErrorActionPreference='Stop'
+# A package hash and an installer mutex do not exclude the original Inventory.
+# No production-authoritative maintenance adapter is integrated in this pin.
+# Fail before opening targets, creating journals, or entering any recovery path.
+if ($Execute) { throw 'FORMAL_INVENTORY_MAINTENANCE_REQUIRED_STOP_AND_PRESERVE' }
 $dependencyPins=New-Object Collections.ArrayList
 function Pin-Reference([string]$Path,[string]$Expected) {
     Assert-NoReparseAncestors $Path
@@ -49,7 +53,7 @@ Pin-Reference $manifestPath $ApprovedManifestSha256
 $m=Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
 # This approval is independent of the package's own source declaration.
 if ($m.source_commit -isnot [string] -or $m.source_commit -cnotmatch '^[0-9a-f]{40}$' -or
-    $m.source_commit -cne $ApprovedSourceCommit -or $m.installer_version -cne '1.1.0') { throw 'SOURCE_OR_INSTALLER_VERSION_MISMATCH' }
+    $m.source_commit -cne $ApprovedSourceCommit -or $m.installer_version -cne '1.1.1') { throw 'SOURCE_OR_INSTALLER_VERSION_MISMATCH' }
 if ($m.schema -cne 'rokt.disabled-host-package.v1' -or $m.inventory_id -cne '1784775229336' -or
     $m.service_name -cne $name -or $m.account -cne $account -or $m.start_type -cne 'Disabled' -or
     $m.code_root -cne $code -or $m.state_root -cne $state -or

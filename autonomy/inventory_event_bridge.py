@@ -118,7 +118,16 @@ def event_handler(base,mailbox):
                 raw=self.rfile.read(int(lengths[0]))
                 if len(raw)!=int(lengths[0]):raise ValueError('SHORT_BODY')
                 if not authorized or not self.authenticated():self.reply(401,error='UNAUTHORIZED');return
-                value=json.loads(raw)
+                # Reject ambiguous requests before any durable reservation or
+                # report. The response path already enforces the same rule.
+                def unique_object(pairs):
+                    obj={}
+                    for key,item in pairs:
+                        if key in obj:raise ValueError('DUPLICATE_REQUEST_KEY')
+                        obj[key]=item
+                    return obj
+                def reject_constant(_):raise ValueError('NONFINITE_REQUEST')
+                value=json.loads(raw,object_pairs_hook=unique_object,parse_constant=reject_constant)
                 if type(value) is not dict:raise ValueError('BODY_SCHEMA')
                 if self.path=='/v1/inventory-events' and set(value)=={'event','owner'}:
                     identity=mailbox.submit(value['event'],value['owner'])
