@@ -1,0 +1,270 @@
+{
+  "source_commit": "c6a500876d9e61881c14cff188bbdb538aa50fe4",
+  "pe_machine": "0x8664",
+  "files_verified": {
+    "DELIVERY.json": {
+      "sha256": "6109f02b73622b0ccc7d3375993677aa63f9f35ccf253da448ff94185ed1c793",
+      "bytes": 372
+    },
+    "host/Acl-Transaction.ps1": {
+      "sha256": "a3fb4ab1fa251bc80e9d6a9f682b6efa48a628ed96a2253492d89af4ccfe8057",
+      "bytes": 10423
+    },
+    "host/Host-InstallTransaction.ps1": {
+      "sha256": "ab627de9fcb356a620227aa95abdfc3088f0ded0f2801339d1e1d818ca19b0b4",
+      "bytes": 14194
+    },
+    "host/Install-DisabledHost.ps1": {
+      "sha256": "f872da7fb2f3b5b5a8e8a27476ea0ff088f49f14a8b33671abde850fe0d62503",
+      "bytes": 11050
+    },
+    "host/Rollback-DisabledHost.ps1": {
+      "sha256": "fe0f23951c834ddc70253343685fa10e4853a29c78da751883b617870832e298",
+      "bytes": 4100
+    },
+    "host/config/host.json": {
+      "sha256": "fc4495c5cb95e23a34892ef35204a40713171fe5fcb362a90b03eec2eb0a8492",
+      "bytes": 202
+    },
+    "host/host_file_transaction.py": {
+      "sha256": "6c0965a15667a4b2675180ad60072dea0e281c8829e6493e003363675cc2136f",
+      "bytes": 21287
+    },
+    "host/manifest.json": {
+      "sha256": "d423f5397e237f340eaa04db60b4e2a251e128ca5a2acc559270eb37726d4199",
+      "bytes": 1823
+    },
+    "host/runtime/build.json": {
+      "sha256": "89b9182c9fa8e6798836c2e8f7feabd690c980102a50bc0ac02ad3deed161431",
+      "bytes": 261
+    },
+    "host/runtime/dependencies.json": {
+      "sha256": "9e6d0158d90f6ac73951ce819a86dbdb4453d1d4f3545582b5bc874d79b8bfc2",
+      "bytes": 1363
+    },
+    "host/service/RoktU1Bridge.cs": {
+      "sha256": "ccfb89f943cc218b12f64d255002b785f448149a3f2281c12d52cf2904fcb30a",
+      "bytes": 11172
+    },
+    "host/service/RoktU1Bridge.exe": {
+      "sha256": "82a78734c14aef668aa1a1226ed82390bc24e4fd5926d69dd30b4490a6d47632",
+      "bytes": 13312
+    },
+    "host/service/u1_bootstrap.py": {
+      "sha256": "6fe5ceeae26a91008cc5f73a48e176052a01004bfc8858a52169354c864bc63f",
+      "bytes": 4834
+    },
+    "python/autonomy/audit_root_policy.py": {
+      "sha256": "d80a4c61ed19817fd97896655582c5e36a78e5380e15fb7357ba00433934a163",
+      "bytes": 3488
+    },
+    "python/autonomy/bridge_acceptance.py": {
+      "sha256": "4a304578466bb978d9666adf961f21dfadaca70ba3d12d86a91cfdf02189e1eb",
+      "bytes": 1851
+    },
+    "python/autonomy/bridge_session_evidence.py": {
+      "sha256": "658751dc918a14e95c6631d33f7d2a808add11b962a6ab54bf01b806ffb91bd1",
+      "bytes": 7785
+    },
+    "python/autonomy/build_dev_disabled_host.py": {
+      "sha256": "54b0fd3e383cf052c81401adae0a7146490766a7cc08a09aff89421dd97801bf",
+      "bytes": 3673
+    },
+    "python/autonomy/build_u1_delivery.py": {
+      "sha256": "cb45e0f8f4784a2f00106afdc7b692f212fafe932b6e4d2bc52e6e64e826c124",
+      "bytes": 4996
+    },
+    "python/autonomy/cancellation_recovery.py": {
+      "sha256": "273614a92b18da65eafd206c2239821edffd74ca80ed95ca4b1f70c35ef11197",
+      "bytes": 11739
+    },
+    "python/autonomy/cancellation_terminal.py": {
+      "sha256": "4d609428476cafc09bdbc141f617f2b3c3ebad15f650ab9c537fd661d99f2f4a",
+      "bytes": 4025
+    },
+    "python/autonomy/cancellation_terminal_bundle.py": {
+      "sha256": "46c67ada9d7412bd6fd05c106800a38de76d6bc85763a3ac37c7a4005500f405",
+      "bytes": 2371
+    },
+    "python/autonomy/directory_identity.py": {
+      "sha256": "081ecaca13b7e04530d28f2d528e77d149b68112295ccb1150715e0a343141bb",
+      "bytes": 4046
+    },
+    "python/autonomy/disabled_host_package.py": {
+      "sha256": "7d68de9a1e908b3acd36c4b8806207c0f9052960fbf3b6ce2a90288694648000",
+      "bytes": 7129
+    },
+    "python/autonomy/drain_bundle_preflight.py": {
+      "sha256": "69b930f6ed9b9f3e115e49ab7b47c818b3b44705b9f475f152e6fc27565cc864",
+      "bytes": 7823
+    },
+    "python/autonomy/durable_slots.py": {
+      "sha256": "f715f988e24d784fb3633f9be06665f4c42a9ae2803ad1315deae9548a0dc5c5",
+      "bytes": 11214
+    },
+    "python/autonomy/first_publication.py": {
+      "sha256": "787eaf2ca7164a34cae26fb0f75043125ce347d721de6dab841082677d27c93b",
+      "bytes": 3375
+    },
+    "python/autonomy/growth_ledger.py": {
+      "sha256": "52af63b96cfe740ac511c10beb20e67eccabc07b8996836e54c0f5c1a1e5f399",
+      "bytes": 26212
+    },
+    "python/autonomy/growth_snapshot.py": {
+      "sha256": "ca861b99ea9335fe4b6c8842875d037b24da9ce28802f9fcece30cef2c5d0d5c",
+      "bytes": 4341
+    },
+    "python/autonomy/handoff_validation.py": {
+      "sha256": "0c84311f25b0563503f5d4a2a7d307b66649511de3884273f49a9dfadc6f3321",
+      "bytes": 7631
+    },
+    "python/autonomy/host_file_transaction.py": {
+      "sha256": "6c0965a15667a4b2675180ad60072dea0e281c8829e6493e003363675cc2136f",
+      "bytes": 21287
+    },
+    "python/autonomy/host_preparation.py": {
+      "sha256": "ba3bf2edf4f39c130a1f56d8246a92476758ac53e223a3d067c02a987cd011d2",
+      "bytes": 7413
+    },
+    "python/autonomy/host_readonly_http.py": {
+      "sha256": "b469887c7cd19c6486c3793d41d7efff98d463301d4c1ac08d37bef53093f031",
+      "bytes": 5942
+    },
+    "python/autonomy/host_remediation.py": {
+      "sha256": "d4bcaa974b07b67ffd49ffff94b1d14891097ae39378aa1cb588829863e35a13",
+      "bytes": 4467
+    },
+    "python/autonomy/independent_install_plan.py": {
+      "sha256": "0b1ccf06b4d8db524dffd83807abfc3c9f53715712ce96f4cf8e92eaa64cc22f",
+      "bytes": 1616
+    },
+    "python/autonomy/install_contract.py": {
+      "sha256": "8fd8fd1ee53ea1aaaeafd5f0fab56d0fe3d2af2db971a1a48579728fdfbcfbc3",
+      "bytes": 4028
+    },
+    "python/autonomy/install_journal.py": {
+      "sha256": "c06a361f6e064c01bd86ab017f9c96d536d798aaad8f651b5b65c1cd4756a8ac",
+      "bytes": 6824
+    },
+    "python/autonomy/inventory_event_bridge.py": {
+      "sha256": "6336473160748c818af8dbd65e615858693b23d970181de8bd1ee6ee1c8c0a51",
+      "bytes": 11259
+    },
+    "python/autonomy/ledger_evidence.py": {
+      "sha256": "ba5c0ecaaf7bb6e4909d85a81eb112721162a35e6e406246d337c0c0d43058f9",
+      "bytes": 1088
+    },
+    "python/autonomy/lock_recovery.py": {
+      "sha256": "e6552960b9a15af38a5fbd238037094d8c75af80d9c0370b6d69092060da7741",
+      "bytes": 8045
+    },
+    "python/autonomy/network_recovery.py": {
+      "sha256": "25d33694379c96500b5638e526a7c0fa1f5bc7461d74b518ff4cc379973dc42f",
+      "bytes": 6892
+    },
+    "python/autonomy/owner_drain_preflight.py": {
+      "sha256": "2df95c5dc2cc17dbfd4fd7e7eb2b9685316972786ac003ca55e6b4b999df400b",
+      "bytes": 5399
+    },
+    "python/autonomy/process_backend.py": {
+      "sha256": "52acaa7473a8f4acc30d602add8c847f8b0377b2c3dbf65792c9293dbe471c4f",
+      "bytes": 7025
+    },
+    "python/autonomy/process_job.py": {
+      "sha256": "f76ab591917337a82c09c1114010df7793bcab46856314ca9097906ced0336d5",
+      "bytes": 14605
+    },
+    "python/autonomy/recovery_status.py": {
+      "sha256": "e4229a403e5b26e428beaea7639df44b34ebbbed5bd76efef162a514ae29358f",
+      "bytes": 4528
+    },
+    "python/autonomy/release_contract.py": {
+      "sha256": "59a70cdd02e5032cf5f4a52cb139c9d0b5ac4454d1d918f3e654df70b98ffed8",
+      "bytes": 4375
+    },
+    "python/autonomy/release_store.py": {
+      "sha256": "7cf6c42a5dd3724af9d2f7986ecb02eea7368eff49dc62ed6784c0ac15755d99",
+      "bytes": 15039
+    },
+    "python/autonomy/rollback_admission.py": {
+      "sha256": "1e703faa3df531756d365e58385ec830d990770219caeccf7bd2d91acf0a1aed",
+      "bytes": 2862
+    },
+    "python/autonomy/safe_authority.py": {
+      "sha256": "9007dcd1549dc342cdecbafbd9249b55e3d25c23af5b496827b70ed0dae631c8",
+      "bytes": 10148
+    },
+    "python/autonomy/single_slot_adapter.py": {
+      "sha256": "e941653ee9f9739771c3854028062b7aa9bf82bf0cfe2ed5d02c7f32f3977869",
+      "bytes": 19095
+    },
+    "python/autonomy/source_identity.py": {
+      "sha256": "e28baf1061f31dae8f8fe62679ce074671fa6091d7675d99604b2dc70885b84f",
+      "bytes": 9004
+    },
+    "python/autonomy/source_publication.py": {
+      "sha256": "fc971365cf28cc25661334399ff87e7b9a5aeb17df4bb3128f4cd459f5cfa523",
+      "bytes": 5261
+    },
+    "python/autonomy/storage_preflight.py": {
+      "sha256": "6b3225477848bd889f814657b21f5031c754f5c08e582e455def843c377e269d",
+      "bytes": 3319
+    },
+    "python/autonomy/supervisor.py": {
+      "sha256": "3d268ccc7423adcaf56c25132a9ae801bcf79493d5cda871b4f2ddbc248939a3",
+      "bytes": 35414
+    },
+    "python/autonomy/task_dispatch.py": {
+      "sha256": "fed60467d43af8594d1222678da8df67a043ad2ea64fc27ed769dcf36ca3ea2a",
+      "bytes": 7907
+    },
+    "python/autonomy/telemetry.py": {
+      "sha256": "a567344ead3f59e3c56bf5bdfdbb19fe2cabd7efb93caa0d18ce26d752ae3faf",
+      "bytes": 12167
+    },
+    "python/autonomy/test_bridge_telemetry.py": {
+      "sha256": "dc25fd0ca5c9dee31faf138d992525724658cc8db3fd86b37f9868185d6fe576",
+      "bytes": 13747
+    },
+    "python/autonomy/test_lock_recovery.py": {
+      "sha256": "3b496a5defd1da3312e9d1ef63b4674c075ec10d84345897e898e370ce69deae",
+      "bytes": 8785
+    },
+    "python/autonomy/test_process_job.py": {
+      "sha256": "2817444efd41f381f519661147d9aca658a570386dea7632d1e37b1dede2dfb3",
+      "bytes": 7007
+    },
+    "python/autonomy/test_storage_preflight.py": {
+      "sha256": "4d212d70848a427b703329dfae6aff04f068a6d9e254325f9df05df00f7d44e9",
+      "bytes": 6146
+    },
+    "python/autonomy/test_supervisor.py": {
+      "sha256": "da35df5bbf1065ce459a8d6489cb4983d1f0689b0f10c9e20cd2e6942b21c648",
+      "bytes": 24976
+    },
+    "python/autonomy/test_telemetry.py": {
+      "sha256": "8ccc01f5734978dace908dee3083c80b4bba11b474c6beed275cbabb42dc25b3",
+      "bytes": 8216
+    },
+    "python/autonomy/u1_host_runtime.py": {
+      "sha256": "9cb9ddd736b98766d58cbbc1e9a33a1322074dca627b4d4042e22fd46e0d4243",
+      "bytes": 2598
+    },
+    "python/autonomy/unattended_policy.py": {
+      "sha256": "21aea336dd46f35ee402598687831b39f33c7aee5ec5245bc63f83cc77ec781f",
+      "bytes": 2201
+    },
+    "python/autonomy/windows/u1_bootstrap.py": {
+      "sha256": "1f0ab7d233c53b57a60d9f9b98aa1ebb32c2e1944b52b5b9028c6942286b4c21",
+      "bytes": 4752
+    },
+    "python/autonomy/windows_observation.py": {
+      "sha256": "35563c2b65f7be373287d4001932fd94dbefe295a359c5e58cafc45933e2c196",
+      "bytes": 4233
+    }
+  },
+  "archive_bytes_verified": true,
+  "host_manifest_sha256": "d423f5397e237f340eaa04db60b4e2a251e128ca5a2acc559270eb37726d4199",
+  "allow_install": false,
+  "independent_review": "PENDING_FOR_CURRENT_PIN"
+}

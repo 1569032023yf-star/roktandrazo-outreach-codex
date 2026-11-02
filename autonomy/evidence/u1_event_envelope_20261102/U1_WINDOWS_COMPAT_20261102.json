@@ -1,0 +1,371 @@
+{
+  "schema": "rokt.u1_windows_compat.v1",
+  "generated_at": "2026-11-02T17:38:10+08:00",
+  "generated_at_utc": "2026-11-02T09:38:10Z",
+  "sample_window": "2026-11-02T17:36:02+08:00 .. 2026-11-02T17:38:10+08:00",
+  "producer": "WorkBuddy",
+  "report_nature": "read_only_compatibility_verification_and_preinstall_check",
+  "report_path_md": "handoff/workbuddy/production/U1_WINDOWS_COMPAT_20261102.md",
+
+  "execution_identity": {
+    "account": "RAKTROZO\\15690",
+    "sid": "S-1-5-21-5926390-557196042-3608508572-1001",
+    "elevated": false,
+    "administrators_in_token": "deny_only",
+    "integrity": "medium",
+    "powershell_version": "5.1.26100.9711",
+    "python_used_for_verification": "3.13.0"
+  },
+
+  "host_environment": {
+    "os_caption": "Microsoft Windows 11 家庭版 中文版",
+    "os_build": "26200",
+    "os_version": "10.0.26200",
+    "architecture": "64-bit",
+    "computer_name": "RAKTROZO",
+    "part_of_domain": false,
+    "workgroup": "WORKGROUP",
+    "ram_gb": 15.7,
+    "last_boot": "2026-11-02 09:09:05 +08:00",
+    "uptime_hours": 8.45,
+    "dotnet_framework": "4.8.09221",
+    "volume_c": { "filesystem": "NTFS", "size_gb": 200, "free_gb": 24.2, "health": "Healthy" }
+  },
+
+  "inherited_evidence_verified": [
+    { "commit": "0b09694855e37eb366c10b3b6571282b60b5a19c", "date": "2026-10-30T14:33:56+08:00", "present": true, "note": "U1 P1 compatibility package" },
+    { "commit": "54b79153adf8b8d6df1349e5ea78751bf244f24e", "date": "2026-10-30T15:11:55+08:00", "present": true, "note": "Windows environment evidence; Codex blob SHAs cross-verified earlier" },
+    { "commit": "13d061a82568bc147efa689742a61b3e06d95a31", "date": "2026-11-01T22:53:30+08:00", "present": true, "note": "production evidence refresh; equals origin/main HEAD; local HEAD identical; 0/0" }
+  ],
+
+  "accepted_acl_ruling": {
+    "status": "ACCEPTED_NOT_REOPENED",
+    "resolved_by_comment": 6520202418,
+    "code_root": "preserve_inheritance_append_service_sid_readandexecute",
+    "state_root": "protect_dacl_system_administrators_fullcontrol_service_sid_modify",
+    "transaction": "durable_record_plus_failure_compensation",
+    "verified_implemented_in_code": true
+  },
+
+  "fixed_candidate_binding": {
+    "producer_comment": 6573469646,
+    "producer_comment_time": "2026-11-02T09:19:05Z",
+    "source_sha": "0db17b51d8ce464f1f57dd5ef40d0df266dcf3f8",
+    "evidence_sha": "91aa60c6cf52b0c0a9c9e0ff2ddfb5ee39a7f7fc",
+    "fields": [
+      { "id": 1, "field": "SOURCE_SHA", "required": true, "value": "0db17b51d8ce464f1f57dd5ef40d0df266dcf3f8", "verdict": "SATISFIED" },
+      { "id": 2, "field": "PACKAGE_SHA256", "required": true, "value": null, "verdict": "ABSENT", "evidence": "no .zip or package artifact in tree at 91aa60c6; evidence dir has 7 text/json files only; RELEASE_CHECKLIST.json has no such field" },
+      { "id": 3, "field": "MANIFEST_SHA256", "required": true, "value": null, "verdict": "ABSENT", "evidence": "only exists as mandatory installer parameter -ApprovedManifestSha256 (Install-DisabledHost.ps1:5); value not supplied" },
+      { "id": 4, "field": "complete_file_inventory", "required": true, "value": "6 source files only, not package contents", "verdict": "ABSENT", "evidence": "new runtime contract requires 6 DLLs while the only ever-delivered package declared 5, so the old package cannot satisfy it" },
+      { "id": 5, "field": "install_target_paths", "required": true, "value": "C:\\Program Files\\RoktU1Bridge\\v1 ; C:\\ProgramData\\RoktU1Bridge ; C:\\ProgramData\\RoktU1InstallAudit", "verdict": "PARTIAL_UNAPPROVED", "evidence": "declared in code; RELEASE_CHECKLIST.json marks every file production_target=UNAPPROVED" },
+      { "id": 6, "field": "installer_version", "required": true, "value": null, "verdict": "ABSENT", "evidence": "no version string; only $name and DisplayName='Rokt U1 Bridge (disabled candidate)'" }
+    ],
+    "satisfied_count": 1,
+    "total_count": 6,
+    "fixed_candidate_received": false,
+    "code_level_proof": {
+      "claim": "installer cannot run without a package and manifest hash",
+      "anchor": "Install-DisabledHost.ps1:3-10",
+      "detail": "param() declares $PackageRoot and $ApprovedManifestSha256 both [Parameter(Mandatory=$true)], the latter with ValidatePattern ^[0-9a-f]{64}$; parameter binding fails before any mutation path"
+    },
+    "producer_declared_gates_from_RELEASE_CHECKLIST_json": {
+      "schema": "rokt.u1-acl-offline-release-checklist.v1",
+      "description_zh": "非执行的离线ACL候选清单，不授权安装。",
+      "release_ready": false,
+      "allow_install": false,
+      "allow_dispatch": false,
+      "allow_cancel_dispatch": false,
+      "production_executed": false,
+      "independent_review_scope": "OFFLINE_ACL_TRANSACTION_ONLY"
+    }
+  },
+
+  "read_only_checks": {
+    "B1_six_file_bidirectional_sha256": {
+      "verdict": "PASS",
+      "method": "raw.githubusercontent at ref=0db17b51; compare sha256 of raw blob (LF) against git_blob_sha256, and sha256 after LF->CRLF normalisation against declared sha256",
+      "all_six_bidirectional_match": true,
+      "files": [
+        { "path": "autonomy/windows/Install-DisabledHost.ps1", "bytes": 15904, "lf_matches_blob_declaration": true, "crlf_matches_worktree_declaration": true },
+        { "path": "autonomy/windows/Acl-Transaction.ps1", "bytes": 10261, "lf_matches_blob_declaration": true, "crlf_matches_worktree_declaration": true },
+        { "path": "autonomy/disabled_host_package.py", "bytes": 6757, "lf_matches_blob_declaration": true, "crlf_matches_worktree_declaration": true },
+        { "path": "test_windows_acl_transaction.py", "bytes": 14255, "lf_matches_blob_declaration": true, "crlf_matches_worktree_declaration": true },
+        { "path": "test_disabled_host_package.py", "bytes": 6206, "lf_matches_blob_declaration": true, "crlf_matches_worktree_declaration": true },
+        { "path": "test_u1_provision.py", "bytes": 4501, "lf_matches_blob_declaration": true, "crlf_matches_worktree_declaration": true }
+      ],
+      "non_claim": "proves manifest equals delivered bytes only; it is not an approval of code correctness, safety or installability"
+    },
+    "B2_syntax_and_compile": {
+      "verdict": "PASS",
+      "powershell_parse": [
+        { "file": "Install-DisabledHost.ps1", "parse_ok": true, "error_count": 0, "tokens": 2642 },
+        { "file": "Acl-Transaction.ps1", "parse_ok": true, "error_count": 0, "tokens": 1804 }
+      ],
+      "python_compile": [
+        { "file": "disabled_host_package.py", "syntax_ok": true },
+        { "file": "test_windows_acl_transaction.py", "syntax_ok": true },
+        { "file": "test_disabled_host_package.py", "syntax_ok": true },
+        { "file": "test_u1_provision.py", "syntax_ok": true }
+      ],
+      "warnings": [
+        { "severity": "non_blocking", "file": "test_windows_acl_transaction.py", "line": 270, "warning": "SyntaxWarning: invalid escape sequence '\\R'", "note": "inside an embedded PowerShell string in a test; cosmetic; recommend here-string or escaping" }
+      ]
+    },
+    "B3_acl_ruling_implemented": {
+      "verdict": "PASS",
+      "items": [
+        { "requirement": "code root keeps inheritance", "anchor": "Acl-Transaction.ps1:129", "code": "if ($codeAcl.AreAccessRulesProtected) { throw 'CODE_INHERITANCE_REQUIRED' }", "ok": true },
+        { "requirement": "code root append service SID RX", "anchor": "Acl-Transaction.ps1:130", "code": "AddAccessRule(...,'ReadAndExecute','ContainerInherit,ObjectInherit','None','Allow')", "ok": true },
+        { "requirement": "state root break inheritance", "anchor": "Acl-Transaction.ps1:133", "code": "$stateAcl.SetAccessRuleProtection($true,$false)", "ok": true },
+        { "requirement": "state root exactly three ACEs", "anchor": "Acl-Transaction.ps1:134", "code": "S-1-5-18 FullControl ; S-1-5-32-544 FullControl ; $ServiceSid Modify", "ok": true },
+        { "requirement": "reject service identity resolving to SYSTEM/Administrators", "anchor": "Acl-Transaction.ps1:125", "code": "if ($ServiceSid -in @('S-1-5-18','S-1-5-32-544')) { throw 'ACL_SERVICE_IDENTITY_REJECTED' }", "ok": true },
+        { "requirement": "durable intent before mutation", "anchor": "Acl-Transaction.ps1:61,146", "code": "STATE_CREATE_INTENT before='ABSENT' ; APPLY_INTENT written before change", "ok": true },
+        { "requirement": "atomic initial DACL removes writable inheritance window", "anchor": "Acl-Transaction.ps1:46-52", "code": "SetAccessRuleProtection($true,$false) then create", "ok": true }
+      ]
+    },
+    "B4_runtime_contract": {
+      "verdict": "PASS",
+      "required_count": 6,
+      "present_count": 6,
+      "count_check_anchor": "Install-DisabledHost.ps1:75 (-ne $runtimePaths.Count)",
+      "newly_added_vs_previous_candidate": "System.Web.Extensions",
+      "dlls": [
+        { "key": "clr", "path": "Microsoft.NET/Framework64/v4.0.30319/clr.dll", "exists": true, "bytes": 10000696, "sha256": "0db5bf856173a818323196fefdd62822c3cddda6f92b2b378f1c6d6ea3b99ead", "matches_20261030_record": true },
+        { "key": "mscorlib", "path": "Microsoft.NET/Framework64/v4.0.30319/mscorlib.dll", "exists": true, "bytes": 5445432, "sha256": "11ac114c43ecf6996bef58ba3c99fba3693a4560a84eeadde54d193060dc626c", "matches_20261030_record": true },
+        { "key": "System", "path": "Microsoft.NET/Framework64/v4.0.30319/System.dll", "exists": true, "bytes": 3545264, "sha256": "2b3c17c6208a0b4b6beb94e1a066f99ba06cdb2ea919479e99d47e8c6d96dc71", "matches_20261030_record": true },
+        { "key": "System.Core", "path": "Microsoft.NET/Framework64/v4.0.30319/System.Core.dll", "exists": true, "bytes": 1551104, "sha256": "8b898bed54ae8cc61f9c58cc3eb062724f8357d2bdda338b5d363654ecff333d", "matches_20261030_record": true },
+        { "key": "System.ServiceProcess", "path": "Microsoft.NET/Framework64/v4.0.30319/System.ServiceProcess.dll", "exists": true, "bytes": 135112, "sha256": "39a46cb60718dae105eaa5bd1010ddd7388abb4e4c4699cdf24709f3aae84df3", "matches_20261030_record": true },
+        { "key": "System.Web.Extensions", "path": "Microsoft.NET/assembly/GAC_MSIL/System.Web.Extensions/v4.0_4.0.0.0__31bf3856ad364e35/System.Web.Extensions.dll", "exists": true, "bytes": 1846016, "sha256": "5e6378edc06f5a61920aaadb2aba839dd3cf302d6192e08aacd4454ba4cff0b3", "matches_20261030_record": null, "note": "new requirement this round; only GAC dir present is v4.0_4.0.0.0__31bf3856ad364e35, matching contract path literally" }
+      ],
+      "host_dotnet": "4.8.09221",
+      "contract_schema_required": "rokt.disabled-host-runtime.v1",
+      "contract_framework_required": ".NET Framework 4 x64",
+      "note": "the contract values live in the package's runtime/dependencies.json, so full validation is package-bound and impossible without a candidate"
+    },
+    "B5_preinstall_environment_baseline": {
+      "verdict": "PASS",
+      "code_root": { "path": "C:\\Program Files\\RoktU1Bridge\\v1", "exists": false, "verdict": "ABSENT" },
+      "state_root": { "path": "C:\\ProgramData\\RoktU1Bridge", "exists": false, "verdict": "ABSENT" },
+      "install_root_parent": { "path": "C:\\Program Files\\RoktU1Bridge", "exists": false, "verdict": "ABSENT" },
+      "parent_reparse_points": [
+        { "path": "C:\\Program Files", "reparse_point": false },
+        { "path": "C:\\ProgramData", "reparse_point": false }
+      ],
+      "rokt_or_u1_junctions_under_parents": "none",
+      "service_RoktU1Bridge": "NOT_REGISTERED",
+      "services_matching_Rokt_or_U1": "NONE",
+      "disk": { "drive": "C", "filesystem": "NTFS", "size_gb": 200, "free_gb": 24.2, "health": "Healthy", "note": "was 16.6 GB free on 2026-10-30; no space pressure" }
+    },
+    "B6_audit_root_precondition": {
+      "verdict": "BLOCKED",
+      "path": "C:\\ProgramData\\RoktU1InstallAudit",
+      "exists": false,
+      "journal_path": "C:\\ProgramData\\RoktU1InstallAudit\\disabled-host-acl.jsonl",
+      "journal_anchor": "Install-DisabledHost.ps1:120",
+      "assert_anchor": "Install-DisabledHost.ps1:154 -> Acl-Transaction.ps1:21-32",
+      "requirements": [
+        "AreAccessRulesProtected must be true",
+        "owner SID must be in {S-1-5-18, S-1-5-32-544}",
+        "all ACEs must be SYSTEM or Administrators and Allow",
+        "exactly two FullControl ACEs (CI+OI, no propagation)"
+      ],
+      "failure_token": "ACL_AUDIT_ROOT_UNTRUSTED",
+      "auto_created": false,
+      "admin_required": true,
+      "assessment": "correct fail-closed behaviour; real deployment hard gate, not a defect"
+    }
+  },
+
+  "proxy_7877": {
+    "second_boot_sample": true,
+    "timeline_20261102": [
+      { "time": "09:08:17", "event": "restart initiated", "source": "System log ID 1074 StartMenuExperienceHost.exe" },
+      { "time": "09:09:05", "event": "OS start", "source": "Kernel-General ID 12" },
+      { "time": "09:09:24", "event": "MyClashHelperService.exe PID 7732 start (Session 0)", "source": "Win32_Process.CreationDate" },
+      { "time": "09:11:05", "event": "Clash GUI MyClash PID 29296 start (Session 1)", "source": "Get-Process.StartTime" },
+      { "time": "09:11:06", "event": "MyClashCore.exe PID 29708 start (Session 0), PPID 7732, bind 127.0.0.1:7877", "source": "Win32_Process + Get-NetTCPConnection" }
+    ],
+    "two_sample_comparison": [
+      { "sample": 1, "date": "2026-10-30", "boot": "08:48:04", "service_ready": "08:48:23", "gui_start": "09:20:23", "kernel_start": "09:20:24", "kernel_minus_service": "32m01s", "kernel_minus_gui": "+1s" },
+      { "sample": 2, "date": "2026-11-02", "boot": "09:09:05", "service_ready": "09:09:24", "gui_start": "09:11:05", "kernel_start": "09:11:06", "kernel_minus_service": "1m42s", "kernel_minus_gui": "+1s" }
+    ],
+    "kernel_idle_before_launch_seconds": 102,
+    "scm_event_at_kernel_start": false,
+    "scm_myclash_events_last_7d": 3,
+    "scm_myclash_events_all_before_20261023": true,
+    "unattended_proxy_available": "NOT_SUPPORTED_OBSERVED",
+    "kernel_spawn_trigger": "GUI_SESSION_INITIATED",
+    "kernel_spawn_trigger_confidence": "structural_inference_not_unique_cause_proof",
+    "kernel_session": 0,
+    "service_parent": { "name": "MyClashHelperService", "start_mode": "Auto", "start_name": "LocalSystem", "delayed_auto_start": false, "path": "D:\\Clash Plus\\MyClashHelperService.exe" },
+    "proxy_bind": "127.0.0.1:7877 loopback only",
+    "logoff_egress_verified": "UNKNOWN",
+    "reboot_egress_verified": "UNKNOWN",
+    "d_volume_dependency": "D: must be mounted or the service cannot start and 7877 will not listen",
+    "operational_consequence": "Inventory runs with SCRAPER_PROXY=7877; if the host does not gate startup on proxy reachability, unattended discovery will fail with ERR_PROXY_CONNECTION_FAILED",
+    "why_still_unknown": "a real logoff terminates this session and all in-flight evidence gathering; interactive availability is deliberately not equated with unattended availability"
+  },
+
+  "bridge_8791": {
+    "listening": false,
+    "pythonw_process_count": 0,
+    "hkcu_run_entry_present": true,
+    "hkcu_run_value": "\"C:/Users/15690/.workbuddy/binaries/python/versions/3.13.12/pythonw.exe\" \"C:/Users/15690/WorkBuddy/deploy-channel/bin/supervisor.py\"",
+    "log_last_entry": "2026-11-01T22:41:12+08:00 HEALTH_TRANSITION ok=true (bridge_version=2.1, test_mode=false)",
+    "log_bytes": 16041,
+    "log_mtime": "2026-11-01 22:41:12",
+    "log_records_for_20261102_boot": false,
+    "stale_lock": { "present": true, "pid": 43520, "started_at": "2026-11-01T22:40:57+08:00", "pid_alive": false, "blocking": false, "note": "supervisor reclaims stale locks on start" },
+    "cross_call_persistence": false,
+    "autostart_effective": false,
+    "autostart_samples_ineffective": ["2026-10-30 boot", "2026-11-02 boot"],
+    "logon_scoped": true,
+    "conclusion": "8791 remains session-scoped; no cross-call persistence and no unattended availability can be claimed"
+  },
+
+  "item_verdicts": {
+    "identity_and_acl": {
+      "verdict": "PARTIAL",
+      "subitems": [
+        { "item": "actual executing identity", "verdict": "PASS" },
+        { "item": "service SID namespace usable", "verdict": "PASS" },
+        { "item": "code root actual inherited ACL", "verdict": "UNKNOWN", "reason": "target directory ABSENT" },
+        { "item": "state root actual effective ACL", "verdict": "UNKNOWN", "reason": "target directory ABSENT" },
+        { "item": "SYSTEM/Administrators/service SID rights", "verdict": "PARTIAL", "reason": "design present in source, not effective" },
+        { "item": "audit directory existence, owner, effective ACL", "verdict": "BLOCKED", "reason": "C:\\ProgramData\\RoktU1InstallAudit ABSENT; admin required" },
+        { "item": "parent directory permissions", "verdict": "PASS", "note": "baseline recorded previously; unchanged" },
+        { "item": "reparse point risk", "verdict": "PASS" }
+      ],
+      "separation_of_terms": {
+        "source_design": "present and verifiable in source",
+        "proposed_acl": "PROPOSED_ONLY, named in source, not applied",
+        "effective_acl": "does not exist because the directories do not exist"
+      }
+    },
+    "service_compatibility": {
+      "verdict": "PARTIAL",
+      "subitems": [
+        { "item": "SCM service account support", "verdict": "PASS", "note": "virtual service account, no password needed, no account creation" },
+        { "item": "SeServiceLogonRight", "verdict": "BLOCKED", "reason": "secedit /export /areas USER_RIGHTS requires an elevated token" },
+        { "item": "service registration and Disabled state", "verdict": "PARTIAL", "note": "source creates with ServiceType=16, StartMode=Disabled, then reads back; not actually registered" },
+        { "item": "existing service upgrade conditions", "verdict": "UNKNOWN", "reason": "service does not exist" },
+        { "item": "service stopped state", "verdict": "UNKNOWN", "reason": "not registered" },
+        { "item": "service files and runtime dependencies", "verdict": "PASS", "note": "6/6 DLL present with hashes" },
+        { "item": "install paths, disk space, file permissions", "verdict": "PASS" }
+      ]
+    },
+    "proxy_and_autostart": {
+      "verdict": "FAIL",
+      "subitems": [
+        { "item": "7877 available without interactive logon", "verdict": "NOT_SUPPORTED_OBSERVED" },
+        { "item": "GUI vs background kernel startup dependency", "verdict": "DEPENDENT_kernel_gui_plus_1s" },
+        { "item": "Session 0 vs interactive difference", "verdict": "kernel_in_session0_trigger_in_session1" },
+        { "item": "actual egress after restart or logoff", "verdict": "UNKNOWN" },
+        { "item": "8791 depends on current logon session", "verdict": "TRUE" },
+        { "item": "8791 cross-call persistence", "verdict": "FALSE" },
+        { "item": "8791 after logoff or restart", "verdict": "UNAVAILABLE" },
+        { "item": "8791 service bootstrap and recovery", "verdict": "NONE" }
+      ]
+    },
+    "install_and_rollback_compatibility": {
+      "verdict": "BLOCKED",
+      "subitems": [
+        { "item": "package SHA256 consistency", "verdict": "BLOCKED", "reason": "no candidate package" },
+        { "item": "manifest completeness", "verdict": "BLOCKED", "reason": "no MANIFEST_SHA256 value" },
+        { "item": "all files within authorised scope", "verdict": "BLOCKED", "reason": "no package file inventory" },
+        { "item": "first install vs upgrade compatibility", "verdict": "BLOCKED", "reason": "no candidate package" },
+        { "item": "backup and ABSENT representation", "verdict": "PARTIAL", "reason": "ABSENT semantics readable in source (STATE_CREATE_INTENT before='ABSENT'); not executed" },
+        { "item": "recovery after interruption", "verdict": "PARTIAL", "reason": "APPLY_INTENT before mutation, reverse compensation, recovery admission gates present in source; not executed" },
+        { "item": "post-rollback file/permission/service state", "verdict": "BLOCKED", "reason": "no package, no install, nothing to roll back" }
+      ]
+    }
+  },
+
+  "incompleteness": {
+    "root_cause": "no fixed installable candidate package exists",
+    "binding_fields_satisfied": "1/6",
+    "admin_privilege_required": true,
+    "admin_required_for": [
+      "create and configure audit root C:\\ProgramData\\RoktU1InstallAudit with protected DACL, SYSTEM/Administrators owner, exactly two FullControl ACEs",
+      "register service and verify SeServiceLogonRight",
+      "execute a real logoff/restart egress test (also interrupts the session)"
+    ],
+    "one_time_install_authority_required": true,
+    "install_authority_requested_now": false,
+    "install_authority_preconditions": [
+      "fixed candidate delivered with all six binding fields",
+      "read-only compatibility verification passed against that pinned candidate",
+      "install gates all explicit"
+    ],
+    "privilege_escalated": false,
+    "system_restriction_bypassed": false
+  },
+
+  "candidate_delivery_requirements": {
+    "required_before_verification_can_start": [
+      "SOURCE_SHA (current 0db17b51..., must be updated if code changes)",
+      "PACKAGE_SHA256 of a real x64 disabled-state candidate package",
+      "MANIFEST_SHA256 equal to the value passed as -ApprovedManifestSha256",
+      "complete in-package file inventory (path/size/sha256)",
+      "runtime/dependencies.json with exactly 6 entries including System.Web.Extensions at the contract path",
+      "install target paths moved from UNAPPROVED to APPROVED",
+      "installer version string"
+    ],
+    "mandatory_package_members": [
+      "service/RoktU1Bridge.exe",
+      "runtime/dependencies.json",
+      "config/host.json",
+      "Install-DisabledHost.ps1",
+      "Rollback-DisabledHost.ps1",
+      "Acl-Transaction.ps1"
+    ],
+    "system_web_extensions_observed_sha256": "5e6378edc06f5a61920aaadb2aba839dd3cf302d6192e08aacd4454ba4cff0b3",
+    "non_blocking_suggestion": "fix SyntaxWarning invalid escape sequence at test_windows_acl_transaction.py:270"
+  },
+
+  "final_verdicts": {
+    "FIXED_CANDIDATE_RECEIVED": false,
+    "CANDIDATE_BINDING_FIELDS_SATISFIED": "1/6",
+    "WINDOWS_COMPATIBILITY": "BLOCKED_NO_FIXED_CANDIDATE",
+    "INSTALLATION_ACCEPTED": false,
+    "UNATTENDED_ACCEPTED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "SOURCE_AND_EVIDENCE_SHA_VERIFIED": true,
+    "ACL_RULING_IMPLEMENTED_IN_CODE": true,
+    "RUNTIME_CONTRACT_SATISFIED_ON_HOST": true,
+    "PREINSTALL_ENV_CLEAN": true,
+    "AUDIT_ROOT_PRECONDITION": "BLOCKED_ADMIN_REQUIRED",
+    "PROXY_UNATTENDED": "NOT_SUPPORTED_OBSERVED",
+    "PROXY_LOGOFF_EGRESS": "UNKNOWN",
+    "BRIDGE_CROSS_CALL_PERSISTENCE": false,
+    "BRIDGE_AUTOSTART_EFFECTIVE": false,
+    "CURRENT_SAFE": "UNKNOWN",
+    "BUSINESS_GROWTH_VERIFIED": "UNKNOWN"
+  },
+
+  "non_claims": [
+    "SHA agreement proves manifest equals delivered bytes only; it is not approval of code correctness, safety or installability",
+    "projected or inherited ACLs are not the effective ACL of any directory, because the target directories do not exist",
+    "the 7877 kernel trigger finding is a structural inference from two consistent boot samples, not a proven unique cause",
+    "interactive availability is not equated with unattended availability",
+    "host DLL presence is not acceptance of the publisher, the host or production",
+    "this report does not authorise installation, service enablement, ACL change, proxy change, a second Inventory, manual collection or database migration"
+  ],
+
+  "safety_attestation": {
+    "service_installed_or_registered": false,
+    "directories_created": false,
+    "accounts_created": false,
+    "acl_modified": false,
+    "proxy_modified": false,
+    "registry_modified": false,
+    "scheduled_tasks_modified": false,
+    "logoff_or_reboot_performed": false,
+    "inventory_triggered": false,
+    "second_scheduler_created": false,
+    "production_db_written": false,
+    "ledger_written": false,
+    "smtp_or_customer_email": false,
+    "scratch_locations_only": ["%TEMP%\\u1src", "%TEMP%\\*.json"]
+  }
+}

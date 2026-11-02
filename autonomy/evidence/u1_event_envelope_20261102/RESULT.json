@@ -1,0 +1,112 @@
+{
+  "updated_at": "2026-11-02T12:01:00.497851+00:00",
+  "source_commit": "c6a500876d9e61881c14cff188bbdb538aa50fe4",
+  "report": "autonomy/evidence/u1_event_envelope_20261102/REPORT.md",
+  "checkpoint": "autonomy/evidence/u1_event_envelope_20261102/REPORT.md",
+  "independent_review": "PENDING_FOR_CURRENT_PIN",
+  "previous_reviewed_source": "70ee72177a40408d5b03a415b3eef3fb51059589",
+  "previous_review": "OFFLINE_REVIEW_PASSED_NOT_INHERITED",
+  "targeted_source_tests": {
+    "run": 24,
+    "passed": true,
+    "seconds": 7.064
+  },
+  "packaged_tests": {
+    "source_commit": "c6a500876d9e61881c14cff188bbdb538aa50fe4",
+    "module_path": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-autonomy\\autonomy\\evidence\\u1_event_envelope_20261102\\package\\install\\payload\\python\\autonomy\\inventory_event_bridge.py",
+    "run": 24,
+    "failures": 0,
+    "errors": 0,
+    "passed": true,
+    "seconds": 10.424
+  },
+  "comparison": {
+    "baseline_commit": "ec857d67d8087222c8b190dcb2776d072080ac14",
+    "candidate_commit": "c6a500876d9e61881c14cff188bbdb538aa50fe4",
+    "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-_vpksjg7",
+    "complete": true,
+    "baseline_run": 833,
+    "candidate_run": 833,
+    "baseline_failures": 37,
+    "candidate_failures": 37,
+    "baseline_errors": 17,
+    "candidate_errors": 17,
+    "failure_ids_identical": true,
+    "error_ids_identical": true,
+    "all_green": false,
+    "no_new_regression": true
+  },
+  "build": {
+    "artifacts": {
+      "install.zip": "cece699786bc4c0fb2d7d8dffe3020acc6bcb05757a09a41d75b50b60b2c5b97",
+      "rollback-tools.zip": "f432a2f1b764c28f100a8a252489d68001840033039d7f1393820e9aab8001fd"
+    },
+    "files": 65,
+    "independent_review": "PENDING",
+    "manifest_sha256": "33a3577e893253688ea6ab5a85f63f8c858e5c5b6265f9e89857cf3b3f169597",
+    "production_ready": false,
+    "source_commit": "c6a500876d9e61881c14cff188bbdb538aa50fe4"
+  },
+  "host_manifest_sha256": "d423f5397e237f340eaa04db60b4e2a251e128ca5a2acc559270eb37726d4199",
+  "states": {
+    "DEVELOPMENT_COMPLETE": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false
+  },
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "business_growth": "UNKNOWN",
+  "formal_backend_integrated": false,
+  "formal_maintenance_lease_enforced": false,
+  "production_owner_configuration_changed": false,
+  "next_action": "Implement enforced live maintenance-exclusion admission in the existing installer; then formal backend and sole-owner configuration. Do not repeat environment collection or install services.",
+  "next_action_zh": "在现有安装器接入强制实时维护排斥校验；随后补正式后端与唯一原 owner 配置。不重复采集环境，不安装服务。",
+  "workbuddy_readback": {
+    "commit": "1c7ba79ac5fec334ae80cabcb2083157ab0a0a71",
+    "files": [
+      {
+        "path": "handoff/workbuddy/production/U1_WINDOWS_COMPAT_20261102.json",
+        "git_blob_sha": "eefd74f48c1520801c4a670bdc061f037240073e",
+        "verified": true,
+        "bytes": 23934,
+        "sha256": "955882e800a6702ae73b0ab60440ea64c54c79bc987199a41275becaef04808d"
+      },
+      {
+        "path": "handoff/workbuddy/production/U1_WINDOWS_COMPAT_20261102.md",
+        "git_blob_sha": "cc0937f5321302c6f5c996d60ced4c8c6f4247f4",
+        "verified": true,
+        "bytes": 26149,
+        "sha256": "660044cbaacd0173a81e5208bcce7394f9c7bdee4d56c15de7a3649c1addc981"
+      }
+    ],
+    "schema_validation": "JSON parsed; producer/schema/required structural fields verified; no independent JSON Schema supplied",
+    "generated_at": "2026-11-02T17:38:10+08:00",
+    "sample_window": "2026-11-02T17:36:02+08:00 .. 2026-11-02T17:38:10+08:00",
+    "git_commit_time": "2026-11-02T17:39:40+08:00",
+    "final_verdicts": {
+      "FIXED_CANDIDATE_RECEIVED": false,
+      "CANDIDATE_BINDING_FIELDS_SATISFIED": "1/6",
+      "WINDOWS_COMPATIBILITY": "BLOCKED_NO_FIXED_CANDIDATE",
+      "INSTALLATION_ACCEPTED": false,
+      "UNATTENDED_ACCEPTED": false,
+      "PRODUCTION_ACCEPTED": false,
+      "SOURCE_AND_EVIDENCE_SHA_VERIFIED": true,
+      "ACL_RULING_IMPLEMENTED_IN_CODE": true,
+      "RUNTIME_CONTRACT_SATISFIED_ON_HOST": true,
+      "PREINSTALL_ENV_CLEAN": true,
+      "AUDIT_ROOT_PRECONDITION": "BLOCKED_ADMIN_REQUIRED",
+      "PROXY_UNATTENDED": "NOT_SUPPORTED_OBSERVED",
+      "PROXY_LOGOFF_EGRESS": "UNKNOWN",
+      "BRIDGE_CROSS_CALL_PERSISTENCE": false,
+      "BRIDGE_AUTOSTART_EFFECTIVE": false,
+      "CURRENT_SAFE": "UNKNOWN",
+      "BUSINESS_GROWTH_VERIFIED": "UNKNOWN"
+    },
+    "scope": "Windows compatibility only; no new production SAFE/Inventory acceptance",
+    "historical_candidate": "0db17b51d8ce464f1f57dd5ef40d0df266dcf3f8",
+    "historical_candidate_binding": "1/6 refers to 0db17b5 at sample time, not 70ee721 or current c6a5008; never rewritten",
+    "formal_receipt_published": false
+  }
+}

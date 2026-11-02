@@ -1,0 +1,16 @@
+{
+  "source_commit": "c6a500876d9e61881c14cff188bbdb538aa50fe4",
+  "files": {
+    "autonomy/inventory_event_bridge.py": {
+      "git_blob_sha": "44520b8f9c426b8a355bff3b99127cc5bacc19f9",
+      "sha256": "6336473160748c818af8dbd65e615858693b23d970181de8bd1ee6ee1c8c0a51",
+      "bytes": 11259
+    },
+    "test_inventory_event_bridge.py": {
+      "git_blob_sha": "fb481f60214eaab13436bd1091f7307dff56bda0",
+      "sha256": "968e6e023e9b5bfd6b80defb41ac1682cefcece9c9649ce5bde1056225d8d086",
+      "bytes": 8353
+    }
+  },
+  "independent_review": "PENDING_FOR_CURRENT_PIN"
+}

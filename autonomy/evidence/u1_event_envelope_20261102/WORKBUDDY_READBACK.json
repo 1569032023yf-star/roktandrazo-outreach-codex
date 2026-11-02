@@ -1,0 +1,46 @@
+{
+  "commit": "1c7ba79ac5fec334ae80cabcb2083157ab0a0a71",
+  "files": [
+    {
+      "path": "handoff/workbuddy/production/U1_WINDOWS_COMPAT_20261102.json",
+      "git_blob_sha": "eefd74f48c1520801c4a670bdc061f037240073e",
+      "verified": true,
+      "bytes": 23934,
+      "sha256": "955882e800a6702ae73b0ab60440ea64c54c79bc987199a41275becaef04808d"
+    },
+    {
+      "path": "handoff/workbuddy/production/U1_WINDOWS_COMPAT_20261102.md",
+      "git_blob_sha": "cc0937f5321302c6f5c996d60ced4c8c6f4247f4",
+      "verified": true,
+      "bytes": 26149,
+      "sha256": "660044cbaacd0173a81e5208bcce7394f9c7bdee4d56c15de7a3649c1addc981"
+    }
+  ],
+  "schema_validation": "JSON parsed; producer/schema/required structural fields verified; no independent JSON Schema supplied",
+  "generated_at": "2026-11-02T17:38:10+08:00",
+  "sample_window": "2026-11-02T17:36:02+08:00 .. 2026-11-02T17:38:10+08:00",
+  "git_commit_time": "2026-11-02T17:39:40+08:00",
+  "final_verdicts": {
+    "FIXED_CANDIDATE_RECEIVED": false,
+    "CANDIDATE_BINDING_FIELDS_SATISFIED": "1/6",
+    "WINDOWS_COMPATIBILITY": "BLOCKED_NO_FIXED_CANDIDATE",
+    "INSTALLATION_ACCEPTED": false,
+    "UNATTENDED_ACCEPTED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "SOURCE_AND_EVIDENCE_SHA_VERIFIED": true,
+    "ACL_RULING_IMPLEMENTED_IN_CODE": true,
+    "RUNTIME_CONTRACT_SATISFIED_ON_HOST": true,
+    "PREINSTALL_ENV_CLEAN": true,
+    "AUDIT_ROOT_PRECONDITION": "BLOCKED_ADMIN_REQUIRED",
+    "PROXY_UNATTENDED": "NOT_SUPPORTED_OBSERVED",
+    "PROXY_LOGOFF_EGRESS": "UNKNOWN",
+    "BRIDGE_CROSS_CALL_PERSISTENCE": false,
+    "BRIDGE_AUTOSTART_EFFECTIVE": false,
+    "CURRENT_SAFE": "UNKNOWN",
+    "BUSINESS_GROWTH_VERIFIED": "UNKNOWN"
+  },
+  "scope": "Windows compatibility only; no new production SAFE/Inventory acceptance",
+  "historical_candidate": "0db17b51d8ce464f1f57dd5ef40d0df266dcf3f8",
+  "historical_candidate_binding": "1/6 refers to 0db17b5 at sample time, not 70ee721 or current c6a5008; never rewritten",
+  "formal_receipt_published": false
+}
