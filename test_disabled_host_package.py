@@ -22,6 +22,7 @@ class DisabledPackageTests(unittest.TestCase):
         result=build_package(self.root/'package',self.artifacts,self.hashes,source_commit='a'*40)
         self.assertFalse(result['allow_install']);self.assertFalse(result['production_ready'])
         self.assertEqual(result['manifest']['start_type'],'Disabled')
+        self.assertEqual(result['manifest']['installer_version'],'1.1.0')
         self.assertEqual(result['manifest']['account'],r'NT SERVICE\RoktU1Bridge')
         raw=(self.root/'package'/'manifest.json').read_bytes()
         self.assertEqual(hashlib.sha256(raw).hexdigest(),result['manifest_sha256'])
@@ -48,6 +49,21 @@ class DisabledPackageTests(unittest.TestCase):
             data['config/host.json']=canonical(config)
             with self.assertRaisesRegex(PackageError,'UNSAFE_HOST_CONFIG'):
                 validate_inputs(data,{k:hashlib.sha256(v).hexdigest() for k,v in data.items()},source_commit='a'*40)
+    @unittest.skipUnless(os.name=='nt','Actual Windows PowerShell binding gate')
+    def test_exact_source_and_installer_version_gate(self):
+        import base64
+        source=(Path(__file__).parent/'autonomy/windows/Install-DisabledHost.ps1').read_text(encoding='utf-8')
+        gate=source[source.index('# This approval is independent'):source.index("if ($m.schema")]
+        for commit,version,accepted in [('a'*40,'1.1.0',True),('b'*40,'1.1.0',False),
+                                        ('A'*40,'1.1.0',False),('', '1.1.0',False),
+                                        ('a'*40,'1.0.0',False),('a'*40,None,False)]:
+            with self.subTest(commit=commit,version=version):
+                raw=json.dumps(dict(source_commit=commit,installer_version=version))
+                code="$ErrorActionPreference='Stop';$ApprovedSourceCommit='"+'a'*40+"';$m='"+raw+"'|ConvertFrom-Json;"+gate
+                encoded=base64.b64encode(code.encode('utf-16le')).decode('ascii')
+                run=subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-EncodedCommand',encoded],capture_output=True,timeout=20,creationflags=subprocess.CREATE_NO_WINDOW)
+                self.assertEqual(run.returncode==0,accepted,run.stderr.decode(errors='replace'))
+
     @unittest.skipUnless(os.name=='nt','Windows compiler/parser test')
     def test_powershell_actual_parser_and_no_start_or_state_delete(self):
         scripts=Path(__file__).parent/'autonomy/windows'

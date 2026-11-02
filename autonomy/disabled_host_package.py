@@ -9,6 +9,7 @@ import re
 from pathlib import Path, PurePosixPath
 
 SCHEMA = 'rokt.disabled-host-package.v1'
+INSTALLER_VERSION = '1.1.0'
 INVENTORY = '1784775229336'
 SERVICE = 'RoktU1Bridge'
 ACCOUNT = r'NT SERVICE\RoktU1Bridge'
@@ -96,7 +97,7 @@ def validate_inputs(artifacts, approved_hashes, *, source_commit):
             type(f['sha256']) is not str or re.fullmatch('[0-9a-f]{64}',f['sha256']) is None or
             type(f['version']) is not str or not 1<=len(f['version'])<=128):
             raise PackageError('INVALID_RUNTIME_DEPENDENCY')
-    return dict(schema=SCHEMA,source_commit=source_commit,inventory_id=INVENTORY,
+    return dict(schema=SCHEMA,source_commit=source_commit,installer_version=INSTALLER_VERSION,inventory_id=INVENTORY,
                 service_name=SERVICE,account=ACCOUNT,start_type='Disabled',
                 code_root=CODE_ROOT,state_root=STATE_ROOT,files=rows,
                 allow_start=False,allow_dispatch=False,allow_cancel_dispatch=False,

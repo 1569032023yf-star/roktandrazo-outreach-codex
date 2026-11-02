@@ -35,3 +35,6 @@ RESERVED events cannot execute again after death, lost responses or credential e
 独立操作使用明确的 `OperationId`（64位小写十六进制），同一操作重复调用不重放。已确认回滚结束后，可以用新的显式操作 ID 安装相同包；未知操作不能通过换 ID 绕过全局未决封锁。
 
 Use an explicit 64-character lowercase hex OperationId per approved operation. Repeating an operation never replays it. After confirmed rollback, a new explicit operation ID may install the same package. A new ID cannot bypass another pending/unknown operation.
+
+安装器版本 / Installer version: `1.1.0`. 新安装、升级与恢复均要求独立批准的 `-ApprovedSourceCommit` 与包内 source_commit 完全一致；清单版本不匹配在任何变更前拒绝。
+First install, upgrade and recovery require independent `-ApprovedSourceCommit` matching the package source exactly; installer-version mismatch is rejected before effects. Existing receipt v2 remains readable for upgrade ownership; new receipts record source/version. This does not establish formal maintenance authority.

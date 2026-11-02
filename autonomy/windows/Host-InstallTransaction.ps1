@@ -98,7 +98,7 @@ function Invoke-HostInstallTransaction {
         @{outcome='ROLLED_BACK';allow_start=$false;state_preserved=[bool]$header.extra.upgrade;fresh_roots_restored_absent=(-not $header.extra.upgrade)} | ConvertTo-Json
     }
     if (-not $Execute) {
-        @{outcome='PLAN_ONLY';upgrade=[bool]$Upgrade;allow_start=$false;allow_dispatch=$false;state_preserved=$true} | ConvertTo-Json
+        @{outcome='PLAN_ONLY';source_commit=$m.source_commit;installer_version=$m.installer_version;upgrade=[bool]$Upgrade;allow_start=$false;allow_dispatch=$false;state_preserved=$true} | ConvertTo-Json
         return
     }
     $principal=New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
@@ -161,7 +161,7 @@ function Invoke-HostInstallTransaction {
             $hasher=[Security.Cryptography.SHA256]::Create()
             try {$fileHashes[$relative]=([BitConverter]::ToString($hasher.ComputeHash($bytes))).Replace('-','').ToLowerInvariant()} finally {$hasher.Dispose()}
         }
-        $receipt=@{schema='rokt.disabled-host-install-receipt.v2';manifest_sha256=$ApprovedManifestSha256;operation_id=$operation;service_name=$name;account=$account;image=$image;wrapper_sha256=$fileHashes['service/RoktU1Bridge.exe'];files=$fileHashes;state_preserved=$true}
+        $receipt=@{schema='rokt.disabled-host-install-receipt.v2';source_commit=$m.source_commit;installer_version=$m.installer_version;manifest_sha256=$ApprovedManifestSha256;operation_id=$operation;service_name=$name;account=$account;image=$image;wrapper_sha256=$fileHashes['service/RoktU1Bridge.exe'];files=$fileHashes;state_preserved=$true}
         $fileBytes['config/installation.json']=[Convert]::ToBase64String([Text.UTF8Encoding]::new($false).GetBytes(($receipt | ConvertTo-Json -Depth 8 -Compress)))
         $request=@{files=$fileBytes;manifest_sha256=$ApprovedManifestSha256;root_created=(-not $Upgrade);previous_receipt=$(if ($previous) {[Convert]::ToBase64String($previous)} else {$null});previous_receipt_sha256=$(if ($Upgrade) {$ApprovedPreviousReceiptSha256} else {$null})}
         Write-HostPhase 'FILES_INTENT'
