@@ -1,3 +1,9 @@
+# 当前交付恢复点 / Current delivery checkpoint — 2026-11-02
+
+固定源码 / Fixed source: fb6f667a1456a7d81e432e7cc87727697ef9fb9f。范围冻结：实际发布器与宿主集成，停止检查器测试空转。新增版本化文件发布器支持首装、新文件升级、备份、原子激活、删除未引用版本与恢复；Python认证只读宿主接入发布版本和进程锁。35项定向PASS；57文件固定包真实安装目录内隔离导入/认证HTTP/退回未安装PASS。Independent review PENDING; SCM-to-Python/Job Object, formal execution backend and original Inventory lock integration remain incomplete. 完整宿主和无人登录验收未通过，生产派发关闭，未安装服务。
+
+下一项 / Next: SCM verified active-version resolver plus Python Job Object supervision, then formal backend/original Inventory integration; fixed-source independent review. 报告 / Report: autonomy/evidence/u1_delivery_20261102/REPORT.md。Install/rollback candidate archives in fixed-package/. 四交付总状态false，BUSINESS_GROWTH=UNKNOWN；WorkBuddy既有证据/回执复用不重发。
+
 # 当前恢复点 / Current recovery point — 2026-11-02 10:47+08
 
 源码 / Source: c582ae72ea0b7de793aeaae81743913fdcd7cb71。离线状态读取增加operation/manifest/lease头绑定、畸形JSON拒绝和16KiB读取上限；4新增、18定向PASS1.001s、125组合PASS6.672s。Header binding and bounded parsing verified; authenticity/readback identity remain unproven. 独审 / Independent review PENDING；生产、安装、取消派发关闭；无人登录持久性未通过。WB13d061a不变，既有回执6561646296不重发。

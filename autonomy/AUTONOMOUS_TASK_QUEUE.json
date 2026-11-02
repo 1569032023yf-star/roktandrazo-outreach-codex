@@ -576,14 +576,14 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/source_process_20261101/REPORT.md",
-      "next_action": "Offline close-to-read journal substitution and I/O error contracts with readback identity verification; pinned independent review PENDING; formal identity/ACL/lease/backend and unattended acceptance blocked.",
+      "checkpoint": "autonomy/evidence/u1_delivery_20261102/REPORT.md",
+      "next_action": "Freeze U1 delivery scope: integrate verified active-version resolver into SCM startup; supervise Python with Job Object; connect formal backend and existing Inventory durable claim/lock; obtain fixed-source independent review. Do not continue inspector-only test increments. No production service install/start without explicit authorization.",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
-      "review_status": "PENDING_CURRENT_SOURCE_PROCESS_CANDIDATE",
+      "review_status": "PENDING_FIXED_DELIVERY_SOURCE",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "ac0e9af1694447027ab4cb9128e4bcaca085e824",
+      "candidate_commit": "fb6f667a1456a7d81e432e7cc87727697ef9fb9f",
       "trust_boundary_review": "SCOPED_PASS",
       "schedule_contract_review": "SCOPED_PASS",
       "regression_runner_candidate": "b69214d",
@@ -1649,6 +1649,26 @@
         "allow_install": false,
         "allow_dispatch": false,
         "allow_cancel_dispatch": false
+      },
+      "u1_actual_delivery_latest": {
+        "source_commit": "fb6f667a1456a7d81e432e7cc87727697ef9fb9f",
+        "scope_frozen": true,
+        "real_code_changes": [
+          "versioned_file_publisher",
+          "actual_package_builder",
+          "authenticated_python_host_bootstrap"
+        ],
+        "tests_passed": 35,
+        "installed_package_http_pass": true,
+        "package_files": 57,
+        "package_build": "autonomy/evidence/u1_delivery_20261102/fixed-package/BUILD.json",
+        "independent_review": "PENDING",
+        "scm_python_supervision_complete": false,
+        "formal_backend_integrated": false,
+        "original_inventory_integrated": false,
+        "allow_dispatch": false,
+        "production_deployed": false,
+        "release_ready": false
       }
     },
     {

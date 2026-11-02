@@ -1,0 +1,11 @@
+{
+  "source_commit": "fb6f667a1456a7d81e432e7cc87727697ef9fb9f",
+  "manifest_sha256": "a754ae2604c2584a09d4402b4915ada1bbd8b76f029732023fb8b233a48a87f8",
+  "actual_package_files": 57,
+  "installed_isolated_import": true,
+  "authenticated_http": "PASS_EPHEMERAL_LOOPBACK_PORT",
+  "first_install_rollback": "PASS",
+  "service_installed": false,
+  "production_dispatch": false,
+  "stdout": "INSTALLED_PYTHON_AUTHENTICATED_HTTP_PASS"
+}

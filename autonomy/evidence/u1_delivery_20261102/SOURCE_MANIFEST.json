@@ -1,0 +1,25 @@
+{
+  "source_commit": "fb6f667a1456a7d81e432e7cc87727697ef9fb9f",
+  "files": [
+    {
+      "path": "autonomy/release_store.py",
+      "git_blob_sha": "b6b26ac7fb52820648d5d52f2cd562542a354ea9"
+    },
+    {
+      "path": "autonomy/build_u1_delivery.py",
+      "git_blob_sha": "59032ae71be356bb6b7fc94dc460ef35574c7b10"
+    },
+    {
+      "path": "autonomy/u1_host_runtime.py",
+      "git_blob_sha": "a75feaf427b36e73adc639c2a2c4be386b950b44"
+    },
+    {
+      "path": "test_release_store.py",
+      "git_blob_sha": "081f62a6903ea855d148118863013b7a1e0ea4f3"
+    },
+    {
+      "path": "test_u1_host_runtime.py",
+      "git_blob_sha": "e2ddd5c28a03386b751564c61e2e8f767460eb9b"
+    }
+  ]
+}

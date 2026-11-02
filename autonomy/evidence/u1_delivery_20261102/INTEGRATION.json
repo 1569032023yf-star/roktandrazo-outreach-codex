@@ -1,0 +1,10 @@
+{
+  "actual_package_files": 56,
+  "first_install": "PASS",
+  "upgrade_added_file": "PASS",
+  "upgrade_rollback": "PASS",
+  "first_install_rollback": "PASS",
+  "production_touched": false,
+  "service_changed": false,
+  "source_commit": "800dfabe0e038bf9a0ba185b53690fef9f0e8dc2"
+}
