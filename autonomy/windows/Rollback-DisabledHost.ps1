@@ -14,15 +14,28 @@ function Assert-NoReparseAncestors([string]$Path) {
         if ($parent -eq $cursor) { break }; $cursor=$parent
     }
 }
-$receiptPath='C:\ProgramData\RoktU1Bridge\installation.json'
+$receiptPath='C:\Program Files\RoktU1Bridge\v1\config\installation.json'
 $wrapper='C:\Program Files\RoktU1Bridge\v1\service\RoktU1Bridge.exe'
+$ownershipPins=New-Object Collections.ArrayList
+function Read-PinnedOwnership([string]$Path) {
+    Assert-NoReparseAncestors $Path
+    $stream=[IO.FileStream]::new($Path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+    [void]$ownershipPins.Add($stream)
+    if ($stream.Length -gt 16777216) { throw 'OWNERSHIP_FILE_TOO_LARGE' }
+    $memory=[IO.MemoryStream]::new()
+    try { $stream.CopyTo($memory); return ,$memory.ToArray() } finally { $memory.Dispose() }
+}
 function Assert-OwnedRegistration {
     foreach ($p in @($receiptPath,$wrapper)) { Assert-NoReparseAncestors $p }
-    $receipt=Get-Content -LiteralPath $receiptPath -Raw | ConvertFrom-Json
+    $receipt=[Text.Encoding]::UTF8.GetString((Read-PinnedOwnership $receiptPath)) | ConvertFrom-Json
+    $wrapperBytes=Read-PinnedOwnership $wrapper
+    $hash=[Security.Cryptography.SHA256]::Create()
+    try { $wrapperHash=([BitConverter]::ToString($hash.ComputeHash($wrapperBytes))).Replace('-','').ToLowerInvariant() } finally { $hash.Dispose() }
     if ($receipt.schema -cne 'rokt.disabled-host-install-receipt.v1' -or $receipt.manifest_sha256 -cne $ApprovedManifestSha256 -or
         $receipt.service_name -cne $name -or $receipt.account -cne 'NT SERVICE\RoktU1Bridge' -or $receipt.image -cne $image -or
-        (Get-FileHash -LiteralPath $wrapper -Algorithm SHA256).Hash.ToLowerInvariant() -cne $receipt.wrapper_sha256) { throw 'INSTALLATION_RECEIPT_MISMATCH' }
+        $wrapperHash -cne $receipt.wrapper_sha256) { throw 'INSTALLATION_RECEIPT_MISMATCH' }
 }
+try {
 $svc=Get-CimInstance Win32_Service -Filter "Name='$name'"
 if (-not $svc) { @{outcome='ALREADY_ABSENT';state_preserved=$true} | ConvertTo-Json; return }
 Assert-OwnedRegistration
@@ -45,3 +58,5 @@ try {
     if (Get-CimInstance Win32_Service -Filter "Name='$name'") { throw 'DELETE_READBACK_FAILED' }
     @{outcome='REGISTRATION_REMOVED';state_preserved=$true;code_preserved=$true;allow_dispatch=$false} | ConvertTo-Json
 } finally { $mutex.ReleaseMutex(); $mutex.Dispose() }
+
+} finally { foreach ($pin in $ownershipPins) { $pin.Dispose() } }

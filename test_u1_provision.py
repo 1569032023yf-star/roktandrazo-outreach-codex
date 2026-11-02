@@ -25,5 +25,25 @@ class ProvisionTests(unittest.TestCase):
    self.assertNotEqual(run(sha).returncode,0)
    self.assertNotEqual(run('0'*64).returncode,0)
 
+class OwnershipReceiptTests(unittest.TestCase):
+ def test_actual_receipt_writer_and_rollback_pins(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   root=Path(tmp); (root/'config').mkdir(); wrapper=root/'wrapper.exe'; wrapper.write_bytes(b'isolated wrapper')
+   install=Path('autonomy/windows/Install-DisabledHost.ps1').read_text()
+   writer=install[install.index('    # Ownership evidence belongs'):install.index('    $result.installed=$true')]
+   rollback=Path('autonomy/windows/Rollback-DisabledHost.ps1').read_text()
+   reader=rollback[rollback.index('$ownershipPins='):rollback.index('function Assert-OwnedRegistration')]
+   quote=lambda x: "'"+str(x).replace("'","''")+"'"
+   code="$ErrorActionPreference='Stop'; function Assert-NoReparseAncestors($p) {}; $code="+quote(root)+"; $receipt=@{schema='isolated'};"+writer
+   code+=reader+"; $path=Join-Path $code 'config/installation.json'; $bytes=Read-PinnedOwnership $path; $w=Read-PinnedOwnership "+quote(wrapper)+";"
+   code+="if ([Text.Encoding]::UTF8.GetString($bytes) -cne '{\"schema\":\"isolated\"}') {throw 'CONTENT_MISMATCH'};"
+   code+="foreach ($p in @($path,"+quote(wrapper)+")) {$blocked=$false; try {[IO.File]::WriteAllText($p,'changed')} catch [IO.IOException] {$blocked=$true}; if (-not $blocked) {throw 'WRITE_NOT_BLOCKED'}}; foreach ($pin in $ownershipPins) {$pin.Dispose()};"
+   code+="$refused=$false; try {"+writer+"} catch [IO.IOException] {$refused=$true}; if (-not $refused) {throw 'RECEIPT_OVERWRITE_ALLOWED'}"
+   run=subprocess.run(['pwsh','-NoProfile','-Command',code],capture_output=True,text=True,timeout=15)
+   self.assertEqual(run.returncode,0,run.stderr)
+   self.assertEqual(json.loads((root/'config/installation.json').read_text()),{'schema':'isolated'})
+   self.assertIn("$receiptPath='C:\\Program Files\\RoktU1Bridge\\v1\\config\\installation.json'",rollback)
+   self.assertNotIn("$receiptPath='C:\\ProgramData",rollback)
+
 if __name__=='__main__':unittest.main()
 

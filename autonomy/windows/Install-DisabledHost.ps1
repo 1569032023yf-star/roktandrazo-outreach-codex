@@ -169,7 +169,14 @@ try {
     $svc=Get-CimInstance Win32_Service -Filter "Name='$name'"
     if ($svc.StartMode -cne 'Disabled' -or $svc.State -cne 'Stopped' -or $svc.StartName -ine $account -or $svc.PathName -cne $args.PathName) { throw 'DISABLED_SERVICE_READBACK_FAILED' }
     $receipt=[ordered]@{schema='rokt.disabled-host-install-receipt.v1';manifest_sha256=$ApprovedManifestSha256;service_name=$name;account=$account;image=$args.PathName;wrapper_sha256=($m.files | Where-Object {$_.path -ceq 'service/RoktU1Bridge.exe'}).sha256;state_preserved=$true}
-    $receipt | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $state 'installation.json') -Encoding UTF8
+    # Ownership evidence belongs to the administrator-controlled code tree,
+    # never the service-writable durable state tree. Refuse replacement on retry.
+    $receiptPath=Join-Path $code 'config/installation.json'
+    Assert-NoReparseAncestors $receiptPath
+    $receiptBytes=[Text.UTF8Encoding]::new($false).GetBytes(($receipt | ConvertTo-Json -Compress))
+    $receiptStream=[IO.FileStream]::new($receiptPath,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
+    try { $receiptStream.Write($receiptBytes,0,$receiptBytes.Length); $receiptStream.Flush($true) } finally { $receiptStream.Dispose() }
+    if ([Convert]::ToBase64String([IO.File]::ReadAllBytes($receiptPath)) -cne [Convert]::ToBase64String($receiptBytes)) { throw 'INSTALLATION_RECEIPT_READBACK_FAILED' }
     $result.installed=$true
     $result['runtime_configured']=($generated.Count -eq 2)
     $result | ConvertTo-Json
