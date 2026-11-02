@@ -1774,7 +1774,27 @@
           "scope": "Windows compatibility only; no new production SAFE/Inventory acceptance",
           "historical_candidate": "0db17b51d8ce464f1f57dd5ef40d0df266dcf3f8",
           "historical_candidate_binding": "1/6 refers to 0db17b5 at sample time, not 70ee721 or current c6a5008; never rewritten",
-          "formal_receipt_published": false
+          "formal_receipt_published": true,
+          "receipt": {
+            "id": 6576621682,
+            "url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6576621682",
+            "readback_verified": true,
+            "verified_at": "2026-11-02T12:01:57.703649+00:00",
+            "source_commit": "c6a500876d9e61881c14cff188bbdb538aa50fe4",
+            "evidence_commit": "45e360cb958a263a66293ebdeaf87e2ced978456",
+            "CODEX_HANDOFF_CONSUMED": true,
+            "scope": "Only two Windows compatibility files at WorkBuddy1c7ba79; not another production-evidence receipt"
+          }
+        },
+        "receipt": {
+          "id": 6576621682,
+          "url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6576621682",
+          "readback_verified": true,
+          "verified_at": "2026-11-02T12:01:57.703649+00:00",
+          "source_commit": "c6a500876d9e61881c14cff188bbdb538aa50fe4",
+          "evidence_commit": "45e360cb958a263a66293ebdeaf87e2ced978456",
+          "CODEX_HANDOFF_CONSUMED": true,
+          "scope": "Only two Windows compatibility files at WorkBuddy1c7ba79; not another production-evidence receipt"
         }
       },
       "u1_scm_integration_latest": {
@@ -4391,7 +4411,27 @@
       "scope": "Windows compatibility only; no new production SAFE/Inventory acceptance",
       "historical_candidate": "0db17b51d8ce464f1f57dd5ef40d0df266dcf3f8",
       "historical_candidate_binding": "1/6 refers to 0db17b5 at sample time, not 70ee721 or current c6a5008; never rewritten",
-      "formal_receipt_published": false
+      "formal_receipt_published": true,
+      "receipt": {
+        "id": 6576621682,
+        "url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6576621682",
+        "readback_verified": true,
+        "verified_at": "2026-11-02T12:01:57.703649+00:00",
+        "source_commit": "c6a500876d9e61881c14cff188bbdb538aa50fe4",
+        "evidence_commit": "45e360cb958a263a66293ebdeaf87e2ced978456",
+        "CODEX_HANDOFF_CONSUMED": true,
+        "scope": "Only two Windows compatibility files at WorkBuddy1c7ba79; not another production-evidence receipt"
+      }
+    },
+    "receipt": {
+      "id": 6576621682,
+      "url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6576621682",
+      "readback_verified": true,
+      "verified_at": "2026-11-02T12:01:57.703649+00:00",
+      "source_commit": "c6a500876d9e61881c14cff188bbdb538aa50fe4",
+      "evidence_commit": "45e360cb958a263a66293ebdeaf87e2ced978456",
+      "CODEX_HANDOFF_CONSUMED": true,
+      "scope": "Only two Windows compatibility files at WorkBuddy1c7ba79; not another production-evidence receipt"
     }
   }
 }

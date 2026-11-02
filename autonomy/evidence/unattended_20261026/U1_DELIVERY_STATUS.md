@@ -24,6 +24,8 @@ English: Read and recomputed blobs for two Windows compatibility files at the pi
 中文：8791跨调用与自启仍未通过；7877无人登录可用 NOT_SUPPORTED_OBSERVED（N=2），注销/重启实际出口 UNKNOWN。SAFE/Inventory沿用此前生产证据，不从Windows报告推导业务增长或零漏跑。未重启采集、未更改生产服务/ACL/调度/数据库/账本/SMTP。
 English:8791 persistence/autostart remain unaccepted;7877 unattended availability is NOT_SUPPORTED_OBSERVED(N=2), actual logoff/reboot egress UNKNOWN. Existing production SAFE/Inventory evidence remains scoped; no collection, service, ACL, scheduling, DB, ledger or mail changes occurred.
 
+消费回执 / Verified consumption receipt: https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6576621682 (CODEX_HANDOFF_CONSUMED=true; Windows-only scope).
+
 下一唯一动作 / Next action: 在现有安装器接入强制实时维护排斥校验；随后补正式后端与唯一原 owner 配置。不重复采集环境，不安装服务。
 Implement enforced live maintenance-exclusion admission in the existing installer; then formal backend and sole-owner configuration. Do not repeat environment collection or install services.
 
