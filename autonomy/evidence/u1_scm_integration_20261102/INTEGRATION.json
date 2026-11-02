@@ -1,0 +1,11 @@
+{
+  "source_commit": "d1e613cdb64f957907812b87c5a0c867531c6d4f",
+  "package_files": 59,
+  "manifest_sha256": "40200f7f9ee1022c6c7566dd8dfb11aaa1e0192cc292c95267ba57432ca78968",
+  "real_packaged_bootstrap_resolution": "PASS",
+  "tampered_runtime_rejected": "PASS",
+  "first_install_rollback": "PASS",
+  "initial_candidate": "ee65281 failed HOST_MISSING; fixed namespace-package requirement in d1e613c",
+  "scm_service_installed": false,
+  "production_8791_bound": false
+}

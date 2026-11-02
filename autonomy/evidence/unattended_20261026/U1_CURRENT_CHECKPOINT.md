@@ -1,3 +1,9 @@
+# 当前交付恢复点 / Current delivery checkpoint — SCM integration 2026-11-02
+
+固定源码 / Fixed source: d1e613cdb64f957907812b87c5a0c867531c6d4f。RoktU1Bridge已接入固定Python引导器、挂起创建/Job绑定/恢复、整树终止及清理核验；引导器核验active版本全文件后加载Python宿主。36定向PASS11.384s；真实Windows父子进程清理通过；59文件固定包解析/篡改拒绝/首装回滚PASS。Fixed package resolves namespace modules after correcting HOST_MISSING; independent review PENDING. 未安装/启动SCM服务，正式backend和原Inventory持久锁未接线，无人登录未验收，生产派发关闭。
+
+下一项 / Next: disabled supervisor/runtime configuration provisioning and installer readback, then existing durable backend/original Inventory admission integration. 报告 / Report: autonomy/evidence/u1_scm_integration_20261102/REPORT.md。四总体状态false；BUSINESS_GROWTH=UNKNOWN；保留原Inventory与SMTP安全边界。
+
 # 当前交付恢复点 / Current delivery checkpoint — 2026-11-02
 
 固定源码 / Fixed source: fb6f667a1456a7d81e432e7cc87727697ef9fb9f。范围冻结：实际发布器与宿主集成，停止检查器测试空转。新增版本化文件发布器支持首装、新文件升级、备份、原子激活、删除未引用版本与恢复；Python认证只读宿主接入发布版本和进程锁。35项定向PASS；57文件固定包真实安装目录内隔离导入/认证HTTP/退回未安装PASS。Independent review PENDING; SCM-to-Python/Job Object, formal execution backend and original Inventory lock integration remain incomplete. 完整宿主和无人登录验收未通过，生产派发关闭，未安装服务。
