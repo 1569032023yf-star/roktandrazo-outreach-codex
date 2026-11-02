@@ -1,0 +1,7 @@
+定向测试 / Focused tests: 18 PASS, 1.001s
+Combination tests / 组合测试: 125 PASS, 6.672s
+New tests / 新增测试: 4
+Independent review / 独立审核: PENDING
+Commands: python -B -m unittest test_inspect_binding test_install_journal test_install_contract test_bound_audit_contract -q
+Combined: test_inspect_binding plus the prior 121-test journal/source/namespace/install/host/recovery set.
+Outer subprocess timeout: 120 seconds. git diff --check: PASS.

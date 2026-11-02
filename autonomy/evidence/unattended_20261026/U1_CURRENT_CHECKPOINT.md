@@ -1,3 +1,9 @@
+# 当前恢复点 / Current recovery point — 2026-11-02 10:47+08
+
+源码 / Source: c582ae72ea0b7de793aeaae81743913fdcd7cb71。离线状态读取增加operation/manifest/lease头绑定、畸形JSON拒绝和16KiB读取上限；4新增、18定向PASS1.001s、125组合PASS6.672s。Header binding and bounded parsing verified; authenticity/readback identity remain unproven. 独审 / Independent review PENDING；生产、安装、取消派发关闭；无人登录持久性未通过。WB13d061a不变，既有回执6561646296不重发。
+
+下一项 / Next: close-to-read substitution and I/O error contracts with readback identity verification. 报告 / Report: autonomy/evidence/inspect_binding_20261102/REPORT.md。DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false; BUSINESS_GROWTH=UNKNOWN.
+
 # 当前恢复点 / Current recovery point — 2026-11-02 07:48+08
 
 候选 / Candidate: 23c872eab5e8138ca8f42596508223251af7e21b；运行源码未改，真实Windows3新增/20定向/121组合PASS7.497s，独审PENDING。Actual journal replacement denial/hardlink invalidation/child corruption exit47 verified; not ACL/unattended acceptance. WB13d061a不变，回执6561646296不重发；生产/安装/取消派发关闭。

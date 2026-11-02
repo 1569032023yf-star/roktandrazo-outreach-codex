@@ -577,7 +577,7 @@
       "status": "in_progress",
       "executor": "current_authorized_chat",
       "checkpoint": "autonomy/evidence/source_process_20261101/REPORT.md",
-      "next_action": "Offline inspect_install operation/manifest/lease binding, malformed-field and bounded-read contracts; pinned independent review PENDING; formal Windows identity/ACL/lease/backend and unattended acceptance blocked.",
+      "next_action": "Offline close-to-read journal substitution and I/O error contracts with readback identity verification; pinned independent review PENDING; formal identity/ACL/lease/backend and unattended acceptance blocked.",
       "phase": "U1",
       "baseline_commit": "b3a0d3ae26ef99fea5f458ec029301d233a27f7c",
       "review_status": "PENDING_CURRENT_SOURCE_PROCESS_CANDIDATE",
@@ -1634,6 +1634,21 @@
         "allow_cancel_dispatch": false,
         "summary_zh": "真实Windows验证命名替换拒、硬链接停写和损坏子进程退出后UNKNOWN不重放。",
         "summary_en": "Actual Windows named replacement denial, hardlink invalidation and UNKNOWN no replay after corrupted child exit."
+      },
+      "inspect_binding_latest": {
+        "source_commit": "c582ae72ea0b7de793aeaae81743913fdcd7cb71",
+        "report": "autonomy/evidence/inspect_binding_20261102/REPORT.md",
+        "new_tests": 4,
+        "focused_pass": 18,
+        "combined_pass": 125,
+        "independent_review": "PENDING",
+        "workbuddy_commit": "13d061a82568bc147efa689742a61b3e06d95a31",
+        "existing_receipt": 6561646296,
+        "new_receipt_published": false,
+        "production_execution": false,
+        "allow_install": false,
+        "allow_dispatch": false,
+        "allow_cancel_dispatch": false
       }
     },
     {

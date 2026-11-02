@@ -1,0 +1,20 @@
+{
+  "source_commit": "c582ae72ea0b7de793aeaae81743913fdcd7cb71",
+  "files": [
+    {
+      "path": "autonomy/install_journal.py",
+      "git_blob_sha": "5f3947b242c31a75e4ebd0831980faff6d275ca2",
+      "working_sha256": "c06a361f6e064c01bd86ab017f9c96d536d798aaad8f651b5b65c1cd4756a8ac"
+    },
+    {
+      "path": "autonomy/install_contract.py",
+      "git_blob_sha": "9d35cf28086b31a339de85e86d8d3ae643753696",
+      "working_sha256": "8fd8fd1ee53ea1aaaeafd5f0fab56d0fe3d2af2db971a1a48579728fdfbcfbc3"
+    },
+    {
+      "path": "test_inspect_binding.py",
+      "git_blob_sha": "a28f61b92bbef47b92e721e20cc9704472e21d04",
+      "working_sha256": "46f14a39b4d6771292d580f722a7bb50d0d565fd8a3a5d32442f4bdbf9b14d1f"
+    }
+  ]
+}
