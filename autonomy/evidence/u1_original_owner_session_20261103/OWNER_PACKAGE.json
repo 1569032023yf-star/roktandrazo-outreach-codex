@@ -1,0 +1,9 @@
+{
+  "source_commit": "68788653c848659c63f85021075fedee4aca5b13",
+  "payload_files": 8,
+  "artifact_sha256": "abc3d0d2903b06e48e429e48ca8c5affea6dd05b66f79d63a3551e8886de0725",
+  "manifest_sha256": "72943a2576382eba2ccbe6eb075c634068fd354c919ab76e05def71bd6ef8e65",
+  "isolated_import_passed": true,
+  "import_output": "OWNER_DEPENDENCIES_IMPORT_ONLY_OK",
+  "production_applied": false
+}

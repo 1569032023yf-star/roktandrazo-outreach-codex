@@ -1,0 +1,8 @@
+{
+  "source_commit": "68788653c848659c63f85021075fedee4aca5b13",
+  "files_verified": 105,
+  "passed": true,
+  "verification": "Actual staged Git blob SHA256 equals artifact manifest",
+  "description_zh": "实际暂存Git字节与制品清单逐项一致",
+  "production_applied": false
+}

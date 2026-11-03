@@ -1,0 +1,37 @@
+{
+  "status": "BLOCKED_WORKINGTREE_DIAGNOSTIC",
+  "base_commit": "01d0464035189dd2e0b9410c636609714965b248",
+  "source_is_uncommitted": true,
+  "filehash": {
+    "autonomy/original_inventory_owner.py": "149fd4f32f6dfdf2c15a15f790ed54c60f438f56ac2ca32e1eac705fd1d28ee4",
+    "autonomy/single_slot_adapter.py": "a3466ba45e768615d21f01e9c8fa381d3872c0e10e5e5ab9b1ef95165be0590f",
+    "autonomy/growth_ledger.py": "a56bee962412b23622b7920d59926e726b33d9e0f3a06586fe585b9f3d5aa7d1",
+    "autonomy/inventory_event_bridge.py": "9d087b4c012b66f66d345b741e9b79d80684250021497902e6c4c5469399665c",
+    "autonomy/u1_host_runtime.py": "0096fb093f12b5aa6c04b5e1d4343943f5ce52cdacf24b9c8e6b8aa8fe043e0f",
+    "bd_db.py": "1f2b4c249fb689f8b0da3f63ce90a5fb55e758b6f21c19185808887b56ce38ed",
+    "test_original_inventory_owner.py": "78d0228f085c95aa03dfd0b8889b0a5d0ed99dea1c1c282c311ffc4a00988998"
+  },
+  "independent_tests": {
+    "count": 22,
+    "duration_seconds": 3.119,
+    "failures": 0,
+    "errors": 0,
+    "command": "python -m unittest test_original_inventory_owner test_inventory_maintenance -q"
+  },
+  "findings": [
+    {
+      "id": "P1_STALE_RELEASE",
+      "actual": "Old same-process/date/holder release returned True after new nonce acquisition."
+    },
+    {
+      "id": "P1_CROSS_OWNER_RECEIPTS",
+      "actual": "Old receipts returned COMPLETED with DUPLICATE_RECEIPT/DUPLICATE under a new original-owner event, marked verified_closed, and allowed release; backend calls stayed one."
+    },
+    {
+      "id": "P2_SQLITE_SIDECAR_ALIAS",
+      "actual": "checked_path accepted original DB -journal/-wal/-shm paths; no sidecar writes performed."
+    }
+  ],
+  "production_actions": false,
+  "RELEASE_READY": false
+}

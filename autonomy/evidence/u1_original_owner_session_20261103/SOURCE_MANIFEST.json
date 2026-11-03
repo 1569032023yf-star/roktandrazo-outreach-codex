@@ -1,0 +1,75 @@
+{
+  "source_commit": "68788653c848659c63f85021075fedee4aca5b13",
+  "files": [
+    {
+      "path": "autonomy/growth_ledger.py",
+      "git_blob_sha256": "ba382c18d481cee2ccdc8cda8524b86483bdda5cca666088f2bafc29e1ca9731",
+      "actual_sha256": "a56bee962412b23622b7920d59926e726b33d9e0f3a06586fe585b9f3d5aa7d1"
+    },
+    {
+      "path": "autonomy/inventory_event_bridge.py",
+      "git_blob_sha256": "9d087b4c012b66f66d345b741e9b79d80684250021497902e6c4c5469399665c",
+      "actual_sha256": "9d087b4c012b66f66d345b741e9b79d80684250021497902e6c4c5469399665c"
+    },
+    {
+      "path": "autonomy/original_inventory_owner.py",
+      "git_blob_sha256": "149fd4f32f6dfdf2c15a15f790ed54c60f438f56ac2ca32e1eac705fd1d28ee4",
+      "actual_sha256": "149fd4f32f6dfdf2c15a15f790ed54c60f438f56ac2ca32e1eac705fd1d28ee4"
+    },
+    {
+      "path": "autonomy/process_backend.py",
+      "git_blob_sha256": "930f8016f570568bec20025f36b0ee59d648f31af2587ee6659e9b164d6651cf",
+      "actual_sha256": "9e39b786375989dc9af2cd7332de51ad0c277e255ce8337f8af7811602cb3002"
+    },
+    {
+      "path": "autonomy/single_slot_adapter.py",
+      "git_blob_sha256": "fae0056498c68746d7df86eed2a1f68cc508f64c4c454ed5cf27d4f4b321f45b",
+      "actual_sha256": "a3466ba45e768615d21f01e9c8fa381d3872c0e10e5e5ab9b1ef95165be0590f"
+    },
+    {
+      "path": "autonomy/u1_host_runtime.py",
+      "git_blob_sha256": "64d676c19dad4e314f44af850cc6481abe106cf252da2d39f8119385797390cc",
+      "actual_sha256": "0096fb093f12b5aa6c04b5e1d4343943f5ce52cdacf24b9c8e6b8aa8fe043e0f"
+    },
+    {
+      "path": "bd_db.py",
+      "git_blob_sha256": "85d10553ecf599d39ecc4f81c5ae8f2f85f4d8639bd98f426384660b8d3185a3",
+      "actual_sha256": "1f2b4c249fb689f8b0da3f63ce90a5fb55e758b6f21c19185808887b56ce38ed"
+    },
+    {
+      "path": "bd_orchestrator.py",
+      "git_blob_sha256": "5fb9632a967de08de21cd54c77fb16d3c51f668805bdcdf99c7389077ea71f3a",
+      "actual_sha256": "af8efe5dd8252706ca9d1f2e7abe38073527db11a4c21ef6d8e6a196122aaf91"
+    },
+    {
+      "path": "test_inventory_maintenance.py",
+      "git_blob_sha256": "96378a062c8654f9dc63428dd9dfd423911a481c42de81529f4d61667012d4e4",
+      "actual_sha256": "96378a062c8654f9dc63428dd9dfd423911a481c42de81529f4d61667012d4e4"
+    },
+    {
+      "path": "test_original_inventory_owner.py",
+      "git_blob_sha256": "b6c812b602880d12ac16b07a30401ef9e5d66a61ff6600ab58b8468da321be68",
+      "actual_sha256": "b6c812b602880d12ac16b07a30401ef9e5d66a61ff6600ab58b8468da321be68"
+    },
+    {
+      "path": "test_process_backend.py",
+      "git_blob_sha256": "e77a3b7b6f0fc77716db8c84be94917ac8fe2548fb4cc949b2ef476eacc90121",
+      "actual_sha256": "cef54776930229e291e5fc95591a03eaced0862b30050877ebea52b0ab63ac02"
+    },
+    {
+      "path": "test_single_slot_adapter.py",
+      "git_blob_sha256": "fb78197abb6f3c57b481de07fa876de5bde49defbc37d24c373745c430dd0ded",
+      "actual_sha256": "69faf51a9f981b79aab8279085a13704d7752b64aeff27fbc537853116be582e"
+    },
+    {
+      "path": "tests/test_inventory_stage_trace.py",
+      "git_blob_sha256": "4d865c078f897bee69eb742b5938d24f2ef751b9a18d1e27c51368efbf25e885",
+      "actual_sha256": "4d865c078f897bee69eb742b5938d24f2ef751b9a18d1e27c51368efbf25e885"
+    },
+    {
+      "path": "tests/test_phase2a_safety_mutex.py",
+      "git_blob_sha256": "7969e95083d5890e55027f9704930d0a1421c321688c3e2c1f28309c8cbe91ee",
+      "actual_sha256": "a95fd0060e6837c880b46eda0ca3f97d443156a193effff635572447edba4efd"
+    }
+  ]
+}

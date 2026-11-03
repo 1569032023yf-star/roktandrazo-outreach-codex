@@ -1,0 +1,85 @@
+{
+  "schema": "rokt.original-owner-companion.v2",
+  "source_commit": "68788653c848659c63f85021075fedee4aca5b13",
+  "baseline_commit": "3bbb77d7f2cce774b3addfdbf851342ad09393c5",
+  "files": [
+    {
+      "path": "bd_db.py",
+      "bytes": 48345,
+      "sha256": "85d10553ecf599d39ecc4f81c5ae8f2f85f4d8639bd98f426384660b8d3185a3",
+      "expected_before": {
+        "kind": "FILE",
+        "git_blob_sha256": "391ad34a9b5300703e7eb7fdb8210bf19db59b195c7356bb64909b95acf6e880"
+      }
+    },
+    {
+      "path": "bd_orchestrator.py",
+      "bytes": 31962,
+      "sha256": "5fb9632a967de08de21cd54c77fb16d3c51f668805bdcdf99c7389077ea71f3a",
+      "expected_before": {
+        "kind": "FILE",
+        "git_blob_sha256": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903"
+      }
+    },
+    {
+      "path": "autonomy/original_inventory_owner.py",
+      "bytes": 11781,
+      "sha256": "149fd4f32f6dfdf2c15a15f790ed54c60f438f56ac2ca32e1eac705fd1d28ee4",
+      "expected_before": {
+        "kind": "ABSENT"
+      }
+    },
+    {
+      "path": "autonomy/inventory_maintenance.py",
+      "bytes": 3475,
+      "sha256": "0d098b41fd25e57e270caf601ae40fe75cce379863b632b69fcbe2ec155908df",
+      "expected_before": {
+        "kind": "ABSENT"
+      }
+    },
+    {
+      "path": "autonomy/lock_recovery.py",
+      "bytes": 8045,
+      "sha256": "e6552960b9a15af38a5fbd238037094d8c75af80d9c0370b6d69092060da7741",
+      "expected_before": {
+        "kind": "FILE",
+        "git_blob_sha256": "e6552960b9a15af38a5fbd238037094d8c75af80d9c0370b6d69092060da7741"
+      }
+    },
+    {
+      "path": "autonomy/growth_ledger.py",
+      "bytes": 26623,
+      "sha256": "ba382c18d481cee2ccdc8cda8524b86483bdda5cca666088f2bafc29e1ca9731",
+      "expected_before": {
+        "kind": "FILE",
+        "git_blob_sha256": "52af63b96cfe740ac511c10beb20e67eccabc07b8996836e54c0f5c1a1e5f399"
+      }
+    },
+    {
+      "path": "autonomy/unattended_policy.py",
+      "bytes": 2201,
+      "sha256": "21aea336dd46f35ee402598687831b39f33c7aee5ec5245bc63f83cc77ec781f",
+      "expected_before": {
+        "kind": "FILE",
+        "git_blob_sha256": "21aea336dd46f35ee402598687831b39f33c7aee5ec5245bc63f83cc77ec781f"
+      }
+    },
+    {
+      "path": "autonomy/release_store.py",
+      "bytes": 15039,
+      "sha256": "7cf6c42a5dd3724af9d2f7986ecb02eea7368eff49dc62ed6784c0ac15755d99",
+      "expected_before": {
+        "kind": "FILE",
+        "git_blob_sha256": "7cf6c42a5dd3724af9d2f7986ecb02eea7368eff49dc62ed6784c0ac15755d99"
+      }
+    }
+  ],
+  "site_before_bytes_verified": false,
+  "automatic_update_supported": false,
+  "production_applied": false,
+  "installable_release": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false
+}

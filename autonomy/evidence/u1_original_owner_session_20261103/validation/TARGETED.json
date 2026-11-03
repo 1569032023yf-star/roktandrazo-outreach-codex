@@ -1,0 +1,63 @@
+{
+  "source_commit": "68788653c848659c63f85021075fedee4aca5b13",
+  "modules": [
+    "test_windows_acl_transaction",
+    "test_disabled_host_package",
+    "test_install_journal",
+    "test_install_contract",
+    "test_independent_install_plan",
+    "test_u1_provision",
+    "test_u1_manifest_closure",
+    "test_u1_host_runtime",
+    "test_host_remediation",
+    "test_host_preparation",
+    "test_release_store",
+    "test_process_backend",
+    "autonomy.test_process_job",
+    "test_single_slot_adapter",
+    "test_host_readonly_http",
+    "test_host_file_transaction",
+    "test_host_install_transaction",
+    "test_inventory_event_bridge",
+    "test_maintenance_control",
+    "test_install_verifier",
+    "test_install_process",
+    "test_install_inputs",
+    "test_install_command",
+    "test_publisher_install_admission",
+    "test_inventory_maintenance",
+    "test_publisher_maintenance",
+    "test_publisher_install_maintenance",
+    "test_original_inventory_owner"
+  ],
+  "tests_run": 257,
+  "passed": true,
+  "failures": [],
+  "errors": [],
+  "skips": [],
+  "groups": [
+    {
+      "tests_run": 207,
+      "failures": [],
+      "errors": [],
+      "skips": [],
+      "passed": true,
+      "group": "host",
+      "exit_code": 0
+    },
+    {
+      "tests_run": 50,
+      "failures": [],
+      "errors": [],
+      "skips": [],
+      "passed": true,
+      "group": "authority",
+      "exit_code": 0
+    }
+  ],
+  "seconds": 289.573,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false
+}

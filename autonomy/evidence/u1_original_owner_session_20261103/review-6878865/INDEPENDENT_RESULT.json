@@ -1,0 +1,152 @@
+{
+  "source_commit": "68788653c848659c63f85021075fedee4aca5b13",
+  "baseline": "6e95089cee61b06ac6d8fafcceb536b01a66087c",
+  "status": "OFFLINE_SCOPED_REVIEW_PASSED",
+  "independent_tests": {
+    "count": 119,
+    "duration_seconds": 31.647,
+    "duration_basis": "sum of independently measured unittest durations, not elapsed wall time",
+    "failures": 0,
+    "errors": 0,
+    "runs": [
+      {
+        "command": "python -m unittest test_original_inventory_owner test_inventory_maintenance test_single_slot_adapter test_growth_ledger tests.test_phase4a8r_continuous_discovery tests.test_inventory_stage_trace -q",
+        "count": 106,
+        "duration_seconds": 23.104,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "command": "python -m unittest test_inventory_event_bridge test_process_backend -q",
+        "count": 13,
+        "duration_seconds": 8.543,
+        "failures": 0,
+        "errors": 0
+      }
+    ]
+  },
+  "additional_isolated_probes": [
+    {
+      "name": "claim_join_failure_before_commit",
+      "result": "PASS",
+      "claim_persisted": false,
+      "backend_calls": 0,
+      "release_denied": true,
+      "retry_does_not_execute": true
+    },
+    {
+      "name": "claim_join_commit_then_lost_ack",
+      "result": "PASS",
+      "claim_persisted": true,
+      "backend_calls": 0,
+      "release_denied": true,
+      "retry_does_not_execute": true
+    },
+    {
+      "name": "concurrent_release_and_event_intent",
+      "iterations": 20,
+      "result": "PASS",
+      "release_won": 20,
+      "intent_won": 0,
+      "both_succeeded": 0,
+      "limitation": "This run observed only release-first schedules; intent-first denial is covered by the separate prepared-event tests."
+    }
+  ],
+  "closed_findings": [
+    {
+      "id": "P1_STALE_RELEASE",
+      "status": "CLOSED_VERIFIED",
+      "evidence": "Captured expected_owner from original acquire transaction; actual old and missing bindings reject release of new incarnation."
+    },
+    {
+      "id": "P1_CROSS_OWNER_RECEIPTS",
+      "status": "CLOSED_VERIFIED",
+      "evidence": "Persisted exact claim join; authenticated receipts require current owner/event/claim digests. Old receipts cannot close a new prepared owner event."
+    },
+    {
+      "id": "P2_SQLITE_SIDECAR_ALIAS",
+      "status": "CLOSED_VERIFIED",
+      "evidence": "All protected main DB and reserved -journal/-wal/-shm paths rejected before file creation; existing aliases compared with samefile."
+    }
+  ],
+  "filehash": {
+    "autonomy/original_inventory_owner.py": {
+      "file_sha256": "149fd4f32f6dfdf2c15a15f790ed54c60f438f56ac2ca32e1eac705fd1d28ee4",
+      "git_blob_sha256": "149fd4f32f6dfdf2c15a15f790ed54c60f438f56ac2ca32e1eac705fd1d28ee4"
+    },
+    "autonomy/single_slot_adapter.py": {
+      "file_sha256": "a3466ba45e768615d21f01e9c8fa381d3872c0e10e5e5ab9b1ef95165be0590f",
+      "git_blob_sha256": "fae0056498c68746d7df86eed2a1f68cc508f64c4c454ed5cf27d4f4b321f45b"
+    },
+    "autonomy/growth_ledger.py": {
+      "file_sha256": "a56bee962412b23622b7920d59926e726b33d9e0f3a06586fe585b9f3d5aa7d1",
+      "git_blob_sha256": "ba382c18d481cee2ccdc8cda8524b86483bdda5cca666088f2bafc29e1ca9731"
+    },
+    "autonomy/inventory_event_bridge.py": {
+      "file_sha256": "9d087b4c012b66f66d345b741e9b79d80684250021497902e6c4c5469399665c",
+      "git_blob_sha256": "9d087b4c012b66f66d345b741e9b79d80684250021497902e6c4c5469399665c"
+    },
+    "autonomy/u1_host_runtime.py": {
+      "file_sha256": "0096fb093f12b5aa6c04b5e1d4343943f5ce52cdacf24b9c8e6b8aa8fe043e0f",
+      "git_blob_sha256": "64d676c19dad4e314f44af850cc6481abe106cf252da2d39f8119385797390cc"
+    },
+    "bd_db.py": {
+      "file_sha256": "1f2b4c249fb689f8b0da3f63ce90a5fb55e758b6f21c19185808887b56ce38ed",
+      "git_blob_sha256": "85d10553ecf599d39ecc4f81c5ae8f2f85f4d8639bd98f426384660b8d3185a3"
+    },
+    "bd_orchestrator.py": {
+      "file_sha256": "af8efe5dd8252706ca9d1f2e7abe38073527db11a4c21ef6d8e6a196122aaf91",
+      "git_blob_sha256": "5fb9632a967de08de21cd54c77fb16d3c51f668805bdcdf99c7389077ea71f3a"
+    },
+    "test_original_inventory_owner.py": {
+      "file_sha256": "b6c812b602880d12ac16b07a30401ef9e5d66a61ff6600ab58b8468da321be68",
+      "git_blob_sha256": "b6c812b602880d12ac16b07a30401ef9e5d66a61ff6600ab58b8468da321be68"
+    },
+    "test_inventory_maintenance.py": {
+      "file_sha256": "96378a062c8654f9dc63428dd9dfd423911a481c42de81529f4d61667012d4e4",
+      "git_blob_sha256": "96378a062c8654f9dc63428dd9dfd423911a481c42de81529f4d61667012d4e4"
+    },
+    "test_single_slot_adapter.py": {
+      "file_sha256": "69faf51a9f981b79aab8279085a13704d7752b64aeff27fbc537853116be582e",
+      "git_blob_sha256": "fb78197abb6f3c57b481de07fa876de5bde49defbc37d24c373745c430dd0ded"
+    },
+    "test_growth_ledger.py": {
+      "file_sha256": "a8acf83f8d5d1aca21705cd64a4b284f25926067d499becea324e0db1a7617d9",
+      "git_blob_sha256": "1487806487f55a3066c1d21a81b59d94c71326a90e6692f7cde633f101aa9448"
+    },
+    "test_inventory_event_bridge.py": {
+      "file_sha256": "7dd4fea485c5930ded5a1df5e09d81765f56567be467f04429cee3f717862b02",
+      "git_blob_sha256": "482e08c45c629fb807df8eef1901b5be1b7c7aacdaac2cb778213339535eb9ad"
+    },
+    "test_process_backend.py": {
+      "file_sha256": "cef54776930229e291e5fc95591a03eaced0862b30050877ebea52b0ab63ac02",
+      "git_blob_sha256": "e77a3b7b6f0fc77716db8c84be94917ac8fe2548fb4cc949b2ef476eacc90121"
+    },
+    "tests/test_phase4a8r_continuous_discovery.py": {
+      "file_sha256": "168a2c6214e8ae5ed3f152ab8b2fd9b706625e14b82e6ea60db22dfaee37ea3a",
+      "git_blob_sha256": "9b9e4e39ca17292cf9a5208ff81e618f258b22903a329e93ef012652e241d5ba"
+    },
+    "tests/test_inventory_stage_trace.py": {
+      "file_sha256": "4d865c078f897bee69eb742b5938d24f2ef751b9a18d1e27c51368efbf25e885",
+      "git_blob_sha256": "4d865c078f897bee69eb742b5938d24f2ef751b9a18d1e27c51368efbf25e885"
+    }
+  },
+  "limitations_zh": [
+    "受信只读连接工厂属于内部接口；HTTP不提供路径或创建原owner。",
+    "真实HTTP/临时SQLite有覆盖；业务backend仍为隔离替身，非正式Provider接线完成。",
+    "未证明完整Windows正式命令/实际SCM/ACL或生产验收。",
+    "owner进程死亡后保留封锁；本轮未提供未知业务自动恢复/重放/强制释放。",
+    "mark_tree和注册函数是受信内部组件，未将任意同权限代码侵入等同为独立授权隔离。"
+  ],
+  "limitations_en": [
+    "Trusted read-only connection factories are internal interfaces; HTTP supplies no owner database path or acquisition.",
+    "Real loopback HTTP and isolated SQLite are tested; business execution remains a test double, not formal Provider integration.",
+    "No complete formal Windows command, actual SCM/ACL or production acceptance is proven.",
+    "Dead owners remain fenced; this change supplies no automatic unknown-work recovery, replay or forced release.",
+    "Registration and tree-state methods are trusted internal components, not isolation against arbitrary code with equal process privileges."
+  ],
+  "RELEASE_READY": false,
+  "formal_backend_integrated": false,
+  "allow_dispatch": false,
+  "production_actions": false
+}

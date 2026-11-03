@@ -576,21 +576,20 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/u1_original_owner_20261103/REPORT.md",
-      "next_action": "Continue formal-backend wiring to the original Inventory owner and service event consumer, reusing the original database lock with durable event, budget, cancellation and settlement contracts. An offline supervisor lease is not the original production owner. Then rebuild the complete release and perform authorized isolated Windows lifecycle acceptance.",
+      "checkpoint": "autonomy/evidence/u1_original_owner_session_20261103/REPORT.md",
+      "next_action": "Complete the fixed call chain connecting the formal Provider/backend protocol, original stage entry and service event consumer, retaining the sole original Inventory and durable event/claim/cost/cancellation/settlement contracts. The current original-owner adapter still uses the isolated_offline protocol and does not complete formal Provider wiring. After complete-candidate review and authorization, perform isolated Windows first-install, upgrade, interruption recovery and rollback acceptance.",
       "phase": "U1",
       "baseline_commit": "91aa60c6cf52b0c0a9c9e0ff2ddfb5ee39a7f7fc",
       "review_status": "OFFLINE_SCOPED_REVIEW_PASSED",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
+      "candidate_commit": "68788653c848659c63f85021075fedee4aca5b13",
       "trust_boundary_review": "SCOPED_PASS",
       "schedule_contract_review": "SCOPED_PASS",
       "regression_runner_candidate": "b69214d",
       "full_regression": {
-        "baseline_commit": "cc6434e1fdff68c0069a5cd9a85fe22c4b9d994d",
-        "candidate_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
-        "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-9mgtxbsr",
+        "baseline_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
+        "candidate_commit": "68788653c848659c63f85021075fedee4aca5b13",
         "complete": true,
         "baseline_run": 833,
         "candidate_run": 833,
@@ -607,7 +606,7 @@
       "bridge_candidate": "68802d5",
       "bridge_review": "SCOPED_PASS_68802D5",
       "handoff_comment": 6435605069,
-      "targeted_tests": 245,
+      "targeted_tests": 257,
       "snapshot_review": "SCOPED_PASS_DA443FD",
       "history_import_review": "SCOPED_PASS_DBDC424",
       "manifest_closure_review": "SCOPED_PASS_TEST621D3E4_PACKAGE_DBDC424",
@@ -1121,8 +1120,8 @@
           }
         }
       },
-      "next_action_zh": "继续正式backend与原Inventory所有者及服务事件消费者接线，复用原数据库锁并加入持久事件/预算/取消/结算合同；禁止用离线supervisor锁冒充原生产所有者。完成后重建完整发布版并做授权隔离Windows生命周期验收。",
-      "next_action_en": "Continue formal-backend wiring to the original Inventory owner and service event consumer, reusing the original database lock with durable event, budget, cancellation and settlement contracts. An offline supervisor lease is not the original production owner. Then rebuild the complete release and perform authorized isolated Windows lifecycle acceptance.",
+      "next_action_zh": "完成正式Provider/backend协议与原stage入口、服务事件消费者的固定调用链；保留原唯一Inventory、持久事件/claim/费用/取消和结算合同。当前原owner身份适配器仍使用isolated_offline协议，不是正式Provider接线完成。完整候选审核和授权后再做隔离Windows首装、升级、中断恢复及回滚验收。",
+      "next_action_en": "Complete the fixed call chain connecting the formal Provider/backend protocol, original stage entry and service event consumer, retaining the sole original Inventory and durable event/claim/cost/cancellation/settlement contracts. The current original-owner adapter still uses the isolated_offline protocol and does not complete formal Provider wiring. After complete-candidate review and authorization, perform isolated Windows first-install, upgrade, interruption recovery and rollback acceptance.",
       "namespace_revalidation_latest": {
         "schema": "codex.u1.namespace-revalidation.v1",
         "summary_zh": "源身份复核在hash前后核对名字对象ID，拒绝同内容替换；返回后窗口仍未锁定。",
@@ -1783,7 +1782,7 @@
         "production_deployed": false,
         "next_action": "Integrate bounded execution backend with existing signed SingleSlotAdapter admission and original Inventory lease; close installer upgrade/rollback, dependency ACL and TOCTOU blockers before independent review. No service install/start."
       },
-      "updated_at": "2026-11-03T10:18:46.031004+00:00",
+      "updated_at": "2026-11-03T13:07:12.844134+00:00",
       "u1_execution_wiring_latest": {
         "updated_at": "2026-11-02T08:40:48.546343+00:00",
         "source_commit": "cc9b7a7b672eb2098fa02d7e57c266b4ec57d76e",
@@ -2903,6 +2902,153 @@
         "inventory_id": "1784775229336",
         "next_action": "Continue formal-backend wiring to the original Inventory owner and service event consumer, reusing the original database lock with durable event, budget, cancellation and settlement contracts. An offline supervisor lease is not the original production owner. Then rebuild the complete release and perform authorized isolated Windows lifecycle acceptance.",
         "next_action_zh": "继续正式backend与原Inventory所有者及服务事件消费者接线，复用原数据库锁并加入持久事件/预算/取消/结算合同；禁止用离线supervisor锁冒充原生产所有者。完成后重建完整发布版并做授权隔离Windows生命周期验收。"
+      },
+      "u1_original_owner_session_latest": {
+        "source_commit": "68788653c848659c63f85021075fedee4aca5b13",
+        "updated_at": "2026-11-03T13:07:12.844134+00:00",
+        "report": "autonomy/evidence/u1_original_owner_session_20261103/REPORT.md",
+        "tests": {
+          "source_commit": "68788653c848659c63f85021075fedee4aca5b13",
+          "modules": [
+            "test_windows_acl_transaction",
+            "test_disabled_host_package",
+            "test_install_journal",
+            "test_install_contract",
+            "test_independent_install_plan",
+            "test_u1_provision",
+            "test_u1_manifest_closure",
+            "test_u1_host_runtime",
+            "test_host_remediation",
+            "test_host_preparation",
+            "test_release_store",
+            "test_process_backend",
+            "autonomy.test_process_job",
+            "test_single_slot_adapter",
+            "test_host_readonly_http",
+            "test_host_file_transaction",
+            "test_host_install_transaction",
+            "test_inventory_event_bridge",
+            "test_maintenance_control",
+            "test_install_verifier",
+            "test_install_process",
+            "test_install_inputs",
+            "test_install_command",
+            "test_publisher_install_admission",
+            "test_inventory_maintenance",
+            "test_publisher_maintenance",
+            "test_publisher_install_maintenance",
+            "test_original_inventory_owner"
+          ],
+          "tests_run": 257,
+          "passed": true,
+          "failures": [],
+          "errors": [],
+          "skips": [],
+          "groups": [
+            {
+              "tests_run": 207,
+              "failures": [],
+              "errors": [],
+              "skips": [],
+              "passed": true,
+              "group": "host",
+              "exit_code": 0
+            },
+            {
+              "tests_run": 50,
+              "failures": [],
+              "errors": [],
+              "skips": [],
+              "passed": true,
+              "group": "authority",
+              "exit_code": 0
+            }
+          ],
+          "seconds": 289.573,
+          "allow_install": false,
+          "allow_dispatch": false,
+          "allow_cancel_dispatch": false,
+          "smtp_enabled": false
+        },
+        "independent_review": "OFFLINE_SCOPED_REVIEW_PASSED",
+        "independent_tests": {
+          "count": 119,
+          "duration_seconds": 31.647,
+          "duration_basis": "sum of independently measured unittest durations, not elapsed wall time",
+          "failures": 0,
+          "errors": 0,
+          "runs": [
+            {
+              "command": "python -m unittest test_original_inventory_owner test_inventory_maintenance test_single_slot_adapter test_growth_ledger tests.test_phase4a8r_continuous_discovery tests.test_inventory_stage_trace -q",
+              "count": 106,
+              "duration_seconds": 23.104,
+              "failures": 0,
+              "errors": 0
+            },
+            {
+              "command": "python -m unittest test_inventory_event_bridge test_process_backend -q",
+              "count": 13,
+              "duration_seconds": 8.543,
+              "failures": 0,
+              "errors": 0
+            }
+          ]
+        },
+        "independent_review_scope": "Original-owner identity/event/claim/settlement adapter; not complete release acceptance",
+        "current_full_regression": {
+          "baseline_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
+          "candidate_commit": "68788653c848659c63f85021075fedee4aca5b13",
+          "complete": true,
+          "baseline_run": 833,
+          "candidate_run": 833,
+          "baseline_failures": 37,
+          "candidate_failures": 37,
+          "baseline_errors": 17,
+          "candidate_errors": 17,
+          "failure_ids_identical": true,
+          "error_ids_identical": true,
+          "all_green": false,
+          "no_new_regression": true
+        },
+        "current_package": {
+          "artifacts": {
+            "install.zip": "e55905083281bcafcfa11b939b150d1b2c57ddd31f0fb7850372621b349f8732",
+            "rollback-tools.zip": "41b85581731be508b863bfa2ae390f4a3cfe7efca7cd8e0bd5f37f284554d443"
+          },
+          "files": 72,
+          "independent_review": "OFFLINE_SCOPED_ARTIFACT_VERIFICATION_PASSED",
+          "manifest_sha256": "7fd387a3fe0f140d8212eb61af0bf53d8fa66803286730b1044586924bedbfa7",
+          "production_ready": false,
+          "source_commit": "68788653c848659c63f85021075fedee4aca5b13",
+          "review_evidence": "review-6878865/INDEPENDENT_PACKAGE_RESULT.json"
+        },
+        "owner_package": {
+          "source_commit": "68788653c848659c63f85021075fedee4aca5b13",
+          "payload_files": 8,
+          "artifact_sha256": "abc3d0d2903b06e48e429e48ca8c5affea6dd05b66f79d63a3551e8886de0725",
+          "manifest_sha256": "72943a2576382eba2ccbe6eb075c634068fd354c919ab76e05def71bd6ef8e65",
+          "isolated_import_passed": true,
+          "import_output": "OWNER_DEPENDENCIES_IMPORT_ONLY_OK",
+          "production_applied": false
+        },
+        "original_owner_identity_event_adapter_integrated": true,
+        "original_stage_event_consumer_connected": false,
+        "original_owner_release_requires_captured_incarnation": true,
+        "old_receipt_cross_owner_rejected": true,
+        "formal_backend_integrated": false,
+        "formal_maintenance_integrated": false,
+        "installable_release": false,
+        "development_complete": false,
+        "release_ready": false,
+        "production_deployed": false,
+        "production_accepted": false,
+        "allow_install": false,
+        "allow_dispatch": false,
+        "allow_cancel_dispatch": false,
+        "smtp_enabled": false,
+        "inventory_id": "1784775229336",
+        "next_action": "Complete the fixed call chain connecting the formal Provider/backend protocol, original stage entry and service event consumer, retaining the sole original Inventory and durable event/claim/cost/cancellation/settlement contracts. The current original-owner adapter still uses the isolated_offline protocol and does not complete formal Provider wiring. After complete-candidate review and authorization, perform isolated Windows first-install, upgrade, interruption recovery and rollback acceptance.",
+        "next_action_zh": "完成正式Provider/backend协议与原stage入口、服务事件消费者的固定调用链；保留原唯一Inventory、持久事件/claim/费用/取消和结算合同。当前原owner身份适配器仍使用isolated_offline协议，不是正式Provider接线完成。完整候选审核和授权后再做隔离Windows首装、升级、中断恢复及回滚验收。"
       }
     },
     {
@@ -4738,7 +4884,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-03T10:18:46.031004+00:00",
+  "updated_at": "2026-11-03T13:07:12.844134+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -5036,7 +5182,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "autonomy/evidence/u1_original_owner_20261103/REPORT.md",
+  "checkpoint": "autonomy/evidence/u1_original_owner_session_20261103/REPORT.md",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
@@ -6437,5 +6583,152 @@
     "inventory_id": "1784775229336",
     "next_action": "Continue formal-backend wiring to the original Inventory owner and service event consumer, reusing the original database lock with durable event, budget, cancellation and settlement contracts. An offline supervisor lease is not the original production owner. Then rebuild the complete release and perform authorized isolated Windows lifecycle acceptance.",
     "next_action_zh": "继续正式backend与原Inventory所有者及服务事件消费者接线，复用原数据库锁并加入持久事件/预算/取消/结算合同；禁止用离线supervisor锁冒充原生产所有者。完成后重建完整发布版并做授权隔离Windows生命周期验收。"
+  },
+  "u1_original_owner_session_latest": {
+    "source_commit": "68788653c848659c63f85021075fedee4aca5b13",
+    "updated_at": "2026-11-03T13:07:12.844134+00:00",
+    "report": "autonomy/evidence/u1_original_owner_session_20261103/REPORT.md",
+    "tests": {
+      "source_commit": "68788653c848659c63f85021075fedee4aca5b13",
+      "modules": [
+        "test_windows_acl_transaction",
+        "test_disabled_host_package",
+        "test_install_journal",
+        "test_install_contract",
+        "test_independent_install_plan",
+        "test_u1_provision",
+        "test_u1_manifest_closure",
+        "test_u1_host_runtime",
+        "test_host_remediation",
+        "test_host_preparation",
+        "test_release_store",
+        "test_process_backend",
+        "autonomy.test_process_job",
+        "test_single_slot_adapter",
+        "test_host_readonly_http",
+        "test_host_file_transaction",
+        "test_host_install_transaction",
+        "test_inventory_event_bridge",
+        "test_maintenance_control",
+        "test_install_verifier",
+        "test_install_process",
+        "test_install_inputs",
+        "test_install_command",
+        "test_publisher_install_admission",
+        "test_inventory_maintenance",
+        "test_publisher_maintenance",
+        "test_publisher_install_maintenance",
+        "test_original_inventory_owner"
+      ],
+      "tests_run": 257,
+      "passed": true,
+      "failures": [],
+      "errors": [],
+      "skips": [],
+      "groups": [
+        {
+          "tests_run": 207,
+          "failures": [],
+          "errors": [],
+          "skips": [],
+          "passed": true,
+          "group": "host",
+          "exit_code": 0
+        },
+        {
+          "tests_run": 50,
+          "failures": [],
+          "errors": [],
+          "skips": [],
+          "passed": true,
+          "group": "authority",
+          "exit_code": 0
+        }
+      ],
+      "seconds": 289.573,
+      "allow_install": false,
+      "allow_dispatch": false,
+      "allow_cancel_dispatch": false,
+      "smtp_enabled": false
+    },
+    "independent_review": "OFFLINE_SCOPED_REVIEW_PASSED",
+    "independent_tests": {
+      "count": 119,
+      "duration_seconds": 31.647,
+      "duration_basis": "sum of independently measured unittest durations, not elapsed wall time",
+      "failures": 0,
+      "errors": 0,
+      "runs": [
+        {
+          "command": "python -m unittest test_original_inventory_owner test_inventory_maintenance test_single_slot_adapter test_growth_ledger tests.test_phase4a8r_continuous_discovery tests.test_inventory_stage_trace -q",
+          "count": 106,
+          "duration_seconds": 23.104,
+          "failures": 0,
+          "errors": 0
+        },
+        {
+          "command": "python -m unittest test_inventory_event_bridge test_process_backend -q",
+          "count": 13,
+          "duration_seconds": 8.543,
+          "failures": 0,
+          "errors": 0
+        }
+      ]
+    },
+    "independent_review_scope": "Original-owner identity/event/claim/settlement adapter; not complete release acceptance",
+    "current_full_regression": {
+      "baseline_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
+      "candidate_commit": "68788653c848659c63f85021075fedee4aca5b13",
+      "complete": true,
+      "baseline_run": 833,
+      "candidate_run": 833,
+      "baseline_failures": 37,
+      "candidate_failures": 37,
+      "baseline_errors": 17,
+      "candidate_errors": 17,
+      "failure_ids_identical": true,
+      "error_ids_identical": true,
+      "all_green": false,
+      "no_new_regression": true
+    },
+    "current_package": {
+      "artifacts": {
+        "install.zip": "e55905083281bcafcfa11b939b150d1b2c57ddd31f0fb7850372621b349f8732",
+        "rollback-tools.zip": "41b85581731be508b863bfa2ae390f4a3cfe7efca7cd8e0bd5f37f284554d443"
+      },
+      "files": 72,
+      "independent_review": "OFFLINE_SCOPED_ARTIFACT_VERIFICATION_PASSED",
+      "manifest_sha256": "7fd387a3fe0f140d8212eb61af0bf53d8fa66803286730b1044586924bedbfa7",
+      "production_ready": false,
+      "source_commit": "68788653c848659c63f85021075fedee4aca5b13",
+      "review_evidence": "review-6878865/INDEPENDENT_PACKAGE_RESULT.json"
+    },
+    "owner_package": {
+      "source_commit": "68788653c848659c63f85021075fedee4aca5b13",
+      "payload_files": 8,
+      "artifact_sha256": "abc3d0d2903b06e48e429e48ca8c5affea6dd05b66f79d63a3551e8886de0725",
+      "manifest_sha256": "72943a2576382eba2ccbe6eb075c634068fd354c919ab76e05def71bd6ef8e65",
+      "isolated_import_passed": true,
+      "import_output": "OWNER_DEPENDENCIES_IMPORT_ONLY_OK",
+      "production_applied": false
+    },
+    "original_owner_identity_event_adapter_integrated": true,
+    "original_stage_event_consumer_connected": false,
+    "original_owner_release_requires_captured_incarnation": true,
+    "old_receipt_cross_owner_rejected": true,
+    "formal_backend_integrated": false,
+    "formal_maintenance_integrated": false,
+    "installable_release": false,
+    "development_complete": false,
+    "release_ready": false,
+    "production_deployed": false,
+    "production_accepted": false,
+    "allow_install": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "smtp_enabled": false,
+    "inventory_id": "1784775229336",
+    "next_action": "Complete the fixed call chain connecting the formal Provider/backend protocol, original stage entry and service event consumer, retaining the sole original Inventory and durable event/claim/cost/cancellation/settlement contracts. The current original-owner adapter still uses the isolated_offline protocol and does not complete formal Provider wiring. After complete-candidate review and authorization, perform isolated Windows first-install, upgrade, interruption recovery and rollback acceptance.",
+    "next_action_zh": "完成正式Provider/backend协议与原stage入口、服务事件消费者的固定调用链；保留原唯一Inventory、持久事件/claim/费用/取消和结算合同。当前原owner身份适配器仍使用isolated_offline协议，不是正式Provider接线完成。完整候选审核和授权后再做隔离Windows首装、升级、中断恢复及回滚验收。"
   }
 }
