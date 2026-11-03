@@ -856,12 +856,14 @@ def acquire_run_lock(date_str: str = None, holder: str = 'daily_operator', stale
     finally:
         conn.close()
 
-def release_run_lock(date_str: str = None, holder: str | None = None, *, expected_owner=None) -> bool:
+def release_run_lock(date_str: str = None, holder: str | None = None, *, expected_owner=None, final_job=None) -> bool:
     """Release only a lock owned by ``holder``; return whether it changed."""
     if date_str is None:
         from datetime import datetime
         date_str = datetime.now().strftime('%Y-%m-%d')
     lock_key = f'run_lock:daily_outreach:{date_str}'
+    if final_job is not None and not date_str.startswith('inventory:'):
+        raise ValueError('INVENTORY_JOB_TERMINAL_REQUIRED')
     if not holder:
         return False
     conn = get_db()
@@ -874,6 +876,9 @@ def release_run_lock(date_str: str = None, holder: str | None = None, *, expecte
                 from autonomy.original_inventory_owner import release_allowed_locked
                 if not release_allowed_locked(conn, lock_key, holder, expected_owner):
                     return False
+                if final_job is not None:
+                    from autonomy.original_inventory_owner import finalize_stage_locked
+                    finalize_stage_locked(conn, holder, date_str[len('inventory:'):], final_job)
             cur = conn.execute(
                 "UPDATE system_config SET value='released',updated_at=datetime('now') WHERE key=? AND value=?",
                 (lock_key, holder),

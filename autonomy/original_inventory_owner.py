@@ -245,3 +245,23 @@ def release_allowed_locked(conn, lock_key, holder, expected_owner):
                 session['tree_state'] in ('idle', 'verified_closed'))
     except (ValueError, OSError):
         return False
+
+
+def finalize_stage_locked(conn, run_id, business_date, result):
+    """Original job terminal and lock release share the caller's DB transaction."""
+    if (not conn.in_transaction or type(result) is not dict or
+            set(result) != {'status','actual','gap','stop_reason'} or
+            result['status'] not in ('completed','partial','stopped') or
+            any(type(result[k]) is not int or not 0 <= result[k] < 2**53 for k in ('actual','gap')) or
+            result['stop_reason'] not in ('target_met','safe_inventory_gap','inventory_event_failed_settled')):
+        raise ValueError('EXACT_ORIGINAL_STAGE_TERMINAL_REQUIRED')
+    expected={'completed':('target_met',result['gap']==0),
+              'partial':('safe_inventory_gap',result['gap']>0),
+              'stopped':('inventory_event_failed_settled',result['actual']==0)}[result['status']]
+    if result['stop_reason']!=expected[0] or not expected[1]:
+        raise ValueError('ORIGINAL_STAGE_TERMINAL_CONFLICT')
+    cur=conn.execute("UPDATE job_runs SET status=?,finished_at=datetime('now'),actual=?,gap=?,stop_reason=?,error='' "
+        "WHERE run_id=? AND stage='inventory' AND business_date=? AND status='running' AND dry_run=0",
+        (result['status'],result['actual'],result['gap'],result['stop_reason'],run_id,business_date))
+    if cur.rowcount != 1:
+        raise ValueError('ORIGINAL_STAGE_RUNNING_JOB_REQUIRED')

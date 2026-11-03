@@ -44,8 +44,13 @@ class ProcessBackend:
     protocol_version=BACKEND_PROTOCOL
 
     def __init__(self, journal, *, python, python_sha256, worker, worker_sha256,
-                 backend_id, offline_only=False):
+                 backend_id, offline_only=False, original_owner=None):
         if offline_only is not True:raise ValueError('OFFLINE_ONLY')
+        if original_owner is not None:
+            from autonomy.original_inventory_owner import OriginalOwnerAuthority
+            if type(original_owner) is not OriginalOwnerAuthority:
+                raise ValueError('EXACT_ORIGINAL_BACKEND_OWNER_REQUIRED')
+        self.original_owner=original_owner
         self.path=ordinary(journal)
         if not self.path.parent.is_dir():raise ValueError('JOURNAL_PARENT_REQUIRED')
         self.python=Path(python);self.worker=Path(worker)
@@ -88,6 +93,17 @@ class ProcessBackend:
             operation.get('production_execution') is not False or operation.get('inventory_id')!=INVENTORY or
             operation.get('schema')!=OPERATION_SCHEMA or operation.get('backend_protocol')!=BACKEND_PROTOCOL or
             operation.get('backend_id')!=self.backend_id):raise ValueError('OPERATION_REJECTED')
+        original_context=any(k in operation for k in ('original_event_digest','original_claim_digest'))
+        if original_context != (self.original_owner is not None):
+            raise ValueError('EXACT_ORIGINAL_BACKEND_OWNER_REQUIRED')
+        def assert_original_owner():
+            common={k:operation[k] for k in ('slot','epoch','owner','run_id','request_id')}
+            expected=self.original_owner.receipt_binding(dict(common,claim_token_hash=digest(operation['token'])))
+            if any(type(operation.get(k)) is not type(v) or operation[k]!=v for k,v in expected.items()):
+                raise ValueError('ORIGINAL_BACKEND_OWNER_BINDING_REJECTED')
+            return True
+        live=assert_original_owner if original_context else None
+        if live is not None:live()
         body=dict(operation);key=body.pop('idempotency_key',None)
         if key!=digest(body):raise ValueError('IDEMPOTENCY_BINDING')
         binding=digest(dict(operation=operation,python_sha256=self.hashes[0],worker_sha256=self.hashes[1]))
@@ -113,7 +129,8 @@ class ProcessBackend:
             remaining=deadline_monotonic-time.monotonic()
             if remaining<=0:raise ExecutionUnknown('DEADLINE_EXPIRED')
             result=run_tree([str(self.python),'-I','-B',str(self.worker)],timeout=remaining,
-                            stdin_bytes=raw,stdout_limit_bytes=65536,stderr_limit_bytes=4096,event_limit_bytes=65536)
+                            stdin_bytes=raw,stdout_limit_bytes=65536,stderr_limit_bytes=4096,event_limit_bytes=65536,
+                            assert_live=live)
             if result.returncode!=0 or not result.cleanup_verified or time.monotonic()>deadline_monotonic:
                 raise ExecutionUnknown('CHILD_OUTCOME_UNKNOWN')
             receipts=_receipts(result.stdout)

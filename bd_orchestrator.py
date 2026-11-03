@@ -391,7 +391,7 @@ def _count_safe_ready_pool(conn):
                 if str(r.get('organization_key') or '').strip()})
 
 
-def stage_inventory(run_id: str, business_date: str, dry_run: bool):
+def stage_inventory(run_id: str, business_date: str, dry_run: bool, *, event_execution=None):
     target = inventory_target_for_date(business_date)
     header(f"STAGE: Inventory — Target {target}, send_enabled=false")
     if dry_run:
@@ -407,14 +407,45 @@ def stage_inventory(run_id: str, business_date: str, dry_run: bool):
                 'BROAD_READY': broad, 'READ_ONLY_V2_SAFE_UNIQUE_ORGS': safe,
                 'MATERIALIZED_FSP_PLANNED': planned,
                 'target': target, 'gap': max(0, target - safe)}
+    # A signed event binds a fresh, already-held original owner. Never acquire a
+    # second lock or silently fall back to the old body when that binding fails.
+    if event_execution is not None:
+        from autonomy.original_stage_event import OriginalStageEvent
+        if type(event_execution) is not OriginalStageEvent:
+            raise ValueError('EXACT_ORIGINAL_STAGE_EVENT_REQUIRED')
+        inventory_owner = event_execution.owner_binding(get_db, run_id, business_date)
     set_execution_mode('inventory_recovery')
     update_job_run(run_id, current_step='inventory_start', target=target)
-    inventory_owner = acquire_run_lock(f'inventory:{business_date}', run_id, capture_owner=True)
+    if event_execution is None:
+        inventory_owner = acquire_run_lock(f'inventory:{business_date}', run_id, capture_owner=True)
     if not inventory_owner:
         finish_job_run(run_id, 'stopped', stop_reason='lock_conflict')
         return False
     inventory_outcome_known = True
+    event_finish = None
     try:
+        if event_execution is not None:
+            receipt = event_execution.consume(get_db, run_id, business_date)
+            outcome = receipt['owner_result']['outcome']
+            if outcome not in ('COMPLETED', 'FAILED'):
+                inventory_outcome_known = False
+                finish_job_run(run_id, 'stopped', stop_reason='inventory_event_unknown_preserved')
+                return False
+            if outcome == 'FAILED':
+                event_finish = dict(status='stopped',actual=0,gap=target,
+                                    stop_reason='inventory_event_failed_settled')
+                return False
+            # Authenticated execution completion is not inventory sufficiency.
+            # Count actual rows in the original DB before recording target_met.
+            conn = get_db()
+            try:
+                safe = _count_safe_ready_pool(conn)
+            finally:
+                conn.close()
+            gap = max(0, target - safe)
+            event_finish = dict(status='completed' if gap == 0 else 'partial',actual=safe,gap=gap,
+                                stop_reason='target_met' if gap == 0 else 'safe_inventory_gap')
+            return gap == 0
         from retail_city_queue import activate_next_city, complete_active_city_if_exhausted, seed_default_queue
         from discovery.discovery_service import DiscoveryService
         from discovery.website_resolver import ProviderWebsiteResolver
@@ -490,7 +521,14 @@ def stage_inventory(run_id: str, business_date: str, dry_run: bool):
         raise
     finally:
         if inventory_outcome_known:
-            release_run_lock(f'inventory:{business_date}', run_id, expected_owner=inventory_owner)
+            if event_execution is not None:
+                # Original job terminal and authority release commit together.
+                released = release_run_lock(f'inventory:{business_date}', run_id,
+                    expected_owner=inventory_owner,final_job=event_finish)
+                if released is not True:
+                    raise ValueError('STOP_AND_PRESERVE_ORIGINAL_STAGE_RELEASE_UNVERIFIED')
+            else:
+                release_run_lock(f'inventory:{business_date}', run_id, expected_owner=inventory_owner)
 
 # ═══════════════════════════════════════════════════════════
 # Stage: end-of-day (17:30) — Dashboard + Daily Summary
