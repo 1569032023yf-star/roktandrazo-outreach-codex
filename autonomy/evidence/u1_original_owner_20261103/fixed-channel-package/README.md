@@ -1,0 +1,7 @@
+# 原Publisher配套工程包 / Original Publisher support archive
+
+这是固定源码的离线配套包，不含生产配置、凭据或自动更新器；未部署。bin路径对应既有原通道，新helper固定在原通道根目录的publisher_channel和autonomy。原通道Credential Manager身份验证与seal保留。每个原文件须精确匹配expected_before SHA，新文件目标必须ABSENT；已有未知文件不得覆盖。运行时仅限既有唯一Inventory，不创建调度器。
+This fixed-source offline support archive contains no production configuration, credentials or automatic updater and is not deployed. bin paths correspond to the original channel; new helpers occupy fixed publisher_channel/autonomy directories at its root. Existing Credential Manager authentication and seal remain. Original files require exact expected_before hashes; new targets must be ABSENT. Unknown existing files must not be overwritten. Only the existing sole Inventory is used; no scheduler is created.
+
+原Inventory补丁另附两个原所有者文件的固定binding，仅供原执行权所有者正式通道审核发布，不纳入宿主文件白名单。必须同窗口完成原Inventory准入、Publisher准入、受信配置和seal更新，完整审核及授权前门禁全false。本包不是完整可安装发布版，不证明现场SCM/ACL或无人值守成功；禁止直接解压覆盖现场。
+The original Inventory companion patch binds both fixed original-owner files for reviewed release by the existing owner through the formal channel; it does not expand host-file targets. Original Inventory admission, Publisher admission and trusted configuration/seal updates require one controlled window. All gates remain false before complete review and authorization. This is not a complete installable release or proof of actual SCM/ACL/unattended success. Never extract it over the site.

@@ -576,21 +576,21 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/u1_publisher_admission_20261103/REPORT.md",
-      "next_action": "Complete formal-backend wiring to the original Inventory owner and service event consumer, including contract verification. Integrate the complete release, then validate real installation, upgrade, interruption recovery and rollback in an explicitly authorized isolated Windows environment.",
+      "checkpoint": "autonomy/evidence/u1_original_owner_20261103/REPORT.md",
+      "next_action": "Continue formal-backend wiring to the original Inventory owner and service event consumer, reusing the original database lock with durable event, budget, cancellation and settlement contracts. An offline supervisor lease is not the original production owner. Then rebuild the complete release and perform authorized isolated Windows lifecycle acceptance.",
       "phase": "U1",
       "baseline_commit": "91aa60c6cf52b0c0a9c9e0ff2ddfb5ee39a7f7fc",
       "review_status": "OFFLINE_SCOPED_REVIEW_PASSED",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "d47e5d9f2f51bf0acc2f9dc4d3dc2a12b6287923",
+      "candidate_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
       "trust_boundary_review": "SCOPED_PASS",
       "schedule_contract_review": "SCOPED_PASS",
       "regression_runner_candidate": "b69214d",
       "full_regression": {
-        "baseline_commit": "e279e5505a1526969ce1e1f4769cc11e02bce66d",
-        "candidate_commit": "d47e5d9f2f51bf0acc2f9dc4d3dc2a12b6287923",
-        "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-iw47re2k",
+        "baseline_commit": "cc6434e1fdff68c0069a5cd9a85fe22c4b9d994d",
+        "candidate_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
+        "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-9mgtxbsr",
         "complete": true,
         "baseline_run": 833,
         "candidate_run": 833,
@@ -607,7 +607,7 @@
       "bridge_candidate": "68802d5",
       "bridge_review": "SCOPED_PASS_68802D5",
       "handoff_comment": 6435605069,
-      "targeted_tests": 234,
+      "targeted_tests": 245,
       "snapshot_review": "SCOPED_PASS_DA443FD",
       "history_import_review": "SCOPED_PASS_DBDC424",
       "manifest_closure_review": "SCOPED_PASS_TEST621D3E4_PACKAGE_DBDC424",
@@ -1121,8 +1121,8 @@
           }
         }
       },
-      "next_action_zh": "完成正式backend与原Inventory所有者/服务事件消费者的接线及合同核验；整合完整发布版后，在明确授权的隔离Windows环境验证真实首装、升级、中断恢复和回滚。",
-      "next_action_en": "Complete formal-backend wiring to the original Inventory owner and service event consumer, including contract verification. Integrate the complete release, then validate real installation, upgrade, interruption recovery and rollback in an explicitly authorized isolated Windows environment.",
+      "next_action_zh": "继续正式backend与原Inventory所有者及服务事件消费者接线，复用原数据库锁并加入持久事件/预算/取消/结算合同；禁止用离线supervisor锁冒充原生产所有者。完成后重建完整发布版并做授权隔离Windows生命周期验收。",
+      "next_action_en": "Continue formal-backend wiring to the original Inventory owner and service event consumer, reusing the original database lock with durable event, budget, cancellation and settlement contracts. An offline supervisor lease is not the original production owner. Then rebuild the complete release and perform authorized isolated Windows lifecycle acceptance.",
       "namespace_revalidation_latest": {
         "schema": "codex.u1.namespace-revalidation.v1",
         "summary_zh": "源身份复核在hash前后核对名字对象ID，拒绝同内容替换；返回后窗口仍未锁定。",
@@ -1783,7 +1783,7 @@
         "production_deployed": false,
         "next_action": "Integrate bounded execution backend with existing signed SingleSlotAdapter admission and original Inventory lease; close installer upgrade/rollback, dependency ACL and TOCTOU blockers before independent review. No service install/start."
       },
-      "updated_at": "2026-11-03T07:22:06.585429+00:00",
+      "updated_at": "2026-11-03T10:18:46.031004+00:00",
       "u1_execution_wiring_latest": {
         "updated_at": "2026-11-02T08:40:48.546343+00:00",
         "source_commit": "cc9b7a7b672eb2098fa02d7e57c266b4ec57d76e",
@@ -2631,6 +2631,278 @@
         "inventory_id": "1784775229336",
         "next_action": "Complete formal-backend wiring to the original Inventory owner and service event consumer, including contract verification. Integrate the complete release, then validate real installation, upgrade, interruption recovery and rollback in an explicitly authorized isolated Windows environment.",
         "next_action_zh": "完成正式backend与原Inventory所有者/服务事件消费者的接线及合同核验；整合完整发布版后，在明确授权的隔离Windows环境验证真实首装、升级、中断恢复和回滚。"
+      },
+      "u1_original_owner_latest": {
+        "source_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
+        "updated_at": "2026-11-03T10:18:46.031004+00:00",
+        "report": "autonomy/evidence/u1_original_owner_20261103/REPORT.md",
+        "tests": {
+          "source_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
+          "modules": [
+            "test_windows_acl_transaction",
+            "test_disabled_host_package",
+            "test_install_journal",
+            "test_install_contract",
+            "test_independent_install_plan",
+            "test_u1_provision",
+            "test_u1_manifest_closure",
+            "test_u1_host_runtime",
+            "test_host_remediation",
+            "test_host_preparation",
+            "test_release_store",
+            "test_process_backend",
+            "autonomy.test_process_job",
+            "test_single_slot_adapter",
+            "test_host_readonly_http",
+            "test_host_file_transaction",
+            "test_host_install_transaction",
+            "test_inventory_event_bridge",
+            "test_maintenance_control",
+            "test_install_verifier",
+            "test_install_process",
+            "test_install_inputs",
+            "test_install_command",
+            "test_publisher_install_admission",
+            "test_inventory_maintenance",
+            "test_publisher_maintenance",
+            "test_publisher_install_maintenance"
+          ],
+          "tests_run": 245,
+          "failures": [],
+          "errors": [],
+          "skips": [],
+          "seconds": 308.572,
+          "passed": true,
+          "isolation_groups": [
+            "host",
+            "authority"
+          ],
+          "allow_install": false,
+          "allow_dispatch": false,
+          "allow_cancel_dispatch": false
+        },
+        "independent_review": {
+          "source_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
+          "baseline": "cc6434e1fdff68c0069a5cd9a85fe22c4b9d994d",
+          "status": "OFFLINE_SCOPED_REVIEW_PASSED",
+          "independent_tests": {
+            "count": 68,
+            "duration_seconds": 72.89,
+            "errors": 0,
+            "failures": 0,
+            "command": "python -m unittest test_inventory_maintenance test_publisher_maintenance test_publisher_install_maintenance tests.test_phase4a8r_continuous_discovery tests.test_phase4a8s_production_patch -q"
+          },
+          "additional_isolated_probes": [
+            {
+              "name": "six_unknown_values_three_admissions",
+              "result": "PASS",
+              "values": [
+                "NULL",
+                "empty",
+                "malformed",
+                "RELEASED",
+                "BLOB released",
+                "integer 0"
+              ],
+              "assertions": "All three admissions refuse and preserve original row; exact released permits; metadata ignored."
+            },
+            {
+              "name": "eight_real_process_cross_date_contention",
+              "result": "PASS",
+              "process_count": 8,
+              "winners": 1,
+              "after_all_process_exit": "new date denied even with stale_after_seconds=-1"
+            },
+            {
+              "name": "actual_stage_AST_and_original_SQLite_lock",
+              "result": "PASS",
+              "cases": {
+                "Exception": "holder preserved; next date denied",
+                "SystemExit": "holder preserved; next date denied",
+                "known-return": "released; next date admitted"
+              },
+              "business_callbacks": "ISOLATED_DOUBLES"
+            },
+            {
+              "name": "artifact_binding",
+              "result": "PASS",
+              "details_file": "INDEPENDENT_PACKAGE_RESULT.json"
+            },
+            {
+              "name": "historical_fixture_exact_origin_and_product_unchanged",
+              "result": "PASS",
+              "historical_source": "cc6434e1fdff68c0069a5cd9a85fe22c4b9d994d:bd_orchestrator.py",
+              "fixture_exact_sha256": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903",
+              "product_files_equal_to_9cbc": [
+                "bd_db.py",
+                "bd_orchestrator.py",
+                "autonomy/inventory_maintenance.py",
+                "publisher_channel/executor.py"
+              ]
+            }
+          ],
+          "closed_findings": [
+            {
+              "id": "P1_EMPTY_INVENTORY_MAINTENANCE_GAP",
+              "diagnostic_source": "68ecdbf92a7cbc1f3df9888e52c5f8cda8392c42",
+              "description_zh": "旧候选空Inventory锁阻止原owner但允许maintenance；新共享只读判定在三个准入事务内一致执行。",
+              "description_en": "Old empty Inventory value blocked the owner but admitted maintenance; the shared read-only predicate now executes in all three admission transactions.",
+              "status": "CLOSED_VERIFIED"
+            }
+          ],
+          "filehash": {
+            "bd_db.py": {
+              "file_sha256": "2f92dc869cc1426f7eb3f415d2b9c8b1428b2dfcca62bd27d353e130fd0192aa",
+              "git_blob_sha256": "5a05b5607e1b579be255dec8b76db52fc00dd81d0c15ad20976e26864403eb0d"
+            },
+            "bd_orchestrator.py": {
+              "file_sha256": "e869aa02e047e6ba0c5198b4123918051170025f502b24113198e9cbc7348b1b",
+              "git_blob_sha256": "41d4382504a6d337cf406a5cbaf248f699f8962a9f322bf3fb5f3993d572f497"
+            },
+            "autonomy/inventory_maintenance.py": {
+              "file_sha256": "0d098b41fd25e57e270caf601ae40fe75cce379863b632b69fcbe2ec155908df",
+              "git_blob_sha256": "0d098b41fd25e57e270caf601ae40fe75cce379863b632b69fcbe2ec155908df"
+            },
+            "publisher_channel/executor.py": {
+              "file_sha256": "20a311f0b95bb00edaa743e5bf5b9d30182e680e686fa299624c8ecfd85a41de",
+              "git_blob_sha256": "20a311f0b95bb00edaa743e5bf5b9d30182e680e686fa299624c8ecfd85a41de"
+            },
+            "publisher_channel/CHANNEL_SOURCE_BINDING.json": {
+              "file_sha256": "eb7b3646f8a80c792a962837507375ac29311dad83be3cd7769f830f32cc38be",
+              "git_blob_sha256": "6ef9e843fa275f81995475a96f5436bb94281e5d978ab1fa0d6030f4138861ce"
+            },
+            "publisher_channel/SOURCE_BINDING.json": {
+              "file_sha256": "8455c6d19b164f9d3e7245dbe10aab2a1c2e4fad54510782c06c53c358b77b66",
+              "git_blob_sha256": "5552cfca506e822a81f308bfcc4261da3798ea6b14d61c7858f1ea42554411ea"
+            },
+            "publisher_channel/CHANNEL_INTEGRATION.patch": {
+              "file_sha256": "f1c8f827e3b8e94fae08b40062c2e564f12044261f11349828871b659a4a5862",
+              "git_blob_sha256": "f1c8f827e3b8e94fae08b40062c2e564f12044261f11349828871b659a4a5862"
+            },
+            "test_inventory_maintenance.py": {
+              "file_sha256": "ba5a28a7981a29be33f980486356dcdcf6aae6b3b64ecfe1b864212b7e814baf",
+              "git_blob_sha256": "ba5a28a7981a29be33f980486356dcdcf6aae6b3b64ecfe1b864212b7e814baf"
+            },
+            "test_publisher_maintenance.py": {
+              "file_sha256": "9dcaaec922a972647a125d76142973573817ff20b438a17e66d9c19591508e6f",
+              "git_blob_sha256": "9dcaaec922a972647a125d76142973573817ff20b438a17e66d9c19591508e6f"
+            },
+            "test_publisher_install_maintenance.py": {
+              "file_sha256": "3397987630769168236e2718b1b77646e4c71a1c66942e929c17221294769599",
+              "git_blob_sha256": "3397987630769168236e2718b1b77646e4c71a1c66942e929c17221294769599"
+            },
+            ".gitattributes": {
+              "file_sha256": "bb3f930b4e7197b4f02b977be0db974e90842f28476d70b6b2cce34691cedadf",
+              "git_blob_sha256": "62f2868b38019bfb615af8b25a7591bd48987f693fb34b978fe3606f2053801b"
+            },
+            "tests/test_phase4a8r_continuous_discovery.py": {
+              "file_sha256": "168a2c6214e8ae5ed3f152ab8b2fd9b706625e14b82e6ea60db22dfaee37ea3a",
+              "git_blob_sha256": "9b9e4e39ca17292cf9a5208ff81e618f258b22903a329e93ef012652e241d5ba"
+            },
+            "tests/test_phase4a8s_production_patch.py": {
+              "file_sha256": "f0d43b19ac8bdd55ebea0a801b63dba885bb4917718d26e5f676fffd81d274d5",
+              "git_blob_sha256": "8f6c02bb015215813add7ca6fd9ab2f300b88d278a49e190376259d51b9371f2"
+            },
+            "tests/fixtures/phase4a8r_bd_orchestrator.py": {
+              "file_sha256": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903",
+              "git_blob_sha256": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903"
+            }
+          },
+          "review_scope": [
+            "bd_db.py",
+            "bd_orchestrator.py",
+            "autonomy/inventory_maintenance.py",
+            "publisher_channel/executor.py",
+            "publisher_channel/CHANNEL_SOURCE_BINDING.json",
+            "publisher_channel/SOURCE_BINDING.json",
+            "publisher_channel/CHANNEL_INTEGRATION.patch",
+            "test_inventory_maintenance.py",
+            "test_publisher_maintenance.py",
+            "test_publisher_install_maintenance.py",
+            ".gitattributes",
+            "tests/test_phase4a8r_continuous_discovery.py",
+            "tests/test_phase4a8s_production_patch.py",
+            "tests/fixtures/phase4a8r_bd_orchestrator.py"
+          ],
+          "limitations_zh": [
+            "仅离线范围审核；业务采集成功使用隔离回调，未执行实际采集。",
+            "未修改生产文件、ACL、服务、数据库、Inventory或凭据。",
+            "未证明完整Windows安装命令、真实SCM/ACL或生产验收；不批准完整安装或更新。",
+            "未知锁持续封锁；本轮没有新建自动恢复或强制解锁授权。",
+            "同基线差异内process_backend增量不在本报告范围。"
+          ],
+          "limitations_en": [
+            "Offline scoped review only; business success uses isolated callbacks, not actual collection.",
+            "No production files, ACLs, services, databases, Inventory or credentials changed.",
+            "No full Windows installation, real SCM/ACL or production acceptance proven; no install/update approval.",
+            "Unknown locks remain fenced; no automatic recovery or forced unlock authorization was added.",
+            "process_backend changes in the baseline diff are outside this report scope."
+          ],
+          "RELEASE_READY": false,
+          "PRODUCTION_DEPLOYED": false,
+          "allow_install": false,
+          "allow_dispatch": false,
+          "test_contract_review_zh": "当前异常释放预期改为保留UNKNOWN锁；历史固定after夹具逐字节匹配原批准摘要，历史异常释放仍在patched副本断言，非删除合同或放宽产品。",
+          "test_contract_review_en": "Current exception expectations now preserve UNKNOWN locks; the immutable historical after fixture exactly matches the approved hash, and historical exception release remains asserted on the patched copy. No product gate was relaxed.",
+          "diagnostic_candidates_not_counted": [
+            "9cbcbbfedbf97dbddae02b7134e3b404962c5034"
+          ]
+        },
+        "current_full_regression": {
+          "baseline_commit": "cc6434e1fdff68c0069a5cd9a85fe22c4b9d994d",
+          "candidate_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
+          "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-9mgtxbsr",
+          "complete": true,
+          "baseline_run": 833,
+          "candidate_run": 833,
+          "baseline_failures": 37,
+          "candidate_failures": 37,
+          "baseline_errors": 17,
+          "candidate_errors": 17,
+          "failure_ids_identical": true,
+          "error_ids_identical": true,
+          "all_green": false,
+          "no_new_regression": true
+        },
+        "current_package": {
+          "artifacts": {
+            "install.zip": "9990cfa0179d2b54bd35602be976923e3d3f624652d49e38dd0a328a0436fdbd",
+            "rollback-tools.zip": "e9da70c05efb23fb299d4ffbfa08e646b3e5c1593080442976d101a37c305fd6"
+          },
+          "files": 71,
+          "independent_review": "OFFLINE_SCOPED_REVIEW_PASSED",
+          "manifest_sha256": "f46ffb36566e511510d2fcf88e639b41667b363f78e9d0cf1a561bd8922f8f81",
+          "production_ready": false,
+          "source_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
+          "review_evidence": "INDEPENDENT_PACKAGE_RESULT.json"
+        },
+        "publisher_package": {
+          "artifact_sha256": "372d61a6475c41a9761533dc916858d8c698b7baf4446c0bacbe0bc8927553db",
+          "import_only_passed": true,
+          "import_output": "DELIVERED_IMPORT_ONLY_OK",
+          "installable_release": false,
+          "manifest_sha256": "10188b161a70a35a382bf6fffa9e0a24b3d6975b4756fee10e3ea1d23419dfbc",
+          "payload_files": 17,
+          "production_applied": false,
+          "source_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0"
+        },
+        "original_owner_cross_date_exclusion": true,
+        "unknown_exception_preserves_original_lock": true,
+        "shared_inventory_publisher_installer_exclusion": true,
+        "formal_backend_integrated": false,
+        "formal_maintenance_integrated": false,
+        "installable_release": false,
+        "development_complete": false,
+        "release_ready": false,
+        "production_deployed": false,
+        "production_accepted": false,
+        "allow_install": false,
+        "allow_dispatch": false,
+        "allow_cancel_dispatch": false,
+        "smtp_enabled": false,
+        "inventory_id": "1784775229336",
+        "next_action": "Continue formal-backend wiring to the original Inventory owner and service event consumer, reusing the original database lock with durable event, budget, cancellation and settlement contracts. An offline supervisor lease is not the original production owner. Then rebuild the complete release and perform authorized isolated Windows lifecycle acceptance.",
+        "next_action_zh": "继续正式backend与原Inventory所有者及服务事件消费者接线，复用原数据库锁并加入持久事件/预算/取消/结算合同；禁止用离线supervisor锁冒充原生产所有者。完成后重建完整发布版并做授权隔离Windows生命周期验收。"
       }
     },
     {
@@ -4466,7 +4738,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-03T07:22:06.585429+00:00",
+  "updated_at": "2026-11-03T10:18:46.031004+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -4764,7 +5036,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "autonomy/evidence/u1_publisher_admission_20261103/REPORT.md",
+  "checkpoint": "autonomy/evidence/u1_original_owner_20261103/REPORT.md",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
@@ -5893,5 +6165,277 @@
     "inventory_id": "1784775229336",
     "next_action": "Complete formal-backend wiring to the original Inventory owner and service event consumer, including contract verification. Integrate the complete release, then validate real installation, upgrade, interruption recovery and rollback in an explicitly authorized isolated Windows environment.",
     "next_action_zh": "完成正式backend与原Inventory所有者/服务事件消费者的接线及合同核验；整合完整发布版后，在明确授权的隔离Windows环境验证真实首装、升级、中断恢复和回滚。"
+  },
+  "u1_original_owner_latest": {
+    "source_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
+    "updated_at": "2026-11-03T10:18:46.031004+00:00",
+    "report": "autonomy/evidence/u1_original_owner_20261103/REPORT.md",
+    "tests": {
+      "source_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
+      "modules": [
+        "test_windows_acl_transaction",
+        "test_disabled_host_package",
+        "test_install_journal",
+        "test_install_contract",
+        "test_independent_install_plan",
+        "test_u1_provision",
+        "test_u1_manifest_closure",
+        "test_u1_host_runtime",
+        "test_host_remediation",
+        "test_host_preparation",
+        "test_release_store",
+        "test_process_backend",
+        "autonomy.test_process_job",
+        "test_single_slot_adapter",
+        "test_host_readonly_http",
+        "test_host_file_transaction",
+        "test_host_install_transaction",
+        "test_inventory_event_bridge",
+        "test_maintenance_control",
+        "test_install_verifier",
+        "test_install_process",
+        "test_install_inputs",
+        "test_install_command",
+        "test_publisher_install_admission",
+        "test_inventory_maintenance",
+        "test_publisher_maintenance",
+        "test_publisher_install_maintenance"
+      ],
+      "tests_run": 245,
+      "failures": [],
+      "errors": [],
+      "skips": [],
+      "seconds": 308.572,
+      "passed": true,
+      "isolation_groups": [
+        "host",
+        "authority"
+      ],
+      "allow_install": false,
+      "allow_dispatch": false,
+      "allow_cancel_dispatch": false
+    },
+    "independent_review": {
+      "source_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
+      "baseline": "cc6434e1fdff68c0069a5cd9a85fe22c4b9d994d",
+      "status": "OFFLINE_SCOPED_REVIEW_PASSED",
+      "independent_tests": {
+        "count": 68,
+        "duration_seconds": 72.89,
+        "errors": 0,
+        "failures": 0,
+        "command": "python -m unittest test_inventory_maintenance test_publisher_maintenance test_publisher_install_maintenance tests.test_phase4a8r_continuous_discovery tests.test_phase4a8s_production_patch -q"
+      },
+      "additional_isolated_probes": [
+        {
+          "name": "six_unknown_values_three_admissions",
+          "result": "PASS",
+          "values": [
+            "NULL",
+            "empty",
+            "malformed",
+            "RELEASED",
+            "BLOB released",
+            "integer 0"
+          ],
+          "assertions": "All three admissions refuse and preserve original row; exact released permits; metadata ignored."
+        },
+        {
+          "name": "eight_real_process_cross_date_contention",
+          "result": "PASS",
+          "process_count": 8,
+          "winners": 1,
+          "after_all_process_exit": "new date denied even with stale_after_seconds=-1"
+        },
+        {
+          "name": "actual_stage_AST_and_original_SQLite_lock",
+          "result": "PASS",
+          "cases": {
+            "Exception": "holder preserved; next date denied",
+            "SystemExit": "holder preserved; next date denied",
+            "known-return": "released; next date admitted"
+          },
+          "business_callbacks": "ISOLATED_DOUBLES"
+        },
+        {
+          "name": "artifact_binding",
+          "result": "PASS",
+          "details_file": "INDEPENDENT_PACKAGE_RESULT.json"
+        },
+        {
+          "name": "historical_fixture_exact_origin_and_product_unchanged",
+          "result": "PASS",
+          "historical_source": "cc6434e1fdff68c0069a5cd9a85fe22c4b9d994d:bd_orchestrator.py",
+          "fixture_exact_sha256": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903",
+          "product_files_equal_to_9cbc": [
+            "bd_db.py",
+            "bd_orchestrator.py",
+            "autonomy/inventory_maintenance.py",
+            "publisher_channel/executor.py"
+          ]
+        }
+      ],
+      "closed_findings": [
+        {
+          "id": "P1_EMPTY_INVENTORY_MAINTENANCE_GAP",
+          "diagnostic_source": "68ecdbf92a7cbc1f3df9888e52c5f8cda8392c42",
+          "description_zh": "旧候选空Inventory锁阻止原owner但允许maintenance；新共享只读判定在三个准入事务内一致执行。",
+          "description_en": "Old empty Inventory value blocked the owner but admitted maintenance; the shared read-only predicate now executes in all three admission transactions.",
+          "status": "CLOSED_VERIFIED"
+        }
+      ],
+      "filehash": {
+        "bd_db.py": {
+          "file_sha256": "2f92dc869cc1426f7eb3f415d2b9c8b1428b2dfcca62bd27d353e130fd0192aa",
+          "git_blob_sha256": "5a05b5607e1b579be255dec8b76db52fc00dd81d0c15ad20976e26864403eb0d"
+        },
+        "bd_orchestrator.py": {
+          "file_sha256": "e869aa02e047e6ba0c5198b4123918051170025f502b24113198e9cbc7348b1b",
+          "git_blob_sha256": "41d4382504a6d337cf406a5cbaf248f699f8962a9f322bf3fb5f3993d572f497"
+        },
+        "autonomy/inventory_maintenance.py": {
+          "file_sha256": "0d098b41fd25e57e270caf601ae40fe75cce379863b632b69fcbe2ec155908df",
+          "git_blob_sha256": "0d098b41fd25e57e270caf601ae40fe75cce379863b632b69fcbe2ec155908df"
+        },
+        "publisher_channel/executor.py": {
+          "file_sha256": "20a311f0b95bb00edaa743e5bf5b9d30182e680e686fa299624c8ecfd85a41de",
+          "git_blob_sha256": "20a311f0b95bb00edaa743e5bf5b9d30182e680e686fa299624c8ecfd85a41de"
+        },
+        "publisher_channel/CHANNEL_SOURCE_BINDING.json": {
+          "file_sha256": "eb7b3646f8a80c792a962837507375ac29311dad83be3cd7769f830f32cc38be",
+          "git_blob_sha256": "6ef9e843fa275f81995475a96f5436bb94281e5d978ab1fa0d6030f4138861ce"
+        },
+        "publisher_channel/SOURCE_BINDING.json": {
+          "file_sha256": "8455c6d19b164f9d3e7245dbe10aab2a1c2e4fad54510782c06c53c358b77b66",
+          "git_blob_sha256": "5552cfca506e822a81f308bfcc4261da3798ea6b14d61c7858f1ea42554411ea"
+        },
+        "publisher_channel/CHANNEL_INTEGRATION.patch": {
+          "file_sha256": "f1c8f827e3b8e94fae08b40062c2e564f12044261f11349828871b659a4a5862",
+          "git_blob_sha256": "f1c8f827e3b8e94fae08b40062c2e564f12044261f11349828871b659a4a5862"
+        },
+        "test_inventory_maintenance.py": {
+          "file_sha256": "ba5a28a7981a29be33f980486356dcdcf6aae6b3b64ecfe1b864212b7e814baf",
+          "git_blob_sha256": "ba5a28a7981a29be33f980486356dcdcf6aae6b3b64ecfe1b864212b7e814baf"
+        },
+        "test_publisher_maintenance.py": {
+          "file_sha256": "9dcaaec922a972647a125d76142973573817ff20b438a17e66d9c19591508e6f",
+          "git_blob_sha256": "9dcaaec922a972647a125d76142973573817ff20b438a17e66d9c19591508e6f"
+        },
+        "test_publisher_install_maintenance.py": {
+          "file_sha256": "3397987630769168236e2718b1b77646e4c71a1c66942e929c17221294769599",
+          "git_blob_sha256": "3397987630769168236e2718b1b77646e4c71a1c66942e929c17221294769599"
+        },
+        ".gitattributes": {
+          "file_sha256": "bb3f930b4e7197b4f02b977be0db974e90842f28476d70b6b2cce34691cedadf",
+          "git_blob_sha256": "62f2868b38019bfb615af8b25a7591bd48987f693fb34b978fe3606f2053801b"
+        },
+        "tests/test_phase4a8r_continuous_discovery.py": {
+          "file_sha256": "168a2c6214e8ae5ed3f152ab8b2fd9b706625e14b82e6ea60db22dfaee37ea3a",
+          "git_blob_sha256": "9b9e4e39ca17292cf9a5208ff81e618f258b22903a329e93ef012652e241d5ba"
+        },
+        "tests/test_phase4a8s_production_patch.py": {
+          "file_sha256": "f0d43b19ac8bdd55ebea0a801b63dba885bb4917718d26e5f676fffd81d274d5",
+          "git_blob_sha256": "8f6c02bb015215813add7ca6fd9ab2f300b88d278a49e190376259d51b9371f2"
+        },
+        "tests/fixtures/phase4a8r_bd_orchestrator.py": {
+          "file_sha256": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903",
+          "git_blob_sha256": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903"
+        }
+      },
+      "review_scope": [
+        "bd_db.py",
+        "bd_orchestrator.py",
+        "autonomy/inventory_maintenance.py",
+        "publisher_channel/executor.py",
+        "publisher_channel/CHANNEL_SOURCE_BINDING.json",
+        "publisher_channel/SOURCE_BINDING.json",
+        "publisher_channel/CHANNEL_INTEGRATION.patch",
+        "test_inventory_maintenance.py",
+        "test_publisher_maintenance.py",
+        "test_publisher_install_maintenance.py",
+        ".gitattributes",
+        "tests/test_phase4a8r_continuous_discovery.py",
+        "tests/test_phase4a8s_production_patch.py",
+        "tests/fixtures/phase4a8r_bd_orchestrator.py"
+      ],
+      "limitations_zh": [
+        "仅离线范围审核；业务采集成功使用隔离回调，未执行实际采集。",
+        "未修改生产文件、ACL、服务、数据库、Inventory或凭据。",
+        "未证明完整Windows安装命令、真实SCM/ACL或生产验收；不批准完整安装或更新。",
+        "未知锁持续封锁；本轮没有新建自动恢复或强制解锁授权。",
+        "同基线差异内process_backend增量不在本报告范围。"
+      ],
+      "limitations_en": [
+        "Offline scoped review only; business success uses isolated callbacks, not actual collection.",
+        "No production files, ACLs, services, databases, Inventory or credentials changed.",
+        "No full Windows installation, real SCM/ACL or production acceptance proven; no install/update approval.",
+        "Unknown locks remain fenced; no automatic recovery or forced unlock authorization was added.",
+        "process_backend changes in the baseline diff are outside this report scope."
+      ],
+      "RELEASE_READY": false,
+      "PRODUCTION_DEPLOYED": false,
+      "allow_install": false,
+      "allow_dispatch": false,
+      "test_contract_review_zh": "当前异常释放预期改为保留UNKNOWN锁；历史固定after夹具逐字节匹配原批准摘要，历史异常释放仍在patched副本断言，非删除合同或放宽产品。",
+      "test_contract_review_en": "Current exception expectations now preserve UNKNOWN locks; the immutable historical after fixture exactly matches the approved hash, and historical exception release remains asserted on the patched copy. No product gate was relaxed.",
+      "diagnostic_candidates_not_counted": [
+        "9cbcbbfedbf97dbddae02b7134e3b404962c5034"
+      ]
+    },
+    "current_full_regression": {
+      "baseline_commit": "cc6434e1fdff68c0069a5cd9a85fe22c4b9d994d",
+      "candidate_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
+      "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-9mgtxbsr",
+      "complete": true,
+      "baseline_run": 833,
+      "candidate_run": 833,
+      "baseline_failures": 37,
+      "candidate_failures": 37,
+      "baseline_errors": 17,
+      "candidate_errors": 17,
+      "failure_ids_identical": true,
+      "error_ids_identical": true,
+      "all_green": false,
+      "no_new_regression": true
+    },
+    "current_package": {
+      "artifacts": {
+        "install.zip": "9990cfa0179d2b54bd35602be976923e3d3f624652d49e38dd0a328a0436fdbd",
+        "rollback-tools.zip": "e9da70c05efb23fb299d4ffbfa08e646b3e5c1593080442976d101a37c305fd6"
+      },
+      "files": 71,
+      "independent_review": "OFFLINE_SCOPED_REVIEW_PASSED",
+      "manifest_sha256": "f46ffb36566e511510d2fcf88e639b41667b363f78e9d0cf1a561bd8922f8f81",
+      "production_ready": false,
+      "source_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
+      "review_evidence": "INDEPENDENT_PACKAGE_RESULT.json"
+    },
+    "publisher_package": {
+      "artifact_sha256": "372d61a6475c41a9761533dc916858d8c698b7baf4446c0bacbe0bc8927553db",
+      "import_only_passed": true,
+      "import_output": "DELIVERED_IMPORT_ONLY_OK",
+      "installable_release": false,
+      "manifest_sha256": "10188b161a70a35a382bf6fffa9e0a24b3d6975b4756fee10e3ea1d23419dfbc",
+      "payload_files": 17,
+      "production_applied": false,
+      "source_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0"
+    },
+    "original_owner_cross_date_exclusion": true,
+    "unknown_exception_preserves_original_lock": true,
+    "shared_inventory_publisher_installer_exclusion": true,
+    "formal_backend_integrated": false,
+    "formal_maintenance_integrated": false,
+    "installable_release": false,
+    "development_complete": false,
+    "release_ready": false,
+    "production_deployed": false,
+    "production_accepted": false,
+    "allow_install": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "smtp_enabled": false,
+    "inventory_id": "1784775229336",
+    "next_action": "Continue formal-backend wiring to the original Inventory owner and service event consumer, reusing the original database lock with durable event, budget, cancellation and settlement contracts. An offline supervisor lease is not the original production owner. Then rebuild the complete release and perform authorized isolated Windows lifecycle acceptance.",
+    "next_action_zh": "继续正式backend与原Inventory所有者及服务事件消费者接线，复用原数据库锁并加入持久事件/预算/取消/结算合同；禁止用离线supervisor锁冒充原生产所有者。完成后重建完整发布版并做授权隔离Windows生命周期验收。"
   }
 }

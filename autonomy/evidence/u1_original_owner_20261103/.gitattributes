@@ -1,0 +1,3 @@
+# Byte-exact engineering artifacts / 保留工程制品精确字节
+fixed-package/** -text
+fixed-channel-package/** -text

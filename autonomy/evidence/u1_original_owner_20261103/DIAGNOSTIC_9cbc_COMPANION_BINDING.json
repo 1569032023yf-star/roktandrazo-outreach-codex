@@ -1,0 +1,20 @@
+{
+  "source_commit": "9cbcbbfedbf97dbddae02b7134e3b404962c5034",
+  "baseline": "3bbb77d7f2cce774b3addfdbf851342ad09393c5",
+  "patch_sha256": "4a4f12e70ea96a82850b53472dfd50af455b57fae395a08d200862239c0d9e7e",
+  "files": [
+    {
+      "path": "bd_db.py",
+      "before_git_blob_sha256": "391ad34a9b5300703e7eb7fdb8210bf19db59b195c7356bb64909b95acf6e880",
+      "after_git_blob_sha256": "5a05b5607e1b579be255dec8b76db52fc00dd81d0c15ad20976e26864403eb0d"
+    },
+    {
+      "path": "bd_orchestrator.py",
+      "before_git_blob_sha256": "e7e619d3e40f415c1894aa3e1087978875c6f26570755254ab535b68e5580903",
+      "after_git_blob_sha256": "41d4382504a6d337cf406a5cbaf248f699f8962a9f322bf3fb5f3993d572f497"
+    }
+  ],
+  "production_applied": false,
+  "allow_install": false,
+  "allow_dispatch": false
+}

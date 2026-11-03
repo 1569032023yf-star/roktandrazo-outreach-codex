@@ -1,0 +1,10 @@
+{
+  "source_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
+  "baseline": "3bbb77d7f2cce774b3addfdbf851342ad09393c5",
+  "patch_sha256": "4a4f12e70ea96a82850b53472dfd50af455b57fae395a08d200862239c0d9e7e",
+  "files_verified": 2,
+  "byte_policy": "Exact Git blob LF; site bytes not asserted",
+  "applied_only_in_temporary_directory": true,
+  "production_applied": false,
+  "passed": true
+}

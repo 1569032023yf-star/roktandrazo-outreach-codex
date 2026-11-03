@@ -1,0 +1,19 @@
+{
+  "source_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
+  "support_sha256": "372d61a6475c41a9761533dc916858d8c698b7baf4446c0bacbe0bc8927553db",
+  "support_files": 17,
+  "support_import": "PASS",
+  "companion_exact_reproduction_files": [
+    "bd_db.py",
+    "bd_orchestrator.py"
+  ],
+  "companion_patch_sha256": "4a4f12e70ea96a82850b53472dfd50af455b57fae395a08d200862239c0d9e7e",
+  "engineering_files": 71,
+  "engineering_artifacts": {
+    "install.zip": "9990cfa0179d2b54bd35602be976923e3d3f624652d49e38dd0a328a0436fdbd",
+    "rollback-tools.zip": "e9da70c05efb23fb299d4ffbfa08e646b3e5c1593080442976d101a37c305fd6"
+  },
+  "pe_machine": "0x8664",
+  "installable_release": false,
+  "production_applied": false
+}

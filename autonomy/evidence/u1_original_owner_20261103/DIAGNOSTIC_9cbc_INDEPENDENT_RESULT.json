@@ -1,0 +1,130 @@
+{
+  "source_commit": "9cbcbbfedbf97dbddae02b7134e3b404962c5034",
+  "baseline": "cc6434e1fdff68c0069a5cd9a85fe22c4b9d994d",
+  "status": "OFFLINE_SCOPED_REVIEW_PASSED",
+  "independent_tests": {
+    "count": 38,
+    "duration_seconds": 8.03,
+    "errors": 0,
+    "failures": 0,
+    "command": "python -m unittest test_inventory_maintenance test_publisher_maintenance test_publisher_install_maintenance -v"
+  },
+  "additional_isolated_probes": [
+    {
+      "name": "six_unknown_values_three_admissions",
+      "result": "PASS",
+      "values": [
+        "NULL",
+        "empty",
+        "malformed",
+        "RELEASED",
+        "BLOB released",
+        "integer 0"
+      ],
+      "assertions": "All three admissions refuse and preserve original row; exact released permits; metadata ignored."
+    },
+    {
+      "name": "eight_real_process_cross_date_contention",
+      "result": "PASS",
+      "process_count": 8,
+      "winners": 1,
+      "after_all_process_exit": "new date denied even with stale_after_seconds=-1"
+    },
+    {
+      "name": "actual_stage_AST_and_original_SQLite_lock",
+      "result": "PASS",
+      "cases": {
+        "Exception": "holder preserved; next date denied",
+        "SystemExit": "holder preserved; next date denied",
+        "known-return": "released; next date admitted"
+      },
+      "business_callbacks": "ISOLATED_DOUBLES"
+    },
+    {
+      "name": "artifact_binding",
+      "result": "PASS",
+      "details_file": "INDEPENDENT_PACKAGE_RESULT.json"
+    }
+  ],
+  "closed_findings": [
+    {
+      "id": "P1_EMPTY_INVENTORY_MAINTENANCE_GAP",
+      "diagnostic_source": "68ecdbf92a7cbc1f3df9888e52c5f8cda8392c42",
+      "description_zh": "旧候选空Inventory锁阻止原owner但允许maintenance；新共享只读判定在三个准入事务内一致执行。",
+      "description_en": "Old empty Inventory value blocked the owner but admitted maintenance; the shared read-only predicate now executes in all three admission transactions.",
+      "status": "CLOSED_VERIFIED"
+    }
+  ],
+  "filehash": {
+    "bd_db.py": {
+      "file_sha256": "2f92dc869cc1426f7eb3f415d2b9c8b1428b2dfcca62bd27d353e130fd0192aa",
+      "git_blob_sha256": "5a05b5607e1b579be255dec8b76db52fc00dd81d0c15ad20976e26864403eb0d"
+    },
+    "bd_orchestrator.py": {
+      "file_sha256": "e869aa02e047e6ba0c5198b4123918051170025f502b24113198e9cbc7348b1b",
+      "git_blob_sha256": "41d4382504a6d337cf406a5cbaf248f699f8962a9f322bf3fb5f3993d572f497"
+    },
+    "autonomy/inventory_maintenance.py": {
+      "file_sha256": "0d098b41fd25e57e270caf601ae40fe75cce379863b632b69fcbe2ec155908df",
+      "git_blob_sha256": "0d098b41fd25e57e270caf601ae40fe75cce379863b632b69fcbe2ec155908df"
+    },
+    "publisher_channel/executor.py": {
+      "file_sha256": "20a311f0b95bb00edaa743e5bf5b9d30182e680e686fa299624c8ecfd85a41de",
+      "git_blob_sha256": "20a311f0b95bb00edaa743e5bf5b9d30182e680e686fa299624c8ecfd85a41de"
+    },
+    "publisher_channel/CHANNEL_SOURCE_BINDING.json": {
+      "file_sha256": "eb7b3646f8a80c792a962837507375ac29311dad83be3cd7769f830f32cc38be",
+      "git_blob_sha256": "6ef9e843fa275f81995475a96f5436bb94281e5d978ab1fa0d6030f4138861ce"
+    },
+    "publisher_channel/SOURCE_BINDING.json": {
+      "file_sha256": "8455c6d19b164f9d3e7245dbe10aab2a1c2e4fad54510782c06c53c358b77b66",
+      "git_blob_sha256": "5552cfca506e822a81f308bfcc4261da3798ea6b14d61c7858f1ea42554411ea"
+    },
+    "publisher_channel/CHANNEL_INTEGRATION.patch": {
+      "file_sha256": "f1c8f827e3b8e94fae08b40062c2e564f12044261f11349828871b659a4a5862",
+      "git_blob_sha256": "f1c8f827e3b8e94fae08b40062c2e564f12044261f11349828871b659a4a5862"
+    },
+    "test_inventory_maintenance.py": {
+      "file_sha256": "ba5a28a7981a29be33f980486356dcdcf6aae6b3b64ecfe1b864212b7e814baf",
+      "git_blob_sha256": "ba5a28a7981a29be33f980486356dcdcf6aae6b3b64ecfe1b864212b7e814baf"
+    },
+    "test_publisher_maintenance.py": {
+      "file_sha256": "9dcaaec922a972647a125d76142973573817ff20b438a17e66d9c19591508e6f",
+      "git_blob_sha256": "9dcaaec922a972647a125d76142973573817ff20b438a17e66d9c19591508e6f"
+    },
+    "test_publisher_install_maintenance.py": {
+      "file_sha256": "3397987630769168236e2718b1b77646e4c71a1c66942e929c17221294769599",
+      "git_blob_sha256": "3397987630769168236e2718b1b77646e4c71a1c66942e929c17221294769599"
+    }
+  },
+  "review_scope": [
+    "bd_db.py",
+    "bd_orchestrator.py",
+    "autonomy/inventory_maintenance.py",
+    "publisher_channel/executor.py",
+    "publisher_channel/CHANNEL_SOURCE_BINDING.json",
+    "publisher_channel/SOURCE_BINDING.json",
+    "publisher_channel/CHANNEL_INTEGRATION.patch",
+    "test_inventory_maintenance.py",
+    "test_publisher_maintenance.py",
+    "test_publisher_install_maintenance.py"
+  ],
+  "limitations_zh": [
+    "仅离线范围审核；业务采集成功使用隔离回调，未执行实际采集。",
+    "未修改生产文件、ACL、服务、数据库、Inventory或凭据。",
+    "未证明完整Windows安装命令、真实SCM/ACL或生产验收；不批准完整安装或更新。",
+    "未知锁持续封锁；本轮没有新建自动恢复或强制解锁授权。",
+    "同基线差异内process_backend增量不在本报告范围。"
+  ],
+  "limitations_en": [
+    "Offline scoped review only; business success uses isolated callbacks, not actual collection.",
+    "No production files, ACLs, services, databases, Inventory or credentials changed.",
+    "No full Windows installation, real SCM/ACL or production acceptance proven; no install/update approval.",
+    "Unknown locks remain fenced; no automatic recovery or forced unlock authorization was added.",
+    "process_backend changes in the baseline diff are outside this report scope."
+  ],
+  "RELEASE_READY": false,
+  "PRODUCTION_DEPLOYED": false,
+  "allow_install": false,
+  "allow_dispatch": false
+}

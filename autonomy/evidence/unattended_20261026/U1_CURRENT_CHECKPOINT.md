@@ -1,3 +1,21 @@
+# U1 原所有者排他 / Original-owner exclusion
+
+固定源码 / Fixed source: `4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0` | 2026-11-03T10:18:46.031004+00:00
+
+原Inventory跨日期及未知退出锁保留已修复，并与Publisher/安装维护统一。组合245项，独审OFFLINE_SCOPED_REVIEW_PASSED；完整正式backend与真实Windows验收未完成。
+Original Inventory cross-date and unknown-exit lock preservation is repaired and shared with Publisher/installer maintenance. Combined tests: 245; review: OFFLINE_SCOPED_REVIEW_PASSED. The complete formal backend and real Windows acceptance remain incomplete.
+
+继续正式backend与原Inventory所有者及服务事件消费者接线，复用原数据库锁并加入持久事件/预算/取消/结算合同；禁止用离线supervisor锁冒充原生产所有者。完成后重建完整发布版并做授权隔离Windows生命周期验收。
+Continue formal-backend wiring to the original Inventory owner and service event consumer, reusing the original database lock with durable event, budget, cancellation and settlement contracts. An offline supervisor lease is not the original production owner. Then rebuild the complete release and perform authorized isolated Windows lifecycle acceptance.
+
+`DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false`
+
+`allow_install=false; allow_dispatch=false; allow_cancel_dispatch=false; SMTP=false`
+
+[双语报告 / Bilingual report](../u1_original_owner_20261103/REPORT.md)
+
+---
+
 # U1 backend 回执解析修复 / Backend receipt parsing fix
 
 固定源码 / Fixed source: `870c7980ac6bec0abe687c781e05b95b2d46e71a` | 2026-11-03T09:07:49.999469+00:00
