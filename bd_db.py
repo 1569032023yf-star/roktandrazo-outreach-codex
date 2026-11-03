@@ -883,6 +883,8 @@ def release_run_lock(date_str: str = None, holder: str | None = None, *, expecte
                 "UPDATE system_config SET value='released',updated_at=datetime('now') WHERE key=? AND value=?",
                 (lock_key, holder),
             )
+            if final_job is not None and cur.rowcount != 1:
+                raise ValueError('STOP_AND_PRESERVE_ORIGINAL_STAGE_RELEASE_UNVERIFIED')
         return cur.rowcount == 1
     finally:
         conn.close()

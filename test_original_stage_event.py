@@ -124,6 +124,18 @@ class OriginalStageEventTests(unittest.TestCase):
         self.assertEqual(self.f.authority.check(),self.f.captured)
         self.assertEqual(self.f.f.backend.calls,1)
 
+    def test_zero_row_release_rolls_back_job_terminal(self):
+        with closing(self.f.connect()) as conn:
+            conn.execute("CREATE TRIGGER ignore_release BEFORE UPDATE ON system_config WHEN NEW.value='released' BEGIN SELECT RAISE(IGNORE); END")
+            conn.commit()
+        with self.f.host() as bridge:
+            execution=OriginalStageEvent(bridge,self.f.event(),captured_owner=self.f.captured)
+            with self.assertRaisesRegex(ValueError,'RELEASE_UNVERIFIED'):
+                self.run_stage(execution)
+        self.assertEqual(self.job()[0],'running')
+        self.assertEqual(self.f.authority.check(),self.f.captured)
+        self.assertEqual(self.f.f.backend.calls,1)
+
     def test_event_input_is_frozen_and_arbitrary_consumer_rejected(self):
         bridge=ExistingOwnerBridge(self.f.f.adapter,port=8791,token='a'*40)
         event=self.f.event()
