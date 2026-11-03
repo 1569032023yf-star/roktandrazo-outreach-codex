@@ -10,7 +10,11 @@ English: `install_maintenance.py` implements an internal session for a trusted p
 
 中文：取得维护权后，安装意图、返回、最终核验和释放都有持久记录。最终核验凭据与释放同一事务提交；异常不在 finally 中释放。突然退出或未知结果只能显式只读核对，不能再次调用安装器。PowerShell 内部协调器在写入阶段及文件 helper 前后核验绑定维护会话；公开 Execute hard gate 保留。
 
-English: Acquisition is followed by durable installation-intent, return, verification and release records. Final proof and release commit atomically. Exceptions never finally-release. Crash/unknown recovery reconciles read-only without relaunching installation. The internal PowerShell coordinator checks the bound session across mutation phases and file-helper calls; public Execute remains hard rejected.
+English: Acquisition atomically persists the marker, replay tombstone and full session context. It is followed by durable installation-intent, return, verification and release records. Final proof and release commit atomically. Exceptions never finally-release. The internal PowerShell coordinator checks the bound session across mutation phases and file-helper calls; public Execute remains hard rejected.
+
+中文：未知状态可显式只读核对；部分应用则在受信适配器确认旧进程已结束后，使用新 recovery_id 在同一维护权下交接为 recover 子会话，不重新运行正向安装。子会话也可在中断后重开记录并继续显式补偿。父会话交接后在数据库事务内被永久禁止再次推进或释放；迟到的状态写入和核验回执不能覆盖交接。
+
+English: Unknown state permits explicit read-only reconciliation. Partial application requires the trusted adapter to confirm the previous process has stopped, then uses a new recovery ID to hand off compensation under the same exclusion. Interrupted compensation can reopen its recorded child and explicitly compensate again. Handed-off parents are permanently barred from advancing or releasing within the database transaction; late state writes and verifier replies cannot override handoff.
 
 中文：尚未完成原通道支持入口到受控安装进程的适配器、独立目标/SCM/ACL 最终核验器及部署 seal 集成。当前回调测试不是这些工程的替代物。完整接线、独审和授权前 `allow_install=false; allow_dispatch=false; SMTP=false`，不得开始 WorkBuddy Windows 实际无人值守或生产验收。
 

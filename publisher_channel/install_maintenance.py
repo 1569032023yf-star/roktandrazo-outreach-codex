@@ -56,9 +56,18 @@ class InstallMaintenance:
                           (self.key+f':{index:06d}', canonical(record)))
 
     def _transition(self, phase, detail=None):
+        allowed = {
+            'INSTALL_INTENT': {'HELD'},
+            'INSTALLER_RETURNED': {'INSTALL_INTENT'},
+            'FINAL_VERIFY_INTENT': {'HELD', 'INSTALL_INTENT', 'INSTALLER_RETURNED', 'UNKNOWN', 'FINAL_VERIFY_INTENT'},
+            'UNKNOWN': {'HELD', 'INSTALL_INTENT', 'INSTALLER_RETURNED', 'FINAL_VERIFY_INTENT', 'UNKNOWN'},
+        }
         try:
             self.conn.execute('BEGIN IMMEDIATE')
             authority.assert_held(self.conn, self.binding)
+            records, _ = self._records()
+            if not records or records[-1]['phase'] not in allowed.get(phase, set()):
+                raise ValueError('STOP_AND_PRESERVE_SESSION_TRANSITION')
             self._append(phase, detail)
             self.conn.commit()
         except BaseException:
@@ -66,10 +75,15 @@ class InstallMaintenance:
             raise
 
     def acquire(self):
-        # Original authority persists both exclusion and replay tombstone before
-        # any installer can run. A crash before HELD intentionally stays fenced.
-        authority.acquire(self.conn, self.binding)
-        self._transition('HELD')
+        # Marker, tombstone and full session context become durable together.
+        try:
+            self.conn.execute('BEGIN IMMEDIATE')
+            authority.acquire_locked(self.conn, self.binding)
+            self._append('HELD')
+            self.conn.commit()
+        except BaseException:
+            self.conn.rollback()
+            raise
 
     def assert_held(self, target_operation_id, source_commit, manifest_sha256, action):
         if (target_operation_id != self.context['target_operation_id'] or
@@ -78,7 +92,7 @@ class InstallMaintenance:
             raise ValueError('STOP_AND_PRESERVE_INSTALL_BINDING_MISMATCH')
         authority.assert_held(self.conn, self.binding)
         records, _ = self._records()
-        if not records or records[-1]['phase'] in ('RELEASED', 'UNKNOWN'):
+        if not records or records[-1]['phase'] not in ('HELD', 'INSTALL_INTENT', 'INSTALLER_RETURNED', 'FINAL_VERIFY_INTENT'):
             raise ValueError('STOP_AND_PRESERVE_SESSION_NOT_ACTIVE')
         return True
 
@@ -96,6 +110,9 @@ class InstallMaintenance:
         try:
             self.conn.execute('BEGIN IMMEDIATE')
             authority.assert_held(self.conn, self.binding)
+            records, _ = self._records()
+            if not records or records[-1]['phase'] != 'FINAL_VERIFY_INTENT':
+                raise ValueError('STOP_AND_PRESERVE_FINAL_SESSION_CHANGED')
             self._append('FINAL_VERIFIED', proof)
             self.conn.execute("UPDATE system_config SET value='released',updated_at=datetime('now') WHERE key=?",
                               (authority.KEY,))
@@ -110,6 +127,9 @@ class InstallMaintenance:
 
     def execute(self, installer, verifier):
         self.acquire()
+        return self._execute_held(installer, verifier)
+
+    def _execute_held(self, installer, verifier):
         try:
             self._transition('INSTALL_INTENT')
             observed = installer(self)
@@ -123,12 +143,61 @@ class InstallMaintenance:
                 pass
             raise
 
+    def _compensation_child(self, recovery_id):
+        child = InstallMaintenance(self.conn, self.binding,
+                                   target_operation_id=self.context['target_operation_id'], action='recover')
+        child.key = authority.KEY+':recovery-session:'+self.binding['operation_id']+':'+recovery_id
+        child.context.update(parent_context_sha256=hashlib.sha256(canonical(self.context).encode()).hexdigest(),
+                             recovery_id=recovery_id)
+        return child
+
+    def compensation_session(self, recovery_id):
+        """Reopen recorded compensation after restart; never launch anything."""
+        child = self._compensation_child(recovery_id)
+        records, _ = self._records()
+        if (not records or records[-1]['phase'] != 'RECOVERY_ADMITTED' or
+                records[-1]['detail']['child_key'] != child.key or not child._records()[0]):
+            raise ValueError('STOP_AND_PRESERVE_UNKNOWN_RECOVERY')
+        return child
+
+    def compensate(self, recovery_id, installer, verifier, *, confirm_stopped):
+        """Explicit compensation under the SAME exclusion, never forward replay.
+
+        The trusted process adapter must establish the previous child is dead
+        before calling. A fresh request ID records handoff to action=recover;
+        that parent can no longer assert authority or release while it runs.
+        """
+        if type(recovery_id) is not str or not re.fullmatch('[0-9a-f]{64}', recovery_id):
+            raise ValueError('EXACT_RECOVERY_REQUEST_REQUIRED')
+        stopped = confirm_stopped(self)
+        if (type(stopped) is not dict or set(stopped) != {'context', 'stopped', 'process_identity_sha256'} or
+                stopped['context'] != self.context or stopped['stopped'] is not True or
+                type(stopped['process_identity_sha256']) is not str or
+                not re.fullmatch('[0-9a-f]{64}', stopped['process_identity_sha256'])):
+            raise ValueError('STOP_AND_PRESERVE_PREVIOUS_PROCESS_UNVERIFIED')
+        child = self._compensation_child(recovery_id)
+        try:
+            self.conn.execute('BEGIN IMMEDIATE')
+            authority.assert_held(self.conn, self.binding)
+            records, _ = self._records()
+            if (not records or records[-1]['phase'] not in ('UNKNOWN', 'INSTALL_INTENT', 'INSTALLER_RETURNED', 'FINAL_VERIFY_INTENT') or child._records()[0]):
+                raise ValueError('STOP_AND_PRESERVE_EXPLICIT_RECOVERY_REQUIRED')
+            self._append('RECOVERY_ADMITTED', dict(child_key=child.key, context=child.context, stopped=stopped))
+            child._append('HELD')
+            self.conn.commit()
+        except BaseException:
+            self.conn.rollback()
+            raise
+        return child._execute_held(installer, verifier)
+
     def reconcile(self, verifier):
         """Explicit read-only reconciliation, never launch/replay the installer."""
         authority.assert_held(self.conn, self.binding)
         records, _ = self._records()
         if not records:
             raise ValueError('STOP_AND_PRESERVE_MISSING_SESSION')
+        if records[-1]['phase'] in ('RELEASED', 'RECOVERY_ADMITTED'):
+            raise ValueError('STOP_AND_PRESERVE_SESSION_HANDED_OFF')
         try:
             return self._verify_and_release(None, verifier)
         except BaseException:

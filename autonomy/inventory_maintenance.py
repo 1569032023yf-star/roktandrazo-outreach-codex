@@ -27,19 +27,24 @@ def blocked(conn):
     return row is not None and row[0]!='released'
 
 
-def acquire(conn,binding):
+def acquire_locked(conn,binding):
+    """Internal publisher composition; caller owns BEGIN IMMEDIATE and commit."""
     raw=binding_bytes(binding);op=KEY+':'+binding['operation_id']
+    if not conn.in_transaction:raise ValueError('MAINTENANCE_TRANSACTION_REQUIRED')
+    if blocked(conn) or conn.execute('SELECT 1 FROM system_config WHERE key=?',(op,)).fetchone():
+        raise ValueError('STOP_AND_PRESERVE_MAINTENANCE_PENDING_OR_REPLAY')
+    rows=conn.execute('SELECT key,value FROM system_config WHERE substr(key,1,?)=?',
+                      (len(PREFIX),PREFIX)).fetchall()
+    if any(not k.endswith('_acquired_at') and v not in ('','released') for k,v in rows):
+        raise ValueError('ORIGINAL_INVENTORY_NOT_QUIESCENT')
+    sql="INSERT INTO system_config(key,value,updated_at) VALUES(?,?,datetime('now')) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=excluded.updated_at"
+    conn.execute(sql,(op,raw));conn.execute(sql,(KEY,raw))
+
+
+def acquire(conn,binding):
     try:
         conn.execute('BEGIN IMMEDIATE')
-        if blocked(conn) or conn.execute('SELECT 1 FROM system_config WHERE key=?',(op,)).fetchone():
-            raise ValueError('STOP_AND_PRESERVE_MAINTENANCE_PENDING_OR_REPLAY')
-        # No stale override: even an old holder may have an unknown side effect.
-        rows=conn.execute('SELECT key,value FROM system_config WHERE substr(key,1,?)=?',
-                          (len(PREFIX),PREFIX)).fetchall()
-        if any(not k.endswith('_acquired_at') and v not in ('','released') for k,v in rows):
-            raise ValueError('ORIGINAL_INVENTORY_NOT_QUIESCENT')
-        sql="INSERT INTO system_config(key,value,updated_at) VALUES(?,?,datetime('now')) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=excluded.updated_at"
-        conn.execute(sql,(op,raw));conn.execute(sql,(KEY,raw));conn.commit()
+        acquire_locked(conn,binding);conn.commit()
     except BaseException:
         conn.rollback();raise
 

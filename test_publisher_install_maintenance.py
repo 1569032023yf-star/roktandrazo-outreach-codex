@@ -1,5 +1,6 @@
 """Publisher maintenance lifecycle with actual isolated authority transactions."""
 from contextlib import closing
+import hashlib
 import json
 from pathlib import Path
 import sqlite3
@@ -74,24 +75,41 @@ class PublisherInstallMaintenanceTests(unittest.TestCase):
             authority.assert_held(self.conn, self.binding)
 
     def test_real_process_exit_after_install_intent_remains_held_after_restart(self):
+        target = Path(self.tmp.name)/'crashed-partial'
         code = '''import json,os,sqlite3,sys
+from pathlib import Path
 from publisher_channel.install_maintenance import InstallMaintenance
 c=sqlite3.connect(sys.argv[1]);b=json.loads(sys.argv[2])
 s=InstallMaintenance(c,b,target_operation_id='e'*64,action='install')
-s.execute(lambda _:os._exit(41),lambda *_:None)
+def die(_):
+    Path(sys.argv[3]).write_bytes(b'partial')
+    os._exit(41)
+s.execute(die,lambda *_:None)
 '''
-        r = subprocess.run([sys.executable, '-B', '-c', code, str(self.db), json.dumps(self.binding)], timeout=15)
-        self.assertEqual(r.returncode, 41)
+        child = subprocess.Popen([sys.executable, '-B', '-c', code, str(self.db), json.dumps(self.binding), str(target)])
+        self.assertEqual(child.wait(timeout=15), 41)
         authority.assert_held(self.conn, self.binding)
         self.assertEqual(self.session._records()[0][-1]['phase'], 'INSTALL_INTENT')
         with self.assertRaisesRegex(ValueError, 'REPLAY'):
             self.session.execute(lambda _: self.fail('replayed'), self.proof)
-        self.session.reconcile(self.proof)
+        def stopped(session):
+            self.assertEqual(child.poll(), 41)
+            return dict(context=session.context, stopped=True,
+                        process_identity_sha256=hashlib.sha256((str(child.pid)+code).encode()).hexdigest())
+        def compensate(session):
+            session.assert_held('e'*64, 'b'*40, 'c'*64, 'recover')
+            self.assertEqual(target.read_bytes(), b'partial'); target.unlink()
+        def verify(session, _):
+            self.assertFalse(target.exists())
+            return dict(context=session.context, outcome='ROLLED_BACK', evidence_sha256='f'*64)
+        self.session.compensate('9'*64, compensate, verify, confirm_stopped=stopped)
         self.assertFalse(authority.blocked(self.conn))
 
     def test_release_commit_failure_keeps_authority_and_does_not_replay_install(self):
         conn = self.conn
         class FailedFinalCommit:
+            @property
+            def in_transaction(_): return conn.in_transaction
             def execute(_, *a): return conn.execute(*a)
             def rollback(_): conn.rollback()
             def commit(_):
@@ -110,6 +128,8 @@ s.execute(lambda _:os._exit(41),lambda *_:None)
     def test_release_commit_succeeded_but_reply_lost_is_observed_without_replay(self):
         conn = self.conn
         class LostReply:
+            @property
+            def in_transaction(_): return conn.in_transaction
             def execute(_, *a): return conn.execute(*a)
             def rollback(_): conn.rollback()
             def commit(_):
@@ -136,6 +156,88 @@ s.execute(lambda _:os._exit(41),lambda *_:None)
             return dict(context=session.context, outcome='ROLLED_BACK', evidence_sha256='3'*64)
         self.assertEqual(rollback.execute(lambda _: None, verified)['outcome'], 'ROLLED_BACK')
         self.assertFalse(authority.blocked(self.conn))
+
+    def test_acquire_session_failure_rolls_back_marker_tombstone_and_context_together(self):
+        original = self.session._append
+        self.session._append = lambda *_: (_ for _ in ()).throw(OSError('HELD write failure'))
+        with self.assertRaises(OSError): self.session.acquire()
+        self.assertFalse(authority.blocked(self.conn))
+        self.assertEqual(self.conn.execute('SELECT count(*) FROM system_config').fetchone()[0], 0)
+        self.session._append = original
+        self.session.execute(lambda _: None, self.proof)
+
+    def test_real_exit_inside_acquire_transaction_leaves_no_orphan_marker(self):
+        code = '''import json,os,sqlite3,sys
+from publisher_channel.install_maintenance import InstallMaintenance
+c=sqlite3.connect(sys.argv[1]);s=InstallMaintenance(c,json.loads(sys.argv[2]),target_operation_id='e'*64,action='install')
+s._append=lambda *_:os._exit(42)
+s.acquire()
+'''
+        result = subprocess.run([sys.executable, '-B', '-c', code, str(self.db), json.dumps(self.binding)], timeout=15)
+        self.assertEqual(result.returncode, 42)
+        self.assertEqual(self.conn.execute('SELECT count(*) FROM system_config').fetchone()[0], 0)
+        self.session.execute(lambda _: None, self.proof)
+
+    def test_explicit_partial_compensation_retains_same_authority_and_can_recover_again(self):
+        target = Path(self.tmp.name)/'partial-file'
+        calls = []
+        def install(_):
+            target.write_bytes(b'partial'); calls.append('forward'); raise OSError('install failed')
+        with self.assertRaises(OSError): self.session.execute(install, self.proof)
+        def stopped(session):
+            return dict(context=session.context, stopped=True, process_identity_sha256='4'*64)
+        def failed_recovery(session):
+            session.assert_held('e'*64, 'b'*40, 'c'*64, 'recover')
+            authority.assert_held(self.conn, self.binding)
+            calls.append('first-recovery'); raise OSError('recovery interrupted')
+        def verify(session, _):
+            session.assert_held('e'*64, 'b'*40, 'c'*64, 'recover')
+            self.assertFalse(target.exists())
+            return dict(context=session.context, outcome='ROLLED_BACK', evidence_sha256='5'*64)
+        with self.assertRaises(OSError):
+            self.session.compensate('6'*64, failed_recovery, verify, confirm_stopped=stopped)
+        authority.assert_held(self.conn, self.binding)
+        with self.assertRaisesRegex(ValueError, 'SESSION_NOT_ACTIVE'): self.held(self.session)
+        with self.assertRaisesRegex(ValueError, 'HANDED_OFF'): self.session.reconcile(self.proof)
+        child = self.session.compensation_session('6'*64)
+        with self.assertRaisesRegex(ValueError, 'EXPLICIT_RECOVERY'):
+            self.session.compensate('6'*64, failed_recovery, verify, confirm_stopped=stopped)
+        def recover(session):
+            session.assert_held('e'*64, 'b'*40, 'c'*64, 'recover')
+            calls.append('second-recovery'); target.unlink()
+        proof = child.compensate('7'*64, recover, verify, confirm_stopped=stopped)
+        self.assertEqual(proof['outcome'], 'ROLLED_BACK')
+        self.assertEqual(calls, ['forward', 'first-recovery', 'second-recovery'])
+        self.assertFalse(authority.blocked(self.conn))
+
+    def test_unverified_prior_process_cannot_start_compensation(self):
+        with self.assertRaises(OSError):
+            self.session.execute(lambda _: (_ for _ in ()).throw(OSError('partial')), self.proof)
+        with self.assertRaisesRegex(ValueError, 'PREVIOUS_PROCESS_UNVERIFIED'):
+            self.session.compensate('8'*64, lambda _: self.fail('unsafe compensation'),
+                                    self.proof, confirm_stopped=lambda _: False)
+        authority.assert_held(self.conn, self.binding)
+        self.assertEqual(self.session._records()[0][-1]['phase'], 'UNKNOWN')
+
+    def test_handoff_during_old_verifier_cannot_release_or_reactivate_parent(self):
+        self.session.acquire()
+        def stopped(session):
+            return dict(context=session.context, stopped=True, process_identity_sha256='4'*64)
+        def failed_recovery(_): raise OSError('child interrupted')
+        def old_verifier(session, _):
+            # Deterministic interleaving: old verifier read before handoff, but
+            # returns its stale proof after compensation has acquired the child.
+            with self.assertRaises(OSError):
+                session.compensate('0'*64, failed_recovery, self.proof, confirm_stopped=stopped)
+            return dict(context=session.context, outcome='COMMITTED', evidence_sha256='f'*64)
+        with self.assertRaisesRegex(ValueError, 'FINAL_SESSION_CHANGED'):
+            self.session.reconcile(old_verifier)
+        authority.assert_held(self.conn, self.binding)
+        self.assertEqual(self.session._records()[0][-1]['phase'], 'RECOVERY_ADMITTED')
+        for phase in ('UNKNOWN', 'INSTALLER_RETURNED', 'FINAL_VERIFY_INTENT'):
+            with self.assertRaisesRegex(ValueError, 'SESSION_TRANSITION'):
+                self.session._transition(phase)
+        authority.assert_held(self.conn, self.binding)
 
 
 if __name__ == '__main__':
