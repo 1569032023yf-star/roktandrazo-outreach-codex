@@ -32,10 +32,20 @@ class HostInstallTests(unittest.TestCase):
 function Assert-AclAuditRoot($p) {if (-not (Test-Path $p)) {throw 'AUDIT_MISSING'}}
 function Assert-AclJournalFile($s) {}
 function Assert-NoReparseAncestors($p) {}
+function Get-DaclText($p) {$key=if($p -eq $code){'code'}else{'state'};$f=Join-Path ([IO.Path]::GetDirectoryName($serviceFile)) 'acl-state';if(Test-Path $f){return (Get-Content $f -Raw | ConvertFrom-Json).$key};return 'before-'+$key}
 function Write-AclRecord($s,$r) {$b=[Text.Encoding]::UTF8.GetBytes(($r | ConvertTo-Json -Depth 12 -Compress)+"`n");$s.Position=$s.Length;$s.Write($b,0,$b.Length);$s.Flush($true)}
 function Read-AclRecords($s) {$s.Position=0;$b=New-Object byte[] ([int]$s.Length);$null=$s.Read($b,0,$b.Length);$raw=[Text.Encoding]::UTF8.GetString($b);if(-not $raw.EndsWith("`n")){throw 'TORN'};@($raw.TrimEnd("`n").Split("`n") | ForEach-Object {$_ | ConvertFrom-Json})}
 function New-RecordedAclStateRoot {param($Path,$Journal,$ManifestHash);[IO.Directory]::CreateDirectory($Path) | Out-Null}
-function Invoke-AclTransaction {param($Code,$State,$ServiceSid,$Journal,$ManifestHash,[switch]$Recover);if($fail -ceq 'ACL' -and -not $Recover){throw 'INJECTED_ACL_FAILURE'};if(-not $Recover){[IO.File]::WriteAllText($Journal,'isolated-acl')};'COMMITTED'}
+function Invoke-AclTransaction {
+    param($Code,$State,$ServiceSid,$Journal,$ManifestHash,[switch]$Recover)
+    $aclState=Join-Path ([IO.Path]::GetDirectoryName($serviceFile)) 'acl-state'
+    if($fail -ceq 'ACL' -and -not $Recover){throw 'INJECTED_ACL_FAILURE'}
+    if($Recover){$h=(Get-Content $Journal -First 1 | ConvertFrom-Json);@{code=$h.targets[0].before;state=$h.targets[1].before} | ConvertTo-Json | Set-Content $aclState;Add-Content -LiteralPath $Journal -Value '{"kind":"ABORTED"}';return 'ABORTED'}
+    $head=@{kind='PREPARED';schema='rokt.acl-transaction.v1';manifest=$ManifestHash;targets=@(
+        @{path=$Code;before=(Get-DaclText $Code);after='after-code'},@{path=$State;before=(Get-DaclText $State);after='after-state'})}
+    [IO.File]::WriteAllText($Journal,($head | ConvertTo-Json -Depth 8 -Compress)+"`n"+'{"kind":"COMMITTED"}'+"`n")
+    @{code='after-code';state='after-state'} | ConvertTo-Json | Set-Content $aclState;'COMMITTED'
+}
 function Get-CimInstance {param($ClassName,$Filter);if(Test-Path $serviceFile){Get-Content $serviceFile -Raw | ConvertFrom-Json}}
 function Invoke-CimMethod {param($ClassName,$MethodName,$Arguments,$InputObject);if($MethodName -ceq 'Create'){@{StartMode='Disabled';State='Stopped';StartName=$Arguments.StartName;PathName=$Arguments.PathName} | ConvertTo-Json | Set-Content $serviceFile}elseif($MethodName -ceq 'Delete'){[IO.File]::Delete($serviceFile)}else{throw 'UNEXPECTED_SCM_OPERATION'};[pscustomobject]@{ReturnValue=0}}
 '''
@@ -46,7 +56,7 @@ function Invoke-CimMethod {param($ClassName,$MethodName,$Arguments,$InputObject)
         for n,b in files.items():
             p=self.package/n;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(b)
             rows.append(dict(path=n,sha256=hashlib.sha256(b).hexdigest()))
-        pre+="$m='"+json.dumps(dict(files=rows,source_commit='b'*40),separators=(',',':'))+"' | ConvertFrom-Json\n"
+        pre+="$m='"+json.dumps(dict(files=rows,source_commit='b'*40,installer_version='1.1.1'),separators=(',',':'))+"' | ConvertFrom-Json\n"
         # Lifecycle fixtures double authority alongside SCM/ACL. Dedicated
         # publisher tests exercise the real shared DB authority separately.
         expected_action=authority_action or ('upgrade' if upgrade else 'recover' if recover else 'rollback' if rollback else 'install')

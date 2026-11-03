@@ -157,7 +157,9 @@ function Invoke-HostInstallTransaction {
             Restore-HostInstall
             return
         }
-        Write-HostPhase 'PREPARED' @{image=$image;upgrade=[bool]$Upgrade;previous_receipt_sha256=$ApprovedPreviousReceiptSha256;code_before=$(if ($Upgrade) {'PRESENT'} else {'ABSENT'});state_before=$(if ($Upgrade) {'PRESENT'} else {'ABSENT'})}
+        $rootsBefore=Invoke-HostFiles 'observe-roots' $null
+        $aclBefore=if ($Upgrade) {@{code=(Get-DaclText $code);state=(Get-DaclText $state)}} else {$null}
+        Write-HostPhase 'PREPARED' @{image=$image;upgrade=[bool]$Upgrade;previous_receipt_sha256=$ApprovedPreviousReceiptSha256;roots_before=$rootsBefore;acl_before=$aclBefore;code_before=$(if ($Upgrade) {'PRESENT'} else {'ABSENT'});state_before=$(if ($Upgrade) {'PRESENT'} else {'ABSENT'})}
         if (-not $Upgrade) {
             Write-HostPhase 'CODE_CREATE_INTENT'
             New-Item -ItemType Directory -Path $code | Out-Null

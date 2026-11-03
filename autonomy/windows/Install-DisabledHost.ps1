@@ -73,7 +73,7 @@ foreach ($f in $entries) {
         (Get-FileHash -LiteralPath $p -Algorithm SHA256).Hash.ToLowerInvariant() -cne $f.sha256) { throw 'ARTIFACT_MISMATCH' }
     Pin-Reference $p $f.sha256
 }
-foreach ($required in @('service/RoktU1Bridge.exe','runtime/dependencies.json','config/host.json','Install-DisabledHost.ps1','Rollback-DisabledHost.ps1','Acl-Transaction.ps1','Host-InstallTransaction.ps1','Maintenance-Authority.ps1','host_file_transaction.py')) {
+foreach ($required in @('service/RoktU1Bridge.exe','runtime/dependencies.json','config/host.json','Install-DisabledHost.ps1','Rollback-DisabledHost.ps1','Acl-Transaction.ps1','Host-InstallTransaction.ps1','Maintenance-Authority.ps1','Observe-HostInstall.ps1','host_file_transaction.py')) {
     if (-not $seen.ContainsKey($required.ToLowerInvariant())) { throw 'MISSING_DEPENDENCY' }
 }
 $deps=Get-Content -LiteralPath (Join-Path $package 'runtime/dependencies.json') -Raw | ConvertFrom-Json

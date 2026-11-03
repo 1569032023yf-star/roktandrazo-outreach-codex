@@ -113,7 +113,7 @@ def build_package(destination, artifacts, approved_hashes, *, source_commit, scr
     """
     manifest=validate_inputs(artifacts,approved_hashes,source_commit=source_commit)
     scripts=Path(script_root or Path(__file__).with_name('windows'))
-    script_bytes={n:(scripts/n).read_bytes() for n in ('Install-DisabledHost.ps1','Rollback-DisabledHost.ps1','Acl-Transaction.ps1','Host-InstallTransaction.ps1','Maintenance-Authority.ps1')}
+    script_bytes={n:(scripts/n).read_bytes() for n in ('Install-DisabledHost.ps1','Rollback-DisabledHost.ps1','Acl-Transaction.ps1','Host-InstallTransaction.ps1','Maintenance-Authority.ps1','Observe-HostInstall.ps1')}
     script_bytes['host_file_transaction.py']=Path(__file__).with_name('host_file_transaction.py').read_bytes()
     if any(not x for x in script_bytes.values()):raise PackageError('INSTALLER_MISSING')
     manifest['scripts']=[dict(path=n,sha256=hashlib.sha256(v).hexdigest(),size=len(v)) for n,v in sorted(script_bytes.items())]
