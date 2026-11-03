@@ -1,0 +1,154 @@
+{
+  "source_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+  "baseline": "68788653c848659c63f85021075fedee4aca5b13",
+  "status": "OFFLINE_SCOPED_REVIEW_PASSED",
+  "independent_tests": {
+    "count": 76,
+    "duration_seconds": 30.374,
+    "duration_basis": "sum of two independent unittest runner durations, not elapsed wall time",
+    "failures": 0,
+    "errors": 0,
+    "runs": [
+      {
+        "command": "python -m unittest test_original_stage_event test_original_inventory_owner test_inventory_maintenance tests.test_inventory_stage_trace tests.test_phase4a8r_continuous_discovery -q",
+        "count": 60,
+        "duration_seconds": 18.916
+      },
+      {
+        "command": "python -m unittest test_original_process_backend test_process_backend test_inventory_event_bridge -q",
+        "count": 16,
+        "duration_seconds": 11.458
+      }
+    ]
+  },
+  "additional_isolated_probes": [
+    {
+      "name": "independent_zero_row_release_trigger",
+      "result": "PASS",
+      "injection": "Temporary trigger ignores only Inventory release updates",
+      "before_job": [
+        "running",
+        null,
+        null,
+        null
+      ],
+      "after_job": [
+        "running",
+        null,
+        null,
+        null
+      ],
+      "owner_held": true,
+      "backend_calls": 1,
+      "observed_exception": "STOP_AND_PRESERVE_ORIGINAL_STAGE_RELEASE_UNVERIFIED",
+      "site_schema_claimed": false
+    }
+  ],
+  "closed_findings": [
+    {
+      "id": "P1_PREMATURE_JOB_TERMINAL",
+      "status": "CLOSED_VERIFIED",
+      "evidence": "Stage defers terminal; original job update and owner release share one immediate transaction."
+    },
+    {
+      "id": "P1_ZERO_ROW_RELEASE_COMMITS_JOB",
+      "status": "CLOSED_VERIFIED",
+      "diagnostic_source": "dea9ed2d19c535ee0add6b564a5f48eca5777d0d",
+      "evidence": "Zero-row release raises before transaction exit and rolls back the prior job terminal write."
+    }
+  ],
+  "filehash": {
+    "bd_db.py": {
+      "file_sha256": "ebdf3b9a87935d883f9a244d4da0b11037800fb5db2fadfda3183b64c9325978",
+      "git_blob_sha256": "b3238f33abeee847986175d3778a993a805df874abd03f1d38132ddec118881b"
+    },
+    "bd_orchestrator.py": {
+      "file_sha256": "da46d959839e6a69f259f98d43099204f28308a05b530da8c7a726fa4273df4e",
+      "git_blob_sha256": "739fd791131a220d4124167d4502a398bf5176953f0bce1ec044f76f56aec65a"
+    },
+    "autonomy/original_stage_event.py": {
+      "file_sha256": "19044a7c372baf4aecd5f14df2b61cda4786d50c9c55fe052f0470324ea9fe27",
+      "git_blob_sha256": "19044a7c372baf4aecd5f14df2b61cda4786d50c9c55fe052f0470324ea9fe27"
+    },
+    "autonomy/original_inventory_owner.py": {
+      "file_sha256": "88598c1b1823f8431773a32f71d70497a07b6c27014640b901de0781e949ec32",
+      "git_blob_sha256": "88598c1b1823f8431773a32f71d70497a07b6c27014640b901de0781e949ec32"
+    },
+    "autonomy/process_backend.py": {
+      "file_sha256": "9d3d5eeb08ebb4d22654bec111e9b833ad1973040ed0b766275549a795e8f666",
+      "git_blob_sha256": "f8db5726b5bf70fdeab294968f5846bdbbe445231524a05aca3465f96247b616"
+    },
+    "autonomy/process_job.py": {
+      "file_sha256": "3878fa8244cc28def6f6c9a18ea21052fef2146a27a3bddfa6eb572cca2c9e4f",
+      "git_blob_sha256": "5b3bc282b0354437ab5589b2d07036dc9248d609c48e761eff43b22322bce082"
+    },
+    "autonomy/single_slot_adapter.py": {
+      "file_sha256": "a3466ba45e768615d21f01e9c8fa381d3872c0e10e5e5ab9b1ef95165be0590f",
+      "git_blob_sha256": "fae0056498c68746d7df86eed2a1f68cc508f64c4c454ed5cf27d4f4b321f45b"
+    },
+    "autonomy/growth_ledger.py": {
+      "file_sha256": "a56bee962412b23622b7920d59926e726b33d9e0f3a06586fe585b9f3d5aa7d1",
+      "git_blob_sha256": "ba382c18d481cee2ccdc8cda8524b86483bdda5cca666088f2bafc29e1ca9731"
+    },
+    "autonomy/inventory_event_bridge.py": {
+      "file_sha256": "9d087b4c012b66f66d345b741e9b79d80684250021497902e6c4c5469399665c",
+      "git_blob_sha256": "9d087b4c012b66f66d345b741e9b79d80684250021497902e6c4c5469399665c"
+    },
+    "autonomy/u1_host_runtime.py": {
+      "file_sha256": "0096fb093f12b5aa6c04b5e1d4343943f5ce52cdacf24b9c8e6b8aa8fe043e0f",
+      "git_blob_sha256": "64d676c19dad4e314f44af850cc6481abe106cf252da2d39f8119385797390cc"
+    },
+    "test_original_stage_event.py": {
+      "file_sha256": "934fffbb59b995b17043369454e9b2c50c49271a88a673ebc5ee3f41ea6b67f7",
+      "git_blob_sha256": "934fffbb59b995b17043369454e9b2c50c49271a88a673ebc5ee3f41ea6b67f7"
+    },
+    "test_original_process_backend.py": {
+      "file_sha256": "30ef9052c941d5d477ac9a49ada32412b21553b8bcdee81a2001fe570a815f9c",
+      "git_blob_sha256": "30ef9052c941d5d477ac9a49ada32412b21553b8bcdee81a2001fe570a815f9c"
+    },
+    "test_original_inventory_owner.py": {
+      "file_sha256": "b6c812b602880d12ac16b07a30401ef9e5d66a61ff6600ab58b8468da321be68",
+      "git_blob_sha256": "b6c812b602880d12ac16b07a30401ef9e5d66a61ff6600ab58b8468da321be68"
+    },
+    "test_inventory_maintenance.py": {
+      "file_sha256": "96378a062c8654f9dc63428dd9dfd423911a481c42de81529f4d61667012d4e4",
+      "git_blob_sha256": "96378a062c8654f9dc63428dd9dfd423911a481c42de81529f4d61667012d4e4"
+    },
+    "test_process_backend.py": {
+      "file_sha256": "cef54776930229e291e5fc95591a03eaced0862b30050877ebea52b0ab63ac02",
+      "git_blob_sha256": "e77a3b7b6f0fc77716db8c84be94917ac8fe2548fb4cc949b2ef476eacc90121"
+    },
+    "test_inventory_event_bridge.py": {
+      "file_sha256": "7dd4fea485c5930ded5a1df5e09d81765f56567be467f04429cee3f717862b02",
+      "git_blob_sha256": "482e08c45c629fb807df8eef1901b5be1b7c7aacdaac2cb778213339535eb9ad"
+    },
+    "tests/test_inventory_stage_trace.py": {
+      "file_sha256": "4d865c078f897bee69eb742b5938d24f2ef751b9a18d1e27c51368efbf25e885",
+      "git_blob_sha256": "4d865c078f897bee69eb742b5938d24f2ef751b9a18d1e27c51368efbf25e885"
+    },
+    "tests/test_phase4a8r_continuous_discovery.py": {
+      "file_sha256": "168a2c6214e8ae5ed3f152ab8b2fd9b706625e14b82e6ea60db22dfaee37ea3a",
+      "git_blob_sha256": "9b9e4e39ca17292cf9a5208ff81e618f258b22903a329e93ef012652e241d5ba"
+    }
+  },
+  "limitations_zh": [
+    "真实原函数AST、临时SQLite、loopback HTTP及Windows Job子进程均在隔离测试中执行；不是一次生产运行。",
+    "业务worker和签名为测试替身，SAFE计数由夹具提供；不证明真实库存增长或Provider验收。",
+    "正式Provider协议、服务配置、完整命令镜像句柄pin与生产授权未因本轮完成。",
+    "受信OriginalStageEvent和连接工厂为内部程序接口，无新增CLI/HTTP路径授权或调度器。",
+    "guard为主进程生命周期复验，非每次子进程业务mutation的同步IPC授权。",
+    "该报告不将死owner或UNKNOWN自动恢复为可重放；不批准生产操作。"
+  ],
+  "limitations_en": [
+    "Actual original function AST, temporary SQLite, loopback HTTP and Windows Job children are exercised in isolated tests, not a production run.",
+    "Business workers/signatures and SAFE counts are fixtures; no real inventory growth or Provider acceptance is proven.",
+    "Formal Provider protocol, service configuration, complete command/image handle pinning and production authorization remain pending.",
+    "OriginalStageEvent and connection factories are trusted internal interfaces, not new CLI/HTTP grants or schedulers.",
+    "The guard rechecks main-process lifecycle boundaries; it is not synchronous IPC authorization for every child business mutation.",
+    "Dead owners or UNKNOWN outcomes are not made replayable; no production action is approved."
+  ],
+  "RELEASE_READY": false,
+  "formal_backend_integrated": false,
+  "allow_dispatch": false,
+  "production_actions": false
+}

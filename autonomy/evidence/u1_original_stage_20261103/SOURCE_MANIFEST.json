@@ -1,0 +1,33 @@
+{
+  "source_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+  "files": [
+    {
+      "path": "autonomy/original_inventory_owner.py",
+      "git_blob_sha256": "88598c1b1823f8431773a32f71d70497a07b6c27014640b901de0781e949ec32"
+    },
+    {
+      "path": "autonomy/original_stage_event.py",
+      "git_blob_sha256": "19044a7c372baf4aecd5f14df2b61cda4786d50c9c55fe052f0470324ea9fe27"
+    },
+    {
+      "path": "autonomy/process_backend.py",
+      "git_blob_sha256": "f8db5726b5bf70fdeab294968f5846bdbbe445231524a05aca3465f96247b616"
+    },
+    {
+      "path": "bd_db.py",
+      "git_blob_sha256": "b3238f33abeee847986175d3778a993a805df874abd03f1d38132ddec118881b"
+    },
+    {
+      "path": "bd_orchestrator.py",
+      "git_blob_sha256": "739fd791131a220d4124167d4502a398bf5176953f0bce1ec044f76f56aec65a"
+    },
+    {
+      "path": "test_original_process_backend.py",
+      "git_blob_sha256": "30ef9052c941d5d477ac9a49ada32412b21553b8bcdee81a2001fe570a815f9c"
+    },
+    {
+      "path": "test_original_stage_event.py",
+      "git_blob_sha256": "934fffbb59b995b17043369454e9b2c50c49271a88a673ebc5ee3f41ea6b67f7"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "source_commit": "dea9ed2d19c535ee0add6b564a5f48eca5777d0d",
+  "status": "BLOCKED",
+  "independent_tests": {
+    "count": 75,
+    "duration_seconds": 29.038,
+    "failures": 0,
+    "errors": 0,
+    "runs": [
+      {
+        "command": "python -m unittest test_original_stage_event test_original_inventory_owner test_inventory_maintenance tests.test_inventory_stage_trace tests.test_phase4a8r_continuous_discovery -q",
+        "count": 59,
+        "duration_seconds": 17.993
+      },
+      {
+        "command": "python -m unittest test_original_process_backend test_process_backend test_inventory_event_bridge -q",
+        "count": 16,
+        "duration_seconds": 11.045
+      }
+    ]
+  },
+  "additional_isolated_probes": [
+    {
+      "name": "zero_row_lock_release_after_job_update",
+      "result": "BLOCKER_REPRODUCED",
+      "injection": "Temporary system_config BEFORE UPDATE trigger RAISE(IGNORE) for Inventory release only",
+      "observed_exception": "STOP_AND_PRESERVE_ORIGINAL_STAGE_RELEASE_UNVERIFIED",
+      "persisted_job": [
+        "completed",
+        50,
+        0,
+        "target_met"
+      ],
+      "owner_remained_held": true,
+      "site_trigger_claimed": false
+    }
+  ],
+  "findings": [
+    {
+      "id": "P1_ZERO_ROW_RELEASE_COMMITS_JOB",
+      "status": "OPEN",
+      "location": "bd_db.py release_run_lock",
+      "description_zh": "原job终态更新后锁UPDATE零行，事务仍提交；commit后返回False不能撤销成功事实。",
+      "description_en": "A zero-row lock update still commits the preceding job terminal update. Returning False after commit cannot roll it back.",
+      "fix_zh": "在原事务内部要求锁更新rowcount精确1，否则raise并回滚；新增零行负例。",
+      "fix_en": "Require exactly one changed lock row inside the transaction, otherwise raise and roll back; add the zero-row negative case."
+    }
+  ],
+  "filehash": {
+    "bd_db.py": {
+      "git_blob_sha256": "6e115b0e0500f07913d0207eff027958e69f3a8319bc0960e1053cc83f66956a"
+    },
+    "bd_orchestrator.py": {
+      "git_blob_sha256": "739fd791131a220d4124167d4502a398bf5176953f0bce1ec044f76f56aec65a"
+    },
+    "autonomy/original_stage_event.py": {
+      "git_blob_sha256": "19044a7c372baf4aecd5f14df2b61cda4786d50c9c55fe052f0470324ea9fe27"
+    },
+    "autonomy/original_inventory_owner.py": {
+      "git_blob_sha256": "88598c1b1823f8431773a32f71d70497a07b6c27014640b901de0781e949ec32"
+    },
+    "autonomy/process_backend.py": {
+      "git_blob_sha256": "f8db5726b5bf70fdeab294968f5846bdbbe445231524a05aca3465f96247b616"
+    },
+    "autonomy/single_slot_adapter.py": {
+      "git_blob_sha256": "fae0056498c68746d7df86eed2a1f68cc508f64c4c454ed5cf27d4f4b321f45b"
+    },
+    "autonomy/inventory_event_bridge.py": {
+      "git_blob_sha256": "9d087b4c012b66f66d345b741e9b79d80684250021497902e6c4c5469399665c"
+    },
+    "test_original_stage_event.py": {
+      "git_blob_sha256": "8727624570681906b552235bf455e7c85c8b113971491cb849743147d28b207e"
+    },
+    "test_original_process_backend.py": {
+      "git_blob_sha256": "30ef9052c941d5d477ac9a49ada32412b21553b8bcdee81a2001fe570a815f9c"
+    }
+  },
+  "limitations_zh": [
+    "仅临时SQLite/HTTP/Windows子进程隔离测试，业务worker、签名、SAFE数量为替身。",
+    "trigger为隔离故障注入，未声称现场存在该trigger。",
+    "formalbackend及所有生产门禁false，非可安装验收。"
+  ],
+  "limitations_en": [
+    "Only isolated SQLite/HTTP/Windows child tests; business workers, signatures and SAFE counts remain doubles.",
+    "The trigger is an isolated failure injection, not a claim about site schema.",
+    "Formal backend and production gates remain false; no installation approval."
+  ],
+  "RELEASE_READY": false,
+  "production_actions": false
+}

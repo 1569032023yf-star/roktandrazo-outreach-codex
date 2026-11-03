@@ -1,0 +1,9 @@
+{
+  "source_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+  "payload_files": 17,
+  "artifact_sha256": "c4adf386d86b8a70b8833c51e51148cee1ea74ffee0858e08b41777dddb6bab7",
+  "manifest_sha256": "c7e0b3aa943cd06ae1948745d14a03c58375ff37f4cb9d12c879585e764b59cb",
+  "isolated_import_passed": true,
+  "import_output": "OWNER_DEPENDENCIES_IMPORT_ONLY_OK",
+  "production_applied": false
+}

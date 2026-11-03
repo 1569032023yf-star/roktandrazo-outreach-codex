@@ -576,20 +576,20 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/u1_original_owner_session_20261103/REPORT.md",
-      "next_action": "Complete the fixed call chain connecting the formal Provider/backend protocol, original stage entry and service event consumer, retaining the sole original Inventory and durable event/claim/cost/cancellation/settlement contracts. The current original-owner adapter still uses the isolated_offline protocol and does not complete formal Provider wiring. After complete-candidate review and authorization, perform isolated Windows first-install, upgrade, interruption recovery and rollback acceptance.",
+      "checkpoint": "autonomy/evidence/u1_original_stage_20261103/REPORT.md",
+      "next_action": "Complete formal Provider execution, measured costs and trusted runtime configuration, then review the complete candidate. After authorization, WorkBuddy verifies isolated Windows first installation, upgrade, process-exit recovery, interrupted rollback and Disabled/Stopped state. Test workers and SAFE fixtures are not business acceptance.",
       "phase": "U1",
       "baseline_commit": "91aa60c6cf52b0c0a9c9e0ff2ddfb5ee39a7f7fc",
       "review_status": "OFFLINE_SCOPED_REVIEW_PASSED",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "68788653c848659c63f85021075fedee4aca5b13",
+      "candidate_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
       "trust_boundary_review": "SCOPED_PASS",
       "schedule_contract_review": "SCOPED_PASS",
       "regression_runner_candidate": "b69214d",
       "full_regression": {
-        "baseline_commit": "4b0353cbc4a5c69998fdd597d2bb884f7f5da8d0",
-        "candidate_commit": "68788653c848659c63f85021075fedee4aca5b13",
+        "baseline_commit": "68788653c848659c63f85021075fedee4aca5b13",
+        "candidate_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
         "complete": true,
         "baseline_run": 833,
         "candidate_run": 833,
@@ -606,7 +606,7 @@
       "bridge_candidate": "68802d5",
       "bridge_review": "SCOPED_PASS_68802D5",
       "handoff_comment": 6435605069,
-      "targeted_tests": 257,
+      "targeted_tests": 271,
       "snapshot_review": "SCOPED_PASS_DA443FD",
       "history_import_review": "SCOPED_PASS_DBDC424",
       "manifest_closure_review": "SCOPED_PASS_TEST621D3E4_PACKAGE_DBDC424",
@@ -1120,8 +1120,8 @@
           }
         }
       },
-      "next_action_zh": "完成正式Provider/backend协议与原stage入口、服务事件消费者的固定调用链；保留原唯一Inventory、持久事件/claim/费用/取消和结算合同。当前原owner身份适配器仍使用isolated_offline协议，不是正式Provider接线完成。完整候选审核和授权后再做隔离Windows首装、升级、中断恢复及回滚验收。",
-      "next_action_en": "Complete the fixed call chain connecting the formal Provider/backend protocol, original stage entry and service event consumer, retaining the sole original Inventory and durable event/claim/cost/cancellation/settlement contracts. The current original-owner adapter still uses the isolated_offline protocol and does not complete formal Provider wiring. After complete-candidate review and authorization, perform isolated Windows first-install, upgrade, interruption recovery and rollback acceptance.",
+      "next_action_zh": "完成正式Provider执行、费用实测和受信运行配置，随后对完整候选审核；经授权后由WorkBuddy进行隔离Windows首次安装、升级、进程退出恢复、回滚中断恢复及Disabled/Stopped验收。不得用测试worker或SAFE替身代替业务验收。",
+      "next_action_en": "Complete formal Provider execution, measured costs and trusted runtime configuration, then review the complete candidate. After authorization, WorkBuddy verifies isolated Windows first installation, upgrade, process-exit recovery, interrupted rollback and Disabled/Stopped state. Test workers and SAFE fixtures are not business acceptance.",
       "namespace_revalidation_latest": {
         "schema": "codex.u1.namespace-revalidation.v1",
         "summary_zh": "源身份复核在hash前后核对名字对象ID，拒绝同内容替换；返回后窗口仍未锁定。",
@@ -1782,7 +1782,7 @@
         "production_deployed": false,
         "next_action": "Integrate bounded execution backend with existing signed SingleSlotAdapter admission and original Inventory lease; close installer upgrade/rollback, dependency ACL and TOCTOU blockers before independent review. No service install/start."
       },
-      "updated_at": "2026-11-03T13:07:12.844134+00:00",
+      "updated_at": "2026-11-03T13:33:27.819649+00:00",
       "u1_execution_wiring_latest": {
         "updated_at": "2026-11-02T08:40:48.546343+00:00",
         "source_commit": "cc9b7a7b672eb2098fa02d7e57c266b4ec57d76e",
@@ -3049,6 +3049,616 @@
         "inventory_id": "1784775229336",
         "next_action": "Complete the fixed call chain connecting the formal Provider/backend protocol, original stage entry and service event consumer, retaining the sole original Inventory and durable event/claim/cost/cancellation/settlement contracts. The current original-owner adapter still uses the isolated_offline protocol and does not complete formal Provider wiring. After complete-candidate review and authorization, perform isolated Windows first-install, upgrade, interruption recovery and rollback acceptance.",
         "next_action_zh": "完成正式Provider/backend协议与原stage入口、服务事件消费者的固定调用链；保留原唯一Inventory、持久事件/claim/费用/取消和结算合同。当前原owner身份适配器仍使用isolated_offline协议，不是正式Provider接线完成。完整候选审核和授权后再做隔离Windows首装、升级、中断恢复及回滚验收。"
+      },
+      "u1_original_stage_latest": {
+        "source_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+        "updated_at": "2026-11-03T13:33:27.819649+00:00",
+        "report": "autonomy/evidence/u1_original_stage_20261103/REPORT.md",
+        "tests": {
+          "source_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+          "modules": [
+            "test_windows_acl_transaction",
+            "test_disabled_host_package",
+            "test_install_journal",
+            "test_install_contract",
+            "test_independent_install_plan",
+            "test_u1_provision",
+            "test_u1_manifest_closure",
+            "test_u1_host_runtime",
+            "test_host_remediation",
+            "test_host_preparation",
+            "test_release_store",
+            "test_process_backend",
+            "autonomy.test_process_job",
+            "test_single_slot_adapter",
+            "test_host_readonly_http",
+            "test_host_file_transaction",
+            "test_host_install_transaction",
+            "test_inventory_event_bridge",
+            "test_maintenance_control",
+            "test_install_verifier",
+            "test_install_process",
+            "test_install_inputs",
+            "test_install_command",
+            "test_publisher_install_admission",
+            "test_original_process_backend",
+            "test_inventory_maintenance",
+            "test_publisher_maintenance",
+            "test_publisher_install_maintenance",
+            "test_original_inventory_owner",
+            "test_original_stage_event"
+          ],
+          "tests_run": 271,
+          "passed": true,
+          "failures": [],
+          "errors": [],
+          "skips": [],
+          "groups": [
+            {
+              "tests_run": 210,
+              "failures": [],
+              "errors": [],
+              "skips": [],
+              "passed": true,
+              "group": "host",
+              "exit_code": 0
+            },
+            {
+              "tests_run": 61,
+              "failures": [],
+              "errors": [],
+              "skips": [],
+              "passed": true,
+              "group": "authority",
+              "exit_code": 0
+            }
+          ],
+          "seconds": 314.223,
+          "allow_install": false,
+          "allow_dispatch": false,
+          "allow_cancel_dispatch": false,
+          "smtp_enabled": false
+        },
+        "current_full_regression": {
+          "baseline_commit": "68788653c848659c63f85021075fedee4aca5b13",
+          "candidate_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+          "complete": true,
+          "baseline_run": 833,
+          "candidate_run": 833,
+          "baseline_failures": 37,
+          "candidate_failures": 37,
+          "baseline_errors": 17,
+          "candidate_errors": 17,
+          "failure_ids_identical": true,
+          "error_ids_identical": true,
+          "all_green": false,
+          "no_new_regression": true
+        },
+        "independent_review": "OFFLINE_SCOPED_REVIEW_PASSED",
+        "independent_tests": {
+          "count": 76,
+          "duration_seconds": 30.374,
+          "duration_basis": "sum of two independent unittest runner durations, not elapsed wall time",
+          "failures": 0,
+          "errors": 0,
+          "runs": [
+            {
+              "command": "python -m unittest test_original_stage_event test_original_inventory_owner test_inventory_maintenance tests.test_inventory_stage_trace tests.test_phase4a8r_continuous_discovery -q",
+              "count": 60,
+              "duration_seconds": 18.916
+            },
+            {
+              "command": "python -m unittest test_original_process_backend test_process_backend test_inventory_event_bridge -q",
+              "count": 16,
+              "duration_seconds": 11.458
+            }
+          ]
+        },
+        "package_review": {
+          "source_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+          "status": "OFFLINE_SCOPED_ARTIFACT_VERIFICATION_PASSED",
+          "engineering_payload_files": 73,
+          "mapping_counts": {
+            "SOURCE_CRLF_LF_EQUIVALENT": 7,
+            "SOURCE_EXACT": 60,
+            "GENERATED_OBSERVATION": 6
+          },
+          "payload_mapping": {
+            "DELIVERY.json": {
+              "kind": "GENERATED_OBSERVATION",
+              "payload_sha256": "00801913904b50f82f841b85cc22f05ddf85de1654ad520f654fe2b01b7ab192"
+            },
+            "host/Acl-Transaction.ps1": {
+              "kind": "SOURCE_CRLF_LF_EQUIVALENT",
+              "source_path": "autonomy/windows/Acl-Transaction.ps1",
+              "git_blob_sha256": "cbc1eec9c2455301b3f3bfaf7bf5ca2f03bdc05b13303da3443dee5ad162e5cd",
+              "payload_sha256": "a3fb4ab1fa251bc80e9d6a9f682b6efa48a628ed96a2253492d89af4ccfe8057"
+            },
+            "host/Host-InstallTransaction.ps1": {
+              "kind": "SOURCE_CRLF_LF_EQUIVALENT",
+              "source_path": "autonomy/windows/Host-InstallTransaction.ps1",
+              "git_blob_sha256": "9bb9fa63845f581a439cc221d1584de2c6e411000b61daa23b0302c42023a111",
+              "payload_sha256": "5859584546f7b9c6d4393ed4e7691ac7fc5ae093d03ba22177677fe6a22f8c4b"
+            },
+            "host/Host-PackagePreparation.ps1": {
+              "kind": "SOURCE_CRLF_LF_EQUIVALENT",
+              "source_path": "autonomy/windows/Host-PackagePreparation.ps1",
+              "git_blob_sha256": "f00011166c44baaed384f6fefad4c18d04199cc17c55b0126a96a8e1540f1e03",
+              "payload_sha256": "105fa4e89334f5a52751dc242ea9fc92c92cd3857e8fa3561d6e1a0bba957ec3"
+            },
+            "host/Install-DisabledHost.ps1": {
+              "kind": "SOURCE_CRLF_LF_EQUIVALENT",
+              "source_path": "autonomy/windows/Install-DisabledHost.ps1",
+              "git_blob_sha256": "3733c53aca89a1c0175f9b3251d21d00cf94db97bbd7d52dbe3b5d5440c3b0e2",
+              "payload_sha256": "ec74bf8257c801bd22fd82f4dd47152a4680e149235948c1e18e445cdc23e44b"
+            },
+            "host/Maintenance-Authority.ps1": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/windows/Maintenance-Authority.ps1",
+              "git_blob_sha256": "070bf93e5ad5c3e3af5334a65e59597d330f9a946f2ac7f26380c8c00e1bc049",
+              "payload_sha256": "070bf93e5ad5c3e3af5334a65e59597d330f9a946f2ac7f26380c8c00e1bc049"
+            },
+            "host/Observe-HostInstall.ps1": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/windows/Observe-HostInstall.ps1",
+              "git_blob_sha256": "95a00a0f465a7b4adde709b758edcf4c830db4254b34fc7b8b8e24f62bb2c7ec",
+              "payload_sha256": "95a00a0f465a7b4adde709b758edcf4c830db4254b34fc7b8b8e24f62bb2c7ec"
+            },
+            "host/Publisher-InstallHost.ps1": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/windows/Publisher-InstallHost.ps1",
+              "git_blob_sha256": "ddc06ce2d17c10d1f21bfffa908ef4c947d78dbc7fd24e53763285c8df4db7a3",
+              "payload_sha256": "ddc06ce2d17c10d1f21bfffa908ef4c947d78dbc7fd24e53763285c8df4db7a3"
+            },
+            "host/Rollback-DisabledHost.ps1": {
+              "kind": "SOURCE_CRLF_LF_EQUIVALENT",
+              "source_path": "autonomy/windows/Rollback-DisabledHost.ps1",
+              "git_blob_sha256": "b539c56f926934b05a4a45a596bfa34dd541a02909d98c93213e2dbd36f49888",
+              "payload_sha256": "73cc25a7825ac2f72f3c6bde44443a313e580ecaa788edad1a9c3aedbf996305"
+            },
+            "host/config/host.json": {
+              "kind": "GENERATED_OBSERVATION",
+              "payload_sha256": "fc4495c5cb95e23a34892ef35204a40713171fe5fcb362a90b03eec2eb0a8492"
+            },
+            "host/host_file_transaction.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/host_file_transaction.py",
+              "git_blob_sha256": "d199186b31e4c6a40fc43dbef19c3f078003430080879aee094b61027c0d0ae9",
+              "payload_sha256": "d199186b31e4c6a40fc43dbef19c3f078003430080879aee094b61027c0d0ae9"
+            },
+            "host/manifest.json": {
+              "kind": "GENERATED_OBSERVATION",
+              "payload_sha256": "65f3c6e81f65f6f29ab56899e2a2336401fa690932c4fb880f769401b80c2102"
+            },
+            "host/runtime/build.json": {
+              "kind": "GENERATED_OBSERVATION",
+              "payload_sha256": "89b9182c9fa8e6798836c2e8f7feabd690c980102a50bc0ac02ad3deed161431"
+            },
+            "host/runtime/dependencies.json": {
+              "kind": "GENERATED_OBSERVATION",
+              "payload_sha256": "9e6d0158d90f6ac73951ce819a86dbdb4453d1d4f3545582b5bc874d79b8bfc2"
+            },
+            "host/service/RoktU1Bridge.cs": {
+              "kind": "SOURCE_CRLF_LF_EQUIVALENT",
+              "source_path": "autonomy/windows/RoktU1Bridge.cs",
+              "git_blob_sha256": "62febdadce2bb740476e8364ef8d17984a65ed4868b5a57646140e1aa7762e38",
+              "payload_sha256": "ccfb89f943cc218b12f64d255002b785f448149a3f2281c12d52cf2904fcb30a"
+            },
+            "host/service/RoktU1Bridge.exe": {
+              "kind": "GENERATED_OBSERVATION",
+              "payload_sha256": "9e61f970522a2d8f6187032cb0af83f61bad5d11c5e54d0be318011950c42c7c"
+            },
+            "host/service/u1_bootstrap.py": {
+              "kind": "SOURCE_CRLF_LF_EQUIVALENT",
+              "source_path": "autonomy/windows/u1_bootstrap.py",
+              "git_blob_sha256": "1f0ab7d233c53b57a60d9f9b98aa1ebb32c2e1944b52b5b9028c6942286b4c21",
+              "payload_sha256": "6fe5ceeae26a91008cc5f73a48e176052a01004bfc8858a52169354c864bc63f"
+            },
+            "python/autonomy/audit_root_policy.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/audit_root_policy.py",
+              "git_blob_sha256": "d80a4c61ed19817fd97896655582c5e36a78e5380e15fb7357ba00433934a163",
+              "payload_sha256": "d80a4c61ed19817fd97896655582c5e36a78e5380e15fb7357ba00433934a163"
+            },
+            "python/autonomy/bridge_acceptance.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/bridge_acceptance.py",
+              "git_blob_sha256": "4a304578466bb978d9666adf961f21dfadaca70ba3d12d86a91cfdf02189e1eb",
+              "payload_sha256": "4a304578466bb978d9666adf961f21dfadaca70ba3d12d86a91cfdf02189e1eb"
+            },
+            "python/autonomy/bridge_session_evidence.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/bridge_session_evidence.py",
+              "git_blob_sha256": "658751dc918a14e95c6631d33f7d2a808add11b962a6ab54bf01b806ffb91bd1",
+              "payload_sha256": "658751dc918a14e95c6631d33f7d2a808add11b962a6ab54bf01b806ffb91bd1"
+            },
+            "python/autonomy/build_dev_disabled_host.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/build_dev_disabled_host.py",
+              "git_blob_sha256": "54b0fd3e383cf052c81401adae0a7146490766a7cc08a09aff89421dd97801bf",
+              "payload_sha256": "54b0fd3e383cf052c81401adae0a7146490766a7cc08a09aff89421dd97801bf"
+            },
+            "python/autonomy/build_u1_delivery.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/build_u1_delivery.py",
+              "git_blob_sha256": "8f10e62c5306506b8a257d9f1467f7f0f7cb397220098d683d334094e06393f5",
+              "payload_sha256": "8f10e62c5306506b8a257d9f1467f7f0f7cb397220098d683d334094e06393f5"
+            },
+            "python/autonomy/cancellation_recovery.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/cancellation_recovery.py",
+              "git_blob_sha256": "273614a92b18da65eafd206c2239821edffd74ca80ed95ca4b1f70c35ef11197",
+              "payload_sha256": "273614a92b18da65eafd206c2239821edffd74ca80ed95ca4b1f70c35ef11197"
+            },
+            "python/autonomy/cancellation_terminal.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/cancellation_terminal.py",
+              "git_blob_sha256": "4d609428476cafc09bdbc141f617f2b3c3ebad15f650ab9c537fd661d99f2f4a",
+              "payload_sha256": "4d609428476cafc09bdbc141f617f2b3c3ebad15f650ab9c537fd661d99f2f4a"
+            },
+            "python/autonomy/cancellation_terminal_bundle.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/cancellation_terminal_bundle.py",
+              "git_blob_sha256": "46c67ada9d7412bd6fd05c106800a38de76d6bc85763a3ac37c7a4005500f405",
+              "payload_sha256": "46c67ada9d7412bd6fd05c106800a38de76d6bc85763a3ac37c7a4005500f405"
+            },
+            "python/autonomy/directory_identity.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/directory_identity.py",
+              "git_blob_sha256": "081ecaca13b7e04530d28f2d528e77d149b68112295ccb1150715e0a343141bb",
+              "payload_sha256": "081ecaca13b7e04530d28f2d528e77d149b68112295ccb1150715e0a343141bb"
+            },
+            "python/autonomy/disabled_host_package.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/disabled_host_package.py",
+              "git_blob_sha256": "d0160d8e4d8c0285477b56e48aa95ec0772cf56f62e7854eb9167164744b34f1",
+              "payload_sha256": "d0160d8e4d8c0285477b56e48aa95ec0772cf56f62e7854eb9167164744b34f1"
+            },
+            "python/autonomy/drain_bundle_preflight.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/drain_bundle_preflight.py",
+              "git_blob_sha256": "69b930f6ed9b9f3e115e49ab7b47c818b3b44705b9f475f152e6fc27565cc864",
+              "payload_sha256": "69b930f6ed9b9f3e115e49ab7b47c818b3b44705b9f475f152e6fc27565cc864"
+            },
+            "python/autonomy/durable_slots.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/durable_slots.py",
+              "git_blob_sha256": "f715f988e24d784fb3633f9be06665f4c42a9ae2803ad1315deae9548a0dc5c5",
+              "payload_sha256": "f715f988e24d784fb3633f9be06665f4c42a9ae2803ad1315deae9548a0dc5c5"
+            },
+            "python/autonomy/first_publication.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/first_publication.py",
+              "git_blob_sha256": "787eaf2ca7164a34cae26fb0f75043125ce347d721de6dab841082677d27c93b",
+              "payload_sha256": "787eaf2ca7164a34cae26fb0f75043125ce347d721de6dab841082677d27c93b"
+            },
+            "python/autonomy/growth_ledger.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/growth_ledger.py",
+              "git_blob_sha256": "ba382c18d481cee2ccdc8cda8524b86483bdda5cca666088f2bafc29e1ca9731",
+              "payload_sha256": "ba382c18d481cee2ccdc8cda8524b86483bdda5cca666088f2bafc29e1ca9731"
+            },
+            "python/autonomy/growth_snapshot.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/growth_snapshot.py",
+              "git_blob_sha256": "ca861b99ea9335fe4b6c8842875d037b24da9ce28802f9fcece30cef2c5d0d5c",
+              "payload_sha256": "ca861b99ea9335fe4b6c8842875d037b24da9ce28802f9fcece30cef2c5d0d5c"
+            },
+            "python/autonomy/handoff_validation.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/handoff_validation.py",
+              "git_blob_sha256": "0c84311f25b0563503f5d4a2a7d307b66649511de3884273f49a9dfadc6f3321",
+              "payload_sha256": "0c84311f25b0563503f5d4a2a7d307b66649511de3884273f49a9dfadc6f3321"
+            },
+            "python/autonomy/host_file_transaction.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/host_file_transaction.py",
+              "git_blob_sha256": "d199186b31e4c6a40fc43dbef19c3f078003430080879aee094b61027c0d0ae9",
+              "payload_sha256": "d199186b31e4c6a40fc43dbef19c3f078003430080879aee094b61027c0d0ae9"
+            },
+            "python/autonomy/host_preparation.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/host_preparation.py",
+              "git_blob_sha256": "ba3bf2edf4f39c130a1f56d8246a92476758ac53e223a3d067c02a987cd011d2",
+              "payload_sha256": "ba3bf2edf4f39c130a1f56d8246a92476758ac53e223a3d067c02a987cd011d2"
+            },
+            "python/autonomy/host_readonly_http.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/host_readonly_http.py",
+              "git_blob_sha256": "b469887c7cd19c6486c3793d41d7efff98d463301d4c1ac08d37bef53093f031",
+              "payload_sha256": "b469887c7cd19c6486c3793d41d7efff98d463301d4c1ac08d37bef53093f031"
+            },
+            "python/autonomy/host_remediation.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/host_remediation.py",
+              "git_blob_sha256": "d4bcaa974b07b67ffd49ffff94b1d14891097ae39378aa1cb588829863e35a13",
+              "payload_sha256": "d4bcaa974b07b67ffd49ffff94b1d14891097ae39378aa1cb588829863e35a13"
+            },
+            "python/autonomy/independent_install_plan.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/independent_install_plan.py",
+              "git_blob_sha256": "0b1ccf06b4d8db524dffd83807abfc3c9f53715712ce96f4cf8e92eaa64cc22f",
+              "payload_sha256": "0b1ccf06b4d8db524dffd83807abfc3c9f53715712ce96f4cf8e92eaa64cc22f"
+            },
+            "python/autonomy/install_contract.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/install_contract.py",
+              "git_blob_sha256": "8fd8fd1ee53ea1aaaeafd5f0fab56d0fe3d2af2db971a1a48579728fdfbcfbc3",
+              "payload_sha256": "8fd8fd1ee53ea1aaaeafd5f0fab56d0fe3d2af2db971a1a48579728fdfbcfbc3"
+            },
+            "python/autonomy/install_journal.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/install_journal.py",
+              "git_blob_sha256": "c06a361f6e064c01bd86ab017f9c96d536d798aaad8f651b5b65c1cd4756a8ac",
+              "payload_sha256": "c06a361f6e064c01bd86ab017f9c96d536d798aaad8f651b5b65c1cd4756a8ac"
+            },
+            "python/autonomy/inventory_event_bridge.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/inventory_event_bridge.py",
+              "git_blob_sha256": "9d087b4c012b66f66d345b741e9b79d80684250021497902e6c4c5469399665c",
+              "payload_sha256": "9d087b4c012b66f66d345b741e9b79d80684250021497902e6c4c5469399665c"
+            },
+            "python/autonomy/inventory_maintenance.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/inventory_maintenance.py",
+              "git_blob_sha256": "0d098b41fd25e57e270caf601ae40fe75cce379863b632b69fcbe2ec155908df",
+              "payload_sha256": "0d098b41fd25e57e270caf601ae40fe75cce379863b632b69fcbe2ec155908df"
+            },
+            "python/autonomy/ledger_evidence.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/ledger_evidence.py",
+              "git_blob_sha256": "ba5c0ecaaf7bb6e4909d85a81eb112721162a35e6e406246d337c0c0d43058f9",
+              "payload_sha256": "ba5c0ecaaf7bb6e4909d85a81eb112721162a35e6e406246d337c0c0d43058f9"
+            },
+            "python/autonomy/lock_recovery.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/lock_recovery.py",
+              "git_blob_sha256": "e6552960b9a15af38a5fbd238037094d8c75af80d9c0370b6d69092060da7741",
+              "payload_sha256": "e6552960b9a15af38a5fbd238037094d8c75af80d9c0370b6d69092060da7741"
+            },
+            "python/autonomy/network_recovery.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/network_recovery.py",
+              "git_blob_sha256": "25d33694379c96500b5638e526a7c0fa1f5bc7461d74b518ff4cc379973dc42f",
+              "payload_sha256": "25d33694379c96500b5638e526a7c0fa1f5bc7461d74b518ff4cc379973dc42f"
+            },
+            "python/autonomy/original_inventory_owner.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/original_inventory_owner.py",
+              "git_blob_sha256": "88598c1b1823f8431773a32f71d70497a07b6c27014640b901de0781e949ec32",
+              "payload_sha256": "88598c1b1823f8431773a32f71d70497a07b6c27014640b901de0781e949ec32"
+            },
+            "python/autonomy/original_stage_event.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/original_stage_event.py",
+              "git_blob_sha256": "19044a7c372baf4aecd5f14df2b61cda4786d50c9c55fe052f0470324ea9fe27",
+              "payload_sha256": "19044a7c372baf4aecd5f14df2b61cda4786d50c9c55fe052f0470324ea9fe27"
+            },
+            "python/autonomy/owner_drain_preflight.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/owner_drain_preflight.py",
+              "git_blob_sha256": "2df95c5dc2cc17dbfd4fd7e7eb2b9685316972786ac003ca55e6b4b999df400b",
+              "payload_sha256": "2df95c5dc2cc17dbfd4fd7e7eb2b9685316972786ac003ca55e6b4b999df400b"
+            },
+            "python/autonomy/process_backend.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/process_backend.py",
+              "git_blob_sha256": "f8db5726b5bf70fdeab294968f5846bdbbe445231524a05aca3465f96247b616",
+              "payload_sha256": "f8db5726b5bf70fdeab294968f5846bdbbe445231524a05aca3465f96247b616"
+            },
+            "python/autonomy/process_control.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/process_control.py",
+              "git_blob_sha256": "0e9cc47420865dba5ae89a52acb564a8ddd107bb6d8060f6dcaf63c9924bfd56",
+              "payload_sha256": "0e9cc47420865dba5ae89a52acb564a8ddd107bb6d8060f6dcaf63c9924bfd56"
+            },
+            "python/autonomy/process_job.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/process_job.py",
+              "git_blob_sha256": "5b3bc282b0354437ab5589b2d07036dc9248d609c48e761eff43b22322bce082",
+              "payload_sha256": "5b3bc282b0354437ab5589b2d07036dc9248d609c48e761eff43b22322bce082"
+            },
+            "python/autonomy/recovery_status.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/recovery_status.py",
+              "git_blob_sha256": "e4229a403e5b26e428beaea7639df44b34ebbbed5bd76efef162a514ae29358f",
+              "payload_sha256": "e4229a403e5b26e428beaea7639df44b34ebbbed5bd76efef162a514ae29358f"
+            },
+            "python/autonomy/release_contract.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/release_contract.py",
+              "git_blob_sha256": "59a70cdd02e5032cf5f4a52cb139c9d0b5ac4454d1d918f3e654df70b98ffed8",
+              "payload_sha256": "59a70cdd02e5032cf5f4a52cb139c9d0b5ac4454d1d918f3e654df70b98ffed8"
+            },
+            "python/autonomy/release_store.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/release_store.py",
+              "git_blob_sha256": "7cf6c42a5dd3724af9d2f7986ecb02eea7368eff49dc62ed6784c0ac15755d99",
+              "payload_sha256": "7cf6c42a5dd3724af9d2f7986ecb02eea7368eff49dc62ed6784c0ac15755d99"
+            },
+            "python/autonomy/rollback_admission.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/rollback_admission.py",
+              "git_blob_sha256": "1e703faa3df531756d365e58385ec830d990770219caeccf7bd2d91acf0a1aed",
+              "payload_sha256": "1e703faa3df531756d365e58385ec830d990770219caeccf7bd2d91acf0a1aed"
+            },
+            "python/autonomy/safe_authority.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/safe_authority.py",
+              "git_blob_sha256": "9007dcd1549dc342cdecbafbd9249b55e3d25c23af5b496827b70ed0dae631c8",
+              "payload_sha256": "9007dcd1549dc342cdecbafbd9249b55e3d25c23af5b496827b70ed0dae631c8"
+            },
+            "python/autonomy/single_slot_adapter.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/single_slot_adapter.py",
+              "git_blob_sha256": "fae0056498c68746d7df86eed2a1f68cc508f64c4c454ed5cf27d4f4b321f45b",
+              "payload_sha256": "fae0056498c68746d7df86eed2a1f68cc508f64c4c454ed5cf27d4f4b321f45b"
+            },
+            "python/autonomy/source_identity.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/source_identity.py",
+              "git_blob_sha256": "e28baf1061f31dae8f8fe62679ce074671fa6091d7675d99604b2dc70885b84f",
+              "payload_sha256": "e28baf1061f31dae8f8fe62679ce074671fa6091d7675d99604b2dc70885b84f"
+            },
+            "python/autonomy/source_publication.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/source_publication.py",
+              "git_blob_sha256": "fc971365cf28cc25661334399ff87e7b9a5aeb17df4bb3128f4cd459f5cfa523",
+              "payload_sha256": "fc971365cf28cc25661334399ff87e7b9a5aeb17df4bb3128f4cd459f5cfa523"
+            },
+            "python/autonomy/storage_preflight.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/storage_preflight.py",
+              "git_blob_sha256": "6b3225477848bd889f814657b21f5031c754f5c08e582e455def843c377e269d",
+              "payload_sha256": "6b3225477848bd889f814657b21f5031c754f5c08e582e455def843c377e269d"
+            },
+            "python/autonomy/supervisor.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/supervisor.py",
+              "git_blob_sha256": "3d268ccc7423adcaf56c25132a9ae801bcf79493d5cda871b4f2ddbc248939a3",
+              "payload_sha256": "3d268ccc7423adcaf56c25132a9ae801bcf79493d5cda871b4f2ddbc248939a3"
+            },
+            "python/autonomy/task_dispatch.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/task_dispatch.py",
+              "git_blob_sha256": "fed60467d43af8594d1222678da8df67a043ad2ea64fc27ed769dcf36ca3ea2a",
+              "payload_sha256": "fed60467d43af8594d1222678da8df67a043ad2ea64fc27ed769dcf36ca3ea2a"
+            },
+            "python/autonomy/telemetry.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/telemetry.py",
+              "git_blob_sha256": "a567344ead3f59e3c56bf5bdfdbb19fe2cabd7efb93caa0d18ce26d752ae3faf",
+              "payload_sha256": "a567344ead3f59e3c56bf5bdfdbb19fe2cabd7efb93caa0d18ce26d752ae3faf"
+            },
+            "python/autonomy/test_bridge_telemetry.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/test_bridge_telemetry.py",
+              "git_blob_sha256": "dc25fd0ca5c9dee31faf138d992525724658cc8db3fd86b37f9868185d6fe576",
+              "payload_sha256": "dc25fd0ca5c9dee31faf138d992525724658cc8db3fd86b37f9868185d6fe576"
+            },
+            "python/autonomy/test_lock_recovery.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/test_lock_recovery.py",
+              "git_blob_sha256": "3b496a5defd1da3312e9d1ef63b4674c075ec10d84345897e898e370ce69deae",
+              "payload_sha256": "3b496a5defd1da3312e9d1ef63b4674c075ec10d84345897e898e370ce69deae"
+            },
+            "python/autonomy/test_process_job.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/test_process_job.py",
+              "git_blob_sha256": "1ab6eaeec41c4ac9d5118f3c6acf922eb71d97491b01e4ce1b90e66489391d96",
+              "payload_sha256": "1ab6eaeec41c4ac9d5118f3c6acf922eb71d97491b01e4ce1b90e66489391d96"
+            },
+            "python/autonomy/test_storage_preflight.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/test_storage_preflight.py",
+              "git_blob_sha256": "4d212d70848a427b703329dfae6aff04f068a6d9e254325f9df05df00f7d44e9",
+              "payload_sha256": "4d212d70848a427b703329dfae6aff04f068a6d9e254325f9df05df00f7d44e9"
+            },
+            "python/autonomy/test_supervisor.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/test_supervisor.py",
+              "git_blob_sha256": "da35df5bbf1065ce459a8d6489cb4983d1f0689b0f10c9e20cd2e6942b21c648",
+              "payload_sha256": "da35df5bbf1065ce459a8d6489cb4983d1f0689b0f10c9e20cd2e6942b21c648"
+            },
+            "python/autonomy/test_telemetry.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/test_telemetry.py",
+              "git_blob_sha256": "8ccc01f5734978dace908dee3083c80b4bba11b474c6beed275cbabb42dc25b3",
+              "payload_sha256": "8ccc01f5734978dace908dee3083c80b4bba11b474c6beed275cbabb42dc25b3"
+            },
+            "python/autonomy/u1_host_runtime.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/u1_host_runtime.py",
+              "git_blob_sha256": "64d676c19dad4e314f44af850cc6481abe106cf252da2d39f8119385797390cc",
+              "payload_sha256": "64d676c19dad4e314f44af850cc6481abe106cf252da2d39f8119385797390cc"
+            },
+            "python/autonomy/unattended_policy.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/unattended_policy.py",
+              "git_blob_sha256": "21aea336dd46f35ee402598687831b39f33c7aee5ec5245bc63f83cc77ec781f",
+              "payload_sha256": "21aea336dd46f35ee402598687831b39f33c7aee5ec5245bc63f83cc77ec781f"
+            },
+            "python/autonomy/windows/u1_bootstrap.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/windows/u1_bootstrap.py",
+              "git_blob_sha256": "1f0ab7d233c53b57a60d9f9b98aa1ebb32c2e1944b52b5b9028c6942286b4c21",
+              "payload_sha256": "1f0ab7d233c53b57a60d9f9b98aa1ebb32c2e1944b52b5b9028c6942286b4c21"
+            },
+            "python/autonomy/windows_observation.py": {
+              "kind": "SOURCE_EXACT",
+              "source_path": "autonomy/windows_observation.py",
+              "git_blob_sha256": "35563c2b65f7be373287d4001932fd94dbefe295a359c5e58cafc45933e2c196",
+              "payload_sha256": "35563c2b65f7be373287d4001932fd94dbefe295a359c5e58cafc45933e2c196"
+            }
+          },
+          "engineering_artifacts": {
+            "install.zip": "16410c14c094ee3452abe0506257236b61de2e1769447e282503e7fcaa17ccb7",
+            "rollback-tools.zip": "0614261b9c1ddaa2dee43be28c4390db9d1b32f11bc6a26b0ea058751ad4395b"
+          },
+          "engineering_manifest_sha256": "85a59889bdeaa4097e92393525f3ad87ceda70090b28d2246cb20a430d397bec",
+          "zip_entry_counts": {
+            "install.zip": 74,
+            "rollback-tools.zip": 18
+          },
+          "pe_machine": "0x8664",
+          "owner_companion_files": 17,
+          "owner_companion_sha256": "c4adf386d86b8a70b8833c51e51148cee1ea74ffee0858e08b41777dddb6bab7",
+          "owner_companion_manifest_sha256": "c7e0b3aa943cd06ae1948745d14a03c58375ff37f4cb9d12c879585e764b59cb",
+          "owner_import_only": "OWNER_STAGE_DEPENDENCY_IMPORT_OK",
+          "artifact_manifest_files_verified": 115,
+          "limitations_zh": [
+            "源码逐字节或CRLF/LF等价分别记录，生成PE/清单不伪称Git原blob；非独立重现构建。",
+            "17项为本轮新helper依赖闭包，不是原业务全部依赖的独立安装包；不执行bd_db/原orchestrator顶层或main。",
+            "expected_before仅3bbb固定Git基线条件，非现场取证；没有配置、DB、凭据、自动更新器或allowlist扩展。",
+            "工程包不是完整可安装发布版；formalbackend与生产门禁仍false。"
+          ],
+          "limitations_en": [
+            "Exact and newline-equivalent source mappings are distinguished; generated PE/manifests are not Git blobs or an independently reproduced build.",
+            "The17-file helper closure is not a self-contained package for all legacy business dependencies; bd_db/orchestrator top-level and main are not executed.",
+            "expected_before is a3bbb Git-baseline condition, not site evidence; no configuration, DB, credentials, updater or allowlist expansion.",
+            "Engineering artifacts are not an installable release; formal backend and production gates remain false."
+          ],
+          "installable_release": false,
+          "production_applied": false,
+          "RELEASE_READY": false
+        },
+        "current_package": {
+          "artifacts": {
+            "install.zip": "16410c14c094ee3452abe0506257236b61de2e1769447e282503e7fcaa17ccb7",
+            "rollback-tools.zip": "0614261b9c1ddaa2dee43be28c4390db9d1b32f11bc6a26b0ea058751ad4395b"
+          },
+          "files": 73,
+          "independent_review": "OFFLINE_SCOPED_ARTIFACT_VERIFICATION_PASSED",
+          "manifest_sha256": "85a59889bdeaa4097e92393525f3ad87ceda70090b28d2246cb20a430d397bec",
+          "production_ready": false,
+          "source_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+          "review_evidence": "review-3fbaa5e/INDEPENDENT_PACKAGE_RESULT.json"
+        },
+        "owner_package": {
+          "source_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+          "payload_files": 17,
+          "artifact_sha256": "c4adf386d86b8a70b8833c51e51148cee1ea74ffee0858e08b41777dddb6bab7",
+          "manifest_sha256": "c7e0b3aa943cd06ae1948745d14a03c58375ff37f4cb9d12c879585e764b59cb",
+          "isolated_import_passed": true,
+          "import_output": "OWNER_DEPENDENCIES_IMPORT_ONLY_OK",
+          "production_applied": false
+        },
+        "original_stage_event_consumer_connected": true,
+        "original_owner_identity_event_adapter_integrated": true,
+        "original_job_terminal_and_release_atomic": true,
+        "formal_backend_integrated": false,
+        "installable_release": false,
+        "development_complete": false,
+        "release_ready": false,
+        "production_deployed": false,
+        "production_accepted": false,
+        "allow_install": false,
+        "allow_dispatch": false,
+        "allow_cancel_dispatch": false,
+        "smtp_enabled": false,
+        "inventory_id": "1784775229336",
+        "next_action": "Complete formal Provider execution, measured costs and trusted runtime configuration, then review the complete candidate. After authorization, WorkBuddy verifies isolated Windows first installation, upgrade, process-exit recovery, interrupted rollback and Disabled/Stopped state. Test workers and SAFE fixtures are not business acceptance.",
+        "next_action_zh": "完成正式Provider执行、费用实测和受信运行配置，随后对完整候选审核；经授权后由WorkBuddy进行隔离Windows首次安装、升级、进程退出恢复、回滚中断恢复及Disabled/Stopped验收。不得用测试worker或SAFE替身代替业务验收。"
       }
     },
     {
@@ -4884,7 +5494,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-03T13:07:12.844134+00:00",
+  "updated_at": "2026-11-03T13:33:27.819649+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -5182,7 +5792,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "autonomy/evidence/u1_original_owner_session_20261103/REPORT.md",
+  "checkpoint": "autonomy/evidence/u1_original_stage_20261103/REPORT.md",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
@@ -6730,5 +7340,615 @@
     "inventory_id": "1784775229336",
     "next_action": "Complete the fixed call chain connecting the formal Provider/backend protocol, original stage entry and service event consumer, retaining the sole original Inventory and durable event/claim/cost/cancellation/settlement contracts. The current original-owner adapter still uses the isolated_offline protocol and does not complete formal Provider wiring. After complete-candidate review and authorization, perform isolated Windows first-install, upgrade, interruption recovery and rollback acceptance.",
     "next_action_zh": "完成正式Provider/backend协议与原stage入口、服务事件消费者的固定调用链；保留原唯一Inventory、持久事件/claim/费用/取消和结算合同。当前原owner身份适配器仍使用isolated_offline协议，不是正式Provider接线完成。完整候选审核和授权后再做隔离Windows首装、升级、中断恢复及回滚验收。"
+  },
+  "u1_original_stage_latest": {
+    "source_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+    "updated_at": "2026-11-03T13:33:27.819649+00:00",
+    "report": "autonomy/evidence/u1_original_stage_20261103/REPORT.md",
+    "tests": {
+      "source_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+      "modules": [
+        "test_windows_acl_transaction",
+        "test_disabled_host_package",
+        "test_install_journal",
+        "test_install_contract",
+        "test_independent_install_plan",
+        "test_u1_provision",
+        "test_u1_manifest_closure",
+        "test_u1_host_runtime",
+        "test_host_remediation",
+        "test_host_preparation",
+        "test_release_store",
+        "test_process_backend",
+        "autonomy.test_process_job",
+        "test_single_slot_adapter",
+        "test_host_readonly_http",
+        "test_host_file_transaction",
+        "test_host_install_transaction",
+        "test_inventory_event_bridge",
+        "test_maintenance_control",
+        "test_install_verifier",
+        "test_install_process",
+        "test_install_inputs",
+        "test_install_command",
+        "test_publisher_install_admission",
+        "test_original_process_backend",
+        "test_inventory_maintenance",
+        "test_publisher_maintenance",
+        "test_publisher_install_maintenance",
+        "test_original_inventory_owner",
+        "test_original_stage_event"
+      ],
+      "tests_run": 271,
+      "passed": true,
+      "failures": [],
+      "errors": [],
+      "skips": [],
+      "groups": [
+        {
+          "tests_run": 210,
+          "failures": [],
+          "errors": [],
+          "skips": [],
+          "passed": true,
+          "group": "host",
+          "exit_code": 0
+        },
+        {
+          "tests_run": 61,
+          "failures": [],
+          "errors": [],
+          "skips": [],
+          "passed": true,
+          "group": "authority",
+          "exit_code": 0
+        }
+      ],
+      "seconds": 314.223,
+      "allow_install": false,
+      "allow_dispatch": false,
+      "allow_cancel_dispatch": false,
+      "smtp_enabled": false
+    },
+    "current_full_regression": {
+      "baseline_commit": "68788653c848659c63f85021075fedee4aca5b13",
+      "candidate_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+      "complete": true,
+      "baseline_run": 833,
+      "candidate_run": 833,
+      "baseline_failures": 37,
+      "candidate_failures": 37,
+      "baseline_errors": 17,
+      "candidate_errors": 17,
+      "failure_ids_identical": true,
+      "error_ids_identical": true,
+      "all_green": false,
+      "no_new_regression": true
+    },
+    "independent_review": "OFFLINE_SCOPED_REVIEW_PASSED",
+    "independent_tests": {
+      "count": 76,
+      "duration_seconds": 30.374,
+      "duration_basis": "sum of two independent unittest runner durations, not elapsed wall time",
+      "failures": 0,
+      "errors": 0,
+      "runs": [
+        {
+          "command": "python -m unittest test_original_stage_event test_original_inventory_owner test_inventory_maintenance tests.test_inventory_stage_trace tests.test_phase4a8r_continuous_discovery -q",
+          "count": 60,
+          "duration_seconds": 18.916
+        },
+        {
+          "command": "python -m unittest test_original_process_backend test_process_backend test_inventory_event_bridge -q",
+          "count": 16,
+          "duration_seconds": 11.458
+        }
+      ]
+    },
+    "package_review": {
+      "source_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+      "status": "OFFLINE_SCOPED_ARTIFACT_VERIFICATION_PASSED",
+      "engineering_payload_files": 73,
+      "mapping_counts": {
+        "SOURCE_CRLF_LF_EQUIVALENT": 7,
+        "SOURCE_EXACT": 60,
+        "GENERATED_OBSERVATION": 6
+      },
+      "payload_mapping": {
+        "DELIVERY.json": {
+          "kind": "GENERATED_OBSERVATION",
+          "payload_sha256": "00801913904b50f82f841b85cc22f05ddf85de1654ad520f654fe2b01b7ab192"
+        },
+        "host/Acl-Transaction.ps1": {
+          "kind": "SOURCE_CRLF_LF_EQUIVALENT",
+          "source_path": "autonomy/windows/Acl-Transaction.ps1",
+          "git_blob_sha256": "cbc1eec9c2455301b3f3bfaf7bf5ca2f03bdc05b13303da3443dee5ad162e5cd",
+          "payload_sha256": "a3fb4ab1fa251bc80e9d6a9f682b6efa48a628ed96a2253492d89af4ccfe8057"
+        },
+        "host/Host-InstallTransaction.ps1": {
+          "kind": "SOURCE_CRLF_LF_EQUIVALENT",
+          "source_path": "autonomy/windows/Host-InstallTransaction.ps1",
+          "git_blob_sha256": "9bb9fa63845f581a439cc221d1584de2c6e411000b61daa23b0302c42023a111",
+          "payload_sha256": "5859584546f7b9c6d4393ed4e7691ac7fc5ae093d03ba22177677fe6a22f8c4b"
+        },
+        "host/Host-PackagePreparation.ps1": {
+          "kind": "SOURCE_CRLF_LF_EQUIVALENT",
+          "source_path": "autonomy/windows/Host-PackagePreparation.ps1",
+          "git_blob_sha256": "f00011166c44baaed384f6fefad4c18d04199cc17c55b0126a96a8e1540f1e03",
+          "payload_sha256": "105fa4e89334f5a52751dc242ea9fc92c92cd3857e8fa3561d6e1a0bba957ec3"
+        },
+        "host/Install-DisabledHost.ps1": {
+          "kind": "SOURCE_CRLF_LF_EQUIVALENT",
+          "source_path": "autonomy/windows/Install-DisabledHost.ps1",
+          "git_blob_sha256": "3733c53aca89a1c0175f9b3251d21d00cf94db97bbd7d52dbe3b5d5440c3b0e2",
+          "payload_sha256": "ec74bf8257c801bd22fd82f4dd47152a4680e149235948c1e18e445cdc23e44b"
+        },
+        "host/Maintenance-Authority.ps1": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/windows/Maintenance-Authority.ps1",
+          "git_blob_sha256": "070bf93e5ad5c3e3af5334a65e59597d330f9a946f2ac7f26380c8c00e1bc049",
+          "payload_sha256": "070bf93e5ad5c3e3af5334a65e59597d330f9a946f2ac7f26380c8c00e1bc049"
+        },
+        "host/Observe-HostInstall.ps1": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/windows/Observe-HostInstall.ps1",
+          "git_blob_sha256": "95a00a0f465a7b4adde709b758edcf4c830db4254b34fc7b8b8e24f62bb2c7ec",
+          "payload_sha256": "95a00a0f465a7b4adde709b758edcf4c830db4254b34fc7b8b8e24f62bb2c7ec"
+        },
+        "host/Publisher-InstallHost.ps1": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/windows/Publisher-InstallHost.ps1",
+          "git_blob_sha256": "ddc06ce2d17c10d1f21bfffa908ef4c947d78dbc7fd24e53763285c8df4db7a3",
+          "payload_sha256": "ddc06ce2d17c10d1f21bfffa908ef4c947d78dbc7fd24e53763285c8df4db7a3"
+        },
+        "host/Rollback-DisabledHost.ps1": {
+          "kind": "SOURCE_CRLF_LF_EQUIVALENT",
+          "source_path": "autonomy/windows/Rollback-DisabledHost.ps1",
+          "git_blob_sha256": "b539c56f926934b05a4a45a596bfa34dd541a02909d98c93213e2dbd36f49888",
+          "payload_sha256": "73cc25a7825ac2f72f3c6bde44443a313e580ecaa788edad1a9c3aedbf996305"
+        },
+        "host/config/host.json": {
+          "kind": "GENERATED_OBSERVATION",
+          "payload_sha256": "fc4495c5cb95e23a34892ef35204a40713171fe5fcb362a90b03eec2eb0a8492"
+        },
+        "host/host_file_transaction.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/host_file_transaction.py",
+          "git_blob_sha256": "d199186b31e4c6a40fc43dbef19c3f078003430080879aee094b61027c0d0ae9",
+          "payload_sha256": "d199186b31e4c6a40fc43dbef19c3f078003430080879aee094b61027c0d0ae9"
+        },
+        "host/manifest.json": {
+          "kind": "GENERATED_OBSERVATION",
+          "payload_sha256": "65f3c6e81f65f6f29ab56899e2a2336401fa690932c4fb880f769401b80c2102"
+        },
+        "host/runtime/build.json": {
+          "kind": "GENERATED_OBSERVATION",
+          "payload_sha256": "89b9182c9fa8e6798836c2e8f7feabd690c980102a50bc0ac02ad3deed161431"
+        },
+        "host/runtime/dependencies.json": {
+          "kind": "GENERATED_OBSERVATION",
+          "payload_sha256": "9e6d0158d90f6ac73951ce819a86dbdb4453d1d4f3545582b5bc874d79b8bfc2"
+        },
+        "host/service/RoktU1Bridge.cs": {
+          "kind": "SOURCE_CRLF_LF_EQUIVALENT",
+          "source_path": "autonomy/windows/RoktU1Bridge.cs",
+          "git_blob_sha256": "62febdadce2bb740476e8364ef8d17984a65ed4868b5a57646140e1aa7762e38",
+          "payload_sha256": "ccfb89f943cc218b12f64d255002b785f448149a3f2281c12d52cf2904fcb30a"
+        },
+        "host/service/RoktU1Bridge.exe": {
+          "kind": "GENERATED_OBSERVATION",
+          "payload_sha256": "9e61f970522a2d8f6187032cb0af83f61bad5d11c5e54d0be318011950c42c7c"
+        },
+        "host/service/u1_bootstrap.py": {
+          "kind": "SOURCE_CRLF_LF_EQUIVALENT",
+          "source_path": "autonomy/windows/u1_bootstrap.py",
+          "git_blob_sha256": "1f0ab7d233c53b57a60d9f9b98aa1ebb32c2e1944b52b5b9028c6942286b4c21",
+          "payload_sha256": "6fe5ceeae26a91008cc5f73a48e176052a01004bfc8858a52169354c864bc63f"
+        },
+        "python/autonomy/audit_root_policy.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/audit_root_policy.py",
+          "git_blob_sha256": "d80a4c61ed19817fd97896655582c5e36a78e5380e15fb7357ba00433934a163",
+          "payload_sha256": "d80a4c61ed19817fd97896655582c5e36a78e5380e15fb7357ba00433934a163"
+        },
+        "python/autonomy/bridge_acceptance.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/bridge_acceptance.py",
+          "git_blob_sha256": "4a304578466bb978d9666adf961f21dfadaca70ba3d12d86a91cfdf02189e1eb",
+          "payload_sha256": "4a304578466bb978d9666adf961f21dfadaca70ba3d12d86a91cfdf02189e1eb"
+        },
+        "python/autonomy/bridge_session_evidence.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/bridge_session_evidence.py",
+          "git_blob_sha256": "658751dc918a14e95c6631d33f7d2a808add11b962a6ab54bf01b806ffb91bd1",
+          "payload_sha256": "658751dc918a14e95c6631d33f7d2a808add11b962a6ab54bf01b806ffb91bd1"
+        },
+        "python/autonomy/build_dev_disabled_host.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/build_dev_disabled_host.py",
+          "git_blob_sha256": "54b0fd3e383cf052c81401adae0a7146490766a7cc08a09aff89421dd97801bf",
+          "payload_sha256": "54b0fd3e383cf052c81401adae0a7146490766a7cc08a09aff89421dd97801bf"
+        },
+        "python/autonomy/build_u1_delivery.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/build_u1_delivery.py",
+          "git_blob_sha256": "8f10e62c5306506b8a257d9f1467f7f0f7cb397220098d683d334094e06393f5",
+          "payload_sha256": "8f10e62c5306506b8a257d9f1467f7f0f7cb397220098d683d334094e06393f5"
+        },
+        "python/autonomy/cancellation_recovery.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/cancellation_recovery.py",
+          "git_blob_sha256": "273614a92b18da65eafd206c2239821edffd74ca80ed95ca4b1f70c35ef11197",
+          "payload_sha256": "273614a92b18da65eafd206c2239821edffd74ca80ed95ca4b1f70c35ef11197"
+        },
+        "python/autonomy/cancellation_terminal.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/cancellation_terminal.py",
+          "git_blob_sha256": "4d609428476cafc09bdbc141f617f2b3c3ebad15f650ab9c537fd661d99f2f4a",
+          "payload_sha256": "4d609428476cafc09bdbc141f617f2b3c3ebad15f650ab9c537fd661d99f2f4a"
+        },
+        "python/autonomy/cancellation_terminal_bundle.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/cancellation_terminal_bundle.py",
+          "git_blob_sha256": "46c67ada9d7412bd6fd05c106800a38de76d6bc85763a3ac37c7a4005500f405",
+          "payload_sha256": "46c67ada9d7412bd6fd05c106800a38de76d6bc85763a3ac37c7a4005500f405"
+        },
+        "python/autonomy/directory_identity.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/directory_identity.py",
+          "git_blob_sha256": "081ecaca13b7e04530d28f2d528e77d149b68112295ccb1150715e0a343141bb",
+          "payload_sha256": "081ecaca13b7e04530d28f2d528e77d149b68112295ccb1150715e0a343141bb"
+        },
+        "python/autonomy/disabled_host_package.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/disabled_host_package.py",
+          "git_blob_sha256": "d0160d8e4d8c0285477b56e48aa95ec0772cf56f62e7854eb9167164744b34f1",
+          "payload_sha256": "d0160d8e4d8c0285477b56e48aa95ec0772cf56f62e7854eb9167164744b34f1"
+        },
+        "python/autonomy/drain_bundle_preflight.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/drain_bundle_preflight.py",
+          "git_blob_sha256": "69b930f6ed9b9f3e115e49ab7b47c818b3b44705b9f475f152e6fc27565cc864",
+          "payload_sha256": "69b930f6ed9b9f3e115e49ab7b47c818b3b44705b9f475f152e6fc27565cc864"
+        },
+        "python/autonomy/durable_slots.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/durable_slots.py",
+          "git_blob_sha256": "f715f988e24d784fb3633f9be06665f4c42a9ae2803ad1315deae9548a0dc5c5",
+          "payload_sha256": "f715f988e24d784fb3633f9be06665f4c42a9ae2803ad1315deae9548a0dc5c5"
+        },
+        "python/autonomy/first_publication.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/first_publication.py",
+          "git_blob_sha256": "787eaf2ca7164a34cae26fb0f75043125ce347d721de6dab841082677d27c93b",
+          "payload_sha256": "787eaf2ca7164a34cae26fb0f75043125ce347d721de6dab841082677d27c93b"
+        },
+        "python/autonomy/growth_ledger.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/growth_ledger.py",
+          "git_blob_sha256": "ba382c18d481cee2ccdc8cda8524b86483bdda5cca666088f2bafc29e1ca9731",
+          "payload_sha256": "ba382c18d481cee2ccdc8cda8524b86483bdda5cca666088f2bafc29e1ca9731"
+        },
+        "python/autonomy/growth_snapshot.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/growth_snapshot.py",
+          "git_blob_sha256": "ca861b99ea9335fe4b6c8842875d037b24da9ce28802f9fcece30cef2c5d0d5c",
+          "payload_sha256": "ca861b99ea9335fe4b6c8842875d037b24da9ce28802f9fcece30cef2c5d0d5c"
+        },
+        "python/autonomy/handoff_validation.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/handoff_validation.py",
+          "git_blob_sha256": "0c84311f25b0563503f5d4a2a7d307b66649511de3884273f49a9dfadc6f3321",
+          "payload_sha256": "0c84311f25b0563503f5d4a2a7d307b66649511de3884273f49a9dfadc6f3321"
+        },
+        "python/autonomy/host_file_transaction.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/host_file_transaction.py",
+          "git_blob_sha256": "d199186b31e4c6a40fc43dbef19c3f078003430080879aee094b61027c0d0ae9",
+          "payload_sha256": "d199186b31e4c6a40fc43dbef19c3f078003430080879aee094b61027c0d0ae9"
+        },
+        "python/autonomy/host_preparation.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/host_preparation.py",
+          "git_blob_sha256": "ba3bf2edf4f39c130a1f56d8246a92476758ac53e223a3d067c02a987cd011d2",
+          "payload_sha256": "ba3bf2edf4f39c130a1f56d8246a92476758ac53e223a3d067c02a987cd011d2"
+        },
+        "python/autonomy/host_readonly_http.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/host_readonly_http.py",
+          "git_blob_sha256": "b469887c7cd19c6486c3793d41d7efff98d463301d4c1ac08d37bef53093f031",
+          "payload_sha256": "b469887c7cd19c6486c3793d41d7efff98d463301d4c1ac08d37bef53093f031"
+        },
+        "python/autonomy/host_remediation.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/host_remediation.py",
+          "git_blob_sha256": "d4bcaa974b07b67ffd49ffff94b1d14891097ae39378aa1cb588829863e35a13",
+          "payload_sha256": "d4bcaa974b07b67ffd49ffff94b1d14891097ae39378aa1cb588829863e35a13"
+        },
+        "python/autonomy/independent_install_plan.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/independent_install_plan.py",
+          "git_blob_sha256": "0b1ccf06b4d8db524dffd83807abfc3c9f53715712ce96f4cf8e92eaa64cc22f",
+          "payload_sha256": "0b1ccf06b4d8db524dffd83807abfc3c9f53715712ce96f4cf8e92eaa64cc22f"
+        },
+        "python/autonomy/install_contract.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/install_contract.py",
+          "git_blob_sha256": "8fd8fd1ee53ea1aaaeafd5f0fab56d0fe3d2af2db971a1a48579728fdfbcfbc3",
+          "payload_sha256": "8fd8fd1ee53ea1aaaeafd5f0fab56d0fe3d2af2db971a1a48579728fdfbcfbc3"
+        },
+        "python/autonomy/install_journal.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/install_journal.py",
+          "git_blob_sha256": "c06a361f6e064c01bd86ab017f9c96d536d798aaad8f651b5b65c1cd4756a8ac",
+          "payload_sha256": "c06a361f6e064c01bd86ab017f9c96d536d798aaad8f651b5b65c1cd4756a8ac"
+        },
+        "python/autonomy/inventory_event_bridge.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/inventory_event_bridge.py",
+          "git_blob_sha256": "9d087b4c012b66f66d345b741e9b79d80684250021497902e6c4c5469399665c",
+          "payload_sha256": "9d087b4c012b66f66d345b741e9b79d80684250021497902e6c4c5469399665c"
+        },
+        "python/autonomy/inventory_maintenance.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/inventory_maintenance.py",
+          "git_blob_sha256": "0d098b41fd25e57e270caf601ae40fe75cce379863b632b69fcbe2ec155908df",
+          "payload_sha256": "0d098b41fd25e57e270caf601ae40fe75cce379863b632b69fcbe2ec155908df"
+        },
+        "python/autonomy/ledger_evidence.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/ledger_evidence.py",
+          "git_blob_sha256": "ba5c0ecaaf7bb6e4909d85a81eb112721162a35e6e406246d337c0c0d43058f9",
+          "payload_sha256": "ba5c0ecaaf7bb6e4909d85a81eb112721162a35e6e406246d337c0c0d43058f9"
+        },
+        "python/autonomy/lock_recovery.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/lock_recovery.py",
+          "git_blob_sha256": "e6552960b9a15af38a5fbd238037094d8c75af80d9c0370b6d69092060da7741",
+          "payload_sha256": "e6552960b9a15af38a5fbd238037094d8c75af80d9c0370b6d69092060da7741"
+        },
+        "python/autonomy/network_recovery.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/network_recovery.py",
+          "git_blob_sha256": "25d33694379c96500b5638e526a7c0fa1f5bc7461d74b518ff4cc379973dc42f",
+          "payload_sha256": "25d33694379c96500b5638e526a7c0fa1f5bc7461d74b518ff4cc379973dc42f"
+        },
+        "python/autonomy/original_inventory_owner.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/original_inventory_owner.py",
+          "git_blob_sha256": "88598c1b1823f8431773a32f71d70497a07b6c27014640b901de0781e949ec32",
+          "payload_sha256": "88598c1b1823f8431773a32f71d70497a07b6c27014640b901de0781e949ec32"
+        },
+        "python/autonomy/original_stage_event.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/original_stage_event.py",
+          "git_blob_sha256": "19044a7c372baf4aecd5f14df2b61cda4786d50c9c55fe052f0470324ea9fe27",
+          "payload_sha256": "19044a7c372baf4aecd5f14df2b61cda4786d50c9c55fe052f0470324ea9fe27"
+        },
+        "python/autonomy/owner_drain_preflight.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/owner_drain_preflight.py",
+          "git_blob_sha256": "2df95c5dc2cc17dbfd4fd7e7eb2b9685316972786ac003ca55e6b4b999df400b",
+          "payload_sha256": "2df95c5dc2cc17dbfd4fd7e7eb2b9685316972786ac003ca55e6b4b999df400b"
+        },
+        "python/autonomy/process_backend.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/process_backend.py",
+          "git_blob_sha256": "f8db5726b5bf70fdeab294968f5846bdbbe445231524a05aca3465f96247b616",
+          "payload_sha256": "f8db5726b5bf70fdeab294968f5846bdbbe445231524a05aca3465f96247b616"
+        },
+        "python/autonomy/process_control.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/process_control.py",
+          "git_blob_sha256": "0e9cc47420865dba5ae89a52acb564a8ddd107bb6d8060f6dcaf63c9924bfd56",
+          "payload_sha256": "0e9cc47420865dba5ae89a52acb564a8ddd107bb6d8060f6dcaf63c9924bfd56"
+        },
+        "python/autonomy/process_job.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/process_job.py",
+          "git_blob_sha256": "5b3bc282b0354437ab5589b2d07036dc9248d609c48e761eff43b22322bce082",
+          "payload_sha256": "5b3bc282b0354437ab5589b2d07036dc9248d609c48e761eff43b22322bce082"
+        },
+        "python/autonomy/recovery_status.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/recovery_status.py",
+          "git_blob_sha256": "e4229a403e5b26e428beaea7639df44b34ebbbed5bd76efef162a514ae29358f",
+          "payload_sha256": "e4229a403e5b26e428beaea7639df44b34ebbbed5bd76efef162a514ae29358f"
+        },
+        "python/autonomy/release_contract.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/release_contract.py",
+          "git_blob_sha256": "59a70cdd02e5032cf5f4a52cb139c9d0b5ac4454d1d918f3e654df70b98ffed8",
+          "payload_sha256": "59a70cdd02e5032cf5f4a52cb139c9d0b5ac4454d1d918f3e654df70b98ffed8"
+        },
+        "python/autonomy/release_store.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/release_store.py",
+          "git_blob_sha256": "7cf6c42a5dd3724af9d2f7986ecb02eea7368eff49dc62ed6784c0ac15755d99",
+          "payload_sha256": "7cf6c42a5dd3724af9d2f7986ecb02eea7368eff49dc62ed6784c0ac15755d99"
+        },
+        "python/autonomy/rollback_admission.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/rollback_admission.py",
+          "git_blob_sha256": "1e703faa3df531756d365e58385ec830d990770219caeccf7bd2d91acf0a1aed",
+          "payload_sha256": "1e703faa3df531756d365e58385ec830d990770219caeccf7bd2d91acf0a1aed"
+        },
+        "python/autonomy/safe_authority.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/safe_authority.py",
+          "git_blob_sha256": "9007dcd1549dc342cdecbafbd9249b55e3d25c23af5b496827b70ed0dae631c8",
+          "payload_sha256": "9007dcd1549dc342cdecbafbd9249b55e3d25c23af5b496827b70ed0dae631c8"
+        },
+        "python/autonomy/single_slot_adapter.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/single_slot_adapter.py",
+          "git_blob_sha256": "fae0056498c68746d7df86eed2a1f68cc508f64c4c454ed5cf27d4f4b321f45b",
+          "payload_sha256": "fae0056498c68746d7df86eed2a1f68cc508f64c4c454ed5cf27d4f4b321f45b"
+        },
+        "python/autonomy/source_identity.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/source_identity.py",
+          "git_blob_sha256": "e28baf1061f31dae8f8fe62679ce074671fa6091d7675d99604b2dc70885b84f",
+          "payload_sha256": "e28baf1061f31dae8f8fe62679ce074671fa6091d7675d99604b2dc70885b84f"
+        },
+        "python/autonomy/source_publication.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/source_publication.py",
+          "git_blob_sha256": "fc971365cf28cc25661334399ff87e7b9a5aeb17df4bb3128f4cd459f5cfa523",
+          "payload_sha256": "fc971365cf28cc25661334399ff87e7b9a5aeb17df4bb3128f4cd459f5cfa523"
+        },
+        "python/autonomy/storage_preflight.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/storage_preflight.py",
+          "git_blob_sha256": "6b3225477848bd889f814657b21f5031c754f5c08e582e455def843c377e269d",
+          "payload_sha256": "6b3225477848bd889f814657b21f5031c754f5c08e582e455def843c377e269d"
+        },
+        "python/autonomy/supervisor.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/supervisor.py",
+          "git_blob_sha256": "3d268ccc7423adcaf56c25132a9ae801bcf79493d5cda871b4f2ddbc248939a3",
+          "payload_sha256": "3d268ccc7423adcaf56c25132a9ae801bcf79493d5cda871b4f2ddbc248939a3"
+        },
+        "python/autonomy/task_dispatch.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/task_dispatch.py",
+          "git_blob_sha256": "fed60467d43af8594d1222678da8df67a043ad2ea64fc27ed769dcf36ca3ea2a",
+          "payload_sha256": "fed60467d43af8594d1222678da8df67a043ad2ea64fc27ed769dcf36ca3ea2a"
+        },
+        "python/autonomy/telemetry.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/telemetry.py",
+          "git_blob_sha256": "a567344ead3f59e3c56bf5bdfdbb19fe2cabd7efb93caa0d18ce26d752ae3faf",
+          "payload_sha256": "a567344ead3f59e3c56bf5bdfdbb19fe2cabd7efb93caa0d18ce26d752ae3faf"
+        },
+        "python/autonomy/test_bridge_telemetry.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/test_bridge_telemetry.py",
+          "git_blob_sha256": "dc25fd0ca5c9dee31faf138d992525724658cc8db3fd86b37f9868185d6fe576",
+          "payload_sha256": "dc25fd0ca5c9dee31faf138d992525724658cc8db3fd86b37f9868185d6fe576"
+        },
+        "python/autonomy/test_lock_recovery.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/test_lock_recovery.py",
+          "git_blob_sha256": "3b496a5defd1da3312e9d1ef63b4674c075ec10d84345897e898e370ce69deae",
+          "payload_sha256": "3b496a5defd1da3312e9d1ef63b4674c075ec10d84345897e898e370ce69deae"
+        },
+        "python/autonomy/test_process_job.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/test_process_job.py",
+          "git_blob_sha256": "1ab6eaeec41c4ac9d5118f3c6acf922eb71d97491b01e4ce1b90e66489391d96",
+          "payload_sha256": "1ab6eaeec41c4ac9d5118f3c6acf922eb71d97491b01e4ce1b90e66489391d96"
+        },
+        "python/autonomy/test_storage_preflight.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/test_storage_preflight.py",
+          "git_blob_sha256": "4d212d70848a427b703329dfae6aff04f068a6d9e254325f9df05df00f7d44e9",
+          "payload_sha256": "4d212d70848a427b703329dfae6aff04f068a6d9e254325f9df05df00f7d44e9"
+        },
+        "python/autonomy/test_supervisor.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/test_supervisor.py",
+          "git_blob_sha256": "da35df5bbf1065ce459a8d6489cb4983d1f0689b0f10c9e20cd2e6942b21c648",
+          "payload_sha256": "da35df5bbf1065ce459a8d6489cb4983d1f0689b0f10c9e20cd2e6942b21c648"
+        },
+        "python/autonomy/test_telemetry.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/test_telemetry.py",
+          "git_blob_sha256": "8ccc01f5734978dace908dee3083c80b4bba11b474c6beed275cbabb42dc25b3",
+          "payload_sha256": "8ccc01f5734978dace908dee3083c80b4bba11b474c6beed275cbabb42dc25b3"
+        },
+        "python/autonomy/u1_host_runtime.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/u1_host_runtime.py",
+          "git_blob_sha256": "64d676c19dad4e314f44af850cc6481abe106cf252da2d39f8119385797390cc",
+          "payload_sha256": "64d676c19dad4e314f44af850cc6481abe106cf252da2d39f8119385797390cc"
+        },
+        "python/autonomy/unattended_policy.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/unattended_policy.py",
+          "git_blob_sha256": "21aea336dd46f35ee402598687831b39f33c7aee5ec5245bc63f83cc77ec781f",
+          "payload_sha256": "21aea336dd46f35ee402598687831b39f33c7aee5ec5245bc63f83cc77ec781f"
+        },
+        "python/autonomy/windows/u1_bootstrap.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/windows/u1_bootstrap.py",
+          "git_blob_sha256": "1f0ab7d233c53b57a60d9f9b98aa1ebb32c2e1944b52b5b9028c6942286b4c21",
+          "payload_sha256": "1f0ab7d233c53b57a60d9f9b98aa1ebb32c2e1944b52b5b9028c6942286b4c21"
+        },
+        "python/autonomy/windows_observation.py": {
+          "kind": "SOURCE_EXACT",
+          "source_path": "autonomy/windows_observation.py",
+          "git_blob_sha256": "35563c2b65f7be373287d4001932fd94dbefe295a359c5e58cafc45933e2c196",
+          "payload_sha256": "35563c2b65f7be373287d4001932fd94dbefe295a359c5e58cafc45933e2c196"
+        }
+      },
+      "engineering_artifacts": {
+        "install.zip": "16410c14c094ee3452abe0506257236b61de2e1769447e282503e7fcaa17ccb7",
+        "rollback-tools.zip": "0614261b9c1ddaa2dee43be28c4390db9d1b32f11bc6a26b0ea058751ad4395b"
+      },
+      "engineering_manifest_sha256": "85a59889bdeaa4097e92393525f3ad87ceda70090b28d2246cb20a430d397bec",
+      "zip_entry_counts": {
+        "install.zip": 74,
+        "rollback-tools.zip": 18
+      },
+      "pe_machine": "0x8664",
+      "owner_companion_files": 17,
+      "owner_companion_sha256": "c4adf386d86b8a70b8833c51e51148cee1ea74ffee0858e08b41777dddb6bab7",
+      "owner_companion_manifest_sha256": "c7e0b3aa943cd06ae1948745d14a03c58375ff37f4cb9d12c879585e764b59cb",
+      "owner_import_only": "OWNER_STAGE_DEPENDENCY_IMPORT_OK",
+      "artifact_manifest_files_verified": 115,
+      "limitations_zh": [
+        "源码逐字节或CRLF/LF等价分别记录，生成PE/清单不伪称Git原blob；非独立重现构建。",
+        "17项为本轮新helper依赖闭包，不是原业务全部依赖的独立安装包；不执行bd_db/原orchestrator顶层或main。",
+        "expected_before仅3bbb固定Git基线条件，非现场取证；没有配置、DB、凭据、自动更新器或allowlist扩展。",
+        "工程包不是完整可安装发布版；formalbackend与生产门禁仍false。"
+      ],
+      "limitations_en": [
+        "Exact and newline-equivalent source mappings are distinguished; generated PE/manifests are not Git blobs or an independently reproduced build.",
+        "The17-file helper closure is not a self-contained package for all legacy business dependencies; bd_db/orchestrator top-level and main are not executed.",
+        "expected_before is a3bbb Git-baseline condition, not site evidence; no configuration, DB, credentials, updater or allowlist expansion.",
+        "Engineering artifacts are not an installable release; formal backend and production gates remain false."
+      ],
+      "installable_release": false,
+      "production_applied": false,
+      "RELEASE_READY": false
+    },
+    "current_package": {
+      "artifacts": {
+        "install.zip": "16410c14c094ee3452abe0506257236b61de2e1769447e282503e7fcaa17ccb7",
+        "rollback-tools.zip": "0614261b9c1ddaa2dee43be28c4390db9d1b32f11bc6a26b0ea058751ad4395b"
+      },
+      "files": 73,
+      "independent_review": "OFFLINE_SCOPED_ARTIFACT_VERIFICATION_PASSED",
+      "manifest_sha256": "85a59889bdeaa4097e92393525f3ad87ceda70090b28d2246cb20a430d397bec",
+      "production_ready": false,
+      "source_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+      "review_evidence": "review-3fbaa5e/INDEPENDENT_PACKAGE_RESULT.json"
+    },
+    "owner_package": {
+      "source_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+      "payload_files": 17,
+      "artifact_sha256": "c4adf386d86b8a70b8833c51e51148cee1ea74ffee0858e08b41777dddb6bab7",
+      "manifest_sha256": "c7e0b3aa943cd06ae1948745d14a03c58375ff37f4cb9d12c879585e764b59cb",
+      "isolated_import_passed": true,
+      "import_output": "OWNER_DEPENDENCIES_IMPORT_ONLY_OK",
+      "production_applied": false
+    },
+    "original_stage_event_consumer_connected": true,
+    "original_owner_identity_event_adapter_integrated": true,
+    "original_job_terminal_and_release_atomic": true,
+    "formal_backend_integrated": false,
+    "installable_release": false,
+    "development_complete": false,
+    "release_ready": false,
+    "production_deployed": false,
+    "production_accepted": false,
+    "allow_install": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "smtp_enabled": false,
+    "inventory_id": "1784775229336",
+    "next_action": "Complete formal Provider execution, measured costs and trusted runtime configuration, then review the complete candidate. After authorization, WorkBuddy verifies isolated Windows first installation, upgrade, process-exit recovery, interrupted rollback and Disabled/Stopped state. Test workers and SAFE fixtures are not business acceptance.",
+    "next_action_zh": "完成正式Provider执行、费用实测和受信运行配置，随后对完整候选审核；经授权后由WorkBuddy进行隔离Windows首次安装、升级、进程退出恢复、回滚中断恢复及Disabled/Stopped验收。不得用测试worker或SAFE替身代替业务验收。"
   }
 }
