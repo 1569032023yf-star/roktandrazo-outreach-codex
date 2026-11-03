@@ -1,11 +1,15 @@
 # Shared lifecycle coordinator. Caller has pinned manifest, Python and helpers.
-# No StartService, scheduler, Inventory or production database operation.
+# No StartService, scheduler or database operation. The pinned publisher owns
+# maintenance authority; this coordinator only asserts its bound live session.
 function Invoke-HostInstallTransaction {
     param([switch]$Upgrade,[switch]$RecoverInstall,[switch]$Rollback,
-          [string]$ApprovedPreviousReceiptSha256,[string]$OperationId,[switch]$Execute)
+          [string]$ApprovedPreviousReceiptSha256,[string]$OperationId,
+          [object]$MaintenanceAuthority,[switch]$Execute)
     if (-not $RuntimePlan) { throw 'EXACT_RUNTIME_PLAN_REQUIRED' }
     $operation=if ($OperationId) {$OperationId} else {$ApprovedManifestSha256}
     if ($operation -cnotmatch '^[0-9a-f]{64}$') {throw 'EXACT_OPERATION_REQUIRED'}
+    if (([int][bool]$Upgrade+[int][bool]$RecoverInstall+[int][bool]$Rollback) -gt 1) {throw 'EXACT_SINGLE_INSTALL_ACTION_REQUIRED'}
+    $maintenanceAction=if ($Upgrade) {'upgrade'} elseif ($RecoverInstall) {'recover'} elseif ($Rollback) {'rollback'} else {'install'}
     $audit='C:\ProgramData\RoktU1InstallAudit'
     $journal=Join-Path $audit ('install-'+$operation+'.jsonl')
     $fileJournal=Join-Path $audit ('files-'+$operation+'.jsonl')
@@ -13,21 +17,31 @@ function Invoke-HostInstallTransaction {
     $image='"'+$code+'\service\RoktU1Bridge.exe"'
     $receiptPath=Join-Path $code 'config/installation.json'
     $pythonHelper=Join-Path $package 'host_file_transaction.py'
+    function Assert-HostMaintenance {
+        if ($null -eq $MaintenanceAuthority -or $null -eq $MaintenanceAuthority.PSObject.Methods['AssertHeld']) {
+            throw 'FORMAL_INVENTORY_MAINTENANCE_REQUIRED_STOP_AND_PRESERVE'
+        }
+        $proof=$MaintenanceAuthority.AssertHeld($operation,$m.source_commit,$ApprovedManifestSha256,$maintenanceAction)
+        if ($proof -isnot [bool] -or -not $proof) {throw 'STOP_AND_PRESERVE_MAINTENANCE_LOST'}
+    }
     function Get-HostService {
         $s=Get-CimInstance Win32_Service -Filter "Name='$name'"
         if ($s -and ($s.StartMode -cne 'Disabled' -or $s.State -cne 'Stopped' -or $s.StartName -ine $account -or $s.PathName -cne $image)) { throw 'OWNED_DISABLED_STOPPED_SERVICE_REQUIRED' }
         return $s
     }
     function Invoke-HostFiles([string]$Action,$Request) {
+        Assert-HostMaintenance
         if ($null -ne $Request) {
             $reply=($Request | ConvertTo-Json -Depth 12 -Compress) | & $plan.python -I -B $pythonHelper $Action --operation $operation
         } else {
             $reply=& $plan.python -I -B $pythonHelper $Action --operation $operation
         }
         if ($LASTEXITCODE -ne 0) { throw 'STOP_AND_PRESERVE_FILE_TRANSACTION' }
+        Assert-HostMaintenance
         return ($reply | ConvertFrom-Json)
     }
     function Write-HostPhase([string]$Phase,$Extra=@{}) {
+        Assert-HostMaintenance
         if ($log.Length -gt 0) {$null=Read-AclRecords $log}
         Write-AclRecord $log @{phase=$Phase;manifest=$ApprovedManifestSha256;operation_id=$operation;extra=$Extra}
     }
@@ -101,6 +115,9 @@ function Invoke-HostInstallTransaction {
         @{outcome='PLAN_ONLY';source_commit=$m.source_commit;installer_version=$m.installer_version;upgrade=[bool]$Upgrade;allow_start=$false;allow_dispatch=$false;state_preserved=$true} | ConvertTo-Json
         return
     }
+    # This is an internal dependency supplied by the trusted pinned publisher,
+    # not a public CLI switch, caller-written proof file or an installation grant.
+    Assert-HostMaintenance
     $principal=New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
     if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { throw 'ADMINISTRATOR_REQUIRED' }
     $mutex=New-Object Threading.Mutex($false,'Global\RoktU1BridgeInstall')

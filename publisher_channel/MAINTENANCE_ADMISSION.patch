@@ -1,0 +1,19 @@
+--- a/bin/executor.py
++++ b/bin/executor.py
+@@ -765,6 +765,16 @@
+     conn = rw_conn(cfg["production"]["db_path"])
+     try:
+         conn.execute("BEGIN IMMEDIATE")
++        # Same durable marker as bd_db admission. Check while holding SQLite's
++        # write reservation, before stale-lock handling or any publisher effect.
++        # Released is the only permissive recorded state; malformed/NULL blocks.
++        maintenance = conn.execute(
++            "SELECT value FROM system_config WHERE key=?",
++            ("u1:inventory:maintenance:v1",)).fetchone()
++        if maintenance is not None and maintenance[0] != "released":
++            conn.rollback()
++            return False, {"lock_key": lock_key,
++                           "reason": "STOP_AND_PRESERVE_MAINTENANCE_HELD"}
+         row = conn.execute("SELECT value FROM system_config WHERE key=?", (lock_key,)).fetchone()
+         existing = row[0] if row else ""
+         stamp = conn.execute("SELECT value FROM system_config WHERE key=?", (acq_key,)).fetchone()

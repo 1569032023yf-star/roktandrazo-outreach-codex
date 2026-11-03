@@ -17,13 +17,15 @@ class HostInstallTests(unittest.TestCase):
         helper=helper.replace("r'C:\\Program Files\\RoktU1Bridge\\v1'",repr(str(self.code))).replace("r'C:\\ProgramData\\RoktU1InstallAudit'",repr(str(self.audit))).replace("r'C:\\ProgramData\\RoktU1Bridge'",repr(str(self.state)))
         (self.package/'host_file_transaction.py').write_text(helper,encoding='utf-8')
 
-    def run_coordinator(self, *, upgrade=False, recover=False, rollback=False, fail='', death='', manifest='a', previous=None, operation=None):
+    def run_coordinator(self, *, upgrade=False, recover=False, rollback=False, fail='', death='', manifest='a', previous=None, operation=None, authority=True, maintenance_fail='', authority_action=None):
         source=Path('autonomy/windows/Host-InstallTransaction.ps1').read_text(encoding='utf-8')
         source=source.replace("$audit='C:\\ProgramData\\RoktU1InstallAudit'","$audit="+self.q(self.audit))
         source=source.replace("$mutex=New-Object Threading.Mutex($false,'Global\\RoktU1BridgeInstall')", "$mutex=New-Object Threading.Mutex($false,'Local\\U1Test"+hashlib.sha256(str(self.root).encode()).hexdigest()+"')")
         source=source.replace("    $principal=New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())\n    if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { throw 'ADMINISTRATOR_REQUIRED' }",'    # Isolated fixture replaces only elevation admission; production source retains it.')
         source=source.replace("$sid=(New-Object Security.Principal.NTAccount($account)).Translate([Security.Principal.SecurityIdentifier])","$sid=[pscustomobject]@{Value='isolated-service-sid'}")
         source=source.replace("Write-AclRecord $log @{phase=$Phase;manifest=$ApprovedManifestSha256;operation_id=$operation;extra=$Extra}","Write-AclRecord $log @{phase=$Phase;manifest=$ApprovedManifestSha256;operation_id=$operation;extra=$Extra}; if ($Phase -ceq $death) {[Environment]::Exit(31)}")
+        if maintenance_fail:
+            source=source.replace("if ($Phase -ceq $death)","if ($Phase -ceq '"+maintenance_fail+"') {$script:authorityLost=$true}; if ($Phase -ceq $death)")
         service_file=self.root/'service.json'
         pre="$ErrorActionPreference='Stop'\n$code="+self.q(self.code)+"; $state="+self.q(self.state)+"; $package="+self.q(self.package)+"; $serviceFile="+self.q(service_file)+"; $RuntimePlan='isolated'; $name='RoktU1Bridge'; $account='NT SERVICE\\RoktU1Bridge'; $ApprovedManifestSha256='"+manifest*64+"'; $plan=@{python="+self.q(sys.executable)+"}; $generated=@{}; $fail="+self.q(fail)+"; $death="+self.q(death)+"\n"
         pre+=r'''
@@ -45,7 +47,12 @@ function Invoke-CimMethod {param($ClassName,$MethodName,$Arguments,$InputObject)
             p=self.package/n;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(b)
             rows.append(dict(path=n,sha256=hashlib.sha256(b).hexdigest()))
         pre+="$m='"+json.dumps(dict(files=rows),separators=(',',':'))+"' | ConvertFrom-Json\n"
+        # Lifecycle fixtures double authority alongside SCM/ACL. Dedicated
+        # publisher tests exercise the real shared DB authority separately.
+        expected_action=authority_action or ('upgrade' if upgrade else 'recover' if recover else 'rollback' if rollback else 'install')
+        pre+="\n$expectedAction='"+expected_action+"'; $script:authorityLost=$false; $maintenance=[pscustomobject]@{}; $maintenance | Add-Member -MemberType ScriptMethod -Name AssertHeld -Value {param($op,$source,$manifest,$action); if($manifest -cne $ApprovedManifestSha256 -or $action -cne $expectedAction){throw 'BINDING_MISMATCH'}; if($script:authorityLost){return $false}; return $true}\n"
         call='\nInvoke-HostInstallTransaction -Execute'
+        if authority:call+=' -MaintenanceAuthority $maintenance'
         for flag,value in (('Upgrade',upgrade),('RecoverInstall',recover),('Rollback',rollback)):
             if value:call+=' -'+flag
         if operation:call+=' -OperationId '+operation
@@ -57,6 +64,31 @@ function Invoke-CimMethod {param($ClassName,$MethodName,$Arguments,$InputObject)
     def q(s):return "'"+str(s).replace("'","''")+"'"
 
     def assert_ok(self,r):self.assertEqual(r.returncode,0,r.stderr+r.stdout)
+
+    def test_missing_maintenance_authority_refuses_before_any_target_creation(self):
+        r=self.run_coordinator(authority=False)
+        self.assertNotEqual(r.returncode,0)
+        self.assertIn('FORMAL_INVENTORY_MAINTENANCE_REQUIRED',r.stderr)
+        self.assertFalse(self.code.exists()); self.assertFalse(self.state.exists())
+        self.assertFalse(list(self.audit.iterdir()))
+
+    def test_wrong_action_or_multiple_actions_refused_before_target_creation(self):
+        r=self.run_coordinator(rollback=True,authority_action='install')
+        self.assertNotEqual(r.returncode,0); self.assertIn('BINDING_MISMATCH',r.stderr)
+        r=self.run_coordinator(rollback=True,upgrade=True)
+        self.assertNotEqual(r.returncode,0); self.assertIn('EXACT_SINGLE_INSTALL_ACTION_REQUIRED',r.stderr)
+        self.assertFalse(self.code.exists()); self.assertFalse(self.state.exists())
+        self.assertFalse(list(self.audit.iterdir()))
+
+    def test_lost_maintenance_after_files_preserves_state_without_scm_or_compensation(self):
+        r=self.run_coordinator(maintenance_fail='FILES_VERIFIED')
+        self.assertNotEqual(r.returncode,0)
+        self.assertIn('STOP_AND_PRESERVE_MAINTENANCE_LOST',r.stderr)
+        self.assertTrue(self.code.exists()); self.assertTrue(self.state.exists())
+        self.assertFalse((self.root/'service.json').exists())
+        rows=[json.loads(x) for x in (self.audit/('install-'+'a'*64+'.jsonl')).read_text(encoding='utf-8').splitlines()]
+        self.assertEqual(rows[-1]['phase'],'FILES_VERIFIED')
+        self.assertNotIn('FAILURE_COMPENSATION_INTENT',[x['phase'] for x in rows])
 
     def test_install_upgrade_full_rollback_and_duplicate(self):
         self.assert_ok(self.run_coordinator())

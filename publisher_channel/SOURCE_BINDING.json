@@ -1,0 +1,19 @@
+{
+  "description_zh": "原发布器源码的离线开发副本；禁止直接运行现场配置。原始文件只读未修改。",
+  "description_en": "Offline development copy of the original publisher; never run against site configuration. Original bytes are unchanged.",
+  "original_path": "C:\\Users\\15690\\WorkBuddy\\deploy-channel\\bin\\executor.py",
+  "original_sha256": "a3c271424131b4d42d8b0ed3f46e8355e3ff9d0556406e2199a5da093043105b",
+  "original_bytes": 70205,
+  "candidate_sha256": "cf7e07b4c52608dcb231b475c64bcd37a1c6ecc7802b34d352cabc54b69ff7cd",
+  "production_modified": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "smtp_enabled": false,
+  "host_allowlist_expanded": false,
+  "required_before_channel_update": [
+    "Independent review",
+    "Explicit channel update authorization and seal refresh",
+    "Exact original SHA match",
+    "Inventory and publisher admission installed together"
+  ]
+}
