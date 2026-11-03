@@ -1,3 +1,22 @@
+# U1 独立终态核验 / Independent terminal verification
+
+固定源码 / Fixed source: `6ff9f61653957eec06887030b17333153e80d1c5` | 2026-11-03T02:47:29.421575+00:00
+
+终态组件已实现，组合 202 项通过，范围独审通过。正式进程适配、持久启动/终止凭据、原认证/seal接线与完整调用链审核仍未完成。
+Terminal verifier component implemented; 202 combined tests and scoped independent review passed. Formal process adaptation, durable launch/termination proof, original authentication/seal wiring and full-chain review remain incomplete.
+
+下一步 / Next: 完成固定命令和进程身份适配、启动及终止持久凭据，并连接原认证/seal调用链；全链独审后再冻结完整安装包，进行生命周期和可比全量回归。
+
+Complete pinned-command/process-identity adaptation, durable launch/termination evidence and original authentication/seal wiring; review the full chain before freezing the complete artifact and running lifecycle/comparable regression.
+
+`DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false`
+
+`allow_install=false; allow_dispatch=false; allow_cancel_dispatch=false; SMTP=false`
+
+[双语证据 / Bilingual evidence](../u1_terminal_verifier_20261103/REPORT.md)
+
+---
+
 # U1 逐步维护权IPC / Per-step maintenance IPC
 
 固定源码 / Fixed source: `b4332e4e2144c36076849ecd5315eeae758ee56a` | 2026-11-03T02:29:42.003922+00:00

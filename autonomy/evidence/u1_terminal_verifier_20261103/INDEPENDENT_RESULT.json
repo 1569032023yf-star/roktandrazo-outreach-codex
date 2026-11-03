@@ -1,0 +1,131 @@
+{
+  "schema": "rokt.independent-offline-review.v1",
+  "source_commit": "6ff9f61653957eec06887030b17333153e80d1c5",
+  "baseline_commit": "f1b88420304484c2cc5d99e4afb9b02477786c92",
+  "review_status": "OFFLINE_SCOPED_REVIEW_PASSED",
+  "new_blocking_findings": [],
+  "tests": {
+    "command": "python -m unittest test_install_verifier test_maintenance_control test_disabled_host_package -v",
+    "count": 22,
+    "seconds": 68.042,
+    "passed": 22,
+    "failed": 0
+  },
+  "independent_additional_probes": [
+    {
+      "case": "actual file-journal previous hash tamper",
+      "expected": "STOP_AND_PRESERVE_FINAL_FILE_JOURNAL_CHAIN",
+      "passed": true
+    },
+    {
+      "case": "second observation changes service to Running",
+      "expected": "STOP_AND_PRESERVE_FINAL_UNSTABLE_OBSERVATION",
+      "passed": true
+    },
+    {
+      "case": "process identity changes between proof reads",
+      "expected": "STOP_AND_PRESERVE_FINAL_PROCESS_IDENTITY_CHANGED",
+      "passed": true
+    }
+  ],
+  "negative_probe_postconditions": [
+    "maintenance marker remains held",
+    "session becomes UNKNOWN"
+  ],
+  "source_files": {
+    "autonomy/build_u1_delivery.py": {
+      "working_tree_sha256": "8722b0351b5b6ef7d8c70c014dbb70b13936322eff610b74606ab0e406e7555a",
+      "git_blob_sha256": "0321395e9c7617c6a014638eaaf67fb8e4d3f8e61009309e5adc7e88c1996ed4",
+      "normalized_matches_pin": true
+    },
+    "autonomy/disabled_host_package.py": {
+      "working_tree_sha256": "d14003c7f0973f40609dd6692a1eaeec228a7e03f08899ba04dd9074737420e7",
+      "git_blob_sha256": "1b1d916eb79341d7040d0820e9085811543151e1d6af6b2fd29d9ee7453c646d",
+      "normalized_matches_pin": true
+    },
+    "autonomy/windows/Host-InstallTransaction.ps1": {
+      "working_tree_sha256": "5859584546f7b9c6d4393ed4e7691ac7fc5ae093d03ba22177677fe6a22f8c4b",
+      "git_blob_sha256": "9bb9fa63845f581a439cc221d1584de2c6e411000b61daa23b0302c42023a111",
+      "normalized_matches_pin": true
+    },
+    "autonomy/windows/Install-DisabledHost.ps1": {
+      "working_tree_sha256": "41274240b226bca8479a15c2fca4e3c8b1b285525961d3142b7bb19067d67bd9",
+      "git_blob_sha256": "70873ca86933ff7c33c85470832a37f7df0867bbb0147d911b3c4f4d6995e088",
+      "normalized_matches_pin": true
+    },
+    "autonomy/windows/Observe-HostInstall.ps1": {
+      "working_tree_sha256": "95a00a0f465a7b4adde709b758edcf4c830db4254b34fc7b8b8e24f62bb2c7ec",
+      "git_blob_sha256": "95a00a0f465a7b4adde709b758edcf4c830db4254b34fc7b8b8e24f62bb2c7ec",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/install_verifier.py": {
+      "working_tree_sha256": "5dc6a2c96499fca5ad8a738ecb9e68f8a08213e3d9db2da762319802fe133bc3",
+      "git_blob_sha256": "5dc6a2c96499fca5ad8a738ecb9e68f8a08213e3d9db2da762319802fe133bc3",
+      "normalized_matches_pin": true
+    },
+    "test_disabled_host_package.py": {
+      "working_tree_sha256": "9c32d1def950a0bfe7a5fd6b15405822703124405900bf3e80608f67b9161630",
+      "git_blob_sha256": "386b422de5c5d2189e4769763bd9e84a25c8cc8e988889dd9116d89c49cf2b77",
+      "normalized_matches_pin": true
+    },
+    "test_host_install_transaction.py": {
+      "working_tree_sha256": "a80e043ae50a98901703d123d35aa653e286f33970ea2ab1ead7592d8ec3bfc5",
+      "git_blob_sha256": "2849d3afeea57e1a3b84db573aa9e0314169cdd2a59b57b20acf0f06b61be01c",
+      "normalized_matches_pin": true
+    },
+    "test_install_verifier.py": {
+      "working_tree_sha256": "87bfa12c0f75bd189868f2d2884d17bed8c7afa1b87bc4ecc6a810afb53887d4",
+      "git_blob_sha256": "87bfa12c0f75bd189868f2d2884d17bed8c7afa1b87bc4ecc6a810afb53887d4",
+      "normalized_matches_pin": true
+    },
+    "tools/validate_u1_candidate.py": {
+      "working_tree_sha256": "eb64cd6b06f9cc369ab9cf37f16fbe689ea7206e5e1eeccb3b917a02658d2161",
+      "git_blob_sha256": "c927da4f48adac441e6ab390766d213bf7034c83cd06a79e2351f6e7e5beec86",
+      "normalized_matches_pin": true
+    }
+  },
+  "limitations_zh": [
+    "正式固定命令及持久进程实例身份证明适配器未完成",
+    "observer与confirm_stopped仍为受信内部接口",
+    "SCM/ACL成功路径使用隔离替身；真实Windows观察器仅验证不可信审计目录拒绝",
+    "仅文件事务日志验证sequence/previous链；主机/ACL/建State日志以受信审计目录及实际字节摘要绑定",
+    "未执行生产安装或真实生产SCM/ACL验收"
+  ],
+  "limitations_en": [
+    "Formal pinned-command and durable process-instance proof adapters remain incomplete",
+    "Observer and confirm_stopped are trusted internal interfaces",
+    "SCM/ACL success paths use isolated doubles; the real Windows observer was tested only for refusal of an untrusted audit directory",
+    "Only the file transaction journal has sequence/previous-chain validation; host/ACL/state-create journals are bound through trusted audit storage and byte digests",
+    "No production installation or real production SCM/ACL acceptance was performed"
+  ],
+  "RELEASE_READY": false,
+  "PRODUCTION_DEPLOYED": false,
+  "FULL_CHAIN_VERIFIED": false,
+  "allow_install": false,
+  "status": "OFFLINE_SCOPED_REVIEW_PASSED",
+  "independent_tests": {
+    "count": 22,
+    "passed": 22,
+    "duration_seconds": 68.042,
+    "command": "python -m unittest test_install_verifier test_maintenance_control test_disabled_host_package -v",
+    "failures": [],
+    "errors": []
+  },
+  "additional_isolated_probes": [
+    {
+      "case": "actual file-journal previous hash tamper",
+      "expected": "STOP_AND_PRESERVE_FINAL_FILE_JOURNAL_CHAIN",
+      "passed": true
+    },
+    {
+      "case": "second observation changes service to Running",
+      "expected": "STOP_AND_PRESERVE_FINAL_UNSTABLE_OBSERVATION",
+      "passed": true
+    },
+    {
+      "case": "process identity changes between proof reads",
+      "expected": "STOP_AND_PRESERVE_FINAL_PROCESS_IDENTITY_CHANGED",
+      "passed": true
+    }
+  ]
+}

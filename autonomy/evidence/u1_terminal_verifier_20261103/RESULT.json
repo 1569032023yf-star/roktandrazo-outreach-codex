@@ -1,0 +1,92 @@
+{
+  "source_commit": "6ff9f61653957eec06887030b17333153e80d1c5",
+  "updated_at": "2026-11-03T02:47:29.421575+00:00",
+  "report": "autonomy/evidence/u1_terminal_verifier_20261103/REPORT.md",
+  "tests": {
+    "source_commit": "6ff9f61653957eec06887030b17333153e80d1c5",
+    "modules": [
+      "test_windows_acl_transaction",
+      "test_disabled_host_package",
+      "test_install_journal",
+      "test_install_contract",
+      "test_independent_install_plan",
+      "test_u1_provision",
+      "test_u1_manifest_closure",
+      "test_u1_host_runtime",
+      "test_host_remediation",
+      "test_host_preparation",
+      "test_release_store",
+      "test_process_backend",
+      "autonomy.test_process_job",
+      "test_single_slot_adapter",
+      "test_host_readonly_http",
+      "test_host_file_transaction",
+      "test_host_install_transaction",
+      "test_inventory_event_bridge",
+      "test_maintenance_control",
+      "test_install_verifier",
+      "test_inventory_maintenance",
+      "test_publisher_maintenance",
+      "test_publisher_install_maintenance"
+    ],
+    "tests_run": 202,
+    "failures": [],
+    "errors": [],
+    "skips": [],
+    "seconds": 238.123,
+    "passed": true,
+    "isolation_groups": [
+      "host",
+      "authority"
+    ],
+    "allow_install": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false
+  },
+  "description_zh": "独立终态核验组件已实现；真实文件及日志核验通过，SCM/ACL成功路径仍隔离替身，正式进程适配与全链未完成。",
+  "description_en": "Independent terminal verifier implemented; actual file/journal validation passes, SCM/ACL success paths remain isolated doubles and formal process adaptation/full-chain integration remain incomplete.",
+  "independent_review": "OFFLINE_SCOPED_REVIEW_PASSED",
+  "independent_tests": {
+    "count": 22,
+    "passed": 22,
+    "duration_seconds": 68.042,
+    "command": "python -m unittest test_install_verifier test_maintenance_control test_disabled_host_package -v",
+    "failures": [],
+    "errors": []
+  },
+  "independent_additional_probes": [
+    {
+      "case": "actual file-journal previous hash tamper",
+      "expected": "STOP_AND_PRESERVE_FINAL_FILE_JOURNAL_CHAIN",
+      "passed": true
+    },
+    {
+      "case": "second observation changes service to Running",
+      "expected": "STOP_AND_PRESERVE_FINAL_UNSTABLE_OBSERVATION",
+      "passed": true
+    },
+    {
+      "case": "process identity changes between proof reads",
+      "expected": "STOP_AND_PRESERVE_FINAL_PROCESS_IDENTITY_CHANGED",
+      "passed": true
+    }
+  ],
+  "terminal_verifier_component_implemented": true,
+  "independent_final_verifier_complete": false,
+  "process_adapter_complete": false,
+  "complete_call_chain_review_passed": false,
+  "formal_maintenance_integrated": false,
+  "development_complete": false,
+  "release_ready": false,
+  "production_deployed": false,
+  "production_accepted": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "inventory_id": "1784775229336",
+  "current_full_regression": "NOT_RUN_FOR_THIS_SOURCE",
+  "current_package": "NOT_BUILT_INCOMPLETE_INTEGRATION",
+  "next_action": "Complete pinned-command/process-identity adaptation, durable launch/termination evidence and original authentication/seal wiring; review the full chain before freezing the complete artifact and running lifecycle/comparable regression.",
+  "next_action_zh": "完成固定命令和进程身份适配、启动及终止持久凭据，并连接原认证/seal调用链；全链独审后再冻结完整安装包，进行生命周期和可比全量回归。"
+}
