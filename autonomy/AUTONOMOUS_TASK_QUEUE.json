@@ -4926,5 +4926,13 @@
       "PRODUCTION_ACCEPTED": false,
       "BUSINESS_GROWTH": "UNKNOWN"
     }
+  },
+  "u1_inventory_maintenance_engineering_receipt": {
+    "kind": "ENGINEERING_RECEIPT_NOT_DUPLICATE_CONSUMPTION",
+    "id": 6591671132,
+    "url": "https://github.com/1569032023yf-star/roktandrazo-outreach-codex/issues/2#issuecomment-6591671132",
+    "readback_exact": true,
+    "source_commit": "3f92a49aa9a93e19ec37189b23cda9edb5cea436",
+    "evidence_commit": "4fdb2091e13f6e1059bd5ca491981acb2828a9c1"
   }
 }
