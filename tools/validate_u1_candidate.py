@@ -18,20 +18,41 @@ MODULES=('test_windows_acl_transaction','test_disabled_host_package','test_insta
  'test_process_backend','test_single_slot_adapter','test_host_readonly_http','test_host_file_transaction',
  'test_host_install_transaction','test_inventory_event_bridge','test_inventory_maintenance',
  'test_publisher_maintenance','test_publisher_install_maintenance')
+GROUPS={'host':MODULES[:-3], 'authority':MODULES[-3:]}
 
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',required=True)
-    p.add_argument('--baseline');a=p.parse_args();out=Path(a.output).resolve();out.mkdir(parents=True,exist_ok=True)
+    p.add_argument('--baseline');p.add_argument('--group',choices=tuple(GROUPS));a=p.parse_args();out=Path(a.output).resolve();out.mkdir(parents=True,exist_ok=True)
     commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
     sys.path.insert(0,str(ROOT))
     if not a.baseline:
+        if not a.group:
+            # bd_db installs process-wide development guards. Never remove or
+            # relax them for host/ACL/HTTP fixtures: use distinct test processes.
+            start=time.monotonic();results=[]
+            for group in GROUPS:
+                folder=out/group
+                child=subprocess.run([sys.executable,'-B',str(Path(__file__).resolve()),
+                                      '--output',str(folder),'--group',group],cwd=ROOT,
+                                     capture_output=True,text=True,timeout=600)
+                result=json.loads((folder/'TARGETED.json').read_text(encoding='utf-8'))
+                result['returncode']=child.returncode
+                results.append(result)
+            value=dict(source_commit=commit,modules=MODULES,tests_run=sum(r['tests_run'] for r in results),
+                       failures=[x for r in results for x in r['failures']],errors=[x for r in results for x in r['errors']],
+                       skips=[x for r in results for x in r['skips']],seconds=round(time.monotonic()-start,3),
+                       passed=all(r['passed'] and r['source_commit']==commit and r['returncode']==0 for r in results),
+                       isolation_groups=list(GROUPS),allow_install=False,allow_dispatch=False,allow_cancel_dispatch=False)
+            (out/'TARGETED.json').write_text(json.dumps(value,indent=2),encoding='utf-8')
+            (out/'TARGETED_OUTPUT.txt').write_text('\n'.join((out/g/'TARGETED_OUTPUT.txt').read_text(encoding='utf-8') for g in GROUPS),encoding='utf-8')
+            print(json.dumps(value));return 0 if value['passed'] else 1
         stream=io.StringIO();start=time.monotonic()
         with contextlib.redirect_stdout(stream),contextlib.redirect_stderr(stream):
-            suite=unittest.defaultTestLoader.loadTestsFromNames(MODULES)
+            suite=unittest.defaultTestLoader.loadTestsFromNames(GROUPS[a.group])
             r=unittest.TextTestRunner(stream=stream,verbosity=2).run(suite)
         (out/'TARGETED_OUTPUT.txt').write_text(stream.getvalue(),encoding='utf-8')
-        value=dict(source_commit=commit,modules=MODULES,tests_run=r.testsRun,failures=[t.id() for t,_ in r.failures],errors=[t.id() for t,_ in r.errors],skips=[t.id() for t,_ in r.skipped],seconds=round(time.monotonic()-start,3),passed=r.wasSuccessful(),allow_dispatch=False,allow_cancel_dispatch=False)
+        value=dict(source_commit=commit,modules=GROUPS[a.group],tests_run=r.testsRun,failures=[t.id() for t,_ in r.failures],errors=[t.id() for t,_ in r.errors],skips=[t.id() for t,_ in r.skipped],seconds=round(time.monotonic()-start,3),passed=r.wasSuccessful(),allow_install=False,allow_dispatch=False,allow_cancel_dispatch=False)
         (out/'TARGETED.json').write_text(json.dumps(value,indent=2),encoding='utf-8');print(json.dumps(value));return 0 if r.wasSuccessful() else 1
     baseline=subprocess.check_output(['git','rev-parse',a.baseline+'^{commit}'],cwd=ROOT,text=True).strip()
     work=Path(tempfile.mkdtemp(prefix='u1-compare-'));processes=[];results={}
