@@ -1,3 +1,21 @@
+# U1 原发布器接线 / Original Publisher admission
+
+固定源码 / Fixed source: `d47e5d9f2f51bf0acc2f9dc4d3dc2a12b6287923` | 2026-11-03T07:22:06.585429+00:00
+
+234项组合、94项独审和六项探针通过；833项全量回归双方37失败/17错误，非全绿。工程包已重建，完整安装交付未完成。
+234 combined tests, 94 independent tests and six probes passed. Both 833-test full runs have 37 failures/17 errors; not all green. Engineering archives rebuilt; complete installable delivery remains incomplete.
+
+完成正式backend与原Inventory所有者/服务事件消费者的接线及合同核验；整合完整发布版后，在明确授权的隔离Windows环境验证真实首装、升级、中断恢复和回滚。
+Complete formal-backend wiring to the original Inventory owner and service event consumer, including contract verification. Integrate the complete release, then validate real installation, upgrade, interruption recovery and rollback in an explicitly authorized isolated Windows environment.
+
+`DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false`
+
+`allow_install=false; allow_dispatch=false; allow_cancel_dispatch=false; SMTP=false`
+
+[双语报告 / Bilingual report](../u1_publisher_admission_20261103/REPORT.md)
+
+---
+
 # U1 固定命令与输入保护 / Fixed command and input protection
 
 固定源码 / Fixed source: `e279e5505a1526969ce1e1f4769cc11e02bce66d` | 2026-11-03T03:21:57.997538+00:00

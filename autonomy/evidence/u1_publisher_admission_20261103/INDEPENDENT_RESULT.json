@@ -1,0 +1,264 @@
+{
+  "source_commit": "d47e5d9f2f51bf0acc2f9dc4d3dc2a12b6287923",
+  "baseline_commit": "061549f0a146606eec1a62f2634e56ecd99d5ea1",
+  "status": "OFFLINE_SCOPED_REVIEW_PASSED",
+  "review_scope": "CONNECTED_INSTALL_MAINTENANCE_CODE_PATH_OFFLINE",
+  "independent_tests": {
+    "count": 94,
+    "passed": 94,
+    "duration_seconds": 231.138,
+    "duration_kind": "sum of two independent suite durations, not wall-clock elapsed",
+    "errors": [],
+    "failures": [],
+    "runs": [
+      {
+        "command": "python -m unittest test_publisher_install_admission test_publisher_install_maintenance test_install_command test_install_process -v",
+        "count": 41,
+        "duration_seconds": 40.348
+      },
+      {
+        "command": "python -m unittest test_install_inputs test_maintenance_control test_host_install_transaction test_windows_acl_transaction test_install_verifier test_publisher_maintenance -v",
+        "count": 53,
+        "duration_seconds": 190.79
+      }
+    ]
+  },
+  "additional_isolated_probes": [
+    {
+      "case": "root HELD and zero events / 根HELD零意图",
+      "result": "NOT_STARTED atomic explicit release",
+      "passed": true
+    },
+    {
+      "case": "reopened compensation child HELD / 重启补偿子HELD",
+      "result": "Bound no-intent proof; root-abandon refused; fresh recovery ID proceeds under same held authority",
+      "passed": true
+    },
+    {
+      "case": "proof changes before transaction / 证明在事务前变化",
+      "result": "HELD->INSTALL_INTENT rejected inside handoff reservation; no child admitted; marker held",
+      "passed": true
+    },
+    {
+      "case": "concurrent identical authenticated HTTP / 并发相同认证HTTP",
+      "result": "Duplicate returns INSTALL_INTENT journal-only; total installer calls=1",
+      "passed": true
+    },
+    {
+      "case": "configuration tampering during operation / 执行期间配置篡改",
+      "result": "Actual Windows handle denies configuration write",
+      "passed": true
+    },
+    {
+      "case": "source provenance / 原通道来源",
+      "result": "Five original and candidate SHA256 pairs match binding",
+      "passed": true
+    }
+  ],
+  "closed_findings": [
+    {
+      "id": "HELD_CHILD_RECOVERY_BLOCKED",
+      "diagnostic_source_commit": "595dbe2558d1a1e7b8875f70fa30ce606e5c1ef1",
+      "diagnostic_status": "OFFLINE_SCOPED_REVIEW_BLOCKED",
+      "resolution": "Narrow NO_PROCESS_INTENT proof bound to HELD zero-event session; same-transaction proof recheck; root-only NOT_STARTED abandonment; independently reproduced as fixed"
+    }
+  ],
+  "new_blocking_findings": [],
+  "filehash": {
+    "autonomy/directory_identity.py": {
+      "actual_sha256": "081ecaca13b7e04530d28f2d528e77d149b68112295ccb1150715e0a343141bb",
+      "git_blob_sha256": "081ecaca13b7e04530d28f2d528e77d149b68112295ccb1150715e0a343141bb",
+      "normalized_matches_pin": true
+    },
+    "autonomy/host_file_transaction.py": {
+      "actual_sha256": "d199186b31e4c6a40fc43dbef19c3f078003430080879aee094b61027c0d0ae9",
+      "git_blob_sha256": "d199186b31e4c6a40fc43dbef19c3f078003430080879aee094b61027c0d0ae9",
+      "normalized_matches_pin": true
+    },
+    "autonomy/inventory_maintenance.py": {
+      "actual_sha256": "72d62c2e6b04bdd9943f589227d8c047325fa53966c46a0661bc8838464e45e7",
+      "git_blob_sha256": "72d62c2e6b04bdd9943f589227d8c047325fa53966c46a0661bc8838464e45e7",
+      "normalized_matches_pin": true
+    },
+    "autonomy/process_control.py": {
+      "actual_sha256": "0e9cc47420865dba5ae89a52acb564a8ddd107bb6d8060f6dcaf63c9924bfd56",
+      "git_blob_sha256": "0e9cc47420865dba5ae89a52acb564a8ddd107bb6d8060f6dcaf63c9924bfd56",
+      "normalized_matches_pin": true
+    },
+    "autonomy/process_job.py": {
+      "actual_sha256": "3878fa8244cc28def6f6c9a18ea21052fef2146a27a3bddfa6eb572cca2c9e4f",
+      "git_blob_sha256": "5b3bc282b0354437ab5589b2d07036dc9248d609c48e761eff43b22322bce082",
+      "normalized_matches_pin": true
+    },
+    "autonomy/windows/Acl-Transaction.ps1": {
+      "actual_sha256": "a3fb4ab1fa251bc80e9d6a9f682b6efa48a628ed96a2253492d89af4ccfe8057",
+      "git_blob_sha256": "cbc1eec9c2455301b3f3bfaf7bf5ca2f03bdc05b13303da3443dee5ad162e5cd",
+      "normalized_matches_pin": true
+    },
+    "autonomy/windows/Host-InstallTransaction.ps1": {
+      "actual_sha256": "5859584546f7b9c6d4393ed4e7691ac7fc5ae093d03ba22177677fe6a22f8c4b",
+      "git_blob_sha256": "9bb9fa63845f581a439cc221d1584de2c6e411000b61daa23b0302c42023a111",
+      "normalized_matches_pin": true
+    },
+    "autonomy/windows/Host-PackagePreparation.ps1": {
+      "actual_sha256": "105fa4e89334f5a52751dc242ea9fc92c92cd3857e8fa3561d6e1a0bba957ec3",
+      "git_blob_sha256": "f00011166c44baaed384f6fefad4c18d04199cc17c55b0126a96a8e1540f1e03",
+      "normalized_matches_pin": true
+    },
+    "autonomy/windows/Maintenance-Authority.ps1": {
+      "actual_sha256": "070bf93e5ad5c3e3af5334a65e59597d330f9a946f2ac7f26380c8c00e1bc049",
+      "git_blob_sha256": "070bf93e5ad5c3e3af5334a65e59597d330f9a946f2ac7f26380c8c00e1bc049",
+      "normalized_matches_pin": true
+    },
+    "autonomy/windows/Observe-HostInstall.ps1": {
+      "actual_sha256": "95a00a0f465a7b4adde709b758edcf4c830db4254b34fc7b8b8e24f62bb2c7ec",
+      "git_blob_sha256": "95a00a0f465a7b4adde709b758edcf4c830db4254b34fc7b8b8e24f62bb2c7ec",
+      "normalized_matches_pin": true
+    },
+    "autonomy/windows/Publisher-InstallHost.ps1": {
+      "actual_sha256": "ddc06ce2d17c10d1f21bfffa908ef4c947d78dbc7fd24e53763285c8df4db7a3",
+      "git_blob_sha256": "ddc06ce2d17c10d1f21bfffa908ef4c947d78dbc7fd24e53763285c8df4db7a3",
+      "normalized_matches_pin": true
+    },
+    "bd_db.py": {
+      "actual_sha256": "498ea2dae17c75efa73bfd1e682f982735c389e8d2a805fb8216d08f695ea08e",
+      "git_blob_sha256": "7a6396882c27be33ac57551581a312b411c1581e46657fe1a0ef4d867dbb6670",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/CHANNEL_INTEGRATION.patch": {
+      "actual_sha256": "d36ef5a1cb0eac04ed4b59f495b8c7c867f142551ebb3fdf423d73f2cd5772ed",
+      "git_blob_sha256": "7358c1bc6e5b0317293c20fb2893fd225812154158ee53577570c6b27161e528",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/CHANNEL_SOURCE_BINDING.json": {
+      "actual_sha256": "f0c4a38e17ec82f80fb8c4442796cb12ba733f90a815f202c8c3ec12b8ab839e",
+      "git_blob_sha256": "e2a967a1cd8d561643c7bb80768c93fb1e9c07b13b6ac115cfe987859c90b458",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/README.md": {
+      "actual_sha256": "16d35d61d25e405a9d8c3809975923c887ab4788292480febe51a8b3c4e8dea3",
+      "git_blob_sha256": "16d35d61d25e405a9d8c3809975923c887ab4788292480febe51a8b3c4e8dea3",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/SOURCE_BINDING.json": {
+      "actual_sha256": "c56d28cbf90b69a80f171cb480ea82244993c507e5b0f3b160c76513c9558c73",
+      "git_blob_sha256": "393b1ef150db5ce169b283154e55a9c83440da60eb5f6ac2bf75755399a5b1a0",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/bridge.py": {
+      "actual_sha256": "654b1a5656b208676c73f40ce7188a19f83f3b0e043bf29219925733c6b3879b",
+      "git_blob_sha256": "654b1a5656b208676c73f40ce7188a19f83f3b0e043bf29219925733c6b3879b",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/executor.py": {
+      "actual_sha256": "63b49a1a7b0afc6ccc345c0b574f33261daf8695ebc0ef0fd685210b842b274f",
+      "git_blob_sha256": "63b49a1a7b0afc6ccc345c0b574f33261daf8695ebc0ef0fd685210b842b274f",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/install_admission.py": {
+      "actual_sha256": "525a87d91d4470c14e35b0a323b44955d6bf1cc5899adbe7cbdd196ab3a4a4bc",
+      "git_blob_sha256": "525a87d91d4470c14e35b0a323b44955d6bf1cc5899adbe7cbdd196ab3a4a4bc",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/install_command.py": {
+      "actual_sha256": "5ae918080f945ace1ef5b54fe1e0daf545502578bad0b7a8b7b020ea99f07307",
+      "git_blob_sha256": "5ae918080f945ace1ef5b54fe1e0daf545502578bad0b7a8b7b020ea99f07307",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/install_inputs.py": {
+      "actual_sha256": "9613f018e4390773fdcf368aa971a7bd2005436a59ed21ee6f5cadc8785223e7",
+      "git_blob_sha256": "9613f018e4390773fdcf368aa971a7bd2005436a59ed21ee6f5cadc8785223e7",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/install_maintenance.py": {
+      "actual_sha256": "cb9854d7c4d62b61fc1beec88d18479eac27cefbc7904af773cf3d32ea68d030",
+      "git_blob_sha256": "cb9854d7c4d62b61fc1beec88d18479eac27cefbc7904af773cf3d32ea68d030",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/install_process.py": {
+      "actual_sha256": "2cb6cf4656ff73784a7eb8886f6b0cbf3fa8ce49aaadb86ce0556793f8331706",
+      "git_blob_sha256": "2cb6cf4656ff73784a7eb8886f6b0cbf3fa8ce49aaadb86ce0556793f8331706",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/install_verifier.py": {
+      "actual_sha256": "5dc6a2c96499fca5ad8a738ecb9e68f8a08213e3d9db2da762319802fe133bc3",
+      "git_blob_sha256": "5dc6a2c96499fca5ad8a738ecb9e68f8a08213e3d9db2da762319802fe133bc3",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/multifile.py": {
+      "actual_sha256": "897e6860b8d6687e95d3e3844c08de9bc6f06be32162199a3faf027aaf6222ae",
+      "git_blob_sha256": "897e6860b8d6687e95d3e3844c08de9bc6f06be32162199a3faf027aaf6222ae",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/prodobs.py": {
+      "actual_sha256": "6acbdf73cde9186f4bc61c0327e2f5d11695f8f885af4f08269365de382ed940",
+      "git_blob_sha256": "6acbdf73cde9186f4bc61c0327e2f5d11695f8f885af4f08269365de382ed940",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/registry.py": {
+      "actual_sha256": "e5ec8e29cdbd14da3cbb722b8e6db8b5ecc89601972a3994e952d778fd129bbe",
+      "git_blob_sha256": "e5ec8e29cdbd14da3cbb722b8e6db8b5ecc89601972a3994e952d778fd129bbe",
+      "normalized_matches_pin": true
+    },
+    "test_install_process.py": {
+      "actual_sha256": "4732ed2c6d4cb45c58020295857daefc39be65bdb93aaaa31c0ddc44f3e33072",
+      "git_blob_sha256": "4732ed2c6d4cb45c58020295857daefc39be65bdb93aaaa31c0ddc44f3e33072",
+      "normalized_matches_pin": true
+    },
+    "test_publisher_install_admission.py": {
+      "actual_sha256": "9505039159c775b48a17d3b45bda701057632983b7ce74661c43aec9722c3b14",
+      "git_blob_sha256": "9505039159c775b48a17d3b45bda701057632983b7ce74661c43aec9722c3b14",
+      "normalized_matches_pin": true
+    },
+    "tools/validate_u1_candidate.py": {
+      "actual_sha256": "cd8afea9249ccd95ae060a142dd5b1b02c4977678d8c6849ae09589c42c036ca",
+      "git_blob_sha256": "4316345b30c4c28bbfef3880dd393c2014e4b2afa6d49cebb330406267e0fa4e",
+      "normalized_matches_pin": true
+    }
+  },
+  "package_verification": {
+    "install.zip": {
+      "sha256": "de61474814dad9acf252d0f75bce058be715743578f7e8514b738140cc676928",
+      "files": 72,
+      "tree_bytes_match": true
+    },
+    "rollback-tools.zip": {
+      "sha256": "40c414b4c9fd4af78ac356050efc9b6a1407d9417c67c59fc947ef880f62a4eb",
+      "files": 18,
+      "tree_bytes_match": true
+    },
+    "publisher_support": {
+      "sha256": "acb0db62e03128cd1dfe8434b65c98cd677e038b8f76c942f77bcffba617c2d9",
+      "manifest_sha256": "7639935e0c476a2ba1c58c165da4450734c85321da531014042ce827821bd73e",
+      "payload_files": 17,
+      "git_blob_bytes_match": true,
+      "layout_and_expected_before_verified": true,
+      "isolated_import_only": true
+    },
+    "source_commit": "d47e5d9f2f51bf0acc2f9dc4d3dc2a12b6287923",
+    "delivery_manifest_sha256": "5d17d1cc7ec430cb60d20756efb2d5c7a8f5676a7eb9e3ee3f0952c75d7228b9",
+    "payload_files": 71,
+    "pe_machine": "0x8664",
+    "engineering_only": true
+  },
+  "pending_zh": [
+    "实际原发布器配置/审批seal刷新与现场部署尚未执行",
+    "认证HTTP成功路径中的install/process/final回调仍是隔离替身；实际协调器另在隔离SCM/ACL替身下测试，不是同一个真实Windows成功安装验收",
+    "固定系统Windows PowerShell完整私有入口成功执行与真实SCM/ACL生产读回尚未验收；不得绕过执行策略",
+    "LAUNCH-only窗口仍未知，不证明未分配挂起进程已清理；不得自动重放",
+    "工程包及publisher-support没有自动更新器，17文件expected_before不等于批准更新现场；Inventory companion保持分离",
+    "临时DACL集成使用当前用户SID替代服务SID，并在隔离fixture替换audit/journal SYSTEM/Admin所有者门禁；原门禁另验证拒绝普通用户fixture，非真实生产服务身份成功验收"
+  ],
+  "pending_en": [
+    "No original publisher configuration/approval-seal refresh or site deployment was performed",
+    "Successful authenticated HTTP install/process/final callbacks remain isolated doubles; the actual coordinator is separately tested with isolated SCM/ACL doubles rather than one real Windows acceptance run",
+    "Successful complete private entry execution under fixed system Windows PowerShell and real production SCM/ACL readback remain unaccepted; execution policy must not be bypassed",
+    "A LAUNCH-only window remains UNKNOWN and does not prove cleanup of an unassigned suspended process; automatic replay is forbidden",
+    "Engineering and publisher-support packages provide no automatic updater; 17-file expected_before records do not approve site updates, and the Inventory companion remains separate",
+    "Temporary-DACL integration substitutes the current-user SID for the service SID and replaces audit/journal SYSTEM/Admin-owner gates only in the isolated fixture; original gates separately reject ordinary-user fixtures and do not establish production service-identity acceptance"
+  ],
+  "RELEASE_READY": false,
+  "allow_install": false,
+  "FULL_CHAIN_ACCEPTANCE_PASSED": false,
+  "PRODUCTION_DEPLOYED": false
+}

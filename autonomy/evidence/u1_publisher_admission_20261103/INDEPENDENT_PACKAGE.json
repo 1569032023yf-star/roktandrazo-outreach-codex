@@ -1,0 +1,25 @@
+{
+  "install.zip": {
+    "sha256": "de61474814dad9acf252d0f75bce058be715743578f7e8514b738140cc676928",
+    "files": 72,
+    "tree_bytes_match": true
+  },
+  "rollback-tools.zip": {
+    "sha256": "40c414b4c9fd4af78ac356050efc9b6a1407d9417c67c59fc947ef880f62a4eb",
+    "files": 18,
+    "tree_bytes_match": true
+  },
+  "publisher_support": {
+    "sha256": "acb0db62e03128cd1dfe8434b65c98cd677e038b8f76c942f77bcffba617c2d9",
+    "manifest_sha256": "7639935e0c476a2ba1c58c165da4450734c85321da531014042ce827821bd73e",
+    "payload_files": 17,
+    "git_blob_bytes_match": true,
+    "layout_and_expected_before_verified": true,
+    "isolated_import_only": true
+  },
+  "source_commit": "d47e5d9f2f51bf0acc2f9dc4d3dc2a12b6287923",
+  "delivery_manifest_sha256": "5d17d1cc7ec430cb60d20756efb2d5c7a8f5676a7eb9e3ee3f0952c75d7228b9",
+  "payload_files": 71,
+  "pe_machine": "0x8664",
+  "engineering_only": true
+}
