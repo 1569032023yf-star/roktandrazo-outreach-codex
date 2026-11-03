@@ -1,0 +1,50 @@
+{
+  "description_zh": "原通道离线副本，未修改现场；原认证及seal保持，U1严格入口新增。",
+  "description_en": "Offline copies of the original channel; site unchanged. Original authentication and seal retained with a strict U1 entry.",
+  "files": [
+    {
+      "name": "bridge.py",
+      "original_path": "C:\\Users\\15690\\WorkBuddy\\deploy-channel\\bin\\bridge.py",
+      "original_sha256": "d752c98fc9acff096b17c61daa4a209af3302b362bd25727f0f9118567742a27",
+      "original_bytes": 16349,
+      "candidate_sha256": "654b1a5656b208676c73f40ce7188a19f83f3b0e043bf29219925733c6b3879b",
+      "original_unchanged": true
+    },
+    {
+      "name": "registry.py",
+      "original_path": "C:\\Users\\15690\\WorkBuddy\\deploy-channel\\bin\\registry.py",
+      "original_sha256": "e5ec8e29cdbd14da3cbb722b8e6db8b5ecc89601972a3994e952d778fd129bbe",
+      "original_bytes": 20008,
+      "candidate_sha256": "e5ec8e29cdbd14da3cbb722b8e6db8b5ecc89601972a3994e952d778fd129bbe",
+      "original_unchanged": true
+    },
+    {
+      "name": "multifile.py",
+      "original_path": "C:\\Users\\15690\\WorkBuddy\\deploy-channel\\bin\\multifile.py",
+      "original_sha256": "897e6860b8d6687e95d3e3844c08de9bc6f06be32162199a3faf027aaf6222ae",
+      "original_bytes": 4496,
+      "candidate_sha256": "897e6860b8d6687e95d3e3844c08de9bc6f06be32162199a3faf027aaf6222ae",
+      "original_unchanged": true
+    },
+    {
+      "name": "prodobs.py",
+      "original_path": "C:\\Users\\15690\\WorkBuddy\\deploy-channel\\bin\\prodobs.py",
+      "original_sha256": "6acbdf73cde9186f4bc61c0327e2f5d11695f8f885af4f08269365de382ed940",
+      "original_bytes": 48749,
+      "candidate_sha256": "6acbdf73cde9186f4bc61c0327e2f5d11695f8f885af4f08269365de382ed940",
+      "original_unchanged": true
+    },
+    {
+      "name": "executor.py",
+      "original_path": "C:\\Users\\15690\\WorkBuddy\\deploy-channel\\bin\\executor.py",
+      "original_sha256": "a3c271424131b4d42d8b0ed3f46e8355e3ff9d0556406e2199a5da093043105b",
+      "original_bytes": 70205,
+      "candidate_sha256": "63b49a1a7b0afc6ccc345c0b574f33261daf8695ebc0ef0fd685210b842b274f",
+      "original_unchanged": true
+    }
+  ],
+  "production_modified": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "smtp_enabled": false
+}

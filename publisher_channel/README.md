@@ -1,8 +1,8 @@
 # 原发布器维护接线开发副本 / Original publisher maintenance development copy
 
-中文：`executor.py` 是既有部署通道执行器的只读来源副本，仅增加原 `inventory_acquire` 事务内的维护标记检查。来源及精确原始 SHA256 见 `SOURCE_BINDING.json`，最小差异见 `MAINTENANCE_ADMISSION.patch`。没有修改现场文件、注册 seal、允许的文件范围或 HTTP 路由。不要直接运行这个副本，也不要将它自动复制到现场。
+中文：此目录是既有部署通道的离线开发副本。`executor.py` 的原 `inventory_acquire` 事务保留维护标记检查，另增加严格U1安装入口；`bridge.py` 复用原Bearer认证。来源见 `SOURCE_BINDING.json` 与 `CHANNEL_SOURCE_BINDING.json`；原维护差异见 `MAINTENANCE_ADMISSION.patch`，通道接线差异见 `CHANNEL_INTEGRATION.patch`。未修改现场文件、seal、白名单或路由；候选新增HTTP入口不等于已部署。不要直接运行现场配置或自动复制到现场。
 
-English: `executor.py` is a development copy of the existing deployment executor, adding only the shared maintenance-marker check inside its original admission transaction. Source binding and the minimal patch are retained. Site files, seals, target allowlists and HTTP routes are unchanged. Do not directly execute this copy or automatically copy it to the site.
+English: This is an offline development copy of the original channel. The original executor admission retains its maintenance check and adds a strict U1 entry; the bridge reuses original Bearer authentication. Both source bindings and patches are retained. Site files, seals, target allowlists and HTTP routes remain unchanged; the candidate HTTP entry is not deployed. Never run site configuration or automatically copy this code to the site.
 
 中文：`install_maintenance.py` 是 Publisher 受信调用方使用的内部会话实现，不是公开 API、调度器或安装授权。调用方须提供已授权数据库连接、受控安装适配器和独立最终核验器；它不发现生产数据库、不执行外部命令、不创建任意路径。维护 invocation ID 与目标安装 journal ID 分开：显式回滚使用新的维护 invocation，仍绑定旧目标、源码、清单和动作。
 
@@ -16,6 +16,14 @@ English: Acquisition atomically persists the marker, replay tombstone and full s
 
 English: Unknown state permits explicit read-only reconciliation. Partial application requires the trusted adapter to confirm the previous process has stopped, then uses a new recovery ID to hand off compensation under the same exclusion. Interrupted compensation can reopen its recorded child and explicitly compensate again. Handed-off parents are permanently barred from advancing or releasing within the database transaction; late state writes and verifier replies cannot override handoff.
 
-中文：尚未完成原通道支持入口到受控安装进程的适配器、独立目标/SCM/ACL 最终核验器及部署 seal 集成。当前回调测试不是这些工程的替代物。完整接线、独审和授权前 `allow_install=false; allow_dispatch=false; SMTP=false`，不得开始 WorkBuddy Windows 实际无人值守或生产验收。
+中文：`POST /v1/u1-install` 先使用原通道Bearer认证，再由原executor调用 `install_admission.py`。请求只含release ID、维护invocation ID、动作和必要的目标/恢复ID；不能提交批准记录、路径、摘要或命令。动作包括install、upgrade、rollback、status、reconcile及compensate。独立批准记录只能来自原配置内受seal覆盖的 `u1_install`；固定配置、scope、seal句柄持续到最终核验。无seal、seal篡改、内存/磁盘配置不符、非唯一Inventory、原锁前缀不符或安装/全链审核门禁关闭时拒绝。不存在的正式数据库不创建。
 
-English: The supported channel-to-installer process adapter, independent target/SCM/ACL final verifier and deployment-seal integration remain incomplete. Callback tests do not substitute for them. Keep installation, dispatch and SMTP disabled until integration, review and authorization are complete; do not enter actual Windows unattended or production acceptance yet.
+English: POST /v1/u1-install first uses the original Bearer check, then the original executor calls install_admission.py. Requests contain only release ID, invocation ID, action and necessary target/recovery IDs, never approval records, paths, hashes or commands. Actions are install, upgrade, rollback, status, reconcile and compensate. Independent approvals originate only from seal-covered u1_install configuration; configuration, scope and seal handles remain pinned through verification. Missing/tampered seals, loaded/disk mismatch, wrong Inventory/lock prefix and closed install/full-review gates refuse. Missing official databases are never created.
+
+中文：重复执行请求只返回已有持久记录；UNKNOWN不重放。status使用只读数据库连接，不改在途标记，也不声称当前现场终态已验证。reconcile先核验旧进程结束，再独立检查终态；compensate使用新recovery ID交接同一维护权。维护意图先于进程；核验及释放仍原子提交。原seal是既有一致性机制，不是加密签名，依赖原通道配置的受信本地所有权；不能把HTTP调用或测试fixture当作安装授权。
+
+English: Repeated execution requests return durable records only; UNKNOWN never replays. Status uses a read-only DB connection without changing in-flight markers or claiming fresh site verification. Reconcile verifies the old process ended before independent terminal checks; compensate hands off the same exclusion using a new recovery ID. Intent precedes launch and verified release remains atomic. The original seal is a consistency mechanism, not a cryptographic signature, and retains the channel's trusted local-configuration ownership boundary. HTTP access/test fixtures are not installation authorization.
+
+中文：安装器和独立终态核验器已在候选代码接线，但固定Windows PowerShell实际成功命令、真实SCM/ACL、正式backend和完整发布交付仍待验收。当前正向入口测试使用明确的隔离安装/进程/终态回调替身；不能替代全链Windows实测。完整审核和授权前 `allow_install=false; allow_dispatch=false; allow_cancel_dispatch=false; SMTP=false`。此目录不启动服务器、服务或Inventory。
+
+English: Candidate code connects the installer and independent terminal verifier, but successful fixed Windows PowerShell execution, actual SCM/ACL, formal backend and complete release delivery still require acceptance. Positive entry tests explicitly use isolated installation/process/terminal callback doubles and do not substitute for full Windows integration. Keep all installation, dispatch, cancellation and SMTP gates false before complete review and authorization. This directory starts no server, service or Inventory by itself.

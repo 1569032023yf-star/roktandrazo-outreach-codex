@@ -349,6 +349,14 @@ def rw_conn(db_path: str):
     return conn
 
 
+def rw_existing_conn(db_path: str):
+    # U1 maintenance must never create an empty replacement for the official DB.
+    conn = sqlite3.connect(Path(db_path).as_uri()+"?mode=rw", uri=True, timeout=20)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA busy_timeout=20000")
+    return conn
+
+
 def db_get(conn: sqlite3.Connection, key: str):
     row = conn.execute("SELECT value FROM system_config WHERE key=?", (key,)).fetchone()
     return row[0] if row else None
@@ -1357,6 +1365,15 @@ def _assert_seal(cfg: dict) -> dict:
                         "channel_config.json / allowed_scope.json changed outside the channel: "
                         + ",".join(st.get("diffs") or []))
     return st
+
+
+def op_u1_install(cfg: dict, request: dict, caller: str) -> dict:
+    # Called only after the original bridge's bearer check. Approvals are never
+    # taken from this request; the stricter U1 admission also requires a seal.
+    import registry
+    from publisher_channel.install_admission import dispatch
+    _assert_seal(cfg)
+    return dispatch(cfg, request, sys.modules[__name__], registry)
 
 
 def op_register(cfg: dict, release_id: str, caller: str) -> dict:
