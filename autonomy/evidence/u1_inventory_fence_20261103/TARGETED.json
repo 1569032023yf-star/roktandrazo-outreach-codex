@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "unittest",
+    "test_inventory_maintenance",
+    "tests.test_phase2a_safety_mutex",
+    "tests.test_inventory_stage_trace"
+  ],
+  "passed": true,
+  "returncode": 0,
+  "seconds": 1.907,
+  "tests_run": 24,
+  "runner_seconds": 1.596
+}

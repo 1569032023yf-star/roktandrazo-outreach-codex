@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "files": 66,
+  "architecture": "AMD64",
+  "source_commit": "3f92a49aa9a93e19ec37189b23cda9edb5cea436",
+  "original_bd_db_deployment_included": false,
+  "production_accepted": false
+}

@@ -1,0 +1,16 @@
+{
+  "baseline_commit": "3bbb77d7f2cce774b3addfdbf851342ad09393c5",
+  "candidate_commit": "3f92a49aa9a93e19ec37189b23cda9edb5cea436",
+  "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-tvsi108a",
+  "complete": true,
+  "baseline_run": 833,
+  "candidate_run": 833,
+  "baseline_failures": 37,
+  "candidate_failures": 37,
+  "baseline_errors": 17,
+  "candidate_errors": 17,
+  "failure_ids_identical": true,
+  "error_ids_identical": true,
+  "all_green": false,
+  "no_new_regression": true
+}

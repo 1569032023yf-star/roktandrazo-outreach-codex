@@ -1,0 +1,26 @@
+  [MIGRATE] Added column: manual_found_email
+  [MIGRATE] Added column: manual_email_source_url
+  [MIGRATE] Added column: manual_email_source_type
+  [MIGRATE] Added column: manual_decision
+  [MIGRATE] Added column: manual_note
+  [MIGRATE] Added column: manual_verified_by
+  [MIGRATE] Added column: manual_verified_at
+  [MIGRATE] Manual columns present: ['manual_email_source_url', 'manual_verified_at', 'manual_note', 'manual_found_email', 'manual_decision', 'manual_email_source_type', 'manual_verified_by']
+[DB] Database initialized (v3.1 with system_state + job_runs)
+  [MIGRATE] Added column: manual_found_email
+  [MIGRATE] Added column: manual_email_source_url
+  [MIGRATE] Added column: manual_email_source_type
+  [MIGRATE] Added column: manual_decision
+  [MIGRATE] Added column: manual_note
+  [MIGRATE] Added column: manual_verified_by
+  [MIGRATE] Added column: manual_verified_at
+  [MIGRATE] Manual columns present: ['manual_email_source_url', 'manual_verified_at', 'manual_note', 'manual_found_email', 'manual_decision', 'manual_email_source_type', 'manual_verified_by']
+[DB] Database initialized (v3.1 with system_state + job_runs)
+[07:57:15] BD Orchestrator v3.1 | stage=inventory | dry_run=False
+[07:57:15] Business date: 2026-11-03 | run_id: inventory:2026-11-03:788ee815
+[07:57:15] [DUPLICATE] Active inventory job already exists for 2026-11-03; exiting without stage execution
+........................
+----------------------------------------------------------------------
+Ran 24 tests in 1.596s
+
+OK
