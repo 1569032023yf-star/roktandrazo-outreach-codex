@@ -18,7 +18,7 @@ def build(output, source_commit):
                   'autonomy/windows/Install-DisabledHost.ps1','autonomy/windows/Rollback-DisabledHost.ps1',
                   'autonomy/build_dev_disabled_host.py','autonomy/disabled_host_package.py',
                   'autonomy/build_u1_delivery.py','autonomy/windows/Acl-Transaction.ps1',
-                  'autonomy/windows/Host-InstallTransaction.ps1','autonomy/windows/Maintenance-Authority.ps1','autonomy/windows/Observe-HostInstall.ps1',
+                  'autonomy/windows/Host-InstallTransaction.ps1','autonomy/windows/Maintenance-Authority.ps1','autonomy/windows/Observe-HostInstall.ps1','autonomy/windows/Host-PackagePreparation.ps1','autonomy/windows/Publisher-InstallHost.ps1',
                   'autonomy/host_file_transaction.py')
     for name in build_inputs:
         pinned=subprocess.check_output(['git','show',resolved+':'+name],cwd=repo)

@@ -40,7 +40,7 @@ class DisabledPackageTests(unittest.TestCase):
         self.assertEqual(result['manifest']['account'],r'NT SERVICE\RoktU1Bridge')
         raw=(self.root/'package'/'manifest.json').read_bytes()
         self.assertEqual(hashlib.sha256(raw).hexdigest(),result['manifest_sha256'])
-        self.assertEqual(len(list((self.root/'package').rglob('*.*'))),11)
+        self.assertEqual(len(list((self.root/'package').rglob('*.*'))),13)
         control=self.root/'package'/'Maintenance-Authority.ps1'
         self.assertTrue(control.is_file());self.assertTrue((self.root/'package'/'Observe-HostInstall.ps1').is_file())
         with self.assertRaises(FileExistsError):build_package(self.root/'package',self.artifacts,self.hashes,source_commit='a'*40)
@@ -68,7 +68,7 @@ class DisabledPackageTests(unittest.TestCase):
     @unittest.skipUnless(os.name=='nt','Actual Windows PowerShell binding gate')
     def test_exact_source_and_installer_version_gate(self):
         import base64
-        source=(Path(__file__).parent/'autonomy/windows/Install-DisabledHost.ps1').read_text(encoding='utf-8')
+        source=(Path(__file__).parent/'autonomy/windows/Host-PackagePreparation.ps1').read_text(encoding='utf-8')
         gate=source[source.index('# This approval is independent'):source.index("if ($m.schema")]
         for commit,version,accepted in [('a'*40,'1.1.1',True),('b'*40,'1.1.1',False),
                                         ('A'*40,'1.1.1',False),('', '1.1.1',False),
