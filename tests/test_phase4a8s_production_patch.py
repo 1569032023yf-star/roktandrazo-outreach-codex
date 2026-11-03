@@ -24,9 +24,10 @@ spec.loader.exec_module(verifier)
 
 
 def source_pair():
-    # Test fixture extraction only. Production verification NEVER normalizes.
-    # 仅用于测试夹具提取；生产核验绝不转换换行。
-    after = (ROOT / "bd_orchestrator.py").read_bytes().replace(b"\r\n", b"\n")
+    # Historical patch evidence binds its immutable reviewed source, rather
+    # than freezing today's evolving original-owner implementation forever.
+    # 历史补丁固定原审核源码；当前所有者的安全合同另行测试，不转换字节。
+    after = (ROOT / "tests/fixtures/phase4a8r_bd_orchestrator.py").read_bytes()
     if verifier.sha256(after) != verifier.AFTER_SHA256:
         raise AssertionError("4A.8R development source drift / 开发源码漂移")
     before = verifier.apply_checked(after, PATCH_PATH.read_bytes(), reverse=True)
@@ -252,15 +253,26 @@ class PatchedSourceBehaviorTests(unittest.TestCase):
             self.assertIsNone(conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='send_authorizations'").fetchone())
 
     def test_inherited_failure_lock_retry_and_city_contracts_on_patched_copy(self):
-        for name in ("test_provider_exception_stops_and_releases_lock",
-                     "test_provider_error_summary_cannot_be_target_success",
+        for name in ("test_provider_error_summary_cannot_be_target_success",
                      "test_lock_conflict_never_constructs_provider",
                      "test_page_budget_is_capped_at_three",
-                     "test_invalid_budget_fails_before_discovery_execution",
                      "test_real_provider_failure_preserves_cursor_then_resumes",
                      "test_city_advances_only_with_durable_exhaustion"):
             with self.subTest(contract=name):
                 getattr(legacy.ContinuousDiscoveryTests, name)(self)
+        # These are the historical release semantics, not permission for the
+        # current owner to release unknown work. Current tests require fencing.
+        with DiscoveryDb() as conn, self.stage(conn, error=TimeoutError('fixture')) as (_,finish,_,released,_,_):
+            with self.assertRaises(TimeoutError):
+                legacy.orchestrator.stage_inventory('fixture','2026-10-13',False)
+            self.assertEqual(finish.call_args.args[1],'stopped')
+            released.assert_called_once()
+        with DiscoveryDb() as conn, self.stage(conn) as (service,finish,_,released,_,_):
+            with patch.dict(os.environ,{'WORKBUDDY_DISCOVERY_MAX_PAGES':'invalid'}):
+                with self.assertRaises(ValueError):
+                    legacy.orchestrator.stage_inventory('fixture','2026-10-13',False)
+            service.run_places_batch.assert_not_called()
+            released.assert_called_once()
 
 
 if __name__ == "__main__":

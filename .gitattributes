@@ -22,3 +22,6 @@ autonomy/evidence/u1_p0_final_20261030/dev-package/** -text
 # Preserve fixed U1 artifact manifests and payload bytes / 保留固定U1制品及载荷字节
 autonomy/evidence/u1_publisher_admission_20261103/package/** -text
 autonomy/evidence/u1_publisher_admission_20261103/channel-package/** -text
+autonomy/evidence/u1_original_owner_20261103/package/** -text
+autonomy/evidence/u1_original_owner_20261103/channel-package/** -text
+tests/fixtures/phase4a8r_bd_orchestrator.py -text

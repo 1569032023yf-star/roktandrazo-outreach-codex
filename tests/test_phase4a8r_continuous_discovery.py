@@ -69,12 +69,12 @@ class ContinuousDiscoveryTests(unittest.TestCase):
                     self.assertTrue(any("DISCOVERY_PATH_EXECUTED=true" in message for message in messages))
                     self.assertTrue(any(f"INVENTORY_TARGET_MET={str(safe >= target).lower()}" in message for message in messages))
 
-    def test_provider_exception_stops_and_releases_lock(self):
+    def test_provider_exception_stops_and_preserves_unknown_lock(self):
         with DiscoveryDb() as conn, self.stage(conn, error=TimeoutError("fixture")) as (service, finish, _, released, _, _):
             with self.assertRaises(TimeoutError):
                 orchestrator.stage_inventory("fixture", "2026-10-13", False)
             self.assertEqual(finish.call_args.args[1], "stopped")
-            released.assert_called_once()
+            released.assert_not_called()
             service.run_website_resolution.assert_not_called()
 
     def test_provider_error_summary_cannot_be_target_success(self):
@@ -122,7 +122,9 @@ class ContinuousDiscoveryTests(unittest.TestCase):
                     orchestrator.stage_inventory("fixture", "2026-10-13", False)
             service.run_places_batch.assert_not_called()
             self.assertEqual(finish.call_args.args[1], "stopped")
-            released.assert_called_once()
+            # City activation may already be committed before budget parsing.
+            # An exception cannot establish that all side effects were absent.
+            released.assert_not_called()
             self.assertFalse(any("DISCOVERY_PATH_EXECUTED=true" in call.args[0] for call in logs.call_args_list))
 
     def test_real_provider_failure_preserves_cursor_then_resumes(self):
