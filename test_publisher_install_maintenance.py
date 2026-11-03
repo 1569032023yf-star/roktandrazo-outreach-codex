@@ -239,6 +239,30 @@ s.acquire()
                 self.session._transition(phase)
         authority.assert_held(self.conn, self.binding)
 
+    def test_real_exit_after_handoff_before_child_intent_allows_explicit_compensation(self):
+        with self.assertRaises(OSError):
+            self.session.execute(lambda _: (_ for _ in ()).throw(OSError('partial')), self.proof)
+        code = '''import json,os,sqlite3,sys
+from publisher_channel.install_maintenance import InstallMaintenance
+c=sqlite3.connect(sys.argv[1]);s=InstallMaintenance(c,json.loads(sys.argv[2]),target_operation_id='e'*64,action='install')
+InstallMaintenance._execute_held=lambda *args:os._exit(43)
+s.compensate('a1'*32,lambda _:None,lambda *_:None,confirm_stopped=lambda s:dict(context=s.context,stopped=True,process_identity_sha256='4'*64))
+'''
+        process = subprocess.Popen([sys.executable, '-B', '-c', code, str(self.db), json.dumps(self.binding)])
+        self.assertEqual(process.wait(timeout=15), 43)
+        child = self.session.compensation_session('a1'*32)
+        self.assertEqual(child._records()[0][-1]['phase'], 'HELD')
+        def stopped(session):
+            self.assertEqual(process.poll(), 43)
+            return dict(context=session.context, stopped=True,
+                        process_identity_sha256=hashlib.sha256((str(process.pid)+code).encode()).hexdigest())
+        def verified(session, _):
+            session.assert_held('e'*64, 'b'*40, 'c'*64, 'recover')
+            return dict(context=session.context, outcome='ROLLED_BACK', evidence_sha256='5'*64)
+        child.compensate('a2'*32, lambda s: s.assert_held('e'*64, 'b'*40, 'c'*64, 'recover'),
+                         verified, confirm_stopped=stopped)
+        self.assertFalse(authority.blocked(self.conn))
+
 
 if __name__ == '__main__':
     unittest.main()

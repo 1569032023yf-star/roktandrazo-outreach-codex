@@ -180,7 +180,7 @@ class InstallMaintenance:
             self.conn.execute('BEGIN IMMEDIATE')
             authority.assert_held(self.conn, self.binding)
             records, _ = self._records()
-            if (not records or records[-1]['phase'] not in ('UNKNOWN', 'INSTALL_INTENT', 'INSTALLER_RETURNED', 'FINAL_VERIFY_INTENT') or child._records()[0]):
+            if (not records or records[-1]['phase'] not in ('HELD', 'UNKNOWN', 'INSTALL_INTENT', 'INSTALLER_RETURNED', 'FINAL_VERIFY_INTENT') or child._records()[0]):
                 raise ValueError('STOP_AND_PRESERVE_EXPLICIT_RECOVERY_REQUIRED')
             self._append('RECOVERY_ADMITTED', dict(child_key=child.key, context=child.context, stopped=stopped))
             child._append('HELD')
