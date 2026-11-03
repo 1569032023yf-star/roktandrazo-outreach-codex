@@ -14,7 +14,10 @@ from autonomy.growth_snapshot import MAX_SNAPSHOT_BYTES
 
 @contextmanager
 def open_host(release_root, state_root, token, credential_expires_at,
-              snapshot, snapshot_sha256, *, port=8791, event_runtime=None):
+              snapshot, snapshot_sha256, *, port=8791, event_runtime=None,
+              original_owner_connect=None):
+    if event_runtime is not None and original_owner_connect is not None:
+        raise ValueError('EXACTLY_ONE_OWNER_AUTHORITY_REQUIRED')
     release=ReleaseStore(release_root)
     if release.recovery_status()['pending']:
         raise ValueError('STOP_AND_PRESERVE_PENDING_PUBLICATION')
@@ -26,9 +29,14 @@ def open_host(release_root, state_root, token, credential_expires_at,
     # releases the lock; backend UNKNOWN outcomes are never replayed here.
     state=ReleaseStore(state_root)
     with state.locked():
-        if event_runtime is not None:
+        if event_runtime is not None or original_owner_connect is not None:
             from autonomy.inventory_event_bridge import EventMailbox,event_handler,owner_observer
-            mailbox=EventMailbox(Path(state_root)/'inventory-events.sqlite',observe_owner=owner_observer(event_runtime))
+            if original_owner_connect is not None:
+                from autonomy.original_inventory_owner import observer
+                observe = observer(original_owner_connect)
+            else:
+                observe = owner_observer(event_runtime)
+            mailbox=EventMailbox(Path(state_root)/'inventory-events.sqlite',observe_owner=observe)
             handler=event_handler(handler,mailbox)
         with HTTPServer(('127.0.0.1',port),handler) as server:
             server.timeout=1

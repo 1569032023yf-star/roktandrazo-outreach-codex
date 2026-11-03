@@ -409,7 +409,8 @@ def stage_inventory(run_id: str, business_date: str, dry_run: bool):
                 'target': target, 'gap': max(0, target - safe)}
     set_execution_mode('inventory_recovery')
     update_job_run(run_id, current_step='inventory_start', target=target)
-    if not acquire_run_lock(f'inventory:{business_date}', run_id):
+    inventory_owner = acquire_run_lock(f'inventory:{business_date}', run_id, capture_owner=True)
+    if not inventory_owner:
         finish_job_run(run_id, 'stopped', stop_reason='lock_conflict')
         return False
     inventory_outcome_known = True
@@ -489,7 +490,7 @@ def stage_inventory(run_id: str, business_date: str, dry_run: bool):
         raise
     finally:
         if inventory_outcome_known:
-            release_run_lock(f'inventory:{business_date}', run_id)
+            release_run_lock(f'inventory:{business_date}', run_id, expected_owner=inventory_owner)
 
 # ═══════════════════════════════════════════════════════════
 # Stage: end-of-day (17:30) — Dashboard + Daily Summary

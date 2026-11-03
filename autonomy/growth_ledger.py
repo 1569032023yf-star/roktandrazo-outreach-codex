@@ -383,7 +383,7 @@ class GrowthLedger:
         with self.tx() as c:c.execute('UPDATE budget_hold SET until_epoch=max(until_epoch,?)',(until,))
         return 'DEFERRED'
 
-    def reserve_then_claim(self,envelope,slot_ledger,slot,slot_evidence,*,now,epoch,owner):
+    def reserve_then_claim(self,envelope,slot_ledger,slot,slot_evidence,*,now,epoch,owner,original_owner=None):
         """Conservative cross-ledger preparation, NEVER dispatches.
 
         Reserve durably before claim. Claim failure/crash leaves funds reserved;
@@ -391,8 +391,14 @@ class GrowthLedger:
         settle unused reservation. The caller still holds the existing run lock.
         """
         from autonomy.lock_recovery import _ACTIVE_LEASE
-        if _ACTIVE_LEASE.get() is None:raise GrowthError('EXISTING_LOCK_REQUIRED')
-        if _ACTIVE_LEASE.get()[1].get('recovery_only') is True:raise GrowthError('RECOVERY_ONLY_NO_DISPATCH')
+        if original_owner is not None:
+            from autonomy.original_inventory_owner import OriginalOwnerAuthority
+            if type(original_owner) is not OriginalOwnerAuthority:raise GrowthError('EXISTING_LOCK_REQUIRED')
+            original_owner.check()
+            original_owner.event_binding()
+        else:
+            if _ACTIVE_LEASE.get() is None:raise GrowthError('EXISTING_LOCK_REQUIRED')
+            if _ACTIVE_LEASE.get()[1].get('recovery_only') is True:raise GrowthError('RECOVERY_ONLY_NO_DISPATCH')
         p=self.evidence(envelope,'budget_request',now)
         expected={'inventory_id':INVENTORY,'slot':slot,'epoch':epoch,'owner':owner}
         if type(epoch) is not int or epoch<1 or type(slot) is not str or type(owner) is not str:
@@ -410,6 +416,7 @@ class GrowthLedger:
                               run_id=run,request_id=p['request_id'],external_state='idle',existing_lock_held=True)
         result=self.reserve(envelope,now=now)
         if result!='RESERVED_NOT_DISPATCHED':raise GrowthError('RESERVATION_RECONCILIATION_REQUIRED')
+        if original_owner is not None:original_owner.check()
         token=slot_ledger.claim(slot,slot_evidence,now=now,epoch=epoch,owner=owner)
         # If this acknowledgement write fails, both sides retain uncertain state
         # and the reservation cannot authorize another claim.

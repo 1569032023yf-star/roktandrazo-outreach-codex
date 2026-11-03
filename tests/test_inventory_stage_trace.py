@@ -73,7 +73,7 @@ class Harness:
         def complete(*args, **kwargs):
             self.business.append(('completion', kwargs))
             return False
-        def release(*args):
+        def release(*args, **kwargs):
             self.released += 1
         queue = types.ModuleType('retail_city_queue')
         queue.activate_next_city = lambda *a, **k: {'id': 22, 'city': 'fixture', 'state': 'NY'}
@@ -87,7 +87,7 @@ class Harness:
         self.ns = load_functions(path, dict(datetime=datetime, timedelta=timedelta, timezone=timezone, os=os,
             inventory_target_for_date=lambda _: 50, header=lambda *a: None, log=lambda *a: None,
             set_execution_mode=lambda *a: None, update_job_run=update,
-            acquire_run_lock=lambda *a: lock, release_run_lock=release,
+            acquire_run_lock=lambda *a, **k: lock, release_run_lock=release,
             finish_job_run=lambda *a, **k: self.finishes.append((a, k)),
             _resolve_active_discovery_state=lambda: ('NY', state_error), get_db=lambda: self.conn,
             _count_safe_ready_pool=lambda _: safe, _count_broad_ready_pool=lambda: safe,

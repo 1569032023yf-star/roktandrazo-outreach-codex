@@ -46,8 +46,9 @@ class CancellationJournal:
         if not path.parent.is_dir():raise AdapterError('CANCEL_JOURNAL_PATH_REJECTED')
         for item in protected:
             other=Path(item).resolve(strict=True)
-            if path==other or (path.exists() and os.path.samefile(path,other)):
-                raise AdapterError('CANCEL_JOURNAL_ALIAS_REJECTED')
+            for reserved in (other, *(Path(str(other)+suffix) for suffix in ('-journal','-wal','-shm'))):
+                if path==reserved or (path.exists() and reserved.exists() and os.path.samefile(path,reserved)):
+                    raise AdapterError('CANCEL_JOURNAL_ALIAS_REJECTED')
         return path
 
     def reserve(self, identity, binding, *, protected):
@@ -146,6 +147,22 @@ class SingleSlotAdapter:
         except AdapterError:raise
         except Exception:raise AdapterError('LOCK_IDENTITY_UNAVAILABLE') from None
 
+    def _mark_tree(self, state):
+        lock_recovery.mark_tree(state)
+
+    def _protected_paths(self):
+        return (self.slots.path, self.budget.path, self.runtime/'supervisor.lock')
+
+    def prepare_event(self, event):
+        """Legacy isolated transport has no original DB event join."""
+
+    def _claim(self, budget_request, slot, idle, epoch, owner):
+        return self.budget.reserve_then_claim(budget_request,self.slots,slot,idle,
+            now=self._now(),epoch=epoch,owner=owner)
+
+    def _operation_binding(self):
+        return {}
+
     @staticmethod
     def _bound(payload,expected):
         if type(payload) is not dict or any(type(payload.get(k)) is not type(v) or payload[k]!=v for k,v in expected.items()):
@@ -208,17 +225,17 @@ class SingleSlotAdapter:
         token=None
         try:
             self.slots.admit_due(p['slot'],due,schedule,now=self._now(),epoch=p['epoch'],owner=p['owner'],missed=missed)
-            token=self.budget.reserve_then_claim(budget_request,self.slots,p['slot'],idle,now=self._now(),epoch=p['epoch'],owner=p['owner'])
+            token=self._claim(budget_request,p['slot'],idle,p['epoch'],p['owner'])
             self._admission(admission) # Recheck signed lifetime and exact lease.
             self.slots.start(p['slot'],token,epoch=p['epoch'],owner=p['owner'])
             self._lock()
-            lock_recovery.mark_tree('unverified')
+            self._mark_tree('unverified')
             started=self.monotonic()
             if type(started) not in (int,float) or not 0<=started<float('inf'):
                 raise AdapterError('CLOCK_UNAVAILABLE')
             operation=dict(common,inventory_id=INVENTORY,token=token,scope='isolated_offline',
                 schema=OPERATION_SCHEMA,backend_protocol=BACKEND_PROTOCOL,max_wall_seconds=wall,production_execution=False,
-                **self.ids,**self._lock())
+                **self.ids,**self._lock(),**self._operation_binding())
             operation['idempotency_key']=digest(operation)
             # v1 backend must enforce deadline outside this Python callback and
             # durably deduplicate this exact identity. This is a contract, not
@@ -239,7 +256,7 @@ class SingleSlotAdapter:
             raise AdapterError('CANCEL_JOURNAL_NOT_CONFIGURED')
         p,common=self._admission(admission,require_backend=False)
         journal=self.cancellation_journal
-        protected=(self.slots.path,self.budget.path,self.runtime/'supervisor.lock')
+        protected=self._protected_paths()
         path=journal.checked_path(protected)
         journal_id=hashlib.sha256(os.path.normcase(str(path)).encode()).hexdigest()
         request=self._verify(cancel_request,'offline_cancel_request')
@@ -308,7 +325,7 @@ class SingleSlotAdapter:
             if row is None or row['claim_hash']!=digest(token) or json.loads(row['binding'])!=expected:
                 raise AdapterError('CLAIM_RECEIPT_CONFLICT')
         self._lock()
-        lock_recovery.mark_tree('unverified')
+        self._mark_tree('unverified')
         state=self.slots.reconcile(p['slot'],sr['state'],slot_receipt,now=self._now(),epoch=p['epoch'],owner=p['owner'])
         if any(row[2] in ('claimed','running','unknown') for row in self.slots.snapshot()):
             raise AdapterError('OTHER_EXECUTION_UNRESOLVED')
@@ -320,5 +337,79 @@ class SingleSlotAdapter:
             return {'outcome':'UNKNOWN_RECONCILE_ONLY','slot_result':state,'budget_result':settled,'production_execution':False}
         # Keep the recovery fence until both durable ledgers acknowledge the
         # receipt. A storage failure must not release an unresolved reservation.
-        lock_recovery.mark_tree('verified_closed')
+        self._mark_tree('verified_closed')
         return {'outcome':sr['state'].upper(),'slot_result':state,'budget_result':settled,'production_execution':False}
+
+
+class OriginalOwnerSlotAdapter(SingleSlotAdapter):
+    """Offline protocol under the original DB authority; no replacement lease.
+
+    This is an integration seam, not a production backend or a dispatch grant.
+    The event, claim, budget and receipt checks remain identical to the existing
+    isolated protocol. Only identity and the durable tree fence use the original
+    owner's database, so supervisor.lock cannot impersonate that owner.
+    """
+    def __init__(self, *args, original_owner, **kwargs):
+        from autonomy.original_inventory_owner import OriginalOwnerAuthority
+        if type(original_owner) is not OriginalOwnerAuthority:
+            raise AdapterError('EXACT_ORIGINAL_OWNER_REQUIRED')
+        self.original_owner = original_owner
+        super().__init__(*args, **kwargs)
+
+    def _lock(self):
+        try:
+            if self.runtime is None:
+                raise AdapterError('TARGET_NOT_CONFIGURED')
+            stat = self.runtime.stat()
+            if (stat.st_dev, stat.st_ino) != self.runtime_identity:
+                raise AdapterError('LOCK_RUNTIME_CHANGED')
+            return self.original_owner.check()
+        except Exception:
+            raise AdapterError('ORIGINAL_OWNER_LOST') from None
+
+    def _mark_tree(self, state):
+        self.original_owner.mark_tree(state)
+
+    def _protected_paths(self):
+        return (self.slots.path, self.budget.path, self.original_owner.database_path)
+
+    def prepare_event(self, event):
+        if (type(event) is not dict or
+                set(event) != {'inventory_id','admission','schedule','idle','budget_request'} or
+                event['inventory_id'] != INVENTORY or
+                any(type(event[k]) is not dict for k in ('admission','schedule','idle','budget_request'))):
+            raise AdapterError('EXACT_ORIGINAL_EVENT_REQUIRED')
+        self._admission(event['admission'])
+        from autonomy.release_store import canonical
+        if len(canonical(event)) > 65536:
+            raise AdapterError('ORIGINAL_EVENT_TOO_LARGE')
+        self.original_owner.prepare_event(digest(event))
+
+    def execute(self, admission, schedule, idle, budget_request):
+        event = dict(inventory_id=INVENTORY,admission=admission,schedule=schedule,
+                     idle=idle,budget_request=budget_request)
+        if self.original_owner.event_binding()['original_event_digest'] != digest(event):
+            raise AdapterError('ORIGINAL_OWNER_EVENT_MISMATCH')
+        return super().execute(admission,schedule,idle,budget_request)
+
+    def _claim(self, budget_request, slot, idle, epoch, owner):
+        token = self.budget.reserve_then_claim(budget_request,self.slots,slot,idle,
+            now=self._now(),epoch=epoch,owner=owner,original_owner=self.original_owner)
+        budget = self._verify(budget_request,'budget_request')
+        self.original_owner.bind_claim(dict(slot=slot,epoch=epoch,owner=owner,
+            run_id=budget['run_id'],request_id=budget['request_id'],claim_token_hash=digest(token)))
+        return token
+
+    def _operation_binding(self):
+        result = self.original_owner.receipt_binding()
+        return {k:v for k,v in result.items() if k not in ('lock_token_hash','process_identity_hash')}
+
+    def reconcile(self, admission, slot_receipt, budget_receipt):
+        p, common = self._admission(admission,require_backend=False)
+        sr=self._verify(slot_receipt,'receipt'); br=self._verify(budget_receipt,'budget_receipt')
+        token=sr.get('token')
+        if type(token) is not str or not token:
+            raise AdapterError('INVALID_TERMINAL_RECEIPT')
+        expected=self.original_owner.receipt_binding(dict(common,claim_token_hash=digest(token)))
+        self._bound(sr,expected); self._bound(br,expected)
+        return super().reconcile(admission,slot_receipt,budget_receipt)

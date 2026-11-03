@@ -805,11 +805,13 @@ def check_run_lock(date_str: str = None) -> tuple[bool, str]:
         return True, existing
     return False, ''
 
-def acquire_run_lock(date_str: str = None, holder: str = 'daily_operator', stale_after_seconds: int = 7200) -> bool:
+def acquire_run_lock(date_str: str = None, holder: str = 'daily_operator', stale_after_seconds: int = 7200, *, capture_owner: bool = False):
     """Atomically acquire a named run lock using UTC timestamps."""
     from datetime import datetime, timezone
     if date_str is None:
         date_str = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+    if capture_owner and not date_str.startswith('inventory:'):
+        raise ValueError('INVENTORY_OWNER_CAPTURE_REQUIRED')
     lock_key = f'run_lock:daily_outreach:{date_str}'
     acquired_key = f'{lock_key}_acquired_at'
     conn = get_db()
@@ -844,14 +846,17 @@ def acquire_run_lock(date_str: str = None, holder: str = 'daily_operator', stale
         upsert = "INSERT INTO system_config(key,value,updated_at) VALUES(?,?,datetime('now')) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=excluded.updated_at"
         conn.execute(upsert, (lock_key, holder))
         conn.execute(upsert, (acquired_key, now_utc))
+        if date_str.startswith('inventory:'):
+            from autonomy.original_inventory_owner import register_locked
+            captured_owner = register_locked(conn, lock_key, holder)
         conn.commit()
         if stale:
             print(f"[LOCK] Overrode stale UTC lock (holder={existing})")
-        return True
+        return captured_owner if capture_owner else True
     finally:
         conn.close()
 
-def release_run_lock(date_str: str = None, holder: str | None = None) -> bool:
+def release_run_lock(date_str: str = None, holder: str | None = None, *, expected_owner=None) -> bool:
     """Release only a lock owned by ``holder``; return whether it changed."""
     if date_str is None:
         from datetime import datetime
@@ -862,6 +867,13 @@ def release_run_lock(date_str: str = None, holder: str | None = None) -> bool:
     conn = get_db()
     try:
         with conn:
+            if date_str.startswith('inventory:'):
+                # Serialize release with event-consumer tree updates and the
+                # original maintenance acquisition. No unknown tree is idle.
+                conn.execute('BEGIN IMMEDIATE')
+                from autonomy.original_inventory_owner import release_allowed_locked
+                if not release_allowed_locked(conn, lock_key, holder, expected_owner):
+                    return False
             cur = conn.execute(
                 "UPDATE system_config SET value='released',updated_at=datetime('now') WHERE key=? AND value=?",
                 (lock_key, holder),

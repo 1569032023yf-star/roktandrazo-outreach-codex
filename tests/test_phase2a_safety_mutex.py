@@ -61,12 +61,18 @@ class AtomicMutexTests(unittest.TestCase):
         return results
 
     def test_atomic_lock_has_one_winner_and_owner_release(self):
-        results = self._race(lambda holder: bd_db.acquire_run_lock("inventory:2099-01-01", holder))
+        capabilities = []
+        def acquire(holder):
+            capability = bd_db.acquire_run_lock("inventory:2099-01-01", holder, capture_owner=True)
+            if capability:
+                capabilities.append(capability)
+            return bool(capability)
+        results = self._race(acquire)
         self.assertEqual(sorted(results), [False, True])
         locked, owner = bd_db.check_run_lock("inventory:2099-01-01")
         self.assertTrue(locked)
         self.assertFalse(bd_db.release_run_lock("inventory:2099-01-01", "wrong-owner"))
-        self.assertTrue(bd_db.release_run_lock("inventory:2099-01-01", owner))
+        self.assertTrue(bd_db.release_run_lock("inventory:2099-01-01", owner, expected_owner=capabilities[0]))
 
     def test_atomic_job_registration_has_one_winner(self):
         # Fresh concurrent registration.

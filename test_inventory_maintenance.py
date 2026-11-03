@@ -57,11 +57,12 @@ class MaintenanceTests(unittest.TestCase):
         m.assert_held(self.conn,self.binding)
 
     def test_original_inventory_single_authority_across_dates(self):
-        self.assertTrue(bd_db.acquire_run_lock('inventory:2026-11-02','original'))
+        captured=bd_db.acquire_run_lock('inventory:2026-11-02','original',capture_owner=True)
+        self.assertTrue(captured)
         self.assertFalse(bd_db.acquire_run_lock('inventory:2026-11-03','other'))
         self.assertFalse(bd_db.release_run_lock('inventory:2026-11-02','other'))
         self.assertFalse(bd_db.acquire_run_lock('inventory:2026-11-03','other'))
-        self.assertTrue(bd_db.release_run_lock('inventory:2026-11-02','original'))
+        self.assertTrue(bd_db.release_run_lock('inventory:2026-11-02','original',expected_owner=captured))
         self.assertTrue(bd_db.acquire_run_lock('inventory:2026-11-03','other'))
 
     def test_original_inventory_never_reclaims_stale_or_same_holder(self):

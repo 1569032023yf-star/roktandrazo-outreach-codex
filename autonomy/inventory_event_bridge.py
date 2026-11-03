@@ -194,6 +194,7 @@ class ExistingOwnerBridge:
         # Validate authority BEFORE reserving the transport event. This does not
         # create a claim or budget reservation; execute still repeats all gates.
         self.adapter._admission(event['admission'])
+        self.adapter.prepare_event(event)
         identity=self.request('/v1/inventory-events',dict(event=event,owner=owner))['event_id']
         route='/v1/inventory-events/'+identity
         delivered=self.request(route+'/reserve',dict(owner=owner))['event']

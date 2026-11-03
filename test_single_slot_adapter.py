@@ -19,6 +19,8 @@ class FakeBackend:
         self.operation=operation;self.deadline=deadline_monotonic
         self.calls+=1;self.effects.append(operation['request_id'])
         common={k:operation[k] for k in ('slot','epoch','owner','run_id','request_id')}
+        common.update({k:operation[k] for k in ('original_event_digest','original_claim_digest',
+            'lock_token_hash','process_identity_hash') if 'original_event_digest' in operation})
         sr=signed('receipt',T+10,**common,token=operation['token'],state='failed' if self.mode=='failed' else 'completed',receipt='fixture-terminal',external_drained=True)
         br=signed('budget_receipt',T+10,**common,claim_token_hash=digest(operation['token']),outcome='known',actual=amounts(),externally_reconciled=True)
         self.receipts=dict(slot_receipt=sr,budget_receipt=br)
