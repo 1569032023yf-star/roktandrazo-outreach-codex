@@ -1,3 +1,21 @@
+# U1 固定命令与输入保护 / Fixed command and input protection
+
+固定源码 / Fixed source: `e279e5505a1526969ce1e1f4769cc11e02bce66d` | 2026-11-03T03:21:57.997538+00:00
+
+组合219项通过；独审21项及3探针通过。真实AMD64工程包已重建，完整安装发布尚未完成。
+219 combined tests passed; 21 independent tests and 3 probes passed. Actual AMD64 engineering artifacts were rebuilt; complete installable delivery remains incomplete.
+
+将固定命令、同会话终态核验与原Publisher认证/seal入口接线；完成整链独审和生命周期验收后才申请安装授权。不得将工程包当作可安装发布版。
+Wire the fixed command and same-session terminal verifier into the original authenticated/sealed Publisher entry. Complete full-chain review and lifecycle acceptance before requesting installation authorization. The engineering archive is not an installable release.
+
+`DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false`
+
+`allow_install=false; allow_dispatch=false; allow_cancel_dispatch=false; SMTP=false`
+
+[双语报告 / Bilingual report](../u1_install_command_20261103/REPORT.md)
+
+---
+
 # U1 实际进程持久凭据 / Actual durable process evidence
 
 固定源码 / Fixed source: `2db72ad5a016d24907e60c4481ffba1b870c959d` | 2026-11-03T02:58:45.114559+00:00

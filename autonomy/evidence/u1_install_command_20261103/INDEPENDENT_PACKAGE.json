@@ -1,0 +1,43 @@
+{
+  "install.zip": {
+    "sha256": "352d3c363135e70fb2869fd2c06d7837ad4d698efc3e8ddd252aaef4f61bf43d",
+    "files": 72,
+    "zip_bytes_match_tree": true
+  },
+  "rollback-tools.zip": {
+    "sha256": "c92ebe64ad8e8cc9971a3134aeb7c5eee4998f2f4df90c3c13262bec1c9d23ba",
+    "files": 18,
+    "zip_bytes_match_tree": true
+  },
+  "source_commit": "e279e5505a1526969ce1e1f4769cc11e02bce66d",
+  "host_manifest_sha256": "bed132e61467cc2852ab7a990b97fe53847ac0eb5fce978d356edbace77009d7",
+  "delivery_manifest_sha256": "6074910fc6ad7c6fe33292b7b4a446002a5da0218e500d347599f0f13d03420a",
+  "scripts": [
+    "Acl-Transaction.ps1",
+    "Host-InstallTransaction.ps1",
+    "Host-PackagePreparation.ps1",
+    "Install-DisabledHost.ps1",
+    "Maintenance-Authority.ps1",
+    "Observe-HostInstall.ps1",
+    "Publisher-InstallHost.ps1",
+    "Rollback-DisabledHost.ps1",
+    "host_file_transaction.py"
+  ],
+  "machine": "0x8664",
+  "engineering_package_only": true,
+  "delivery": {
+    "allow_cancel_dispatch": false,
+    "allow_dispatch": false,
+    "allow_install": false,
+    "formal_backend_integrated": false,
+    "formal_maintenance_integrated": false,
+    "inventory_id": "1784775229336",
+    "production_ready": false,
+    "python_runtime": "External CPython 3.11+ required; not bundled",
+    "scheduler_created": false,
+    "schema": "rokt.u1-delivery.v1",
+    "service_start": "Disabled",
+    "smtp_enabled": false,
+    "source_commit": "e279e5505a1526969ce1e1f4769cc11e02bce66d"
+  }
+}

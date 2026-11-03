@@ -1,0 +1,78 @@
+{
+  "source_commit": "e279e5505a1526969ce1e1f4769cc11e02bce66d",
+  "baseline_commit": "2c17b8cdb7f23eea3fa7b6ca50e3588924f4ac37",
+  "files": [
+    {
+      "path": "autonomy/build_u1_delivery.py",
+      "actual_sha256": "db5be1328543927b53e5c0d6b6678a346e2cd26b38ac1e4d8854fea8b65adee1",
+      "git_blob_sha256": "8f10e62c5306506b8a257d9f1467f7f0f7cb397220098d683d334094e06393f5",
+      "normalized_match": true
+    },
+    {
+      "path": "autonomy/disabled_host_package.py",
+      "actual_sha256": "c17e65a142e281cd5ae92859a76674a06ee3994ae5f8379d8263aea7a1f797c8",
+      "git_blob_sha256": "d0160d8e4d8c0285477b56e48aa95ec0772cf56f62e7854eb9167164744b34f1",
+      "normalized_match": true
+    },
+    {
+      "path": "autonomy/windows/Host-PackagePreparation.ps1",
+      "actual_sha256": "105fa4e89334f5a52751dc242ea9fc92c92cd3857e8fa3561d6e1a0bba957ec3",
+      "git_blob_sha256": "f00011166c44baaed384f6fefad4c18d04199cc17c55b0126a96a8e1540f1e03",
+      "normalized_match": true
+    },
+    {
+      "path": "autonomy/windows/Install-DisabledHost.ps1",
+      "actual_sha256": "ec74bf8257c801bd22fd82f4dd47152a4680e149235948c1e18e445cdc23e44b",
+      "git_blob_sha256": "3733c53aca89a1c0175f9b3251d21d00cf94db97bbd7d52dbe3b5d5440c3b0e2",
+      "normalized_match": true
+    },
+    {
+      "path": "autonomy/windows/Publisher-InstallHost.ps1",
+      "actual_sha256": "ddc06ce2d17c10d1f21bfffa908ef4c947d78dbc7fd24e53763285c8df4db7a3",
+      "git_blob_sha256": "ddc06ce2d17c10d1f21bfffa908ef4c947d78dbc7fd24e53763285c8df4db7a3",
+      "normalized_match": true
+    },
+    {
+      "path": "publisher_channel/install_command.py",
+      "actual_sha256": "4f4a4c141fdf51177eed8f3cc7f6f3d6ef56e66f30c2dc7d8cb5c81c1ca8319b",
+      "git_blob_sha256": "4f4a4c141fdf51177eed8f3cc7f6f3d6ef56e66f30c2dc7d8cb5c81c1ca8319b",
+      "normalized_match": true
+    },
+    {
+      "path": "publisher_channel/install_inputs.py",
+      "actual_sha256": "9613f018e4390773fdcf368aa971a7bd2005436a59ed21ee6f5cadc8785223e7",
+      "git_blob_sha256": "9613f018e4390773fdcf368aa971a7bd2005436a59ed21ee6f5cadc8785223e7",
+      "normalized_match": true
+    },
+    {
+      "path": "test_disabled_host_package.py",
+      "actual_sha256": "5a63e8af40d3cd040302481b9770e1430c870d17b9e5f5746173e0de304008e5",
+      "git_blob_sha256": "6e7f3e95ff856310a581164df9cffd87ca6880085adfc908f9e4b9f09944ca4b",
+      "normalized_match": true
+    },
+    {
+      "path": "test_install_command.py",
+      "actual_sha256": "1d6a0434a6b860ddd65a2cba6b731f8fca690a5fddf887d67f1273e735f614da",
+      "git_blob_sha256": "1d6a0434a6b860ddd65a2cba6b731f8fca690a5fddf887d67f1273e735f614da",
+      "normalized_match": true
+    },
+    {
+      "path": "test_install_inputs.py",
+      "actual_sha256": "5ef901f43ee3b3c073b8e6d948fe39c0ce60749c8e0479256f305049c24f5df3",
+      "git_blob_sha256": "5ef901f43ee3b3c073b8e6d948fe39c0ce60749c8e0479256f305049c24f5df3",
+      "normalized_match": true
+    },
+    {
+      "path": "test_u1_provision.py",
+      "actual_sha256": "3352b7d8836926181023448401a0a8f5a0093a30551632be077bbb9d46995322",
+      "git_blob_sha256": "6850be291613074f25585223477d5f7327cf9692b461064280e6584825aa8862",
+      "normalized_match": true
+    },
+    {
+      "path": "tools/validate_u1_candidate.py",
+      "actual_sha256": "69b8c35cb4f496475ae16fbbf47ee2347d898da796308c8d8f713407f6428535",
+      "git_blob_sha256": "063ac9e89caa51a1e1239086798916f766f274abce4add235821e76facdc4b23",
+      "normalized_match": true
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "source_commit": "e279e5505a1526969ce1e1f4769cc11e02bce66d",
+  "updated_at": "2026-11-03T03:22:25.615727+00:00",
+  "report": "autonomy/evidence/u1_install_command_20261103/REPORT.md",
+  "tests": {
+    "source_commit": "e279e5505a1526969ce1e1f4769cc11e02bce66d",
+    "modules": [
+      "test_windows_acl_transaction",
+      "test_disabled_host_package",
+      "test_install_journal",
+      "test_install_contract",
+      "test_independent_install_plan",
+      "test_u1_provision",
+      "test_u1_manifest_closure",
+      "test_u1_host_runtime",
+      "test_host_remediation",
+      "test_host_preparation",
+      "test_release_store",
+      "test_process_backend",
+      "autonomy.test_process_job",
+      "test_single_slot_adapter",
+      "test_host_readonly_http",
+      "test_host_file_transaction",
+      "test_host_install_transaction",
+      "test_inventory_event_bridge",
+      "test_maintenance_control",
+      "test_install_verifier",
+      "test_install_process",
+      "test_install_inputs",
+      "test_install_command",
+      "test_inventory_maintenance",
+      "test_publisher_maintenance",
+      "test_publisher_install_maintenance"
+    ],
+    "tests_run": 219,
+    "failures": [],
+    "errors": [],
+    "skips": [],
+    "seconds": 270.959,
+    "passed": true,
+    "isolation_groups": [
+      "host",
+      "authority"
+    ],
+    "allow_install": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false
+  },
+  "independent_review": "OFFLINE_SCOPED_REVIEW_PASSED",
+  "independent_tests": {
+    "command": "python -m unittest test_install_inputs test_install_command test_disabled_host_package test_u1_provision -v",
+    "count": 21,
+    "passed": 21,
+    "duration_seconds": 12.826,
+    "errors": [],
+    "failures": []
+  },
+  "independent_additional_probes": [
+    {
+      "case": "Pin后新增普通文件hardlink / New hardlink after ordinary-file admission",
+      "result": "STOP_AND_PRESERVE_INPUT_LINKS_OR_SIZE",
+      "passed": true
+    },
+    {
+      "case": "新增alias不可写固定文件 / New alias cannot write pinned file",
+      "passed": true
+    },
+    {
+      "case": "Pins关闭后observer零launch拒绝 / Observer refuses after pins close without launch",
+      "result": "STOP_AND_PRESERVE_INPUT_PINS_NOT_ACTIVE",
+      "passed": true
+    }
+  ],
+  "description_zh": "固定内部命令、持久输入句柄及同源只读终态观察器已实现；原认证/seal接线和完整可安装交付仍未完成。",
+  "description_en": "Fixed internal commands, persistent input handles and the same-source read-only terminal observer are implemented; original authentication/seal wiring and complete installable delivery remain incomplete.",
+  "fixed_command_component_implemented": true,
+  "input_pins_implemented": true,
+  "observer_component_connected": true,
+  "process_adapter_complete": false,
+  "independent_final_verifier_complete": false,
+  "complete_call_chain_review_passed": false,
+  "formal_maintenance_integrated": false,
+  "development_complete": false,
+  "release_ready": false,
+  "production_deployed": false,
+  "production_accepted": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "inventory_id": "1784775229336",
+  "current_full_regression": {
+    "baseline_commit": "2db72ad5a016d24907e60c4481ffba1b870c959d",
+    "candidate_commit": "e279e5505a1526969ce1e1f4769cc11e02bce66d",
+    "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-b5w7bogk",
+    "complete": true,
+    "baseline_run": 833,
+    "candidate_run": 833,
+    "baseline_failures": 37,
+    "candidate_failures": 37,
+    "baseline_errors": 17,
+    "candidate_errors": 17,
+    "failure_ids_identical": true,
+    "error_ids_identical": true,
+    "all_green": false,
+    "no_new_regression": true
+  },
+  "current_package": {
+    "artifacts": {
+      "install.zip": "352d3c363135e70fb2869fd2c06d7837ad4d698efc3e8ddd252aaef4f61bf43d",
+      "rollback-tools.zip": "c92ebe64ad8e8cc9971a3134aeb7c5eee4998f2f4df90c3c13262bec1c9d23ba"
+    },
+    "files": 71,
+    "independent_review": "PENDING",
+    "manifest_sha256": "6074910fc6ad7c6fe33292b7b4a446002a5da0218e500d347599f0f13d03420a",
+    "production_ready": false,
+    "source_commit": "e279e5505a1526969ce1e1f4769cc11e02bce66d"
+  },
+  "installable_release": false,
+  "next_action": "Wire the fixed command and same-session terminal verifier into the original authenticated/sealed Publisher entry. Complete full-chain review and lifecycle acceptance before requesting installation authorization. The engineering archive is not an installable release.",
+  "next_action_zh": "将固定命令、同会话终态核验与原Publisher认证/seal入口接线；完成整链独审和生命周期验收后才申请安装授权。不得将工程包当作可安装发布版。"
+}

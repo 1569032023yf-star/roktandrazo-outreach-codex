@@ -1,0 +1,163 @@
+{
+  "source_commit": "e279e5505a1526969ce1e1f4769cc11e02bce66d",
+  "baseline_commit": "2c17b8cdb7f23eea3fa7b6ca50e3588924f4ac37",
+  "status": "OFFLINE_SCOPED_REVIEW_PASSED",
+  "independent_tests": {
+    "command": "python -m unittest test_install_inputs test_install_command test_disabled_host_package test_u1_provision -v",
+    "count": 21,
+    "passed": 21,
+    "duration_seconds": 12.826,
+    "errors": [],
+    "failures": []
+  },
+  "additional_isolated_probes": [
+    {
+      "case": "Pin后新增普通文件hardlink / New hardlink after ordinary-file admission",
+      "result": "STOP_AND_PRESERVE_INPUT_LINKS_OR_SIZE",
+      "passed": true
+    },
+    {
+      "case": "新增alias不可写固定文件 / New alias cannot write pinned file",
+      "passed": true
+    },
+    {
+      "case": "Pins关闭后observer零launch拒绝 / Observer refuses after pins close without launch",
+      "result": "STOP_AND_PRESERVE_INPUT_PINS_NOT_ACTIVE",
+      "passed": true
+    }
+  ],
+  "filehash": {
+    "autonomy/build_u1_delivery.py": {
+      "working_tree_sha256": "db5be1328543927b53e5c0d6b6678a346e2cd26b38ac1e4d8854fea8b65adee1",
+      "git_blob_sha256": "8f10e62c5306506b8a257d9f1467f7f0f7cb397220098d683d334094e06393f5",
+      "normalized_matches_pin": true
+    },
+    "autonomy/disabled_host_package.py": {
+      "working_tree_sha256": "c17e65a142e281cd5ae92859a76674a06ee3994ae5f8379d8263aea7a1f797c8",
+      "git_blob_sha256": "d0160d8e4d8c0285477b56e48aa95ec0772cf56f62e7854eb9167164744b34f1",
+      "normalized_matches_pin": true
+    },
+    "autonomy/windows/Host-PackagePreparation.ps1": {
+      "working_tree_sha256": "105fa4e89334f5a52751dc242ea9fc92c92cd3857e8fa3561d6e1a0bba957ec3",
+      "git_blob_sha256": "f00011166c44baaed384f6fefad4c18d04199cc17c55b0126a96a8e1540f1e03",
+      "normalized_matches_pin": true
+    },
+    "autonomy/windows/Install-DisabledHost.ps1": {
+      "working_tree_sha256": "ec74bf8257c801bd22fd82f4dd47152a4680e149235948c1e18e445cdc23e44b",
+      "git_blob_sha256": "3733c53aca89a1c0175f9b3251d21d00cf94db97bbd7d52dbe3b5d5440c3b0e2",
+      "normalized_matches_pin": true
+    },
+    "autonomy/windows/Publisher-InstallHost.ps1": {
+      "working_tree_sha256": "ddc06ce2d17c10d1f21bfffa908ef4c947d78dbc7fd24e53763285c8df4db7a3",
+      "git_blob_sha256": "ddc06ce2d17c10d1f21bfffa908ef4c947d78dbc7fd24e53763285c8df4db7a3",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/install_command.py": {
+      "working_tree_sha256": "4f4a4c141fdf51177eed8f3cc7f6f3d6ef56e66f30c2dc7d8cb5c81c1ca8319b",
+      "git_blob_sha256": "4f4a4c141fdf51177eed8f3cc7f6f3d6ef56e66f30c2dc7d8cb5c81c1ca8319b",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/install_inputs.py": {
+      "working_tree_sha256": "9613f018e4390773fdcf368aa971a7bd2005436a59ed21ee6f5cadc8785223e7",
+      "git_blob_sha256": "9613f018e4390773fdcf368aa971a7bd2005436a59ed21ee6f5cadc8785223e7",
+      "normalized_matches_pin": true
+    },
+    "test_disabled_host_package.py": {
+      "working_tree_sha256": "5a63e8af40d3cd040302481b9770e1430c870d17b9e5f5746173e0de304008e5",
+      "git_blob_sha256": "6e7f3e95ff856310a581164df9cffd87ca6880085adfc908f9e4b9f09944ca4b",
+      "normalized_matches_pin": true
+    },
+    "test_install_command.py": {
+      "working_tree_sha256": "1d6a0434a6b860ddd65a2cba6b731f8fca690a5fddf887d67f1273e735f614da",
+      "git_blob_sha256": "1d6a0434a6b860ddd65a2cba6b731f8fca690a5fddf887d67f1273e735f614da",
+      "normalized_matches_pin": true
+    },
+    "test_install_inputs.py": {
+      "working_tree_sha256": "5ef901f43ee3b3c073b8e6d948fe39c0ce60749c8e0479256f305049c24f5df3",
+      "git_blob_sha256": "5ef901f43ee3b3c073b8e6d948fe39c0ce60749c8e0479256f305049c24f5df3",
+      "normalized_matches_pin": true
+    },
+    "test_u1_provision.py": {
+      "working_tree_sha256": "3352b7d8836926181023448401a0a8f5a0093a30551632be077bbb9d46995322",
+      "git_blob_sha256": "6850be291613074f25585223477d5f7327cf9692b461064280e6584825aa8862",
+      "normalized_matches_pin": true
+    },
+    "tools/validate_u1_candidate.py": {
+      "working_tree_sha256": "69b8c35cb4f496475ae16fbbf47ee2347d898da796308c8d8f713407f6428535",
+      "git_blob_sha256": "063ac9e89caa51a1e1239086798916f766f274abce4add235821e76facdc4b23",
+      "normalized_matches_pin": true
+    }
+  },
+  "package_verification": {
+    "install.zip": {
+      "sha256": "352d3c363135e70fb2869fd2c06d7837ad4d698efc3e8ddd252aaef4f61bf43d",
+      "files": 72,
+      "zip_bytes_match_tree": true
+    },
+    "rollback-tools.zip": {
+      "sha256": "c92ebe64ad8e8cc9971a3134aeb7c5eee4998f2f4df90c3c13262bec1c9d23ba",
+      "files": 18,
+      "zip_bytes_match_tree": true
+    },
+    "source_commit": "e279e5505a1526969ce1e1f4769cc11e02bce66d",
+    "host_manifest_sha256": "bed132e61467cc2852ab7a990b97fe53847ac0eb5fce978d356edbace77009d7",
+    "delivery_manifest_sha256": "6074910fc6ad7c6fe33292b7b4a446002a5da0218e500d347599f0f13d03420a",
+    "scripts": [
+      "Acl-Transaction.ps1",
+      "Host-InstallTransaction.ps1",
+      "Host-PackagePreparation.ps1",
+      "Install-DisabledHost.ps1",
+      "Maintenance-Authority.ps1",
+      "Observe-HostInstall.ps1",
+      "Publisher-InstallHost.ps1",
+      "Rollback-DisabledHost.ps1",
+      "host_file_transaction.py"
+    ],
+    "machine": "0x8664",
+    "engineering_package_only": true,
+    "delivery": {
+      "allow_cancel_dispatch": false,
+      "allow_dispatch": false,
+      "allow_install": false,
+      "formal_backend_integrated": false,
+      "formal_maintenance_integrated": false,
+      "inventory_id": "1784775229336",
+      "production_ready": false,
+      "python_runtime": "External CPython 3.11+ required; not bundled",
+      "scheduler_created": false,
+      "schema": "rokt.u1-delivery.v1",
+      "service_start": "Disabled",
+      "smtp_enabled": false,
+      "source_commit": "e279e5505a1526969ce1e1f4769cc11e02bce66d"
+    },
+    "outer_manifest_entries_verified": 71
+  },
+  "closed_findings": [
+    {
+      "id": "PROVISION_EXTRACTION_REGRESSION",
+      "diagnostic_source_commit": "efe78a14ade785fffa5bd06de8c6e82a97025485",
+      "diagnostic_count": 21,
+      "diagnostic_errors": 1,
+      "error": "test_u1_provision.py:14 ValueError substring not found",
+      "resolution": "Read shared Host-PackagePreparation.ps1; independently rerun all 21 tests on new pin"
+    }
+  ],
+  "limitations_zh": [
+    "独立批准摘要必须来自受信seal记录；auth/seal正式入口未接线，测试审批仅隔离替身",
+    "未执行固定安装命令成功路径或生产SCM/ACL验收",
+    "六个.NET固定组件及系统PS允许既有hardlink，仅固定内容与canonical名称，其他alias可删除",
+    "observer成功命令响应在单测为替身；实际安装和终态生产验收尚未完成",
+    "未修改生产目录/ACL/服务/DB/Inventory或执行策略"
+  ],
+  "limitations_en": [
+    "Independent approval hashes must originate from a trusted sealed record; formal auth/seal admission is not connected and test approvals are isolated fixtures",
+    "No successful fixed installer invocation or production SCM/ACL acceptance was performed",
+    "Six fixed .NET components and system PowerShell allow existing hardlinks; bytes and the canonical name are pinned while other aliases may be removed",
+    "Observer-success command responses are mocked in unit tests; production installation and terminal acceptance remain unverified",
+    "No production directories/ACLs/services/DB/Inventory or execution policies were changed"
+  ],
+  "RELEASE_READY": false,
+  "allow_install": false,
+  "FULL_CHAIN_VERIFIED": false,
+  "PRODUCTION_DEPLOYED": false
+}
