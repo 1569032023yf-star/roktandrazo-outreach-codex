@@ -109,6 +109,14 @@ if ($RuntimePlan) {
     Pin-Reference $RuntimePlan $ApprovedRuntimePlanSha256
     $plan=Get-Content -LiteralPath $RuntimePlan -Raw | ConvertFrom-Json
     $keys=@('schema','inventory_id','python','python_sha256','release_root','token_file','token_sha256','credential_expires_at','snapshot','snapshot_sha256')
+    if (($plan.PSObject.Properties.Name -ccontains 'event_runtime') -and ($plan.PSObject.Properties.Name -ccontains 'original_owner_db')) {throw 'EXACTLY_ONE_OWNER_AUTHORITY_REQUIRED'}
+    if ($plan.PSObject.Properties.Name -ccontains 'original_owner_db') {
+        $keys+=@('original_owner_db')
+        if ($plan.original_owner_db -isnot [string] -or -not [IO.Path]::IsPathRooted($plan.original_owner_db) -or $plan.original_owner_db -match '["\r\n]' -or [IO.Path]::GetFullPath($plan.original_owner_db) -cne $plan.original_owner_db -or -not (Test-Path -LiteralPath $plan.original_owner_db -PathType Leaf)) {throw 'ORIGINAL_OWNER_DB_REQUIRED'}
+        Assert-NoReparseAncestors $plan.original_owner_db
+        # Mutable database bytes are never pinned, copied or changed by setup.
+        # The approved plan binds the reference; the host opens it read-only.
+    }
     if ($plan.PSObject.Properties.Name -ccontains 'event_runtime') {
         $keys+=@('event_runtime')
         if ($plan.event_runtime -isnot [string] -or -not [IO.Path]::IsPathRooted($plan.event_runtime) -or [IO.Path]::GetFullPath($plan.event_runtime) -cne $plan.event_runtime -or -not (Test-Path -LiteralPath $plan.event_runtime -PathType Container)) {throw 'EVENT_RUNTIME_REQUIRED'}
@@ -133,6 +141,7 @@ if ($RuntimePlan) {
     if ($bootstrapEntry.Count -ne 1) { throw 'BOOTSTRAP_REQUIRED' }
     $runtime=[ordered]@{schema='rokt.u1-python-runtime.v1';inventory_id='1784775229336';release_root=$plan.release_root;state_root=$state;token_file=$plan.token_file;credential_expires_at=$plan.credential_expires_at;snapshot=$plan.snapshot;snapshot_sha256=$plan.snapshot_sha256;allow_dispatch=$false;allow_cancel_dispatch=$false;smtp_enabled=$false}
     if ($keys -ccontains 'event_runtime') {$runtime['event_runtime']=$plan.event_runtime}
+    if ($keys -ccontains 'original_owner_db') {$runtime['original_owner_db']=$plan.original_owner_db}
     $utf8=New-Object Text.UTF8Encoding($false)
     $runtimeBytes=$utf8.GetBytes(($runtime | ConvertTo-Json -Compress))
     $hasher=[Security.Cryptography.SHA256]::Create()
