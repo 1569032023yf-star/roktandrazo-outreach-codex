@@ -823,13 +823,8 @@ def acquire_run_lock(date_str: str = None, holder: str = 'daily_operator', stale
         # timestamp cannot prove its previous side effects or process stopped.
         # Never steal an unknown Inventory lock, including after restart.
         if date_str.startswith('inventory:'):
-            active = conn.execute(
-                "SELECT 1 FROM system_config WHERE "
-                "substr(key,1,34)='run_lock:daily_outreach:inventory:' "
-                "AND substr(key,-12)<>'_acquired_at' "
-                "AND (value IS NULL OR value<>'released') LIMIT 1"
-            ).fetchone()
-            if active is not None:
+            from autonomy.inventory_maintenance import inventory_lock_blocked
+            if inventory_lock_blocked(conn):
                 conn.rollback()
                 return False
         row = conn.execute("SELECT value FROM system_config WHERE key=?", (lock_key,)).fetchone()

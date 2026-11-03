@@ -8,6 +8,16 @@ import re
 
 KEY = 'u1:inventory:maintenance:v1'
 PREFIX = 'run_lock:daily_outreach:'
+INVENTORY_PREFIX = PREFIX+'inventory:'
+
+
+def inventory_lock_blocked(conn):
+    """Unknown original-owner locks never expire, including across dates."""
+    return conn.execute(
+        "SELECT 1 FROM system_config WHERE substr(key,1,?)=? "
+        "AND substr(key,-12)<>'_acquired_at' "
+        "AND (value IS NULL OR value<>'released') LIMIT 1",
+        (len(INVENTORY_PREFIX),INVENTORY_PREFIX)).fetchone() is not None
 
 
 def binding_bytes(binding):
@@ -35,7 +45,7 @@ def acquire_locked(conn,binding):
         raise ValueError('STOP_AND_PRESERVE_MAINTENANCE_PENDING_OR_REPLAY')
     rows=conn.execute('SELECT key,value FROM system_config WHERE substr(key,1,?)=?',
                       (len(PREFIX),PREFIX)).fetchall()
-    if any(not k.endswith('_acquired_at') and v not in ('','released') for k,v in rows):
+    if inventory_lock_blocked(conn) or any(not k.endswith('_acquired_at') and v not in ('','released') for k,v in rows):
         raise ValueError('ORIGINAL_INVENTORY_NOT_QUIESCENT')
     sql="INSERT INTO system_config(key,value,updated_at) VALUES(?,?,datetime('now')) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=excluded.updated_at"
     conn.execute(sql,(op,raw));conn.execute(sql,(KEY,raw))

@@ -95,6 +95,19 @@ class PublisherMaintenanceTests(unittest.TestCase):
         with self.assertRaises(sqlite3.OperationalError):
             publisher.inventory_acquire(self.cfg, 'deploy:op-test')
 
+    def test_unknown_original_inventory_blocks_publisher_across_dates(self):
+        for value in ('dead-owner','',None,'malformed'):
+            with self.subTest(value=value), closing(sqlite3.connect(self.db)) as conn:
+                conn.execute('DELETE FROM system_config')
+                key=maintenance.INVENTORY_PREFIX+'2000-01-01'
+                conn.execute('INSERT INTO system_config VALUES(?,?,NULL)',(key,value))
+                conn.execute('INSERT INTO system_config VALUES(?,?,NULL)',(key+'_acquired_at','2000-01-01 00:00:00'))
+                conn.commit()
+                ok,result=publisher.inventory_acquire(self.cfg,'deploy:op-test')
+                self.assertFalse(ok)
+                self.assertEqual(result['reason'],'STOP_AND_PRESERVE_ORIGINAL_INVENTORY_UNKNOWN')
+                self.assertEqual(conn.execute('SELECT value FROM system_config WHERE key=?',(key,)).fetchone()[0],value)
+
     def test_all_four_original_mutating_paths_use_shared_admission_before_replace(self):
         tree = ast.parse(SOURCE.read_text(encoding='utf-8'))
         for name in ('op_apply', 'op_apply_multi', 'op_rollback', 'op_rollback_multi'):

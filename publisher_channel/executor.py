@@ -763,9 +763,9 @@ def live_gates_multi(cfg: dict, release_id: str, *, direction: str = "apply") ->
 def inventory_acquire(cfg: dict, holder: str) -> tuple[bool, dict]:
     """Acquire the official Inventory run-lock with our holder.
 
-    Replicates bd_db.acquire_run_lock semantics exactly (same key, same
-    BEGIN IMMEDIATE atomicity, same 2h stale rule). A fresh lock held by
-    anyone else blocks us - we never steal valid locks.
+    Preserve the original key and transaction. Original Inventory locks across
+    dates block publication without expiry; legacy publisher-lock expiry is
+    unchanged. A timestamp cannot prove an Inventory process stopped.
     """
     bd = business_date_shanghai()
     lock_key = cfg["lock"]["key_prefix"] + bd
@@ -783,6 +783,11 @@ def inventory_acquire(cfg: dict, holder: str) -> tuple[bool, dict]:
             conn.rollback()
             return False, {"lock_key": lock_key,
                            "reason": "STOP_AND_PRESERVE_MAINTENANCE_HELD"}
+        from autonomy.inventory_maintenance import inventory_lock_blocked
+        if inventory_lock_blocked(conn):
+            conn.rollback()
+            return False, {"lock_key": lock_key,
+                           "reason": "STOP_AND_PRESERVE_ORIGINAL_INVENTORY_UNKNOWN"}
         row = conn.execute("SELECT value FROM system_config WHERE key=?", (lock_key,)).fetchone()
         existing = row[0] if row else ""
         stamp = conn.execute("SELECT value FROM system_config WHERE key=?", (acq_key,)).fetchone()

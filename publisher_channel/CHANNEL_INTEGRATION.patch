@@ -1,37 +1,5 @@
---- original/executor.py
-+++ candidate/executor.py
-@@ -351,0 +352,8 @@
-+def rw_existing_conn(db_path: str):
-+    # U1 maintenance must never create an empty replacement for the official DB.
-+    conn = sqlite3.connect(Path(db_path).as_uri()+"?mode=rw", uri=True, timeout=20)
-+    conn.row_factory = sqlite3.Row
-+    conn.execute("PRAGMA busy_timeout=20000")
-+    return conn
-+
-+
-@@ -767,0 +776,10 @@
-+        # Same durable marker as bd_db admission. Check while holding SQLite's
-+        # write reservation, before stale-lock handling or any publisher effect.
-+        # Released is the only permissive recorded state; malformed/NULL blocks.
-+        maintenance = conn.execute(
-+            "SELECT value FROM system_config WHERE key=?",
-+            ("u1:inventory:maintenance:v1",)).fetchone()
-+        if maintenance is not None and maintenance[0] != "released":
-+            conn.rollback()
-+            return False, {"lock_key": lock_key,
-+                           "reason": "STOP_AND_PRESERVE_MAINTENANCE_HELD"}
-@@ -1351,0 +1370,9 @@
-+def op_u1_install(cfg: dict, request: dict, caller: str) -> dict:
-+    # Called only after the original bridge's bearer check. Approvals are never
-+    # taken from this request; the stricter U1 admission also requires a seal.
-+    import registry
-+    from publisher_channel.install_admission import dispatch
-+    _assert_seal(cfg)
-+    return dispatch(cfg, request, sys.modules[__name__], registry)
-+
-+
---- original/bridge.py
-+++ candidate/bridge.py
+--- a/bin/bridge.py
++++ b/bin/bridge.py
 @@ -24,0 +25,3 @@
 +# The reviewed U1 helper package lives at the existing channel root, alongside
 +# releases/, rather than accepting any import location from an HTTP request.
@@ -63,3 +31,47 @@
 @@ -318 +332 @@
 -                if write_op:
 +                if inflight_started:
+--- a/bin/executor.py
++++ b/bin/executor.py
+@@ -351,0 +352,8 @@
++def rw_existing_conn(db_path: str):
++    # U1 maintenance must never create an empty replacement for the official DB.
++    conn = sqlite3.connect(Path(db_path).as_uri()+"?mode=rw", uri=True, timeout=20)
++    conn.row_factory = sqlite3.Row
++    conn.execute("PRAGMA busy_timeout=20000")
++    return conn
++
++
+@@ -758,3 +766,3 @@
+-    Replicates bd_db.acquire_run_lock semantics exactly (same key, same
+-    BEGIN IMMEDIATE atomicity, same 2h stale rule). A fresh lock held by
+-    anyone else blocks us - we never steal valid locks.
++    Preserve the original key and transaction. Original Inventory locks across
++    dates block publication without expiry; legacy publisher-lock expiry is
++    unchanged. A timestamp cannot prove an Inventory process stopped.
+@@ -767,0 +776,15 @@
++        # Same durable marker as bd_db admission. Check while holding SQLite's
++        # write reservation, before stale-lock handling or any publisher effect.
++        # Released is the only permissive recorded state; malformed/NULL blocks.
++        maintenance = conn.execute(
++            "SELECT value FROM system_config WHERE key=?",
++            ("u1:inventory:maintenance:v1",)).fetchone()
++        if maintenance is not None and maintenance[0] != "released":
++            conn.rollback()
++            return False, {"lock_key": lock_key,
++                           "reason": "STOP_AND_PRESERVE_MAINTENANCE_HELD"}
++        from autonomy.inventory_maintenance import inventory_lock_blocked
++        if inventory_lock_blocked(conn):
++            conn.rollback()
++            return False, {"lock_key": lock_key,
++                           "reason": "STOP_AND_PRESERVE_ORIGINAL_INVENTORY_UNKNOWN"}
+@@ -1351,0 +1375,9 @@
++def op_u1_install(cfg: dict, request: dict, caller: str) -> dict:
++    # Called only after the original bridge's bearer check. Approvals are never
++    # taken from this request; the stricter U1 admission also requires a seal.
++    import registry
++    from publisher_channel.install_admission import dispatch
++    _assert_seal(cfg)
++    return dispatch(cfg, request, sys.modules[__name__], registry)
++
++

@@ -78,6 +78,8 @@ class MaintenanceTests(unittest.TestCase):
                     ('run_lock:daily_outreach:inventory:2026-11-02',value))
                 self.conn.commit()
                 self.assertFalse(bd_db.acquire_run_lock('inventory:2026-11-03','original',stale_after_seconds=-1))
+                with self.assertRaisesRegex(ValueError,'NOT_QUIESCENT'):m.acquire(self.conn,self.binding)
+                self.assertFalse(m.blocked(self.conn))
 
     def test_original_inventory_process_exit_preserves_unknown_lock(self):
         import subprocess,sys
