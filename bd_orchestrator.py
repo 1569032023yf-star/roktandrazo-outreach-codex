@@ -412,6 +412,7 @@ def stage_inventory(run_id: str, business_date: str, dry_run: bool):
     if not acquire_run_lock(f'inventory:{business_date}', run_id):
         finish_job_run(run_id, 'stopped', stop_reason='lock_conflict')
         return False
+    inventory_outcome_known = True
     try:
         from retail_city_queue import activate_next_city, complete_active_city_if_exhausted, seed_default_queue
         from discovery.discovery_service import DiscoveryService
@@ -479,11 +480,16 @@ def stage_inventory(run_id: str, business_date: str, dry_run: bool):
             return gap == 0
         finally:
             conn.close()
-    except Exception as exc:
-        finish_job_run(run_id, 'stopped', stop_reason=f'linked_backlog_error:{type(exc).__name__}')
+    except BaseException as exc:
+        # A failure may follow committed discovery/provider effects. Preserve
+        # the original lock until explicit reconciliation, even for SystemExit.
+        inventory_outcome_known = False
+        if isinstance(exc, Exception):
+            finish_job_run(run_id, 'stopped', stop_reason=f'linked_backlog_error:{type(exc).__name__}')
         raise
     finally:
-        release_run_lock(f'inventory:{business_date}', run_id)
+        if inventory_outcome_known:
+            release_run_lock(f'inventory:{business_date}', run_id)
 
 # ═══════════════════════════════════════════════════════════
 # Stage: end-of-day (17:30) — Dashboard + Daily Summary
