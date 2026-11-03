@@ -5,6 +5,8 @@ import subprocess
 import threading
 import time
 import tempfile
+from contextlib import ExitStack
+from autonomy.process_control import MaintenanceControl
 
 
 class OutputLimitExceeded(RuntimeError):
@@ -30,7 +32,7 @@ def _assert_live(assert_live):
 
 
 class _Capture:
-    def __init__(self, stdout_limit, stderr_limit, event_limit):
+    def __init__(self, stdout_limit, stderr_limit, event_limit, control=None):
         self.limits = (stdout_limit, stderr_limit)
         self.event_limit = event_limit
         self.data = [bytearray(), bytearray()]
@@ -38,6 +40,7 @@ class _Capture:
         self.failure = None
         self.cleanup_errors = []
         self.lock = threading.Lock()
+        self.control = control
 
     def fail(self, error):
         with self.lock:
@@ -53,6 +56,7 @@ class _Capture:
     def read(self, index, stream):
         line_size = 0
         total = 0
+        pending = bytearray()
         try:
             while True:
                 chunk = os.read(stream.fileno(), 8192)
@@ -66,6 +70,17 @@ class _Capture:
                     self.fail(OutputLimitExceeded('OUTPUT_LIMIT: ' + ('stdout' if index == 0 else 'stderr')))
                 if self.failure is None:
                     self.data[index].extend(chunk)
+                    if index == 0 and self.control is not None:
+                        pending.extend(chunk)
+                        while b'\n' in pending:
+                            line, _, remaining = pending.partition(b'\n')
+                            pending = bytearray(remaining)
+                            self.control.offer(bytes(line).rstrip(b'\r'))
+            if pending and self.control is not None:
+                # Normal output may end without LF, but a control request may not.
+                from autonomy.process_control import PREFIX, ControlProtocolError
+                if pending.startswith(PREFIX):
+                    raise ControlProtocolError('STOP_AND_PRESERVE_TORN_CONTROL')
         except BaseException as error:
             self.fail(error)
         finally:
@@ -113,7 +128,7 @@ def _finish(primary, cleanup_errors):
 
 def run_tree(args, *, timeout, cwd=None, stdout_limit_bytes=4*1024*1024,
              stderr_limit_bytes=1024*1024, event_limit_bytes=256*1024,
-             cleanup_timeout=10, stdin_bytes=None, assert_live=None):
+             cleanup_timeout=10, stdin_bytes=None, assert_live=None, maintenance_handler=None):
     """Supervise a tree; an optional trusted authority check must return True.
 
     Checks precede launch, precede Windows resume, run during execution and
@@ -122,26 +137,46 @@ def run_tree(args, *, timeout, cwd=None, stdout_limit_bytes=4*1024*1024,
     """
     if assert_live is not None and not callable(assert_live):
         raise ValueError('Callable live authority required')
+    if maintenance_handler is not None and (not callable(maintenance_handler) or stdin_bytes is not None):
+        raise ValueError('Private maintenance control requires callable handler and exclusive stdin')
     for value in (stdout_limit_bytes, stderr_limit_bytes, event_limit_bytes):
         if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
             raise ValueError('Output byte limits must be positive integers')
     if timeout <= 0 or cleanup_timeout <= 0:
         raise ValueError('Timeouts must be positive')
     _assert_live(assert_live)
-    capture = _Capture(stdout_limit_bytes, stderr_limit_bytes, event_limit_bytes)
     if stdin_bytes is not None and (type(stdin_bytes) is not bytes or len(stdin_bytes)>65536):
         raise ValueError('Bounded bytes input required')
     # Bounded temporary stdin handle, deleted on close; no tokens in argv.
     # Windows may back this with a named temporary file; production ACL remains required.
-    with tempfile.TemporaryFile() as input_stream:
-        if stdin_bytes is not None:
-            input_stream.write(stdin_bytes);input_stream.seek(0)
-        if os.name == 'nt':
-            result = _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, assert_live)
+    with ExitStack() as stack:
+        control = None
+        if maintenance_handler is None:
+            input_stream = stack.enter_context(tempfile.TemporaryFile())
+            if stdin_bytes is not None:
+                input_stream.write(stdin_bytes);input_stream.seek(0)
         else:
-            result = _posix_tree(args, timeout, cwd, capture, cleanup_timeout, input_stream, assert_live)
+            read_fd, write_fd = os.pipe()
+            input_stream = stack.enter_context(os.fdopen(read_fd, 'rb', buffering=0))
+            writer = stack.enter_context(os.fdopen(write_fd, 'wb', buffering=0))
+            # A child that sends checks without consuming acknowledgements must
+            # never block the supervising thread or defeat its timeout/cleanup.
+            os.set_blocking(write_fd, False)
+            control = MaintenanceControl(maintenance_handler, writer)
+        capture = _Capture(stdout_limit_bytes, stderr_limit_bytes, event_limit_bytes, control)
+        def tick():
+            _assert_live(assert_live)
+            if control is not None:
+                control.poll()
+            return True
+        if os.name == 'nt':
+            result = _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, tick)
+        else:
+            result = _posix_tree(args, timeout, cwd, capture, cleanup_timeout, input_stream, tick)
         try:
             _assert_live(assert_live)
+            if control is not None:
+                control.assert_drained()
         except BaseException as error:
             # Reaching here means the entire tree and output readers are gone.
             _finish(error, [])
@@ -213,6 +248,9 @@ def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, ass
         _fields_ = [('hProcess', w.HANDLE), ('hThread', w.HANDLE),
                     ('dwProcessId', w.DWORD), ('dwThreadId', w.DWORD)]
 
+    class STARTUPINFOEX(c.Structure):
+        _fields_ = [('StartupInfo', STARTUPINFO), ('lpAttributeList', c.c_void_p)]
+
     class BASIC_LIMIT(c.Structure):
         _fields_ = [('PerProcessUserTimeLimit', c.c_longlong), ('PerJobUserTimeLimit', c.c_longlong),
             ('LimitFlags', w.DWORD), ('MinimumWorkingSetSize', c.c_size_t),
@@ -246,8 +284,15 @@ def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, ass
     k.TerminateJobObject.argtypes = [w.HANDLE, w.UINT]
     k.TerminateJobObject.restype = w.BOOL
     k.CreateProcessW.argtypes = [w.LPCWSTR, w.LPWSTR, c.c_void_p, c.c_void_p, w.BOOL,
-        w.DWORD, c.c_void_p, w.LPCWSTR, c.POINTER(STARTUPINFO), c.POINTER(PROCESS_INFORMATION)]
+        w.DWORD, c.c_void_p, w.LPCWSTR, c.c_void_p, c.POINTER(PROCESS_INFORMATION)]
     k.CreateProcessW.restype = w.BOOL
+    k.InitializeProcThreadAttributeList.argtypes = [c.c_void_p, w.DWORD, w.DWORD, c.POINTER(c.c_size_t)]
+    k.InitializeProcThreadAttributeList.restype = w.BOOL
+    k.UpdateProcThreadAttribute.argtypes = [c.c_void_p, w.DWORD, c.c_size_t, c.c_void_p,
+                                          c.c_size_t, c.c_void_p, c.c_void_p]
+    k.UpdateProcThreadAttribute.restype = w.BOOL
+    k.DeleteProcThreadAttributeList.argtypes = [c.c_void_p]
+    k.DeleteProcThreadAttributeList.restype = None
     k.ResumeThread.argtypes = [w.HANDLE]
     k.ResumeThread.restype = w.DWORD
     k.WaitForSingleObject.argtypes = [w.HANDLE, w.DWORD]
@@ -273,6 +318,8 @@ def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, ass
     streams = []
     writes = []
     input_file = None
+    attributes = None
+    attributes_initialized = False
     try:
         job = checked(k.CreateJobObjectW(None, None))
         limits = EXTENDED_LIMIT()
@@ -286,13 +333,25 @@ def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, ass
         handles = [msvcrt.get_osfhandle(f.fileno()) for f in (input_file, *writes)]
         for handle in handles:
             os.set_handle_inheritable(handle, True)
-        startup = STARTUPINFO()
-        startup.cb = c.sizeof(startup)
+        extended = STARTUPINFOEX()
+        size = c.c_size_t()
+        k.InitializeProcThreadAttributeList(None, 1, 0, c.byref(size))
+        if not size.value or size.value > 65536:
+            raise ProcessCleanupError('PROCESS_HANDLE_LIST_SIZE')
+        attributes = c.create_string_buffer(size.value)
+        checked(k.InitializeProcThreadAttributeList(attributes, 1, 0, c.byref(size)))
+        attributes_initialized = True
+        allowed_handles = (w.HANDLE*len(handles))(*handles)
+        checked(k.UpdateProcThreadAttribute(attributes, 0, 0x20002, allowed_handles,
+                                           c.sizeof(allowed_handles), None, None))
+        extended.lpAttributeList = c.cast(attributes, c.c_void_p)
+        startup = extended.StartupInfo
+        startup.cb = c.sizeof(extended)
         startup.dwFlags = 0x100
         startup.hStdInput, startup.hStdOutput, startup.hStdError = handles
         command = c.create_unicode_buffer(subprocess.list2cmdline(args))
-        checked(k.CreateProcessW(None, command, None, None, True, 0x4 | 0x08000000,
-            None, str(cwd) if cwd else None, c.byref(startup), c.byref(info)))
+        checked(k.CreateProcessW(None, command, None, None, True, 0x4 | 0x08000000 | 0x80000,
+            None, str(cwd) if cwd else None, c.byref(extended), c.byref(info)))
         for stream in writes:
             stream.close()
         checked(k.AssignProcessToJobObject(job, info.hProcess))
@@ -317,6 +376,8 @@ def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, ass
     except BaseException as error:
         primary = error
     finally:
+        if attributes_initialized:
+            k.DeleteProcThreadAttributeList(attributes)
         # Every failure, including suspended assignment failure, uses verified cleanup.
         if info.hProcess:
             try:

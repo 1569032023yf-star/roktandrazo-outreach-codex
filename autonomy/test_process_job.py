@@ -108,7 +108,7 @@ class ProcessTests(unittest.TestCase):
     def test_windows_assignment_and_query_failures(self):
         import ctypes
         real_dll = ctypes.WinDLL
-        for name in ('AssignProcessToJobObject', 'QueryInformationJobObject', 'WaitForSingleObject'):
+        for name in ('AssignProcessToJobObject', 'QueryInformationJobObject', 'WaitForSingleObject', 'UpdateProcThreadAttribute'):
             class Wrapper:
                 def __init__(self, fn):
                     self.fn = fn
@@ -128,6 +128,25 @@ class ProcessTests(unittest.TestCase):
                     self.assertFalse(caught.exception.cleanup_verified)
                 else:
                     self.assertTrue(caught.exception.cleanup_verified)
+
+    @unittest.skipUnless(os.name == 'nt', 'Windows handle inheritance')
+    def test_only_declared_standard_handles_are_inherited(self):
+        import msvcrt
+        with tempfile.TemporaryDirectory() as folder:
+            sentinel=Path(folder)/'must-not-inherit.bin'
+            with sentinel.open('wb') as stream:
+                handle=msvcrt.get_osfhandle(stream.fileno())
+                os.set_handle_inheritable(handle,True)
+                code=('import ctypes as c;from ctypes import wintypes as w;'
+                      'k=c.WinDLL("kernel32",use_last_error=True);'
+                      'k.GetFinalPathNameByHandleW.argtypes=[w.HANDLE,w.LPWSTR,w.DWORD,w.DWORD];'
+                      'b=c.create_unicode_buffer(4096);'
+                      'n=k.GetFinalPathNameByHandleW('+str(handle)+',b,4096,0);'
+                      'print(b.value if n else "NOT_INHERITED")')
+                result=self.run_code(code)
+                self.assertEqual(result.returncode,0,result.stderr)
+                self.assertNotIn(sentinel.name,result.stdout)
+                self.assertTrue(result.cleanup_verified)
 
 
     def test_reader_close_failure_is_captured_and_primary_timeout_retained(self):

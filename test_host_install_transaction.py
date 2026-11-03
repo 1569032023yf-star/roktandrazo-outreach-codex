@@ -17,7 +17,7 @@ class HostInstallTests(unittest.TestCase):
         helper=helper.replace("r'C:\\Program Files\\RoktU1Bridge\\v1'",repr(str(self.code))).replace("r'C:\\ProgramData\\RoktU1InstallAudit'",repr(str(self.audit))).replace("r'C:\\ProgramData\\RoktU1Bridge'",repr(str(self.state)))
         (self.package/'host_file_transaction.py').write_text(helper,encoding='utf-8')
 
-    def run_coordinator(self, *, upgrade=False, recover=False, rollback=False, fail='', death='', manifest='a', previous=None, operation=None, authority=True, maintenance_fail='', authority_action=None):
+    def run_coordinator(self, *, upgrade=False, recover=False, rollback=False, fail='', death='', manifest='a', previous=None, operation=None, authority=True, maintenance_fail='', authority_action=None, maintenance_session=None, control_deny_phase=None):
         source=Path('autonomy/windows/Host-InstallTransaction.ps1').read_text(encoding='utf-8')
         source=source.replace("$audit='C:\\ProgramData\\RoktU1InstallAudit'","$audit="+self.q(self.audit))
         source=source.replace("$mutex=New-Object Threading.Mutex($false,'Global\\RoktU1BridgeInstall')", "$mutex=New-Object Threading.Mutex($false,'Local\\U1Test"+hashlib.sha256(str(self.root).encode()).hexdigest()+"')")
@@ -46,11 +46,14 @@ function Invoke-CimMethod {param($ClassName,$MethodName,$Arguments,$InputObject)
         for n,b in files.items():
             p=self.package/n;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(b)
             rows.append(dict(path=n,sha256=hashlib.sha256(b).hexdigest()))
-        pre+="$m='"+json.dumps(dict(files=rows),separators=(',',':'))+"' | ConvertFrom-Json\n"
+        pre+="$m='"+json.dumps(dict(files=rows,source_commit='b'*40),separators=(',',':'))+"' | ConvertFrom-Json\n"
         # Lifecycle fixtures double authority alongside SCM/ACL. Dedicated
         # publisher tests exercise the real shared DB authority separately.
         expected_action=authority_action or ('upgrade' if upgrade else 'recover' if recover else 'rollback' if rollback else 'install')
         pre+="\n$expectedAction='"+expected_action+"'; $script:authorityLost=$false; $maintenance=[pscustomobject]@{}; $maintenance | Add-Member -MemberType ScriptMethod -Name AssertHeld -Value {param($op,$source,$manifest,$action); if($manifest -cne $ApprovedManifestSha256 -or $action -cne $expectedAction){throw 'BINDING_MISMATCH'}; if($script:authorityLost){return $false}; return $true}\n"
+        if maintenance_session is not None:
+            bridge=Path('autonomy/windows/Maintenance-Authority.ps1').resolve()
+            pre+='\n. '+self.q(bridge)+'\n$maintenance=New-HostMaintenanceAuthority\n'
         call='\nInvoke-HostInstallTransaction -Execute'
         if authority:call+=' -MaintenanceAuthority $maintenance'
         for flag,value in (('Upgrade',upgrade),('RecoverInstall',recover),('Rollback',rollback)):
@@ -58,6 +61,18 @@ function Invoke-CimMethod {param($ClassName,$MethodName,$Arguments,$InputObject)
         if operation:call+=' -OperationId '+operation
         if previous:call+=' -ApprovedPreviousReceiptSha256 '+previous
         path=self.root/'run.ps1';path.write_text(pre+source+call,encoding='utf-8-sig')
+        if maintenance_session is not None:
+            from autonomy.process_job import run_tree
+            handler=maintenance_session.maintenance_handler()
+            def checked(request):
+                if control_deny_phase:
+                    journal=self.audit/('install-'+(operation or manifest*64)+'.jsonl')
+                    lines=journal.read_text().splitlines() if journal.exists() else []
+                    if lines and json.loads(lines[-1])['phase']==control_deny_phase:
+                        return False
+                return handler(request)
+            return run_tree(['pwsh','-NoProfile','-File',str(path)],timeout=90,
+                            assert_live=maintenance_session.process_guard(),maintenance_handler=checked)
         return subprocess.run(['pwsh','-NoProfile','-File',str(path)],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
 
     @staticmethod

@@ -118,6 +118,15 @@ class InstallMaintenance:
             return True
         return check
 
+    def maintenance_handler(self):
+        """Private stdio requests are assertions, never installation grants."""
+        live = self.process_guard()
+        def check(request):
+            live()
+            return self.assert_held(request['target_operation_id'], request['source_commit'],
+                                    request['manifest_sha256'], request['action'])
+        return check
+
     def _verify_and_release(self, observed, verifier):
         self._transition('FINAL_VERIFY_INTENT')
         # The trusted publisher must independently read target/service/ACL state;
