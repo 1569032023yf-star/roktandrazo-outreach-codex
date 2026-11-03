@@ -191,6 +191,32 @@ class InstallMaintenance:
             raise ValueError('STOP_AND_PRESERVE_UNKNOWN_RECOVERY')
         return child
 
+    def abandon_unstarted(self, confirm_unstarted):
+        """Explicit known-no-launch release; never claim installation succeeded.
+
+        HELD and absence of process intent are checked inside the same write
+        reservation that commits the receipt/release. INSTALL_INTENT is unknown.
+        """
+        try:
+            self.conn.execute('BEGIN IMMEDIATE')
+            authority.assert_held(self.conn,self.binding)
+            rows,_=self._records()
+            if (not rows or rows[-1]['phase']!='HELD' or set(self.context)!={'binding','target_operation_id','action'}):
+                # An unstarted compensation child can still have partial parent
+                # effects. It may hand off again, but cannot abandon exclusion.
+                raise ValueError('STOP_AND_PRESERVE_NOT_UNSTARTED_ROOT')
+            proof=confirm_unstarted(self)
+            if (type(proof) is not dict or set(proof)!={'context','not_started','evidence_sha256'} or
+                    proof['context']!=self.context or proof['not_started'] is not True or
+                    type(proof['evidence_sha256']) is not str or not re.fullmatch('[0-9a-f]{64}',proof['evidence_sha256'])):
+                raise ValueError('STOP_AND_PRESERVE_UNSTARTED_PROOF_REQUIRED')
+            result=dict(context=self.context,outcome='NOT_STARTED',evidence_sha256=proof['evidence_sha256'])
+            self._append('ABORTED_NOT_STARTED',result)
+            self.conn.execute("UPDATE system_config SET value='released',updated_at=datetime('now') WHERE key=?",(authority.KEY,))
+            self._append('RELEASED',result);self.conn.commit();return result
+        except BaseException:
+            self.conn.rollback();raise
+
     def compensate(self, recovery_id, installer, verifier, *, confirm_stopped):
         """Explicit compensation under the SAME exclusion, never forward replay.
 
@@ -210,6 +236,10 @@ class InstallMaintenance:
         try:
             self.conn.execute('BEGIN IMMEDIATE')
             authority.assert_held(self.conn, self.binding)
+            # Recheck within the handoff reservation: a HELD/no-intent proof
+            # must not race another caller advancing to INSTALL_INTENT/launch.
+            if confirm_stopped(self)!=stopped:
+                raise ValueError('STOP_AND_PRESERVE_PROCESS_PROOF_CHANGED')
             records, _ = self._records()
             if (not records or records[-1]['phase'] not in ('HELD', 'UNKNOWN', 'INSTALL_INTENT', 'INSTALLER_RETURNED', 'FINAL_VERIFY_INTENT') or child._records()[0]):
                 raise ValueError('STOP_AND_PRESERVE_EXPLICIT_RECOVERY_REQUIRED')

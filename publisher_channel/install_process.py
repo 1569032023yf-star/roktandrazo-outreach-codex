@@ -82,13 +82,26 @@ class InstallProcessEvidence:
         if session is not self.session or canonical(session.context)!=self.context:reject('CONTEXT_CHANGED')
         authority.assert_held(session.conn,session.binding)
         rows,_=self._records()
+        if not rows:
+            proof=self.confirm_unstarted(session)
+            # No PID ever existed under this exact HELD session. Domain-separated
+            # journal proof is not a fabricated Windows process identity.
+            return dict(context=session.context,stopped=True,process_identity_sha256=proof['evidence_sha256'])
         if len(rows)!=3:reject('TERMINATION_UNKNOWN')
         return dict(context=session.context,stopped=True,process_identity_sha256=digest(rows[1]['event']))
+
+    def confirm_unstarted(self,session):
+        if session is not self.session or canonical(session.context)!=self.context:reject('CONTEXT_CHANGED')
+        authority.assert_held(session.conn,session.binding)
+        process,_=self._records();rows,previous=session._records()
+        if process or not rows or rows[-1]['phase']!='HELD':reject('NO_PROCESS_INTENT_NOT_PROVEN')
+        return dict(context=session.context,not_started=True,evidence_sha256=digest(dict(
+            kind='NO_PROCESS_INTENT',session_key=session.key,context=session.context,session_journal_sha256=previous)))
 
     def reconcile_stopped(self):
         """Explicit read-only OS reconciliation; never launch or terminate/replay."""
         rows,_=self._records()
-        if len(rows)==3:return self.confirm_stopped(self.session)
+        if len(rows) in (0,3):return self.confirm_stopped(self.session)
         if len(rows)!=2:reject('INSTANCE_UNKNOWN')
         instance=rows[1]['event']
         _windows_stopped(instance,rows[0]['event'])

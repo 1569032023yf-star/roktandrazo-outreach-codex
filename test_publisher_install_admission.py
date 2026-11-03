@@ -16,6 +16,8 @@ from unittest.mock import patch
 from publisher_channel import bridge
 from publisher_channel import install_admission as admission
 from publisher_channel import install_command as command
+from publisher_channel.install_maintenance import InstallMaintenance
+from publisher_channel.install_process import InstallProcessEvidence
 from autonomy import inventory_maintenance as authority
 import registry
 
@@ -95,7 +97,10 @@ class AdmissionTests(unittest.TestCase):
                     return dict(context=actual.context,outcome='ROLLED_BACK' if actual.context['action'] in ('recover','rollback') else 'COMMITTED',evidence_sha256='3'*64)
                 return verify
             def confirm_stopped(self,session):return dict(context=session.context,stopped=True,process_identity_sha256='4'*64)
-            def reconcile_stopped(self,session):return self.confirm_stopped(session)
+            def confirm_unstarted(self,session):return InstallProcessEvidence(session,[sys.executable,'-c','pass']).confirm_unstarted(session)
+            def reconcile_stopped(self,session):
+                if session._records()[0][-1]['phase']=='HELD':return InstallProcessEvidence(session,[sys.executable,'-c','pass']).reconcile_stopped()
+                return self.confirm_stopped(session)
         return Adapter
 
     def test_original_auth_and_closed_gate_do_not_open_db(self):
@@ -167,6 +172,32 @@ class AdmissionTests(unittest.TestCase):
         self.cfg['u1_install']['inventory_id']='1784775229336';self.cfg['lock']['key_prefix']='another:';self.seal()
         code,value=self.post(self.req);self.assertEqual(code,400);self.assertIn('ORIGINAL_INVENTORY_LOCK',value['error'])
         self.assertEqual(self.rows(),[])
+
+    def test_http_root_held_reconciliation_reports_not_started_without_launch(self):
+        self.enable_fixture()
+        binding=dict(inventory_id='1784775229336',operation_id='1'*64,source_commit='a'*40,manifest_sha256='b'*64,lease_nonce='7'*64)
+        with closing(sqlite3.connect(self.db)) as conn:InstallMaintenance(conn,binding,target_operation_id='2'*64,action='install').acquire()
+        adapter=self.fake_adapter()
+        with patch.object(admission,'InstallCommand',adapter):
+            code,value=self.post(dict(release_id='fixed',invocation_id='1'*64,action='reconcile',recovery_path=[]))
+        self.assertEqual(code,200,value);self.assertEqual(value['state'],'NOT_STARTED');self.assertEqual(adapter.calls,0)
+        self.assertEqual(dict(self.rows())[authority.KEY],'released')
+
+    def test_http_unstarted_child_keeps_exclusion_until_explicit_compensation(self):
+        self.enable_fixture()
+        binding=dict(inventory_id='1784775229336',operation_id='1'*64,source_commit='a'*40,manifest_sha256='b'*64,lease_nonce='7'*64)
+        with closing(sqlite3.connect(self.db)) as conn:
+            session=InstallMaintenance(conn,binding,target_operation_id='2'*64,action='install');session.acquire()
+            evidence=InstallProcessEvidence(session,[sys.executable,'-c','pass'])
+            with patch.object(InstallMaintenance,'_execute_held',side_effect=OSError('exit after handoff')):
+                with self.assertRaises(OSError):session.compensate('8'*64,lambda _:None,lambda *_:None,confirm_stopped=evidence.confirm_stopped)
+        adapter=self.fake_adapter()
+        with patch.object(admission,'InstallCommand',adapter):
+            code,_=self.post(dict(release_id='fixed',invocation_id='1'*64,action='reconcile',recovery_path=['8'*64]))
+            self.assertEqual(code,400);self.assertNotEqual(dict(self.rows())[authority.KEY],'released');self.assertEqual(adapter.calls,0)
+            code,value=self.post(dict(release_id='fixed',invocation_id='1'*64,action='compensate',recovery_path=['8'*64],recovery_id='9'*64))
+            self.assertEqual(code,200,value);self.assertEqual(value['state'],'ROLLED_BACK');self.assertEqual(adapter.calls,1)
+        self.assertEqual(dict(self.rows())[authority.KEY],'released')
 
 
 if __name__=='__main__':unittest.main()

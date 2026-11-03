@@ -107,6 +107,7 @@ class InstallCommand:
         return result
 
     def confirm_stopped(self,session):return self.process(session).confirm_stopped(session)
+    def confirm_unstarted(self,session):return self.process(session).confirm_unstarted(session)
     def reconcile_stopped(self,session):return self.process(session).reconcile_stopped()
 
     def verifier(self,session):

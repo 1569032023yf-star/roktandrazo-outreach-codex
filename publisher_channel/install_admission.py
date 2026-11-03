@@ -113,8 +113,12 @@ def dispatch(cfg,value,executor,registry):
             with adapter:
                 if action in ('install','upgrade','rollback'):proof=session.execute(adapter,adapter.verifier(session))
                 elif action=='reconcile':
-                    adapter.reconcile_stopped(session)
-                    proof=session.reconcile(adapter.verifier(session))
+                    rows,_=session._records()
+                    if rows[-1]['phase']=='HELD':
+                        proof=session.abandon_unstarted(adapter.confirm_unstarted)
+                    else:
+                        adapter.reconcile_stopped(session)
+                        proof=session.reconcile(adapter.verifier(session))
                 else:
                     adapter.reconcile_stopped(session)
                     child=session._compensation_child(req['recovery_id'])

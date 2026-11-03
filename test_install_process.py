@@ -8,6 +8,7 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest.mock import patch
 
 from autonomy import inventory_maintenance as authority
 from autonomy.process_job import run_tree
@@ -69,6 +70,52 @@ class InstallProcessTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'INSTANCE_UNKNOWN'):self.evidence.reconcile_stopped()
         with self.assertRaisesRegex(ValueError,'REPLAY'):self.session.execute(lambda _:self.fail('replayed'),lambda *_:None)
         self.assertTrue(authority.blocked(self.conn))
+
+    def test_held_without_process_intent_has_bound_proof_and_explicit_root_abandon(self):
+        self.session.acquire();evidence=InstallProcessEvidence(self.session,[sys.executable,'-c','pass'])
+        proof=evidence.confirm_unstarted(self.session)
+        self.assertTrue(proof['not_started']);self.assertEqual(evidence.reconcile_stopped()['process_identity_sha256'],proof['evidence_sha256'])
+        def confirm(session):
+            self.assertTrue(self.conn.in_transaction)
+            return evidence.confirm_unstarted(session)
+        result=self.session.abandon_unstarted(confirm)
+        self.assertEqual(result['outcome'],'NOT_STARTED');self.assertFalse(authority.blocked(self.conn))
+        self.assertEqual([r['phase'] for r in self.session._records()[0]],['HELD','ABORTED_NOT_STARTED','RELEASED'])
+        self.assertEqual(evidence._records()[0],[])
+        with self.assertRaisesRegex(ValueError,'REPLAY'):self.session.execute(lambda _:self.fail('replay'),lambda *_:None)
+
+    def test_zero_process_records_after_install_intent_remain_unknown(self):
+        self.session.acquire();evidence=InstallProcessEvidence(self.session,[sys.executable,'-c','pass'])
+        self.session._transition('INSTALL_INTENT')
+        with self.assertRaisesRegex(ValueError,'NO_PROCESS_INTENT_NOT_PROVEN'):evidence.reconcile_stopped()
+        with self.assertRaisesRegex(ValueError,'NOT_UNSTARTED_ROOT'):self.session.abandon_unstarted(evidence.confirm_unstarted)
+        self.assertTrue(authority.blocked(self.conn))
+
+    def test_compensation_rechecks_no_launch_proof_in_handoff_transaction(self):
+        self.session.acquire();evidence=InstallProcessEvidence(self.session,[sys.executable,'-c','pass']);calls=[]
+        def confirm(session):
+            calls.append(self.conn.in_transaction)
+            proof=evidence.confirm_stopped(session)
+            if len(calls)==1:self.session._transition('INSTALL_INTENT')
+            return proof
+        with self.assertRaisesRegex(ValueError,'NO_PROCESS_INTENT_NOT_PROVEN'):
+            self.session.compensate('1'*64,lambda _:self.fail('launched'),lambda *_:None,confirm_stopped=confirm)
+        self.assertEqual(calls,[False,True]);self.assertEqual(self.session._records()[0][-1]['phase'],'INSTALL_INTENT')
+        self.assertTrue(authority.blocked(self.conn))
+
+    def test_unstarted_recovery_child_can_handoff_but_cannot_release_partial_parent(self):
+        self.session.acquire();parent=InstallProcessEvidence(self.session,[sys.executable,'-c','pass'])
+        parent_proof=parent.confirm_unstarted(self.session)
+        with patch.object(InstallMaintenance,'_execute_held',side_effect=OSError('exit after atomic handoff')):
+            with self.assertRaises(OSError):self.session.compensate('1'*64,lambda _:None,lambda *_:None,confirm_stopped=parent.confirm_stopped)
+        child=self.session.compensation_session('1'*64);evidence=InstallProcessEvidence(child,[sys.executable,'-c','pass'])
+        self.assertTrue(evidence.reconcile_stopped()['stopped'])
+        self.assertNotEqual(evidence.confirm_unstarted(child)['evidence_sha256'],parent_proof['evidence_sha256'])
+        with self.assertRaisesRegex(ValueError,'NOT_UNSTARTED_ROOT'):child.abandon_unstarted(evidence.confirm_unstarted)
+        self.assertTrue(authority.blocked(self.conn))
+        def verify(session,_):return dict(context=session.context,outcome='ROLLED_BACK',evidence_sha256='5'*64)
+        child.compensate('2'*64,lambda s:s.process_guard()(),verify,confirm_stopped=evidence.confirm_stopped)
+        self.assertFalse(authority.blocked(self.conn))
 
     def test_full_coordinator_terminal_verifier_uses_actual_process_evidence(self):
         fixture=terminal_fixture.InstallVerifierTests();fixture.setUp();self.addCleanup(fixture.doCleanups)
