@@ -10,7 +10,7 @@ class ProvisionTests(unittest.TestCase):
    plan=dict(schema='rokt.u1-provision-plan.v1',inventory_id='1784775229336',**files,release_root=str(root),credential_expires_at=int(time.time())+3600)
    for key in files:plan['token_sha256' if key=='token_file' else key+'_sha256']=hashlib.sha256(Path(files[key]).read_bytes()).hexdigest()
    path=root/'plan.json';path.write_text(json.dumps(plan));sha=hashlib.sha256(path.read_bytes()).hexdigest()
-   source=Path('autonomy/windows/Install-DisabledHost.ps1').read_text()
+   source=Path('autonomy/windows/Host-PackagePreparation.ps1').read_text()
    block=source[source.index('# Generate exact supervisor'):source.index('# The helper is manifest-hashed')]
    script=root/'check.ps1'
    pre="param($RuntimePlan,$ApprovedRuntimePlanSha256)\n$ErrorActionPreference='Stop'\nfunction Assert-NoReparseAncestors($p) {}\n$code='C:\\Program Files\\RoktU1Bridge\\v1'\n$state='C:\\ProgramData\\RoktU1Bridge'\n$m=@{files=@(@{path='service/u1_bootstrap.py';sha256=('a'*64)})}\n"
