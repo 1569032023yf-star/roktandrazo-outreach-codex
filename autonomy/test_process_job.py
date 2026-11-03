@@ -87,7 +87,8 @@ class ProcessTests(unittest.TestCase):
                 return not marker.exists()
             code = ('import subprocess,sys,time,json,os,pathlib;'
                     'child=subprocess.Popen([sys.executable,"-c","import time;time.sleep(30)"]);'
-                    'pathlib.Path('+repr(str(marker))+').write_text(json.dumps([os.getpid(),child.pid]));'
+                    'p=pathlib.Path('+repr(str(marker))+');'
+                    'tmp=p.with_suffix(".tmp");tmp.write_text(json.dumps([os.getpid(),child.pid]));os.replace(tmp,p);'
                     'time.sleep(30)')
             with self.assertRaises(p.ProcessAuthorityLost) as caught:
                 self.run_code(code, assert_live=check)

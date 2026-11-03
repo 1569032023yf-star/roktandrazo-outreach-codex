@@ -39,13 +39,15 @@ class _Capture:
         self.threads = []
         self.failure = None
         self.cleanup_errors = []
-        self.lock = threading.Lock()
+        self.lock = control.lock if control is not None else threading.Lock()
         self.control = control
 
     def fail(self, error):
         with self.lock:
             if self.failure is None:
                 self.failure = error
+            if self.control is not None and self.control.failure is None:
+                self.control.failure = error
 
     def start(self, streams):
         for index, stream in enumerate(streams):
@@ -166,6 +168,8 @@ def run_tree(args, *, timeout, cwd=None, stdout_limit_bytes=4*1024*1024,
         capture = _Capture(stdout_limit_bytes, stderr_limit_bytes, event_limit_bytes, control)
         def tick():
             _assert_live(assert_live)
+            if capture.failure is not None:
+                raise capture.failure
             if control is not None:
                 control.poll()
             return True

@@ -33,20 +33,38 @@ class MaintenanceControl:
         self.owner = threading.get_ident()
         self.requests = queue.Queue(maxsize=1)
         self.sequence = 0
+        self.lock = threading.Lock()
+        self.failure = None
 
     def offer(self, line):
         if not line.startswith(PREFIX):
             return
-        if len(line) > MAX_REQUEST_BYTES:
-            raise ControlProtocolError('STOP_AND_PRESERVE_CONTROL_LENGTH')
-        try:
-            self.requests.put_nowait(line[len(PREFIX):])
-        except queue.Full as error:
-            raise ControlProtocolError('STOP_AND_PRESERVE_CONTROL_OVERLAP') from error
+        with self.lock:
+            if self.failure is not None:
+                raise self.failure
+            try:
+                if len(line) > MAX_REQUEST_BYTES:
+                    raise ControlProtocolError('STOP_AND_PRESERVE_CONTROL_LENGTH')
+                self.requests.put_nowait(line[len(PREFIX):])
+            except (queue.Full, ControlProtocolError) as error:
+                self.failure = ControlProtocolError('STOP_AND_PRESERVE_CONTROL_OVERLAP_OR_LENGTH')
+                raise self.failure from error
 
     def poll(self):
+        try:
+            return self._poll()
+        except BaseException as error:
+            with self.lock:
+                if self.failure is None:
+                    self.failure = error
+            raise
+
+    def _poll(self):
         if threading.get_ident() != self.owner:
             raise ControlProtocolError('STOP_AND_PRESERVE_CONTROL_THREAD')
+        with self.lock:
+            if self.failure is not None:
+                raise self.failure
         try:
             raw = self.requests.get_nowait()
         except queue.Empty:
@@ -68,11 +86,20 @@ class MaintenanceControl:
         # Nonblocking writer, a <64-byte response and bounded total count. An
         # unread/full input pipe fails closed instead of hanging supervision.
         # Never write arbitrary child-provided data back into the pipe.
-        if self.writer.write(reply) != len(reply):
-            raise ControlProtocolError('STOP_AND_PRESERVE_CONTROL_SHORT_WRITE')
-        self.writer.flush()
-        self.sequence += 1
+        # Reader failure and ACK share the same lock. Check again after the
+        # potentially slow authority callback; a known failure can never receive
+        # a late ACK. Capture.fail uses this exact lock and sticky failure slot.
+        with self.lock:
+            if self.failure is not None:
+                raise self.failure
+            if self.writer.write(reply) != len(reply):
+                raise ControlProtocolError('STOP_AND_PRESERVE_CONTROL_SHORT_WRITE')
+            self.writer.flush()
+            self.sequence += 1
 
     def assert_drained(self):
-        if not self.requests.empty():
-            raise ControlProtocolError('STOP_AND_PRESERVE_CONTROL_UNACKNOWLEDGED')
+        with self.lock:
+            if self.failure is not None:
+                raise self.failure
+            if not self.requests.empty():
+                raise ControlProtocolError('STOP_AND_PRESERVE_CONTROL_UNACKNOWLEDGED')

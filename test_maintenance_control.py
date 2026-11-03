@@ -69,14 +69,46 @@ class ControlTests(unittest.TestCase):
         control.offer(self.request(action='rollback'))
         with self.assertRaisesRegex(ValueError,'BINDING_MISMATCH'):control.poll()
         self.assertEqual(writer.getvalue(),b'')
+        control=MaintenanceControl(self.session.maintenance_handler(),writer)
         control.offer(self.request());control.poll()
         self.assertEqual(writer.getvalue(),b'{"sequence":0,"held":true}\n')
         control.offer(self.request())
         with self.assertRaisesRegex(ControlProtocolError,'SEQUENCE'):control.poll()
-        control.offer(self.request(1)[:-1]+b',"sequence":1}')
+        control=MaintenanceControl(self.session.maintenance_handler(),io.BytesIO())
+        control.offer(self.request()[:-1]+b',"sequence":0}')
         with self.assertRaises(ControlProtocolError):control.poll()
-        control.offer(self.request(1))
-        with self.assertRaisesRegex(ControlProtocolError,'OVERLAP'):control.offer(self.request(2))
+        control=MaintenanceControl(self.session.maintenance_handler(),io.BytesIO())
+        control.offer(self.request())
+        with self.assertRaisesRegex(ControlProtocolError,'OVERLAP'):control.offer(self.request(1))
+
+    def test_known_reader_failure_never_acknowledges_queued_request(self):
+        from autonomy.process_job import _Capture
+        writer=io.BytesIO();control=MaintenanceControl(lambda _:True,writer)
+        capture=_Capture(65536,65536,4096,control)
+        with tempfile.TemporaryFile() as source:
+            source.write(self.request()+b'\n'+self.request(1)+b'\n');source.seek(0)
+            capture.read(0,source)
+        self.assertIsInstance(capture.failure,ControlProtocolError)
+        with self.assertRaises(ControlProtocolError):control.poll()
+        self.assertEqual(writer.getvalue(),b'')
+
+    def test_reader_failure_during_authority_check_prevents_late_ack(self):
+        from autonomy.process_job import _Capture
+        for overlap in (True,False):
+            writer=io.BytesIO()
+            def handler(_):
+                if overlap:
+                    control.offer(self.request(1))
+                    try:control.offer(self.request(2))
+                    except ControlProtocolError:pass
+                else:
+                    capture.fail(OSError('injected reader failure'))
+                return True
+            control=MaintenanceControl(handler,writer)
+            capture=_Capture(65536,65536,4096,control)
+            control.offer(self.request())
+            with self.assertRaises((ControlProtocolError,OSError)):control.poll()
+            self.assertEqual(writer.getvalue(),b'')
 
     def test_child_eof_torn_requests_and_unacknowledged_exit_are_unknown(self):
         self.session.acquire();self.session._transition('INSTALL_INTENT')
