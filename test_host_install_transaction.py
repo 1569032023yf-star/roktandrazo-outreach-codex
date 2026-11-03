@@ -5,6 +5,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import shutil
 import unittest
 
 
@@ -17,7 +18,7 @@ class HostInstallTests(unittest.TestCase):
         helper=helper.replace("r'C:\\Program Files\\RoktU1Bridge\\v1'",repr(str(self.code))).replace("r'C:\\ProgramData\\RoktU1InstallAudit'",repr(str(self.audit))).replace("r'C:\\ProgramData\\RoktU1Bridge'",repr(str(self.state)))
         (self.package/'host_file_transaction.py').write_text(helper,encoding='utf-8')
 
-    def run_coordinator(self, *, upgrade=False, recover=False, rollback=False, fail='', death='', manifest='a', previous=None, operation=None, authority=True, maintenance_fail='', authority_action=None, maintenance_session=None, control_deny_phase=None):
+    def run_coordinator(self, *, upgrade=False, recover=False, rollback=False, fail='', death='', manifest='a', previous=None, operation=None, authority=True, maintenance_fail='', authority_action=None, maintenance_session=None, control_deny_phase=None, process_evidence=None):
         source=Path('autonomy/windows/Host-InstallTransaction.ps1').read_text(encoding='utf-8')
         source=source.replace("$audit='C:\\ProgramData\\RoktU1InstallAudit'","$audit="+self.q(self.audit))
         source=source.replace("$mutex=New-Object Threading.Mutex($false,'Global\\RoktU1BridgeInstall')", "$mutex=New-Object Threading.Mutex($false,'Local\\U1Test"+hashlib.sha256(str(self.root).encode()).hexdigest()+"')")
@@ -81,8 +82,9 @@ function Invoke-CimMethod {param($ClassName,$MethodName,$Arguments,$InputObject)
                     if lines and json.loads(lines[-1])['phase']==control_deny_phase:
                         return False
                 return handler(request)
-            return run_tree(['pwsh','-NoProfile','-File',str(path)],timeout=90,
-                            assert_live=maintenance_session.process_guard(),maintenance_handler=checked)
+            return run_tree([shutil.which('pwsh'),'-NoProfile','-File',str(path)],timeout=90,
+                            assert_live=maintenance_session.process_guard(),maintenance_handler=checked,
+                            lifecycle=process_evidence.record if process_evidence else None)
         return subprocess.run(['pwsh','-NoProfile','-File',str(path)],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
 
     @staticmethod

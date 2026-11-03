@@ -16,7 +16,7 @@ MODULES=('test_windows_acl_transaction','test_disabled_host_package','test_insta
  'test_install_contract','test_independent_install_plan','test_u1_provision','test_u1_manifest_closure',
  'test_u1_host_runtime','test_host_remediation','test_host_preparation','test_release_store',
  'test_process_backend','autonomy.test_process_job','test_single_slot_adapter','test_host_readonly_http','test_host_file_transaction',
- 'test_host_install_transaction','test_inventory_event_bridge','test_maintenance_control','test_install_verifier','test_inventory_maintenance',
+ 'test_host_install_transaction','test_inventory_event_bridge','test_maintenance_control','test_install_verifier','test_install_process','test_inventory_maintenance',
  'test_publisher_maintenance','test_publisher_install_maintenance')
 GROUPS={'host':MODULES[:-3], 'authority':MODULES[-3:]}
 

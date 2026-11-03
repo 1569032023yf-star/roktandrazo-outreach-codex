@@ -5,6 +5,9 @@ import subprocess
 import threading
 import time
 import tempfile
+import hashlib
+import json
+import secrets
 from contextlib import ExitStack
 from autonomy.process_control import MaintenanceControl
 
@@ -130,7 +133,8 @@ def _finish(primary, cleanup_errors):
 
 def run_tree(args, *, timeout, cwd=None, stdout_limit_bytes=4*1024*1024,
              stderr_limit_bytes=1024*1024, event_limit_bytes=256*1024,
-             cleanup_timeout=10, stdin_bytes=None, assert_live=None, maintenance_handler=None):
+             cleanup_timeout=10, stdin_bytes=None, assert_live=None, maintenance_handler=None,
+             lifecycle=None):
     """Supervise a tree; an optional trusted authority check must return True.
 
     Checks precede launch, precede Windows resume, run during execution and
@@ -139,6 +143,10 @@ def run_tree(args, *, timeout, cwd=None, stdout_limit_bytes=4*1024*1024,
     """
     if assert_live is not None and not callable(assert_live):
         raise ValueError('Callable live authority required')
+    if lifecycle is not None and (not callable(lifecycle) or os.name!='nt' or
+            not isinstance(args,(list,tuple)) or not args or not all(type(x) is str for x in args) or
+            not os.path.isabs(args[0])):
+        raise ValueError('Windows lifecycle requires absolute executable and callable durable sink')
     if maintenance_handler is not None and (not callable(maintenance_handler) or stdin_bytes is not None):
         raise ValueError('Private maintenance control requires callable handler and exclusive stdin')
     for value in (stdout_limit_bytes, stderr_limit_bytes, event_limit_bytes):
@@ -174,7 +182,7 @@ def run_tree(args, *, timeout, cwd=None, stdout_limit_bytes=4*1024*1024,
                 control.poll()
             return True
         if os.name == 'nt':
-            result = _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, tick)
+            result = _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, tick, lifecycle)
         else:
             result = _posix_tree(args, timeout, cwd, capture, cleanup_timeout, input_stream, tick)
         try:
@@ -235,7 +243,7 @@ def _posix_tree(args, timeout, cwd, capture, cleanup_timeout, input_stream, asse
     return result
 
 
-def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, assert_live=None):
+def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, assert_live=None, lifecycle=None):
     import ctypes as c
     from ctypes import wintypes as w
     import msvcrt
@@ -307,6 +315,10 @@ def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, ass
     k.CloseHandle.restype = w.BOOL
     k.TerminateProcess.argtypes = [w.HANDLE, w.UINT]
     k.TerminateProcess.restype = w.BOOL
+    k.GetProcessTimes.argtypes = [w.HANDLE,c.POINTER(w.FILETIME),c.POINTER(w.FILETIME),c.POINTER(w.FILETIME),c.POINTER(w.FILETIME)]
+    k.GetProcessTimes.restype = w.BOOL
+    k.QueryFullProcessImageNameW.argtypes = [w.HANDLE,w.DWORD,w.LPWSTR,c.POINTER(w.DWORD)]
+    k.QueryFullProcessImageNameW.restype = w.BOOL
 
     def checked(value):
         if not value:
@@ -324,8 +336,21 @@ def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, ass
     input_file = None
     attributes = None
     attributes_initialized = False
+    contained = None
     try:
-        job = checked(k.CreateJobObjectW(None, None))
+        job_name='Global\\RoktU1Install-'+secrets.token_hex(32) if lifecycle is not None else None
+        if lifecycle is not None:
+            payload=json.dumps(dict(args=list(args),cwd=str(cwd) if cwd else None),sort_keys=True,separators=(',',':')).encode()
+            parent_times=[w.FILETIME() for _ in range(4)]
+            checked(k.GetProcessTimes(w.HANDLE(-1),*(c.byref(t) for t in parent_times)))
+            parent_created=(parent_times[0].dwHighDateTime<<32)|parent_times[0].dwLowDateTime
+            if lifecycle(dict(phase='LAUNCH_INTENT',job_name=job_name,command_sha256=hashlib.sha256(payload).hexdigest(),
+                              supervisor_pid=os.getpid(),supervisor_creation_filetime=parent_created)) is not True:
+                raise ProcessCleanupError('DURABLE_LAUNCH_INTENT_REQUIRED')
+        c.set_last_error(0)
+        job = checked(k.CreateJobObjectW(None, job_name))
+        if job_name is not None and c.get_last_error()==183:
+            raise ProcessCleanupError('PROCESS_JOB_NAME_COLLISION')
         limits = EXTENDED_LIMIT()
         limits.BasicLimitInformation.LimitFlags = 0x2000
         checked(k.SetInformationJobObject(job, 9, c.byref(limits), c.sizeof(limits)))
@@ -354,13 +379,22 @@ def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, ass
         startup.dwFlags = 0x100
         startup.hStdInput, startup.hStdOutput, startup.hStdError = handles
         command = c.create_unicode_buffer(subprocess.list2cmdline(args))
-        checked(k.CreateProcessW(None, command, None, None, True, 0x4 | 0x08000000 | 0x80000,
+        checked(k.CreateProcessW(args[0] if lifecycle is not None else None, command, None, None, True, 0x4 | 0x08000000 | 0x80000,
             None, str(cwd) if cwd else None, c.byref(extended), c.byref(info)))
         for stream in writes:
             stream.close()
         checked(k.AssignProcessToJobObject(job, info.hProcess))
         assigned = True
         capture.start(streams)
+        if lifecycle is not None:
+            times=[w.FILETIME() for _ in range(4)]
+            checked(k.GetProcessTimes(info.hProcess,*(c.byref(t) for t in times)))
+            image=c.create_unicode_buffer(32768);length=w.DWORD(len(image))
+            checked(k.QueryFullProcessImageNameW(info.hProcess,0,image,c.byref(length)))
+            contained=dict(phase='CONTAINED',job_name=job_name,pid=info.dwProcessId,
+                           creation_filetime=(times[0].dwHighDateTime<<32)|times[0].dwLowDateTime,image=image.value)
+            if lifecycle(contained) is not True:
+                raise ProcessCleanupError('DURABLE_PROCESS_IDENTITY_REQUIRED')
         _assert_live(assert_live)
         if k.ResumeThread(info.hThread) == 0xFFFFFFFF:
             raise c.WinError(c.get_last_error())
@@ -425,6 +459,12 @@ def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, ass
                     stream.close()
                 except BaseException as error:
                     errors.extend(_cleanup_codes('UNSTARTED_OUTPUT_CLOSE_FAILED', error))
+    if lifecycle is not None and contained is not None and not errors:
+        try:
+            if lifecycle(dict(contained,phase='STOPPED',tree_empty=True,readers_closed=True)) is not True:
+                raise ProcessCleanupError('DURABLE_PROCESS_STOP_REQUIRED')
+        except BaseException as error:
+            primary=primary or error
     _finish(primary or capture.failure, errors)
     result = capture.result(args, code.value)
     result.cleanup_verified = True
