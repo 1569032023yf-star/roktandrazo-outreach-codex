@@ -1,0 +1,10 @@
+{
+  "source_commit": "59acb7a1c422841b71f82019cd52a5e66daa6d7e",
+  "manifest_files_verified": 73,
+  "archives_byte_verified": true,
+  "pe_machine": "AMD64",
+  "packaged_test_returncode": 0,
+  "duration_seconds": 12.184673599986127,
+  "independent_review": "PENDING",
+  "production_ready": false
+}
