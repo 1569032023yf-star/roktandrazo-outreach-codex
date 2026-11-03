@@ -54,6 +54,18 @@ class BackendTests(unittest.TestCase):
   self.assertTrue(caught.exception.cleanup_verified)
   with self.assertRaisesRegex(ExecutionUnknown,'UNKNOWN_NO_REPLAY'):self.backend().execute_once(o,deadline_monotonic=time.monotonic()+.8)
   self.assertEqual(self.backend().status(o['idempotency_key'])['outcome'],'UNKNOWN')
+ def test_ambiguous_worker_receipts_are_unknown_and_never_replayed(self):
+  for raw in ('{"slot_receipt":{},"slot_receipt":{},"budget_receipt":{}}',
+              '{"slot_receipt":{"state":1,"state":2},"budget_receipt":{}}',
+              '{"slot_receipt":{},"budget_receipt":{"actual":NaN}}'):
+   with self.subTest(raw=raw):
+    self.worker.write_text('import sys\nsys.stdin.read()\nprint('+repr(raw)+')',encoding='utf-8')
+    b=self.backend();o=self.operation();o['case']=raw
+    o.pop('idempotency_key');o['idempotency_key']=digest(o)
+    with self.assertRaises(ExecutionUnknown):b.execute_once(o,deadline_monotonic=time.monotonic()+.8)
+    self.assertEqual(b.status(o['idempotency_key'])['transport_state'],'UNKNOWN')
+    with self.assertRaisesRegex(ExecutionUnknown,'UNKNOWN_NO_REPLAY'):
+     self.backend().execute_once(o,deadline_monotonic=time.monotonic()+.8)
  def test_foreign_inventory_and_no_lease_rejected(self):
   with self.assertRaises(ValueError):consume_existing_inventory_event(self.f.adapter,dict(inventory_id='other'))
   event=dict(inventory_id=INVENTORY,admission={},schedule={},idle={},budget_request={})

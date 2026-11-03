@@ -19,6 +19,22 @@ class ExecutionUnknown(RuntimeError):
     pass
 
 
+def _receipts(raw):
+    # Preserve the exact receipt meaning across the worker and durable cache.
+    # Reject ambiguous JSON before recording transport success.
+    def unique(pairs):
+        value = {}
+        for key, item in pairs:
+            if key in value:raise ExecutionUnknown('DUPLICATE_RECEIPT_KEY')
+            value[key] = item
+        return value
+    def nonfinite(_):raise ExecutionUnknown('NONFINITE_RECEIPT')
+    value = json.loads(raw, object_pairs_hook=unique, parse_constant=nonfinite)
+    if type(value) is not dict or set(value)!={'slot_receipt','budget_receipt'}:
+        raise ExecutionUnknown('RECEIPTS_MISSING')
+    return value
+
+
 class ProcessBackend:
     protocol_version=BACKEND_PROTOCOL
 
@@ -85,7 +101,7 @@ class ProcessBackend:
             if row:
                 c.rollback()
                 if row[0]!=binding:raise ValueError('EXECUTION_CONFLICT')
-                if row[1]=='OUTPUT_RECORDED':return json.loads(row[2])
+                if row[1]=='OUTPUT_RECORDED':return _receipts(row[2])
                 raise ExecutionUnknown('UNKNOWN_NO_REPLAY')
             c.execute('INSERT INTO executions VALUES (?,?,?,NULL)',(key,binding,'IN_FLIGHT'));c.commit()
         try:
@@ -95,8 +111,7 @@ class ProcessBackend:
                             stdin_bytes=raw,stdout_limit_bytes=65536,stderr_limit_bytes=4096,event_limit_bytes=65536)
             if result.returncode!=0 or not result.cleanup_verified or time.monotonic()>deadline_monotonic:
                 raise ExecutionUnknown('CHILD_OUTCOME_UNKNOWN')
-            receipts=json.loads(result.stdout)
-            if type(receipts) is not dict or set(receipts)!={'slot_receipt','budget_receipt'}:raise ExecutionUnknown('RECEIPTS_MISSING')
+            receipts=_receipts(result.stdout)
             with self._db() as c:
                 c.execute('BEGIN IMMEDIATE')
                 c.execute("UPDATE executions SET state='OUTPUT_RECORDED',result=? WHERE key=? AND binding=? AND state='IN_FLIGHT'",
