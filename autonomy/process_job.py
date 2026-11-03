@@ -17,6 +17,18 @@ class ProcessCleanupError(RuntimeError):
     outcome = 'UNKNOWN'
 
 
+class ProcessAuthorityLost(RuntimeError):
+    reason = 'PROCESS_AUTHORITY_LOST'
+    outcome = 'UNKNOWN'
+
+
+def _assert_live(assert_live):
+    # Runs on the calling thread: SQLite maintenance connections are thread-bound.
+    # Exceptions retain their cause; false/None/truthy objects are never grants.
+    if assert_live is not None and assert_live() is not True:
+        raise ProcessAuthorityLost('STOP_AND_PRESERVE_PROCESS_AUTHORITY_LOST')
+
+
 class _Capture:
     def __init__(self, stdout_limit, stderr_limit, event_limit):
         self.limits = (stdout_limit, stderr_limit)
@@ -101,12 +113,21 @@ def _finish(primary, cleanup_errors):
 
 def run_tree(args, *, timeout, cwd=None, stdout_limit_bytes=4*1024*1024,
              stderr_limit_bytes=1024*1024, event_limit_bytes=256*1024,
-             cleanup_timeout=10, stdin_bytes=None):
+             cleanup_timeout=10, stdin_bytes=None, assert_live=None):
+    """Supervise a tree; an optional trusted authority check must return True.
+
+    Checks precede launch, precede Windows resume, run during execution and
+    follow verified tree cleanup. Failure kills the tree, never releases a lease.
+    This is a parent watchdog, not a replacement for per-mutation child checks.
+    """
+    if assert_live is not None and not callable(assert_live):
+        raise ValueError('Callable live authority required')
     for value in (stdout_limit_bytes, stderr_limit_bytes, event_limit_bytes):
         if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
             raise ValueError('Output byte limits must be positive integers')
     if timeout <= 0 or cleanup_timeout <= 0:
         raise ValueError('Timeouts must be positive')
+    _assert_live(assert_live)
     capture = _Capture(stdout_limit_bytes, stderr_limit_bytes, event_limit_bytes)
     if stdin_bytes is not None and (type(stdin_bytes) is not bytes or len(stdin_bytes)>65536):
         raise ValueError('Bounded bytes input required')
@@ -116,8 +137,15 @@ def run_tree(args, *, timeout, cwd=None, stdout_limit_bytes=4*1024*1024,
         if stdin_bytes is not None:
             input_stream.write(stdin_bytes);input_stream.seek(0)
         if os.name == 'nt':
-            return _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream)
-        return _posix_tree(args, timeout, cwd, capture, cleanup_timeout, input_stream)
+            result = _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, assert_live)
+        else:
+            result = _posix_tree(args, timeout, cwd, capture, cleanup_timeout, input_stream, assert_live)
+        try:
+            _assert_live(assert_live)
+        except BaseException as error:
+            # Reaching here means the entire tree and output readers are gone.
+            _finish(error, [])
+        return result
 
 
 def _posix_cleanup(process, timeout):
@@ -138,7 +166,7 @@ def _posix_cleanup(process, timeout):
         time.sleep(0.02)
 
 
-def _posix_tree(args, timeout, cwd, capture, cleanup_timeout, input_stream):
+def _posix_tree(args, timeout, cwd, capture, cleanup_timeout, input_stream, assert_live=None):
     process = subprocess.Popen(args, cwd=cwd, stdin=input_stream,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
     primary = None
@@ -147,6 +175,7 @@ def _posix_tree(args, timeout, cwd, capture, cleanup_timeout, input_stream):
         capture.start((process.stdout, process.stderr))
         deadline = time.monotonic() + timeout
         while process.poll() is None:
+            _assert_live(assert_live)
             if capture.failure:
                 raise capture.failure
             if time.monotonic() >= deadline:
@@ -167,7 +196,7 @@ def _posix_tree(args, timeout, cwd, capture, cleanup_timeout, input_stream):
     return result
 
 
-def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream):
+def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, assert_live=None):
     import ctypes as c
     from ctypes import wintypes as w
     import msvcrt
@@ -269,10 +298,12 @@ def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream):
         checked(k.AssignProcessToJobObject(job, info.hProcess))
         assigned = True
         capture.start(streams)
+        _assert_live(assert_live)
         if k.ResumeThread(info.hThread) == 0xFFFFFFFF:
             raise c.WinError(c.get_last_error())
         deadline = time.monotonic() + timeout
         while True:
+            _assert_live(assert_live)
             if capture.failure:
                 raise capture.failure
             wait = k.WaitForSingleObject(info.hProcess, 10)

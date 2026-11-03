@@ -63,6 +63,39 @@ class PublisherInstallMaintenanceTests(unittest.TestCase):
         self.assertEqual(calls, ['install'])
         self.assertFalse(authority.blocked(self.conn))
 
+    def test_actual_supervised_process_uses_session_and_keeps_maintenance_on_failure(self):
+        from autonomy.process_job import run_tree
+        marker = Path(self.tmp.name)/'running'
+        verifies = []
+        def install(session):
+            live = session.process_guard()
+            def invalidate_after_start():
+                if marker.exists():
+                    # Simulate a recorded recovery handoff: the old parent must
+                    # stop even while the global exclusion remains held.
+                    session._transition('UNKNOWN')
+                return live()
+            return run_tree([sys.executable, '-c',
+                'import pathlib,time;pathlib.Path('+repr(str(marker))+').touch();time.sleep(30)'],
+                timeout=5, assert_live=invalidate_after_start)
+        with self.assertRaisesRegex(ValueError, 'SESSION_NOT_ACTIVE') as caught:
+            self.session.execute(install, lambda *args: verifies.append(args))
+        self.assertTrue(caught.exception.cleanup_verified)
+        self.assertEqual(verifies, [])
+        authority.assert_held(self.conn, self.binding)
+        self.assertEqual(self.session._records()[0][-1]['phase'], 'UNKNOWN')
+        with self.assertRaisesRegex(ValueError, 'REPLAY'):
+            self.session.execute(install, self.proof)
+
+    def test_process_guard_requires_executing_phase_and_exact_context(self):
+        guard = self.session.process_guard()
+        self.session.acquire()
+        with self.assertRaisesRegex(ValueError, 'NOT_EXECUTING'): guard()
+        self.session._transition('INSTALL_INTENT')
+        self.assertTrue(guard())
+        self.session.context['action'] = 'rollback'
+        with self.assertRaisesRegex(ValueError, 'CONTEXT_CHANGED'): guard()
+
     def test_wrong_binding_or_verifier_failure_never_releases(self):
         self.session.acquire()
         with self.assertRaisesRegex(ValueError, 'BINDING_MISMATCH'):

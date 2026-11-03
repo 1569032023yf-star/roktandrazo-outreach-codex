@@ -96,6 +96,28 @@ class InstallMaintenance:
             raise ValueError('STOP_AND_PRESERVE_SESSION_NOT_ACTIVE')
         return True
 
+    def process_guard(self):
+        """Bind the parent process watchdog to this exact executing session.
+
+        Trusted adapters pass this to process_job.run_tree(assert_live=...).
+        It neither launches a command nor grants public install permission.
+        Child per-mutation checks remain mandatory.
+        """
+        expected = canonical(self.context)
+        target = self.context['target_operation_id']
+        source = self.binding['source_commit']
+        manifest = self.binding['manifest_sha256']
+        action = self.context['action']
+        def check():
+            if canonical(self.context) != expected:
+                raise ValueError('STOP_AND_PRESERVE_PROCESS_CONTEXT_CHANGED')
+            self.assert_held(target, source, manifest, action)
+            records, _ = self._records()
+            if records[-1]['phase'] != 'INSTALL_INTENT':
+                raise ValueError('STOP_AND_PRESERVE_PROCESS_SESSION_NOT_EXECUTING')
+            return True
+        return check
+
     def _verify_and_release(self, observed, verifier):
         self._transition('FINAL_VERIFY_INTENT')
         # The trusted publisher must independently read target/service/ACL state;

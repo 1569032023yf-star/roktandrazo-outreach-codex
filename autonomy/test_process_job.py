@@ -66,6 +66,44 @@ class ProcessTests(unittest.TestCase):
         self.assertFalse(original.cleanup_verified)
         self.assertEqual(original.cleanup_errors, ('OSError',))
 
+    def test_authority_denied_before_launch_has_no_child_effect(self):
+        with tempfile.TemporaryDirectory() as folder:
+            marker = Path(folder)/'forbidden'
+            for denied in (False, None, 1, 'true'):
+                with self.subTest(denied=denied), self.assertRaises(p.ProcessAuthorityLost):
+                    self.run_code('from pathlib import Path;Path('+repr(str(marker))+').touch()',
+                                  assert_live=lambda: denied)
+                self.assertFalse(marker.exists())
+
+    def test_lost_authority_kills_running_descendants_on_calling_thread(self):
+        import threading
+        from autonomy.lock_recovery import process_identity
+        import json
+        owner = threading.get_ident()
+        with tempfile.TemporaryDirectory() as folder:
+            marker = Path(folder)/'pids.json'
+            def check():
+                self.assertEqual(threading.get_ident(), owner)
+                return not marker.exists()
+            code = ('import subprocess,sys,time,json,os,pathlib;'
+                    'child=subprocess.Popen([sys.executable,"-c","import time;time.sleep(30)"]);'
+                    'pathlib.Path('+repr(str(marker))+').write_text(json.dumps([os.getpid(),child.pid]));'
+                    'time.sleep(30)')
+            with self.assertRaises(p.ProcessAuthorityLost) as caught:
+                self.run_code(code, assert_live=check)
+            self.assertTrue(caught.exception.cleanup_verified)
+            for pid in json.loads(marker.read_text()):
+                self.assertIsNone(process_identity(pid))
+
+    def test_post_cleanup_check_prevents_false_success(self):
+        # Even an immediately-exiting child requires a fresh final assertion.
+        with tempfile.TemporaryDirectory() as folder:
+            marker = Path(folder)/'done'
+            with self.assertRaises(p.ProcessAuthorityLost) as caught:
+                self.run_code('from pathlib import Path;Path('+repr(str(marker))+').touch()',
+                              assert_live=lambda: not marker.exists())
+            self.assertTrue(caught.exception.cleanup_verified)
+
     @unittest.skipUnless(os.name == 'nt', 'Windows API failure injection')
     def test_windows_assignment_and_query_failures(self):
         import ctypes
