@@ -1,3 +1,22 @@
+# U1 安装进程维护监管 / Install process maintenance supervision
+
+固定源码 / Fixed source: `8dde11230772484cc86ee7dfc3d2d45f891ec58a` | 2026-11-03T02:14:37.558455+00:00
+
+真实进程树维护权监管已接入；组合187 PASS，独审27项及2探针通过，范围独审结论。完整跨进程权限桥和独立最终核验尚未完成，不进入真实安装或无人值守验收。
+Real process trees now support live maintenance supervision; 187 combined tests and 27 independent tests plus two probes passed. This is scoped approval. The complete cross-process authority bridge and independent final verification remain unfinished; do not begin installation/unattended acceptance.
+
+下一步 / Next: 完成受控安装进程的逐步维护权跨进程核验、固定身份及独立文件/日志/SCM/ACL最终核验；完整调用链独审后再制作可安装版本，保持生产门禁关闭。
+
+Complete per-step cross-process maintenance checks, pinned process identity and independent file/journal/SCM/ACL final verification; review the complete chain before producing the installable release. Keep production gates closed.
+
+`DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false`
+
+`allow_install=false; allow_dispatch=false; allow_cancel_dispatch=false; SMTP=false`
+
+[双语报告 / Bilingual report](../u1_process_maintenance_20261103/REPORT.md)
+
+---
+
 # U1 原Publisher维护接线 / Publisher maintenance wiring
 
 固定当前源码 / Current source: `1006e2ff91757e5be6e31b2d9940c500703a82d3` | 2026-11-03T10:05:29.868174+08:00

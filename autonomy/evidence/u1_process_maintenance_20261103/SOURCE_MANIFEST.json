@@ -1,0 +1,35 @@
+{
+  "source_commit": "8dde11230772484cc86ee7dfc3d2d45f891ec58a",
+  "files": [
+    {
+      "path": "autonomy/process_job.py",
+      "actual_sha256": "9687daaa6be500394e411167fabdad5e59f979ad4dfb80691abb3b99c0ff6d01",
+      "git_blob_sha256": "32c575f3f4e57d06760a315ad1883649dd0f34707ab7c37ec016ec9c545274cb",
+      "matches_fixed_source_after_newline_normalization": true
+    },
+    {
+      "path": "autonomy/test_process_job.py",
+      "actual_sha256": "1a0d973314a21ff8507c27cffbd6ce866755988faf9ce27e0413b7edc25ed7ba",
+      "git_blob_sha256": "cfda2f5cda6da885c280aa36ac950335b3b77edf6705be43037664ae525faf1b",
+      "matches_fixed_source_after_newline_normalization": true
+    },
+    {
+      "path": "publisher_channel/install_maintenance.py",
+      "actual_sha256": "0b18fdef1f4d77f7242d62c5ac9fad2f4878719b283e2e769950143056988417",
+      "git_blob_sha256": "0b18fdef1f4d77f7242d62c5ac9fad2f4878719b283e2e769950143056988417",
+      "matches_fixed_source_after_newline_normalization": true
+    },
+    {
+      "path": "test_publisher_install_maintenance.py",
+      "actual_sha256": "3397987630769168236e2718b1b77646e4c71a1c66942e929c17221294769599",
+      "git_blob_sha256": "3397987630769168236e2718b1b77646e4c71a1c66942e929c17221294769599",
+      "matches_fixed_source_after_newline_normalization": true
+    },
+    {
+      "path": "tools/validate_u1_candidate.py",
+      "actual_sha256": "cb0702dfa7d79a30f61a9dde31005b38a2a2774eb30e7e26126333c8f9a29f93",
+      "git_blob_sha256": "cb0702dfa7d79a30f61a9dde31005b38a2a2774eb30e7e26126333c8f9a29f93",
+      "matches_fixed_source_after_newline_normalization": true
+    }
+  ]
+}

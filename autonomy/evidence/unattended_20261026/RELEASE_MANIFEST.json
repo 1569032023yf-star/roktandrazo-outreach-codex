@@ -203,14 +203,13 @@
   "current_release_ready": false,
   "historical_plan_source_preserved": true,
   "current_engineering_checkpoint": {
-    "description_zh": "原Publisher维护准入与安装维护会话的离线源码增量；完整进程适配仍在开发。",
-    "description_en": "Offline source progress on original publisher admission and installer maintenance sessions; complete process adaptation remains in development.",
-    "updated_at": "2026-11-03T10:05:29.868174+08:00",
-    "source_commit": "1006e2ff91757e5be6e31b2d9940c500703a82d3",
-    "reviewed_product_commit": "a90b28fdfb7da4caca97fab33b2d414aee8e1919",
-    "report": "autonomy/evidence/u1_publisher_maintenance_20261103/REPORT.md",
+    "updated_at": "2026-11-03T02:14:37.558455+00:00",
+    "source_commit": "8dde11230772484cc86ee7dfc3d2d45f891ec58a",
+    "description_zh": "原安装维护会话接入真实进程树的主线程维护权监管；完整进程适配仍未完成。",
+    "description_en": "Live parent-thread authority supervision connects the install session to real process trees; complete process adaptation remains unfinished.",
+    "report": "autonomy/evidence/u1_process_maintenance_20261103/REPORT.md",
     "tests": {
-      "source_commit": "1006e2ff91757e5be6e31b2d9940c500703a82d3",
+      "source_commit": "8dde11230772484cc86ee7dfc3d2d45f891ec58a",
       "modules": [
         "test_windows_acl_transaction",
         "test_disabled_host_package",
@@ -224,6 +223,7 @@
         "test_host_preparation",
         "test_release_store",
         "test_process_backend",
+        "autonomy.test_process_job",
         "test_single_slot_adapter",
         "test_host_readonly_http",
         "test_host_file_transaction",
@@ -233,11 +233,11 @@
         "test_publisher_maintenance",
         "test_publisher_install_maintenance"
       ],
-      "tests_run": 173,
+      "tests_run": 187,
       "failures": [],
       "errors": [],
       "skips": [],
-      "seconds": 174.415,
+      "seconds": 173.032,
       "passed": true,
       "isolation_groups": [
         "host",
@@ -248,11 +248,13 @@
       "allow_cancel_dispatch": false
     },
     "independent_review": "OFFLINE_SCOPED_REVIEW_PASSED",
-    "independent_tests": 29,
+    "independent_tests": 27,
+    "independent_additional_probes": 2,
     "complete_call_chain_review_passed": false,
-    "formal_maintenance_integrated": false,
+    "parent_process_watchdog_implemented": true,
     "process_adapter_complete": false,
     "independent_final_verifier_complete": false,
+    "formal_maintenance_integrated": false,
     "development_complete": false,
     "release_ready": false,
     "production_deployed": false,
@@ -264,8 +266,8 @@
     "inventory_id": "1784775229336",
     "current_full_regression": "NOT_RUN_FOR_THIS_SOURCE",
     "current_package": "NOT_BUILT_INCOMPLETE_INTEGRATION",
-    "next_action": "Complete the original authenticated publisher-to-installer process adapter with pinned process identity/containment, stopped-child verification and independent target/journal/SCM/ACL final verification; then review the complete chain before producing an installable release. Keep all production gates closed.",
-    "next_action_zh": "继续完成原认证Publisher到安装进程的受控适配器、进程身份与约束、旧进程终止核验及独立目标/日志/SCM/ACL最终核验；再独审完整链并制作可安装版本，所有生产门禁保持关闭。"
+    "next_action": "Complete per-step cross-process maintenance checks, pinned process identity and independent file/journal/SCM/ACL final verification; review the complete chain before producing the installable release. Keep production gates closed.",
+    "next_action_zh": "完成受控安装进程的逐步维护权跨进程核验、固定身份及独立文件/日志/SCM/ACL最终核验；完整调用链独审后再制作可安装版本，保持生产门禁关闭。"
   },
-  "latest_engineering_commit": "1006e2ff91757e5be6e31b2d9940c500703a82d3"
+  "latest_engineering_commit": "8dde11230772484cc86ee7dfc3d2d45f891ec58a"
 }

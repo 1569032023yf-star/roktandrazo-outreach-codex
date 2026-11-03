@@ -1,0 +1,90 @@
+{
+  "schema": "rokt.u1-process-maintenance-independent-review.v1",
+  "source_commit": "8dde11230772484cc86ee7dfc3d2d45f891ec58a",
+  "base_commit": "5fac8c7d13a9b5b678b3ea2e5024701a82027720",
+  "reviewed_at": "2026-11-03T02:12:36.330596+00:00",
+  "status": "OFFLINE_SCOPED_REVIEW_PASSED",
+  "new_actionable_findings": [],
+  "complete_adapter": false,
+  "complete_call_chain_review_passed": false,
+  "release_ready": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "smtp_enabled": false,
+  "independent_tests": {
+    "command": "python -m unittest autonomy.test_process_job test_publisher_install_maintenance -q",
+    "count": 27,
+    "duration_seconds": 5.865,
+    "exit_code": 0,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "additional_isolated_probes": [
+    {
+      "case": "windows_pre_resume_denial",
+      "assertion_calls": 2,
+      "marker_exists": false,
+      "cleanup_verified": true
+    },
+    {
+      "case": "only_post_verified_cleanup_denial",
+      "actual_tree_cleaned": true,
+      "cleanup_verified": true,
+      "method": "Wrap actual _windows_job return to set completion flag; deny only once real tree cleanup has returned."
+    }
+  ],
+  "limitations": [
+    {
+      "zh": "父进程 watchdog 是周期检查，不是子进程每次文件/SCM/ACL mutation 的同步 IPC 权限桥。",
+      "en": "The parent watchdog polls authority; it is not a synchronous IPC authority bridge for each child file/SCM/ACL mutation."
+    },
+    {
+      "zh": "原发布器支持入口到受控安装进程的完整正式适配、真实进程身份及独立目标/SCM/ACL final verifier、seal/授权仍待闭合。",
+      "en": "The supported publisher-to-installer adapter, real process identity, independent target/SCM/ACL final verifier and seal/authorization remain incomplete."
+    },
+    {
+      "zh": "本次实测为 Windows；POSIX 分支仅静态审核，未在 POSIX 环境运行。",
+      "en": "Actual execution was on Windows; the POSIX path received static review only."
+    }
+  ],
+  "file_hashes": [
+    {
+      "path": "autonomy/process_job.py",
+      "actual_sha256": "9687daaa6be500394e411167fabdad5e59f979ad4dfb80691abb3b99c0ff6d01",
+      "git_blob_sha256": "32c575f3f4e57d06760a315ad1883649dd0f34707ab7c37ec016ec9c545274cb",
+      "matches_fixed_source_after_newline_normalization": true
+    },
+    {
+      "path": "autonomy/test_process_job.py",
+      "actual_sha256": "1a0d973314a21ff8507c27cffbd6ce866755988faf9ce27e0413b7edc25ed7ba",
+      "git_blob_sha256": "cfda2f5cda6da885c280aa36ac950335b3b77edf6705be43037664ae525faf1b",
+      "matches_fixed_source_after_newline_normalization": true
+    },
+    {
+      "path": "publisher_channel/install_maintenance.py",
+      "actual_sha256": "0b18fdef1f4d77f7242d62c5ac9fad2f4878719b283e2e769950143056988417",
+      "git_blob_sha256": "0b18fdef1f4d77f7242d62c5ac9fad2f4878719b283e2e769950143056988417",
+      "matches_fixed_source_after_newline_normalization": true
+    },
+    {
+      "path": "test_publisher_install_maintenance.py",
+      "actual_sha256": "3397987630769168236e2718b1b77646e4c71a1c66942e929c17221294769599",
+      "git_blob_sha256": "3397987630769168236e2718b1b77646e4c71a1c66942e929c17221294769599",
+      "matches_fixed_source_after_newline_normalization": true
+    },
+    {
+      "path": "tools/validate_u1_candidate.py",
+      "actual_sha256": "cb0702dfa7d79a30f61a9dde31005b38a2a2774eb30e7e26126333c8f9a29f93",
+      "git_blob_sha256": "cb0702dfa7d79a30f61a9dde31005b38a2a2774eb30e7e26126333c8f9a29f93",
+      "matches_fixed_source_after_newline_normalization": true
+    }
+  ],
+  "production_modified": false,
+  "session_invalidation_fixture": {
+    "phase": "UNKNOWN",
+    "actual_recovery_handoff": false,
+    "zh": "监督测试仅模拟活跃会话失效；实际 handoff 另有既有测试。",
+    "en": "Supervision test simulates active-session invalidation; actual handoff has separate existing tests."
+  }
+}
