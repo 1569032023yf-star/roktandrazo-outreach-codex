@@ -1,0 +1,106 @@
+{
+  "source_commit": "2db72ad5a016d24907e60c4481ffba1b870c959d",
+  "updated_at": "2026-11-03T02:58:45.114559+00:00",
+  "report": "autonomy/evidence/u1_process_evidence_20261103/REPORT.md",
+  "tests": {
+    "source_commit": "2db72ad5a016d24907e60c4481ffba1b870c959d",
+    "modules": [
+      "test_windows_acl_transaction",
+      "test_disabled_host_package",
+      "test_install_journal",
+      "test_install_contract",
+      "test_independent_install_plan",
+      "test_u1_provision",
+      "test_u1_manifest_closure",
+      "test_u1_host_runtime",
+      "test_host_remediation",
+      "test_host_preparation",
+      "test_release_store",
+      "test_process_backend",
+      "autonomy.test_process_job",
+      "test_single_slot_adapter",
+      "test_host_readonly_http",
+      "test_host_file_transaction",
+      "test_host_install_transaction",
+      "test_inventory_event_bridge",
+      "test_maintenance_control",
+      "test_install_verifier",
+      "test_install_process",
+      "test_inventory_maintenance",
+      "test_publisher_maintenance",
+      "test_publisher_install_maintenance"
+    ],
+    "tests_run": 208,
+    "failures": [],
+    "errors": [],
+    "skips": [],
+    "seconds": 268.814,
+    "passed": true,
+    "isolation_groups": [
+      "host",
+      "authority"
+    ],
+    "allow_install": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false
+  },
+  "independent_review": "OFFLINE_SCOPED_REVIEW_PASSED",
+  "independent_tests": {
+    "command": "python -m unittest test_install_process autonomy.test_process_job test_install_verifier -v",
+    "count": 26,
+    "passed": 26,
+    "duration_seconds": 89.16,
+    "errors": [],
+    "failures": []
+  },
+  "independent_additional_probes": [
+    {
+      "case": "STOPPED persistence failure before insert / STOPPED写入前失败",
+      "result": "TERMINATION_UNKNOWN",
+      "session": "UNKNOWN",
+      "maintenance_held": true,
+      "passed": true
+    },
+    {
+      "case": "Live original supervisor blocks reconcile / 原监督进程存活拒绝核验",
+      "result": "INSTANCE_STILL_LIVE",
+      "maintenance_held": true,
+      "passed": true
+    },
+    {
+      "case": "Different command cannot reopen process journal / 不同命令不可复用凭据",
+      "result": "JOURNAL_BINDING",
+      "maintenance_held": true,
+      "passed": true
+    },
+    {
+      "case": "Actual grandchild termination after supervisor death / 父进程死亡后实际孙进程终止",
+      "isolated_grandchild_pid": 40168,
+      "passed": true
+    }
+  ],
+  "description_zh": "真实Windows进程身份、Job整树终止与原维护会话持久凭据已接入终态组件；正式固定命令/包身份和认证接线仍未完成。",
+  "description_en": "Actual Windows process identity, Job-tree termination and durable evidence in the original maintenance session now feed terminal verification; formal fixed-command/package identity and authentication wiring remain incomplete.",
+  "durable_process_evidence_implemented": true,
+  "process_identity_uses_actual_windows_handles": true,
+  "terminal_verifier_component_implemented": true,
+  "launch_only_outcome": "UNKNOWN_STOP_AND_PRESERVE",
+  "launch_only_orphan_cleanup_proven": false,
+  "process_adapter_complete": false,
+  "independent_final_verifier_complete": false,
+  "complete_call_chain_review_passed": false,
+  "formal_maintenance_integrated": false,
+  "development_complete": false,
+  "release_ready": false,
+  "production_deployed": false,
+  "production_accepted": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "inventory_id": "1784775229336",
+  "current_full_regression": "NOT_RUN_FOR_THIS_SOURCE",
+  "current_package": "NOT_BUILT_INCOMPLETE_INTEGRATION",
+  "next_action": "Complete the formal fixed install command, package/runtime-image identity pins and original authentication/seal wiring, then review the complete chain; freeze the complete AMD64 artifact and rerun lifecycle/comparable regression while production gates remain closed pending authorization.",
+  "next_action_zh": "完成正式固定安装命令、包及运行时镜像身份固定和原认证/seal接线，再执行完整调用链独审；冻结完整AMD64安装包后重跑生命周期和可比全量回归，授权前保持生产门禁关闭。"
+}

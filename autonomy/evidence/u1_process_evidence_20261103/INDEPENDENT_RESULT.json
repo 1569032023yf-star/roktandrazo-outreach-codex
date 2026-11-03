@@ -1,0 +1,86 @@
+{
+  "schema": "rokt.independent-offline-review.v1",
+  "source_commit": "2db72ad5a016d24907e60c4481ffba1b870c959d",
+  "baseline_commit": "bb2f6aabc8e955491e4ade0b75f4f3c512efc297",
+  "status": "OFFLINE_SCOPED_REVIEW_PASSED",
+  "new_blocking_findings": [],
+  "independent_tests": {
+    "command": "python -m unittest test_install_process autonomy.test_process_job test_install_verifier -v",
+    "count": 26,
+    "passed": 26,
+    "duration_seconds": 89.16,
+    "errors": [],
+    "failures": []
+  },
+  "additional_isolated_probes": [
+    {
+      "case": "STOPPED persistence failure before insert / STOPPED写入前失败",
+      "result": "TERMINATION_UNKNOWN",
+      "session": "UNKNOWN",
+      "maintenance_held": true,
+      "passed": true
+    },
+    {
+      "case": "Live original supervisor blocks reconcile / 原监督进程存活拒绝核验",
+      "result": "INSTANCE_STILL_LIVE",
+      "maintenance_held": true,
+      "passed": true
+    },
+    {
+      "case": "Different command cannot reopen process journal / 不同命令不可复用凭据",
+      "result": "JOURNAL_BINDING",
+      "maintenance_held": true,
+      "passed": true
+    },
+    {
+      "case": "Actual grandchild termination after supervisor death / 父进程死亡后实际孙进程终止",
+      "isolated_grandchild_pid": 40168,
+      "passed": true
+    }
+  ],
+  "filehash": {
+    "autonomy/process_job.py": {
+      "working_tree_sha256": "3878fa8244cc28def6f6c9a18ea21052fef2146a27a3bddfa6eb572cca2c9e4f",
+      "git_blob_sha256": "5b3bc282b0354437ab5589b2d07036dc9248d609c48e761eff43b22322bce082",
+      "normalized_matches_pin": true
+    },
+    "publisher_channel/install_process.py": {
+      "working_tree_sha256": "77e68ff8beecb1117650ca397c98b694adc6e93232c7c378a164f245d8dd6c0c",
+      "git_blob_sha256": "77e68ff8beecb1117650ca397c98b694adc6e93232c7c378a164f245d8dd6c0c",
+      "normalized_matches_pin": true
+    },
+    "test_host_install_transaction.py": {
+      "working_tree_sha256": "12c87ec6e3b355254c3912926385d2b3735cd554220472c54cc7a2aeeed5cd1c",
+      "git_blob_sha256": "cce8d012597e4652f12df2e1c2be573dd02d0b58294cda6bf365141c921128fd",
+      "normalized_matches_pin": true
+    },
+    "test_install_process.py": {
+      "working_tree_sha256": "541cff2631d022ff8784724bc1fb71996e670f0eaff01b4ef6f1f83727ecffab",
+      "git_blob_sha256": "541cff2631d022ff8784724bc1fb71996e670f0eaff01b4ef6f1f83727ecffab",
+      "normalized_matches_pin": true
+    },
+    "tools/validate_u1_candidate.py": {
+      "working_tree_sha256": "10b4634a3c92a25adfafb0b92e5ce16f931d4402cfee26249dc9287b5587157b",
+      "git_blob_sha256": "8561196600bd5e12255145f358e71961c78c5918579793396aa95f3d27804eb4",
+      "normalized_matches_pin": true
+    }
+  },
+  "limitations_zh": [
+    "正式固定命令/package身份与auth/seal适配器未完成",
+    "SCM/ACL成功路径仍为隔离替身；真实进程/Job/SQLite凭据不能证明生产终态",
+    "LAUNCH-only窗口缺失child identity时保持UNKNOWN，不能声称已证明该窗口不存在挂起遗留进程",
+    "lifecycle/record属于受信内部接口，不接受不可信调用者自报终止",
+    "未进行生产操作，未修改执行策略"
+  ],
+  "limitations_en": [
+    "Formal pinned-command/package identity and auth/seal adapters remain incomplete",
+    "Successful SCM/ACL observation paths remain isolated doubles; actual process/Job/SQLite evidence does not prove production state",
+    "A LAUNCH-only window without child identity remains UNKNOWN and does not prove absence of a suspended orphan",
+    "Lifecycle/record are trusted internal interfaces, not acceptance of untrusted caller claims of termination",
+    "No production operations or execution-policy changes were performed"
+  ],
+  "RELEASE_READY": false,
+  "allow_install": false,
+  "FULL_CHAIN_VERIFIED": false,
+  "PRODUCTION_DEPLOYED": false
+}

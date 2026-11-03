@@ -1,0 +1,35 @@
+{
+  "source_commit": "2db72ad5a016d24907e60c4481ffba1b870c959d",
+  "files": [
+    {
+      "path": "autonomy/process_job.py",
+      "actual_sha256": "3878fa8244cc28def6f6c9a18ea21052fef2146a27a3bddfa6eb572cca2c9e4f",
+      "git_blob_sha256": "5b3bc282b0354437ab5589b2d07036dc9248d609c48e761eff43b22322bce082",
+      "normalized_match": true
+    },
+    {
+      "path": "publisher_channel/install_process.py",
+      "actual_sha256": "77e68ff8beecb1117650ca397c98b694adc6e93232c7c378a164f245d8dd6c0c",
+      "git_blob_sha256": "77e68ff8beecb1117650ca397c98b694adc6e93232c7c378a164f245d8dd6c0c",
+      "normalized_match": true
+    },
+    {
+      "path": "test_host_install_transaction.py",
+      "actual_sha256": "12c87ec6e3b355254c3912926385d2b3735cd554220472c54cc7a2aeeed5cd1c",
+      "git_blob_sha256": "cce8d012597e4652f12df2e1c2be573dd02d0b58294cda6bf365141c921128fd",
+      "normalized_match": true
+    },
+    {
+      "path": "test_install_process.py",
+      "actual_sha256": "541cff2631d022ff8784724bc1fb71996e670f0eaff01b4ef6f1f83727ecffab",
+      "git_blob_sha256": "541cff2631d022ff8784724bc1fb71996e670f0eaff01b4ef6f1f83727ecffab",
+      "normalized_match": true
+    },
+    {
+      "path": "tools/validate_u1_candidate.py",
+      "actual_sha256": "10b4634a3c92a25adfafb0b92e5ce16f931d4402cfee26249dc9287b5587157b",
+      "git_blob_sha256": "8561196600bd5e12255145f358e71961c78c5918579793396aa95f3d27804eb4",
+      "normalized_match": true
+    }
+  ]
+}

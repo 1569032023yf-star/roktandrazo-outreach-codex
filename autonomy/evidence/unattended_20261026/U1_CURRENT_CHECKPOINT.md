@@ -1,3 +1,22 @@
+# U1 实际进程持久凭据 / Actual durable process evidence
+
+固定源码 / Fixed source: `2db72ad5a016d24907e60c4481ffba1b870c959d` | 2026-11-03T02:58:45.114559+00:00
+
+实际Windows进程身份与整树终止凭据接入终态核验；组合208项通过，独审26项和4探针通过。LAUNCH-only窗口仍UNKNOWN；正式固定命令/包身份和原认证接线未完成。
+Actual Windows identity and tree-termination evidence now feed terminal verification; 208 combined tests, 26 independent tests and 4 probes passed. LAUNCH-only remains UNKNOWN; formal fixed-command/package identity and original authentication wiring remain incomplete.
+
+下一步 / Next: 完成正式固定安装命令、包及运行时镜像身份固定和原认证/seal接线，再执行完整调用链独审；冻结完整AMD64安装包后重跑生命周期和可比全量回归，授权前保持生产门禁关闭。
+
+Complete the formal fixed install command, package/runtime-image identity pins and original authentication/seal wiring, then review the complete chain; freeze the complete AMD64 artifact and rerun lifecycle/comparable regression while production gates remain closed pending authorization.
+
+`DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false`
+
+`allow_install=false; allow_dispatch=false; allow_cancel_dispatch=false; SMTP=false`
+
+[双语报告 / Bilingual report](../u1_process_evidence_20261103/REPORT.md)
+
+---
+
 # U1 独立终态核验 / Independent terminal verification
 
 固定源码 / Fixed source: `6ff9f61653957eec06887030b17333153e80d1c5` | 2026-11-03T02:47:29.421575+00:00
