@@ -1,0 +1,17 @@
+{
+  "source_commit": "1006e2ff91757e5be6e31b2d9940c500703a82d3",
+  "modules": [
+    "test_inventory_maintenance",
+    "test_publisher_maintenance",
+    "test_publisher_install_maintenance"
+  ],
+  "tests_run": 26,
+  "failures": [],
+  "errors": [],
+  "skips": [],
+  "seconds": 2.136,
+  "passed": true,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false
+}

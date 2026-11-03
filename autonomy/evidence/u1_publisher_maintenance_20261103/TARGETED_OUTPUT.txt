@@ -1,0 +1,1598 @@
+test_atomic_state_creation_has_durable_intent_and_secure_initial_dacl (test_windows_acl_transaction.WindowsAclTransactionTests.test_atomic_state_creation_has_durable_intent_and_secure_initial_dacl) ... ERROR
+test_both_success_inheritance_and_exact_aces_then_explicit_rollback (test_windows_acl_transaction.WindowsAclTransactionTests.test_both_success_inheritance_and_exact_aces_then_explicit_rollback) ... ERROR
+test_existing_journal_never_replays (test_windows_acl_transaction.WindowsAclTransactionTests.test_existing_journal_never_replays) ... ERROR
+test_exit_after_first_readback (test_windows_acl_transaction.WindowsAclTransactionTests.test_exit_after_first_readback) ... ERROR
+test_exit_after_second_set_before_readback (test_windows_acl_transaction.WindowsAclTransactionTests.test_exit_after_second_set_before_readback) ... ERROR
+test_exit_before_second_write (test_windows_acl_transaction.WindowsAclTransactionTests.test_exit_before_second_write) ... ERROR
+test_exit_during_rollback_can_finish_without_reapplying (test_windows_acl_transaction.WindowsAclTransactionTests.test_exit_during_rollback_can_finish_without_reapplying) ... ERROR
+test_partial_journal_refuses_all_writes (test_windows_acl_transaction.WindowsAclTransactionTests.test_partial_journal_refuses_all_writes) ... ERROR
+test_prepared_flush_failure_has_no_acl_effects (test_windows_acl_transaction.WindowsAclTransactionTests.test_prepared_flush_failure_has_no_acl_effects) ... ERROR
+test_production_audit_gate_rejects_ordinary_user_fixture (test_windows_acl_transaction.WindowsAclTransactionTests.test_production_audit_gate_rejects_ordinary_user_fixture) ... ERROR
+test_production_file_gate_rejects_user_owned_existing_file (test_windows_acl_transaction.WindowsAclTransactionTests.test_production_file_gate_rejects_user_owned_existing_file) ... ERROR
+test_production_trust_gates_synthetic_positive_and_untrusted_ace (test_windows_acl_transaction.WindowsAclTransactionTests.test_production_trust_gates_synthetic_positive_and_untrusted_ace) ... ERROR
+test_recovery_admission_requires_unfinished_stopped_disabled_identity (test_windows_acl_transaction.WindowsAclTransactionTests.test_recovery_admission_requires_unfinished_stopped_disabled_identity) ... ERROR
+test_rollback_failure_retained_and_explicit_recovery (test_windows_acl_transaction.WindowsAclTransactionTests.test_rollback_failure_retained_and_explicit_recovery) ... ERROR
+test_second_apply_failure_compensates_code (test_windows_acl_transaction.WindowsAclTransactionTests.test_second_apply_failure_compensates_code) ... ERROR
+test_unknown_acl_no_automatic_reapply_or_rollback (test_windows_acl_transaction.WindowsAclTransactionTests.test_unknown_acl_no_automatic_reapply_or_rollback) ... ERROR
+test_wrong_manifest_recovery_refuses_all_writes (test_windows_acl_transaction.WindowsAclTransactionTests.test_wrong_manifest_recovery_refuses_all_writes) ... ERROR
+test_enabled_config_rejected_even_with_matching_hash (test_disabled_host_package.DisabledPackageTests.test_enabled_config_rejected_even_with_matching_hash) ... ok
+test_exact_source_and_installer_version_gate (test_disabled_host_package.DisabledPackageTests.test_exact_source_and_installer_version_gate) ... 
+  test_exact_source_and_installer_version_gate (test_disabled_host_package.DisabledPackageTests.test_exact_source_and_installer_version_gate) (commit='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', version='1.1.1') ... ERROR
+  test_exact_source_and_installer_version_gate (test_disabled_host_package.DisabledPackageTests.test_exact_source_and_installer_version_gate) (commit='bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', version='1.1.1') ... ERROR
+  test_exact_source_and_installer_version_gate (test_disabled_host_package.DisabledPackageTests.test_exact_source_and_installer_version_gate) (commit='AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', version='1.1.1') ... ERROR
+  test_exact_source_and_installer_version_gate (test_disabled_host_package.DisabledPackageTests.test_exact_source_and_installer_version_gate) (commit='', version='1.1.1') ... ERROR
+  test_exact_source_and_installer_version_gate (test_disabled_host_package.DisabledPackageTests.test_exact_source_and_installer_version_gate) (commit='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', version='1.0.0') ... ERROR
+  test_exact_source_and_installer_version_gate (test_disabled_host_package.DisabledPackageTests.test_exact_source_and_installer_version_gate) (commit='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', version=None) ... ERROR
+test_execute_cannot_bypass_missing_formal_maintenance (test_disabled_host_package.DisabledPackageTests.test_execute_cannot_bypass_missing_formal_maintenance) ... ERROR
+test_missing_or_changed_dependency_rejected_before_writes (test_disabled_host_package.DisabledPackageTests.test_missing_or_changed_dependency_rejected_before_writes) ... ok
+test_paths_collisions_and_missing_approval_rejected (test_disabled_host_package.DisabledPackageTests.test_paths_collisions_and_missing_approval_rejected) ... ok
+test_powershell_actual_parser_and_no_start_or_state_delete (test_disabled_host_package.DisabledPackageTests.test_powershell_actual_parser_and_no_start_or_state_delete) ... ERROR
+test_real_pe_compiles_and_config_cli_is_fail_closed (test_disabled_host_package.DisabledPackageTests.test_real_pe_compiles_and_config_cli_is_fail_closed) ... ERROR
+test_real_staging_exact_files_and_no_install_authority (test_disabled_host_package.DisabledPackageTests.test_real_staging_exact_files_and_no_install_authority) ... ok
+test_flush_failure_poison_writer_and_preserve (test_install_journal.InstallJournalTests.test_flush_failure_poison_writer_and_preserve) ... ok
+test_order_and_full_receipts_never_authorize (test_install_journal.InstallJournalTests.test_order_and_full_receipts_never_authorize) ... ok
+test_partial_acl_survives_process_exit_without_replay (test_install_journal.InstallJournalTests.test_partial_acl_survives_process_exit_without_replay) ... ok
+test_torn_or_invalid_log_is_unknown (test_install_journal.InstallJournalTests.test_torn_or_invalid_log_is_unknown) ... ok
+test_condition_lost_at_each_boundary_stops (test_install_contract.InstallContractTests.test_condition_lost_at_each_boundary_stops) ... ok
+test_driver_process_exit_after_second_acl_effect (test_install_contract.InstallContractTests.test_driver_process_exit_after_second_acl_effect) ... ok
+test_every_effect_failure_is_preserved_without_replay (test_install_contract.InstallContractTests.test_every_effect_failure_is_preserved_without_replay) ... ok
+test_intent_flush_failure_prevents_effect (test_install_contract.InstallContractTests.test_intent_flush_failure_prevents_effect) ... ok
+test_non_offline_adapter_rejected_and_success_is_not_authority (test_install_contract.InstallContractTests.test_non_offline_adapter_rejected_and_success_is_not_authority) ... ok
+test_readback_must_match_operation_package_lease_and_step (test_install_contract.InstallContractTests.test_readback_must_match_operation_package_lease_and_step) ... ok
+test_receipt_flush_failure_never_advances_to_next_effect (test_install_contract.InstallContractTests.test_receipt_flush_failure_never_advances_to_next_effect) ... ok
+test_every_crash_boundary_preserves_all_state (test_independent_install_plan.IndependentInstallPlanTests.test_every_crash_boundary_preserves_all_state) ... ok
+test_existing_or_unknown_targets_rejected (test_independent_install_plan.IndependentInstallPlanTests.test_existing_or_unknown_targets_rejected) ... ok
+test_first_install_records_absence_without_authority (test_independent_install_plan.IndependentInstallPlanTests.test_first_install_records_absence_without_authority) ... ok
+test_identity_and_hash_rejected (test_independent_install_plan.IndependentInstallPlanTests.test_identity_and_hash_rejected) ... ok
+test_unknown_or_running_or_missing_lease_stops (test_independent_install_plan.IndependentInstallPlanTests.test_unknown_or_running_or_missing_lease_stops) ... ok
+test_actual_receipt_writer_and_rollback_pins (test_u1_provision.OwnershipReceiptTests.test_actual_receipt_writer_and_rollback_pins) ... ERROR
+test_generated_configs_and_tamper (test_u1_provision.ProvisionTests.test_generated_configs_and_tamper) ... ERROR
+test_missing_local_dependency_does_not_fall_back_to_checkout (test_u1_manifest_closure.ManifestClosureTests.test_missing_local_dependency_does_not_fall_back_to_checkout) ... ERROR
+test_pinned_manifest_imports_without_checkout (test_u1_manifest_closure.ManifestClosureTests.test_pinned_manifest_imports_without_checkout) ... ERROR
+test_authenticated_listener_and_exclusive_lifetime (test_u1_host_runtime.HostRuntimeTests.test_authenticated_listener_and_exclusive_lifetime) ... ERROR
+test_uncertain_publication_blocks_host_and_standalone_bootstrap (test_u1_host_runtime.HostRuntimeTests.test_uncertain_publication_blocks_host_and_standalone_bootstrap) ... ok
+test_config_fingerprint_and_protocol_fail_closed (test_host_remediation.HostRemediationTests.test_config_fingerprint_and_protocol_fail_closed) ... ok
+test_each_failure_or_unknown_gate_blocks (test_host_remediation.HostRemediationTests.test_each_failure_or_unknown_gate_blocks) ... ok
+test_even_complete_signed_fixture_never_grants_any_execution (test_host_remediation.HostRemediationTests.test_even_complete_signed_fixture_never_grants_any_execution) ... ok
+test_invalid_signature_rejected (test_host_remediation.HostRemediationTests.test_invalid_signature_rejected) ... ok
+test_no_self_approved_bindings_or_unknown_fields (test_host_remediation.HostRemediationTests.test_no_self_approved_bindings_or_unknown_fields) ... ok
+test_stale_expired_and_wrong_inventory_rejected (test_host_remediation.HostRemediationTests.test_stale_expired_and_wrong_inventory_rejected) ... ok
+test_unsafe_service_variants_rejected (test_host_remediation.HostRemediationTests.test_unsafe_service_variants_rejected) ... ok
+test_bound_receipt_expiry_and_exact_types (test_host_preparation.HostPreparationTests.test_bound_receipt_expiry_and_exact_types) ... ok
+test_bridge_duplicate_and_wrong_post_contract (test_host_preparation.HostPreparationTests.test_bridge_duplicate_and_wrong_post_contract) ... ok
+test_bridge_four_independent_statuses (test_host_preparation.HostPreparationTests.test_bridge_four_independent_statuses) ... ok
+test_caller_booleans_and_malformed_envelopes_fail_closed (test_host_preparation.HostPreparationTests.test_caller_booleans_and_malformed_envelopes_fail_closed) ... ok
+test_disabled_task_and_cli_cannot_collect (test_host_preparation.HostPreparationTests.test_disabled_task_and_cli_cannot_collect) ... ok
+test_mutation_signature_source_identity_and_time (test_host_preparation.HostPreparationTests.test_mutation_signature_source_identity_and_time) ... ok
+test_runtime_hash_probe_is_read_only (test_host_preparation.HostPreparationTests.test_runtime_hash_probe_is_read_only) ... ok
+test_signed_all_true_never_dispatches (test_host_preparation.HostPreparationTests.test_signed_all_true_never_dispatches) ... ok
+test_user_session_proxy_not_noninteractive (test_host_preparation.HostPreparationTests.test_user_session_proxy_not_noninteractive) ... ok
+test_failed_commit_keeps_old_pointer_and_backup (test_release_store.ReleaseStoreTests.test_failed_commit_keeps_old_pointer_and_backup) ... ok
+test_failed_pointer_commit_is_inspect_only_and_all_writers_fenced (test_release_store.ReleaseStoreTests.test_failed_pointer_commit_is_inspect_only_and_all_writers_fenced) ... ok
+test_final_sha_layout_rejected_before_staging (test_release_store.ReleaseStoreTests.test_final_sha_layout_rejected_before_staging) ... ok
+test_first_install_upgrade_and_complete_pointer_rollback (test_release_store.ReleaseStoreTests.test_first_install_upgrade_and_complete_pointer_rollback) ... ok
+test_namespace_paths_rejected (test_release_store.ReleaseStoreTests.test_namespace_paths_rejected) ... ok
+test_process_exit_after_real_commit_keeps_unknown_and_does_not_replay (test_release_store.ReleaseStoreTests.test_process_exit_after_real_commit_keeps_unknown_and_does_not_replay) ... ok
+test_tamper_refused_and_inactive_delete_preserves_backups (test_release_store.ReleaseStoreTests.test_tamper_refused_and_inactive_delete_preserves_backups) ... ok
+test_torn_intent_blocks_publication_without_clearing_evidence (test_release_store.ReleaseStoreTests.test_torn_intent_blocks_publication_without_clearing_evidence) ... ok
+test_actual_child_receipts_settle_existing_ledgers (test_process_backend.BackendTests.test_actual_child_receipts_settle_existing_ledgers) ... ok
+test_foreign_inventory_and_no_lease_rejected (test_process_backend.BackendTests.test_foreign_inventory_and_no_lease_rejected) ... ok
+test_inflight_after_reopen_never_enters_child (test_process_backend.BackendTests.test_inflight_after_reopen_never_enters_child) ... ok
+test_lost_or_invalid_receipt_blocks_retry (test_process_backend.BackendTests.test_lost_or_invalid_receipt_blocks_retry) ... ok
+test_timeout_kills_child_and_no_replay (test_process_backend.BackendTests.test_timeout_kills_child_and_no_replay) ... ok
+test_exit_after_commit_new_process_does_not_replay_intent (test_single_slot_adapter.CancellationProcessTests.test_exit_after_commit_new_process_does_not_replay_intent) ... ok
+test_exit_before_commit_new_process_records_intent_once (test_single_slot_adapter.CancellationProcessTests.test_exit_before_commit_new_process_records_intent_once) ... ok
+test_four_processes_reserve_one_intent (test_single_slot_adapter.CancellationProcessTests.test_four_processes_reserve_one_intent) ... ok
+test_budget_failure_does_not_claim_or_call (test_single_slot_adapter.SingleSlotTests.test_budget_failure_does_not_claim_or_call) ... ok
+test_cancel_ack_and_timeout_preserve_unknown_budget_no_replay (test_single_slot_adapter.SingleSlotTests.test_cancel_ack_and_timeout_preserve_unknown_budget_no_replay) ... ok
+test_cancel_intent_before_commit_failure_remains_unknown (test_single_slot_adapter.SingleSlotTests.test_cancel_intent_before_commit_failure_remains_unknown) ... ok
+test_cancel_intent_invalid_signature_version_binding_and_alias (test_single_slot_adapter.SingleSlotTests.test_cancel_intent_invalid_signature_version_binding_and_alias) ... ok
+test_cancel_intent_reopen_duplicate_and_commit_ack_lost (test_single_slot_adapter.SingleSlotTests.test_cancel_intent_reopen_duplicate_and_commit_ack_lost) ... ok
+test_cancel_journal_conflict_schema_and_hardlink (test_single_slot_adapter.SingleSlotTests.test_cancel_journal_conflict_schema_and_hardlink) ... ok
+test_cancel_journal_then_settlement_failure_and_recovery (test_single_slot_adapter.SingleSlotTests.test_cancel_journal_then_settlement_failure_and_recovery) ... ok
+test_completed_claim_cannot_create_cancel_intent (test_single_slot_adapter.SingleSlotTests.test_completed_claim_cannot_create_cancel_intent) ... ok
+test_default_deny_and_missing_lock (test_single_slot_adapter.SingleSlotTests.test_default_deny_and_missing_lock) ... ok
+test_direct_reconcile_overrun_and_duplicate_keep_fence (test_single_slot_adapter.SingleSlotTests.test_direct_reconcile_overrun_and_duplicate_keep_fence) ... ok
+test_effect_then_lost_receipt_unknown_no_replay_reconcile (test_single_slot_adapter.SingleSlotTests.test_effect_then_lost_receipt_unknown_no_replay_reconcile) ... ok
+test_invalid_completion_clock_requires_explicit_reconciliation (test_single_slot_adapter.SingleSlotTests.test_invalid_completion_clock_requires_explicit_reconciliation) ... ok
+test_late_backend_result_rejected_without_retry (test_single_slot_adapter.SingleSlotTests.test_late_backend_result_rejected_without_retry) ... ok
+test_late_receipt_survives_adapter_restart_without_replay (test_single_slot_adapter.SingleSlotTests.test_late_receipt_survives_adapter_restart_without_replay) ... ok
+test_legacy_admission_missing_version_reconciles_but_cannot_execute (test_single_slot_adapter.SingleSlotTests.test_legacy_admission_missing_version_reconciles_but_cannot_execute) ... ok
+test_old_receipt_cannot_clear_new_unknown_tree (test_single_slot_adapter.SingleSlotTests.test_old_receipt_cannot_clear_new_unknown_tree) ... ok
+test_production_scope_or_host_boolean_cannot_enable (test_single_slot_adapter.SingleSlotTests.test_production_scope_or_host_boolean_cannot_enable) ... ok
+test_protocol_version_default_deny_before_claim (test_single_slot_adapter.SingleSlotTests.test_protocol_version_default_deny_before_claim) ... ok
+test_real_settlement_transaction_fault_preserves_reservation (test_single_slot_adapter.SingleSlotTests.test_real_settlement_transaction_fault_preserves_reservation) ... ok
+test_receipt_wrong_request_never_releases_budget (test_single_slot_adapter.SingleSlotTests.test_receipt_wrong_request_never_releases_budget) ... ok
+test_runtime_and_lock_instance_binding (test_single_slot_adapter.SingleSlotTests.test_runtime_and_lock_instance_binding) ... ok
+test_settlement_commit_ack_lost_keeps_fence_without_replay (test_single_slot_adapter.SingleSlotTests.test_settlement_commit_ack_lost_keeps_fence_without_replay) ... ok
+test_settlement_storage_failure_keeps_recovery_fence (test_single_slot_adapter.SingleSlotTests.test_settlement_storage_failure_keeps_recovery_fence) ... ok
+test_signed_failed_terminal (test_single_slot_adapter.SingleSlotTests.test_signed_failed_terminal) ... ok
+test_signed_missed_slots_are_preserved (test_single_slot_adapter.SingleSlotTests.test_signed_missed_slots_are_preserved) ... ok
+test_start_ack_failure_no_external_effect_no_retry (test_single_slot_adapter.SingleSlotTests.test_start_ack_failure_no_external_effect_no_retry) ... ok
+test_success_failure_and_duplicate_no_second_dispatch (test_single_slot_adapter.SingleSlotTests.test_success_failure_and_duplicate_no_second_dispatch) ... ok
+test_unknown_without_drained_receipt_preserves_existing_lock (test_single_slot_adapter.SingleSlotTests.test_unknown_without_drained_receipt_preserves_existing_lock) ... ok
+test_versioned_operation_identity_and_time_bound (test_single_slot_adapter.SingleSlotTests.test_versioned_operation_identity_and_time_bound) ... ok
+test_authentication_precedes_health_or_backend_reads (test_host_readonly_http.HostReadOnlyHTTPTests.test_authentication_precedes_health_or_backend_reads) ... ERROR
+test_backend_read_cannot_release_status_after_clock_failure (test_host_readonly_http.HostReadOnlyHTTPTests.test_backend_read_cannot_release_status_after_clock_failure) ... ERROR
+test_backend_read_cannot_release_status_after_expiry (test_host_readonly_http.HostReadOnlyHTTPTests.test_backend_read_cannot_release_status_after_expiry) ... ERROR
+test_clock_rollback_permanently_fences_credential_across_requests (test_host_readonly_http.HostReadOnlyHTTPTests.test_clock_rollback_permanently_fences_credential_across_requests) ... ERROR
+test_duplicate_authorization_rejected_without_backend_read (test_host_readonly_http.HostReadOnlyHTTPTests.test_duplicate_authorization_rejected_without_backend_read) ... ERROR
+test_empty_or_invalid_provisioning_rejected (test_host_readonly_http.HostReadOnlyHTTPTests.test_empty_or_invalid_provisioning_rejected) ... ok
+test_existing_operation_status_never_replays_unknown (test_host_readonly_http.HostReadOnlyHTTPTests.test_existing_operation_status_never_replays_unknown) ... ERROR
+test_expired_and_invalid_clock_reject_before_any_backend_read (test_host_readonly_http.HostReadOnlyHTTPTests.test_expired_and_invalid_clock_reject_before_any_backend_read) ... ERROR
+test_expiry_cannot_be_revived_by_clock_rollback (test_host_readonly_http.HostReadOnlyHTTPTests.test_expiry_cannot_be_revived_by_clock_rollback) ... ERROR
+test_explicit_deadline_required_and_head_has_no_body (test_host_readonly_http.HostReadOnlyHTTPTests.test_explicit_deadline_required_and_head_has_no_body) ... ERROR
+test_failed_clock_remains_fenced_after_clock_recovers (test_host_readonly_http.HostReadOnlyHTTPTests.test_failed_clock_remains_fenced_after_clock_recovers) ... ERROR
+test_hash_failure_and_forged_authority_never_become_http_success (test_host_readonly_http.HostReadOnlyHTTPTests.test_hash_failure_and_forged_authority_never_become_http_success) ... ERROR
+test_invalid_backend_or_methods_routes_and_body_fail_closed (test_host_readonly_http.HostReadOnlyHTTPTests.test_invalid_backend_or_methods_routes_and_body_fail_closed) ... ERROR
+test_created_roots_prune_process_exit_recovery (test_host_file_transaction.FileTransactionTests.test_created_roots_prune_process_exit_recovery) ... ok
+test_fault_at_every_apply_and_rollback_boundary (test_host_file_transaction.FileTransactionTests.test_fault_at_every_apply_and_rollback_boundary) ... ok
+test_first_install_repeat_and_absent_rollback (test_host_file_transaction.FileTransactionTests.test_first_install_repeat_and_absent_rollback) ... ok
+test_read_rejects_hardlink_created_before_open (test_host_file_transaction.FileTransactionTests.test_read_rejects_hardlink_created_before_open) ... ok
+test_read_rejects_name_swap_before_open (test_host_file_transaction.FileTransactionTests.test_read_rejects_name_swap_before_open) ... ok
+test_real_process_exit_after_effect_and_during_rollback (test_host_file_transaction.FileTransactionTests.test_real_process_exit_after_effect_and_during_rollback) ... ok
+test_receipt_requires_verified_actual_bytes (test_host_file_transaction.FileTransactionTests.test_receipt_requires_verified_actual_bytes) ... ok
+test_reserved_staging_and_case_collisions_rejected (test_host_file_transaction.FileTransactionTests.test_reserved_staging_and_case_collisions_rejected) ... ok
+test_torn_journal_and_unexpected_stage_preserved (test_host_file_transaction.FileTransactionTests.test_torn_journal_and_unexpected_stage_preserved) ... ok
+test_unowned_and_forged_receipt_rejected_before_intent (test_host_file_transaction.FileTransactionTests.test_unowned_and_forged_receipt_rejected_before_intent) ... ok
+test_upgrade_new_replace_delete_and_restore_previous_receipt (test_host_file_transaction.FileTransactionTests.test_upgrade_new_replace_delete_and_restore_previous_receipt) ... ok
+test_acl_failure_compensates_actual_files_and_registration (test_host_install_transaction.HostInstallTests.test_acl_failure_compensates_actual_files_and_registration) ... ERROR
+test_early_root_creation_process_exit_restores_absent (test_host_install_transaction.HostInstallTests.test_early_root_creation_process_exit_restores_absent) ... 
+  test_early_root_creation_process_exit_restores_absent (test_host_install_transaction.HostInstallTests.test_early_root_creation_process_exit_restores_absent) (phase='CODE_CREATE_VERIFIED') ... ERROR
+  test_early_root_creation_process_exit_restores_absent (test_host_install_transaction.HostInstallTests.test_early_root_creation_process_exit_restores_absent) (phase='STATE_CREATE_VERIFIED') ... ERROR
+test_install_upgrade_full_rollback_and_duplicate (test_host_install_transaction.HostInstallTests.test_install_upgrade_full_rollback_and_duplicate) ... ERROR
+test_lost_maintenance_after_files_preserves_state_without_scm_or_compensation (test_host_install_transaction.HostInstallTests.test_lost_maintenance_after_files_preserves_state_without_scm_or_compensation) ... ERROR
+test_missing_maintenance_authority_refuses_before_any_target_creation (test_host_install_transaction.HostInstallTests.test_missing_maintenance_authority_refuses_before_any_target_creation) ... ERROR
+test_real_coordinator_process_exit_recovery_no_forward_replay (test_host_install_transaction.HostInstallTests.test_real_coordinator_process_exit_recovery_no_forward_replay) ... ERROR
+test_unknown_state_content_preserved_before_registration_or_acl_rollback (test_host_install_transaction.HostInstallTests.test_unknown_state_content_preserved_before_registration_or_acl_rollback) ... ERROR
+test_wrong_action_or_multiple_actions_refused_before_target_creation (test_host_install_transaction.HostInstallTests.test_wrong_action_or_multiple_actions_refused_before_target_creation) ... ERROR
+test_actual_service_event_existing_owner_child_and_settlement (test_inventory_event_bridge.EventBridgeTests.test_actual_service_event_existing_owner_child_and_settlement) ... ERROR
+test_ambiguous_or_open_response_never_reaches_executor (test_inventory_event_bridge.EventBridgeTests.test_ambiguous_or_open_response_never_reaches_executor) ... ok
+test_ambiguous_request_cannot_create_or_reserve_event (test_inventory_event_bridge.EventBridgeTests.test_ambiguous_request_cannot_create_or_reserve_event) ... ERROR
+test_expiry_during_reserve_withholds_event_and_preserves_reservation (test_inventory_event_bridge.EventBridgeTests.test_expiry_during_reserve_withholds_event_and_preserves_reservation) ... ERROR
+test_lost_report_does_not_repeat_completed_child (test_inventory_event_bridge.EventBridgeTests.test_lost_report_does_not_repeat_completed_child) ... ERROR
+test_no_lease_foreign_owner_bad_auth_and_bad_admission (test_inventory_event_bridge.EventBridgeTests.test_no_lease_foreign_owner_bad_auth_and_bad_admission) ... ERROR
+test_reserved_after_process_loss_reopen_cannot_dispatch (test_inventory_event_bridge.EventBridgeTests.test_reserved_after_process_loss_reopen_cannot_dispatch) ... ERROR
+test_active_original_lock_rejects_maintenance_even_if_stale (test_inventory_maintenance.MaintenanceTests.test_active_original_lock_rejects_maintenance_even_if_stale) ... ok
+test_commit_failure_does_not_release_existing_marker (test_inventory_maintenance.MaintenanceTests.test_commit_failure_does_not_release_existing_marker) ... ok
+test_malformed_marker_fails_closed_and_no_tombstone_replay (test_inventory_maintenance.MaintenanceTests.test_malformed_marker_fails_closed_and_no_tombstone_replay) ... ok
+test_original_inventory_blocked_across_dates_until_verified_release (test_inventory_maintenance.MaintenanceTests.test_original_inventory_blocked_across_dates_until_verified_release) ... ok
+test_restart_and_wrong_owner_preserve_exclusion (test_inventory_maintenance.MaintenanceTests.test_restart_and_wrong_owner_preserve_exclusion) ... ok
+test_actual_single_multi_apply_and_rollback_refuse_effects_after_green_preflight (test_publisher_maintenance.PublisherMaintenanceTests.test_actual_single_multi_apply_and_rollback_refuse_effects_after_green_preflight) ... ok
+test_all_four_original_mutating_paths_use_shared_admission_before_replace (test_publisher_maintenance.PublisherMaintenanceTests.test_all_four_original_mutating_paths_use_shared_admission_before_replace) ... ok
+test_malformed_null_and_empty_markers_fail_closed (test_publisher_maintenance.PublisherMaintenanceTests.test_malformed_null_and_empty_markers_fail_closed) ... ok
+test_marker_blocks_apply_and_rollback_holders_across_dates (test_publisher_maintenance.PublisherMaintenanceTests.test_marker_blocks_apply_and_rollback_holders_across_dates) ... ok
+test_missing_authority_table_raises_without_publisher_admission (test_publisher_maintenance.PublisherMaintenanceTests.test_missing_authority_table_raises_without_publisher_admission) ... ok
+test_publisher_holder_blocks_maintenance_even_with_expired_timestamp (test_publisher_maintenance.PublisherMaintenanceTests.test_publisher_holder_blocks_maintenance_even_with_expired_timestamp) ... ok
+test_racing_maintenance_and_publisher_have_exactly_one_winner (test_publisher_maintenance.PublisherMaintenanceTests.test_racing_maintenance_and_publisher_have_exactly_one_winner) ... ok
+test_released_marker_allows_original_admission_but_operation_cannot_replay (test_publisher_maintenance.PublisherMaintenanceTests.test_released_marker_allows_original_admission_but_operation_cannot_replay) ... ok
+test_acquire_session_failure_rolls_back_marker_tombstone_and_context_together (test_publisher_install_maintenance.PublisherInstallMaintenanceTests.test_acquire_session_failure_rolls_back_marker_tombstone_and_context_together) ... ok
+test_explicit_partial_compensation_retains_same_authority_and_can_recover_again (test_publisher_install_maintenance.PublisherInstallMaintenanceTests.test_explicit_partial_compensation_retains_same_authority_and_can_recover_again) ... ok
+test_explicit_rollback_has_fresh_maintenance_operation_but_same_target_journal (test_publisher_install_maintenance.PublisherInstallMaintenanceTests.test_explicit_rollback_has_fresh_maintenance_operation_but_same_target_journal) ... ok
+test_failure_preserves_marker_and_explicit_reconcile_never_relaunches (test_publisher_install_maintenance.PublisherInstallMaintenanceTests.test_failure_preserves_marker_and_explicit_reconcile_never_relaunches) ... ok
+test_handoff_during_old_verifier_cannot_release_or_reactivate_parent (test_publisher_install_maintenance.PublisherInstallMaintenanceTests.test_handoff_during_old_verifier_cannot_release_or_reactivate_parent) ... ok
+test_hold_from_install_through_independent_final_verification_and_atomic_release (test_publisher_install_maintenance.PublisherInstallMaintenanceTests.test_hold_from_install_through_independent_final_verification_and_atomic_release) ... ok
+test_real_exit_inside_acquire_transaction_leaves_no_orphan_marker (test_publisher_install_maintenance.PublisherInstallMaintenanceTests.test_real_exit_inside_acquire_transaction_leaves_no_orphan_marker) ... ok
+test_real_process_exit_after_install_intent_remains_held_after_restart (test_publisher_install_maintenance.PublisherInstallMaintenanceTests.test_real_process_exit_after_install_intent_remains_held_after_restart) ... ok
+test_release_commit_failure_keeps_authority_and_does_not_replay_install (test_publisher_install_maintenance.PublisherInstallMaintenanceTests.test_release_commit_failure_keeps_authority_and_does_not_replay_install) ... ok
+test_release_commit_succeeded_but_reply_lost_is_observed_without_replay (test_publisher_install_maintenance.PublisherInstallMaintenanceTests.test_release_commit_succeeded_but_reply_lost_is_observed_without_replay) ... ok
+test_unverified_prior_process_cannot_start_compensation (test_publisher_install_maintenance.PublisherInstallMaintenanceTests.test_unverified_prior_process_cannot_start_compensation) ... ok
+test_wrong_binding_or_verifier_failure_never_releases (test_publisher_install_maintenance.PublisherInstallMaintenanceTests.test_wrong_binding_or_verifier_failure_never_releases) ... ok
+
+======================================================================
+ERROR: test_atomic_state_creation_has_durable_intent_and_secure_initial_dacl (test_windows_acl_transaction.WindowsAclTransactionTests.test_atomic_state_creation_has_durable_intent_and_secure_initial_dacl)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 60, in setUp
+    self.run_ps(self.fixture)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 24, in run_ps
+    p = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive',
+                        '-EncodedCommand', encoded], input=code.encode('utf-8'), capture_output=True,
+                       timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'dAByAHkAIAB7ACAAJgAgACgAWwBzAGMAcgBpAHAAdABiAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKABbAEMAbwBuAHMAbwBsAGUAXQA6ADoASQBuAC4AUgBlAGEAZABUAG8ARQBuAGQAKAApACkAKQA7ACAAZQB4AGkAdAAgADAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFcAcgBpAHQAZQAtAEUAcgByAG8AcgAgACQAXwA7ACAAZQB4AGkAdAAgADEAIAB9AA==']
+
+======================================================================
+ERROR: test_both_success_inheritance_and_exact_aces_then_explicit_rollback (test_windows_acl_transaction.WindowsAclTransactionTests.test_both_success_inheritance_and_exact_aces_then_explicit_rollback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 60, in setUp
+    self.run_ps(self.fixture)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 24, in run_ps
+    p = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive',
+                        '-EncodedCommand', encoded], input=code.encode('utf-8'), capture_output=True,
+                       timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'dAByAHkAIAB7ACAAJgAgACgAWwBzAGMAcgBpAHAAdABiAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKABbAEMAbwBuAHMAbwBsAGUAXQA6ADoASQBuAC4AUgBlAGEAZABUAG8ARQBuAGQAKAApACkAKQA7ACAAZQB4AGkAdAAgADAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFcAcgBpAHQAZQAtAEUAcgByAG8AcgAgACQAXwA7ACAAZQB4AGkAdAAgADEAIAB9AA==']
+
+======================================================================
+ERROR: test_existing_journal_never_replays (test_windows_acl_transaction.WindowsAclTransactionTests.test_existing_journal_never_replays)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 60, in setUp
+    self.run_ps(self.fixture)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 24, in run_ps
+    p = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive',
+                        '-EncodedCommand', encoded], input=code.encode('utf-8'), capture_output=True,
+                       timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'dAByAHkAIAB7ACAAJgAgACgAWwBzAGMAcgBpAHAAdABiAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKABbAEMAbwBuAHMAbwBsAGUAXQA6ADoASQBuAC4AUgBlAGEAZABUAG8ARQBuAGQAKAApACkAKQA7ACAAZQB4AGkAdAAgADAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFcAcgBpAHQAZQAtAEUAcgByAG8AcgAgACQAXwA7ACAAZQB4AGkAdAAgADEAIAB9AA==']
+
+======================================================================
+ERROR: test_exit_after_first_readback (test_windows_acl_transaction.WindowsAclTransactionTests.test_exit_after_first_readback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 60, in setUp
+    self.run_ps(self.fixture)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 24, in run_ps
+    p = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive',
+                        '-EncodedCommand', encoded], input=code.encode('utf-8'), capture_output=True,
+                       timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'dAByAHkAIAB7ACAAJgAgACgAWwBzAGMAcgBpAHAAdABiAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKABbAEMAbwBuAHMAbwBsAGUAXQA6ADoASQBuAC4AUgBlAGEAZABUAG8ARQBuAGQAKAApACkAKQA7ACAAZQB4AGkAdAAgADAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFcAcgBpAHQAZQAtAEUAcgByAG8AcgAgACQAXwA7ACAAZQB4AGkAdAAgADEAIAB9AA==']
+
+======================================================================
+ERROR: test_exit_after_second_set_before_readback (test_windows_acl_transaction.WindowsAclTransactionTests.test_exit_after_second_set_before_readback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 60, in setUp
+    self.run_ps(self.fixture)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 24, in run_ps
+    p = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive',
+                        '-EncodedCommand', encoded], input=code.encode('utf-8'), capture_output=True,
+                       timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'dAByAHkAIAB7ACAAJgAgACgAWwBzAGMAcgBpAHAAdABiAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKABbAEMAbwBuAHMAbwBsAGUAXQA6ADoASQBuAC4AUgBlAGEAZABUAG8ARQBuAGQAKAApACkAKQA7ACAAZQB4AGkAdAAgADAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFcAcgBpAHQAZQAtAEUAcgByAG8AcgAgACQAXwA7ACAAZQB4AGkAdAAgADEAIAB9AA==']
+
+======================================================================
+ERROR: test_exit_before_second_write (test_windows_acl_transaction.WindowsAclTransactionTests.test_exit_before_second_write)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 60, in setUp
+    self.run_ps(self.fixture)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 24, in run_ps
+    p = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive',
+                        '-EncodedCommand', encoded], input=code.encode('utf-8'), capture_output=True,
+                       timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'dAByAHkAIAB7ACAAJgAgACgAWwBzAGMAcgBpAHAAdABiAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKABbAEMAbwBuAHMAbwBsAGUAXQA6ADoASQBuAC4AUgBlAGEAZABUAG8ARQBuAGQAKAApACkAKQA7ACAAZQB4AGkAdAAgADAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFcAcgBpAHQAZQAtAEUAcgByAG8AcgAgACQAXwA7ACAAZQB4AGkAdAAgADEAIAB9AA==']
+
+======================================================================
+ERROR: test_exit_during_rollback_can_finish_without_reapplying (test_windows_acl_transaction.WindowsAclTransactionTests.test_exit_during_rollback_can_finish_without_reapplying)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 60, in setUp
+    self.run_ps(self.fixture)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 24, in run_ps
+    p = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive',
+                        '-EncodedCommand', encoded], input=code.encode('utf-8'), capture_output=True,
+                       timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'dAByAHkAIAB7ACAAJgAgACgAWwBzAGMAcgBpAHAAdABiAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKABbAEMAbwBuAHMAbwBsAGUAXQA6ADoASQBuAC4AUgBlAGEAZABUAG8ARQBuAGQAKAApACkAKQA7ACAAZQB4AGkAdAAgADAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFcAcgBpAHQAZQAtAEUAcgByAG8AcgAgACQAXwA7ACAAZQB4AGkAdAAgADEAIAB9AA==']
+
+======================================================================
+ERROR: test_partial_journal_refuses_all_writes (test_windows_acl_transaction.WindowsAclTransactionTests.test_partial_journal_refuses_all_writes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 60, in setUp
+    self.run_ps(self.fixture)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 24, in run_ps
+    p = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive',
+                        '-EncodedCommand', encoded], input=code.encode('utf-8'), capture_output=True,
+                       timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'dAByAHkAIAB7ACAAJgAgACgAWwBzAGMAcgBpAHAAdABiAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKABbAEMAbwBuAHMAbwBsAGUAXQA6ADoASQBuAC4AUgBlAGEAZABUAG8ARQBuAGQAKAApACkAKQA7ACAAZQB4AGkAdAAgADAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFcAcgBpAHQAZQAtAEUAcgByAG8AcgAgACQAXwA7ACAAZQB4AGkAdAAgADEAIAB9AA==']
+
+======================================================================
+ERROR: test_prepared_flush_failure_has_no_acl_effects (test_windows_acl_transaction.WindowsAclTransactionTests.test_prepared_flush_failure_has_no_acl_effects)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 60, in setUp
+    self.run_ps(self.fixture)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 24, in run_ps
+    p = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive',
+                        '-EncodedCommand', encoded], input=code.encode('utf-8'), capture_output=True,
+                       timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'dAByAHkAIAB7ACAAJgAgACgAWwBzAGMAcgBpAHAAdABiAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKABbAEMAbwBuAHMAbwBsAGUAXQA6ADoASQBuAC4AUgBlAGEAZABUAG8ARQBuAGQAKAApACkAKQA7ACAAZQB4AGkAdAAgADAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFcAcgBpAHQAZQAtAEUAcgByAG8AcgAgACQAXwA7ACAAZQB4AGkAdAAgADEAIAB9AA==']
+
+======================================================================
+ERROR: test_production_audit_gate_rejects_ordinary_user_fixture (test_windows_acl_transaction.WindowsAclTransactionTests.test_production_audit_gate_rejects_ordinary_user_fixture)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 60, in setUp
+    self.run_ps(self.fixture)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 24, in run_ps
+    p = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive',
+                        '-EncodedCommand', encoded], input=code.encode('utf-8'), capture_output=True,
+                       timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'dAByAHkAIAB7ACAAJgAgACgAWwBzAGMAcgBpAHAAdABiAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKABbAEMAbwBuAHMAbwBsAGUAXQA6ADoASQBuAC4AUgBlAGEAZABUAG8ARQBuAGQAKAApACkAKQA7ACAAZQB4AGkAdAAgADAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFcAcgBpAHQAZQAtAEUAcgByAG8AcgAgACQAXwA7ACAAZQB4AGkAdAAgADEAIAB9AA==']
+
+======================================================================
+ERROR: test_production_file_gate_rejects_user_owned_existing_file (test_windows_acl_transaction.WindowsAclTransactionTests.test_production_file_gate_rejects_user_owned_existing_file)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 60, in setUp
+    self.run_ps(self.fixture)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 24, in run_ps
+    p = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive',
+                        '-EncodedCommand', encoded], input=code.encode('utf-8'), capture_output=True,
+                       timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'dAByAHkAIAB7ACAAJgAgACgAWwBzAGMAcgBpAHAAdABiAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKABbAEMAbwBuAHMAbwBsAGUAXQA6ADoASQBuAC4AUgBlAGEAZABUAG8ARQBuAGQAKAApACkAKQA7ACAAZQB4AGkAdAAgADAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFcAcgBpAHQAZQAtAEUAcgByAG8AcgAgACQAXwA7ACAAZQB4AGkAdAAgADEAIAB9AA==']
+
+======================================================================
+ERROR: test_production_trust_gates_synthetic_positive_and_untrusted_ace (test_windows_acl_transaction.WindowsAclTransactionTests.test_production_trust_gates_synthetic_positive_and_untrusted_ace)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 60, in setUp
+    self.run_ps(self.fixture)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 24, in run_ps
+    p = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive',
+                        '-EncodedCommand', encoded], input=code.encode('utf-8'), capture_output=True,
+                       timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'dAByAHkAIAB7ACAAJgAgACgAWwBzAGMAcgBpAHAAdABiAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKABbAEMAbwBuAHMAbwBsAGUAXQA6ADoASQBuAC4AUgBlAGEAZABUAG8ARQBuAGQAKAApACkAKQA7ACAAZQB4AGkAdAAgADAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFcAcgBpAHQAZQAtAEUAcgByAG8AcgAgACQAXwA7ACAAZQB4AGkAdAAgADEAIAB9AA==']
+
+======================================================================
+ERROR: test_recovery_admission_requires_unfinished_stopped_disabled_identity (test_windows_acl_transaction.WindowsAclTransactionTests.test_recovery_admission_requires_unfinished_stopped_disabled_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 60, in setUp
+    self.run_ps(self.fixture)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 24, in run_ps
+    p = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive',
+                        '-EncodedCommand', encoded], input=code.encode('utf-8'), capture_output=True,
+                       timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'dAByAHkAIAB7ACAAJgAgACgAWwBzAGMAcgBpAHAAdABiAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKABbAEMAbwBuAHMAbwBsAGUAXQA6ADoASQBuAC4AUgBlAGEAZABUAG8ARQBuAGQAKAApACkAKQA7ACAAZQB4AGkAdAAgADAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFcAcgBpAHQAZQAtAEUAcgByAG8AcgAgACQAXwA7ACAAZQB4AGkAdAAgADEAIAB9AA==']
+
+======================================================================
+ERROR: test_rollback_failure_retained_and_explicit_recovery (test_windows_acl_transaction.WindowsAclTransactionTests.test_rollback_failure_retained_and_explicit_recovery)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 60, in setUp
+    self.run_ps(self.fixture)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 24, in run_ps
+    p = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive',
+                        '-EncodedCommand', encoded], input=code.encode('utf-8'), capture_output=True,
+                       timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'dAByAHkAIAB7ACAAJgAgACgAWwBzAGMAcgBpAHAAdABiAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKABbAEMAbwBuAHMAbwBsAGUAXQA6ADoASQBuAC4AUgBlAGEAZABUAG8ARQBuAGQAKAApACkAKQA7ACAAZQB4AGkAdAAgADAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFcAcgBpAHQAZQAtAEUAcgByAG8AcgAgACQAXwA7ACAAZQB4AGkAdAAgADEAIAB9AA==']
+
+======================================================================
+ERROR: test_second_apply_failure_compensates_code (test_windows_acl_transaction.WindowsAclTransactionTests.test_second_apply_failure_compensates_code)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 60, in setUp
+    self.run_ps(self.fixture)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 24, in run_ps
+    p = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive',
+                        '-EncodedCommand', encoded], input=code.encode('utf-8'), capture_output=True,
+                       timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'dAByAHkAIAB7ACAAJgAgACgAWwBzAGMAcgBpAHAAdABiAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKABbAEMAbwBuAHMAbwBsAGUAXQA6ADoASQBuAC4AUgBlAGEAZABUAG8ARQBuAGQAKAApACkAKQA7ACAAZQB4AGkAdAAgADAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFcAcgBpAHQAZQAtAEUAcgByAG8AcgAgACQAXwA7ACAAZQB4AGkAdAAgADEAIAB9AA==']
+
+======================================================================
+ERROR: test_unknown_acl_no_automatic_reapply_or_rollback (test_windows_acl_transaction.WindowsAclTransactionTests.test_unknown_acl_no_automatic_reapply_or_rollback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 60, in setUp
+    self.run_ps(self.fixture)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 24, in run_ps
+    p = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive',
+                        '-EncodedCommand', encoded], input=code.encode('utf-8'), capture_output=True,
+                       timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'dAByAHkAIAB7ACAAJgAgACgAWwBzAGMAcgBpAHAAdABiAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKABbAEMAbwBuAHMAbwBsAGUAXQA6ADoASQBuAC4AUgBlAGEAZABUAG8ARQBuAGQAKAApACkAKQA7ACAAZQB4AGkAdAAgADAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFcAcgBpAHQAZQAtAEUAcgByAG8AcgAgACQAXwA7ACAAZQB4AGkAdAAgADEAIAB9AA==']
+
+======================================================================
+ERROR: test_wrong_manifest_recovery_refuses_all_writes (test_windows_acl_transaction.WindowsAclTransactionTests.test_wrong_manifest_recovery_refuses_all_writes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 60, in setUp
+    self.run_ps(self.fixture)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_windows_acl_transaction.py", line 24, in run_ps
+    p = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive',
+                        '-EncodedCommand', encoded], input=code.encode('utf-8'), capture_output=True,
+                       timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'dAByAHkAIAB7ACAAJgAgACgAWwBzAGMAcgBpAHAAdABiAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKABbAEMAbwBuAHMAbwBsAGUAXQA6ADoASQBuAC4AUgBlAGEAZABUAG8ARQBuAGQAKAApACkAKQA7ACAAZQB4AGkAdAAgADAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFcAcgBpAHQAZQAtAEUAcgByAG8AcgAgACQAXwA7ACAAZQB4AGkAdAAgADEAIAB9AA==']
+
+======================================================================
+ERROR: test_exact_source_and_installer_version_gate (test_disabled_host_package.DisabledPackageTests.test_exact_source_and_installer_version_gate) (commit='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', version='1.1.1')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_disabled_host_package.py", line 78, in test_exact_source_and_installer_version_gate
+    run=subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-EncodedCommand',encoded],capture_output=True,timeout=20,creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQA9ACcAUwB0AG8AcAAnADsAJABBAHAAcAByAG8AdgBlAGQAUwBvAHUAcgBjAGUAQwBvAG0AbQBpAHQAPQAnAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAJwA7ACQAbQA9ACcAewAiAHMAbwB1AHIAYwBlAF8AYwBvAG0AbQBpAHQAIgA6ACAAIgBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhACIALAAgACIAaQBuAHMAdABhAGwAbABlAHIAXwB2AGUAcgBzAGkAbwBuACIAOgAgACIAMQAuADEALgAxACIAfQAnAHwAQwBvAG4AdgBlAHIAdABGAHIAbwBtAC0ASgBzAG8AbgA7ACMAIABUAGgAaQBzACAAYQBwAHAAcgBvAHYAYQBsACAAaQBzACAAaQBuAGQAZQBwAGUAbgBkAGUAbgB0ACAAbwBmACAAdABoAGUAIABwAGEAYwBrAGEAZwBlACcAcwAgAG8AdwBuACAAcwBvAHUAcgBjAGUAIABkAGUAYwBsAGEAcgBhAHQAaQBvAG4ALgAKAGkAZgAgACgAJABtAC4AcwBvAHUAcgBjAGUAXwBjAG8AbQBtAGkAdAAgAC0AaQBzAG4AbwB0ACAAWwBzAHQAcgBpAG4AZwBdACAALQBvAHIAIAAkAG0ALgBzAG8AdQByAGMAZQBfAGMAbwBtAG0AaQB0ACAALQBjAG4AbwB0AG0AYQB0AGMAaAAgACcAXgBbADAALQA5AGEALQBmAF0AewA0ADAAfQAkACcAIAAtAG8AcgAKACAAIAAgACAAJABtAC4AcwBvAHUAcgBjAGUAXwBjAG8AbQBtAGkAdAAgAC0AYwBuAGUAIAAkAEEAcABwAHIAbwB2AGUAZABTAG8AdQByAGMAZQBDAG8AbQBtAGkAdAAgAC0AbwByACAAJABtAC4AaQBuAHMAdABhAGwAbABlAHIAXwB2AGUAcgBzAGkAbwBuACAALQBjAG4AZQAgACcAMQAuADEALgAxACcAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAFMATwBVAFIAQwBFAF8ATwBSAF8ASQBOAFMAVABBAEwATABFAFIAXwBWAEUAUgBTAEkATwBOAF8ATQBJAFMATQBBAFQAQwBIACcAIAB9AAoA']
+
+======================================================================
+ERROR: test_exact_source_and_installer_version_gate (test_disabled_host_package.DisabledPackageTests.test_exact_source_and_installer_version_gate) (commit='bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', version='1.1.1')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_disabled_host_package.py", line 78, in test_exact_source_and_installer_version_gate
+    run=subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-EncodedCommand',encoded],capture_output=True,timeout=20,creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQA9ACcAUwB0AG8AcAAnADsAJABBAHAAcAByAG8AdgBlAGQAUwBvAHUAcgBjAGUAQwBvAG0AbQBpAHQAPQAnAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAJwA7ACQAbQA9ACcAewAiAHMAbwB1AHIAYwBlAF8AYwBvAG0AbQBpAHQAIgA6ACAAIgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiACIALAAgACIAaQBuAHMAdABhAGwAbABlAHIAXwB2AGUAcgBzAGkAbwBuACIAOgAgACIAMQAuADEALgAxACIAfQAnAHwAQwBvAG4AdgBlAHIAdABGAHIAbwBtAC0ASgBzAG8AbgA7ACMAIABUAGgAaQBzACAAYQBwAHAAcgBvAHYAYQBsACAAaQBzACAAaQBuAGQAZQBwAGUAbgBkAGUAbgB0ACAAbwBmACAAdABoAGUAIABwAGEAYwBrAGEAZwBlACcAcwAgAG8AdwBuACAAcwBvAHUAcgBjAGUAIABkAGUAYwBsAGEAcgBhAHQAaQBvAG4ALgAKAGkAZgAgACgAJABtAC4AcwBvAHUAcgBjAGUAXwBjAG8AbQBtAGkAdAAgAC0AaQBzAG4AbwB0ACAAWwBzAHQAcgBpAG4AZwBdACAALQBvAHIAIAAkAG0ALgBzAG8AdQByAGMAZQBfAGMAbwBtAG0AaQB0ACAALQBjAG4AbwB0AG0AYQB0AGMAaAAgACcAXgBbADAALQA5AGEALQBmAF0AewA0ADAAfQAkACcAIAAtAG8AcgAKACAAIAAgACAAJABtAC4AcwBvAHUAcgBjAGUAXwBjAG8AbQBtAGkAdAAgAC0AYwBuAGUAIAAkAEEAcABwAHIAbwB2AGUAZABTAG8AdQByAGMAZQBDAG8AbQBtAGkAdAAgAC0AbwByACAAJABtAC4AaQBuAHMAdABhAGwAbABlAHIAXwB2AGUAcgBzAGkAbwBuACAALQBjAG4AZQAgACcAMQAuADEALgAxACcAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAFMATwBVAFIAQwBFAF8ATwBSAF8ASQBOAFMAVABBAEwATABFAFIAXwBWAEUAUgBTAEkATwBOAF8ATQBJAFMATQBBAFQAQwBIACcAIAB9AAoA']
+
+======================================================================
+ERROR: test_exact_source_and_installer_version_gate (test_disabled_host_package.DisabledPackageTests.test_exact_source_and_installer_version_gate) (commit='AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', version='1.1.1')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_disabled_host_package.py", line 78, in test_exact_source_and_installer_version_gate
+    run=subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-EncodedCommand',encoded],capture_output=True,timeout=20,creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQA9ACcAUwB0AG8AcAAnADsAJABBAHAAcAByAG8AdgBlAGQAUwBvAHUAcgBjAGUAQwBvAG0AbQBpAHQAPQAnAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAJwA7ACQAbQA9ACcAewAiAHMAbwB1AHIAYwBlAF8AYwBvAG0AbQBpAHQAIgA6ACAAIgBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEEAQQBBACIALAAgACIAaQBuAHMAdABhAGwAbABlAHIAXwB2AGUAcgBzAGkAbwBuACIAOgAgACIAMQAuADEALgAxACIAfQAnAHwAQwBvAG4AdgBlAHIAdABGAHIAbwBtAC0ASgBzAG8AbgA7ACMAIABUAGgAaQBzACAAYQBwAHAAcgBvAHYAYQBsACAAaQBzACAAaQBuAGQAZQBwAGUAbgBkAGUAbgB0ACAAbwBmACAAdABoAGUAIABwAGEAYwBrAGEAZwBlACcAcwAgAG8AdwBuACAAcwBvAHUAcgBjAGUAIABkAGUAYwBsAGEAcgBhAHQAaQBvAG4ALgAKAGkAZgAgACgAJABtAC4AcwBvAHUAcgBjAGUAXwBjAG8AbQBtAGkAdAAgAC0AaQBzAG4AbwB0ACAAWwBzAHQAcgBpAG4AZwBdACAALQBvAHIAIAAkAG0ALgBzAG8AdQByAGMAZQBfAGMAbwBtAG0AaQB0ACAALQBjAG4AbwB0AG0AYQB0AGMAaAAgACcAXgBbADAALQA5AGEALQBmAF0AewA0ADAAfQAkACcAIAAtAG8AcgAKACAAIAAgACAAJABtAC4AcwBvAHUAcgBjAGUAXwBjAG8AbQBtAGkAdAAgAC0AYwBuAGUAIAAkAEEAcABwAHIAbwB2AGUAZABTAG8AdQByAGMAZQBDAG8AbQBtAGkAdAAgAC0AbwByACAAJABtAC4AaQBuAHMAdABhAGwAbABlAHIAXwB2AGUAcgBzAGkAbwBuACAALQBjAG4AZQAgACcAMQAuADEALgAxACcAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAFMATwBVAFIAQwBFAF8ATwBSAF8ASQBOAFMAVABBAEwATABFAFIAXwBWAEUAUgBTAEkATwBOAF8ATQBJAFMATQBBAFQAQwBIACcAIAB9AAoA']
+
+======================================================================
+ERROR: test_exact_source_and_installer_version_gate (test_disabled_host_package.DisabledPackageTests.test_exact_source_and_installer_version_gate) (commit='', version='1.1.1')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_disabled_host_package.py", line 78, in test_exact_source_and_installer_version_gate
+    run=subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-EncodedCommand',encoded],capture_output=True,timeout=20,creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQA9ACcAUwB0AG8AcAAnADsAJABBAHAAcAByAG8AdgBlAGQAUwBvAHUAcgBjAGUAQwBvAG0AbQBpAHQAPQAnAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAJwA7ACQAbQA9ACcAewAiAHMAbwB1AHIAYwBlAF8AYwBvAG0AbQBpAHQAIgA6ACAAIgAiACwAIAAiAGkAbgBzAHQAYQBsAGwAZQByAF8AdgBlAHIAcwBpAG8AbgAiADoAIAAiADEALgAxAC4AMQAiAH0AJwB8AEMAbwBuAHYAZQByAHQARgByAG8AbQAtAEoAcwBvAG4AOwAjACAAVABoAGkAcwAgAGEAcABwAHIAbwB2AGEAbAAgAGkAcwAgAGkAbgBkAGUAcABlAG4AZABlAG4AdAAgAG8AZgAgAHQAaABlACAAcABhAGMAawBhAGcAZQAnAHMAIABvAHcAbgAgAHMAbwB1AHIAYwBlACAAZABlAGMAbABhAHIAYQB0AGkAbwBuAC4ACgBpAGYAIAAoACQAbQAuAHMAbwB1AHIAYwBlAF8AYwBvAG0AbQBpAHQAIAAtAGkAcwBuAG8AdAAgAFsAcwB0AHIAaQBuAGcAXQAgAC0AbwByACAAJABtAC4AcwBvAHUAcgBjAGUAXwBjAG8AbQBtAGkAdAAgAC0AYwBuAG8AdABtAGEAdABjAGgAIAAnAF4AWwAwAC0AOQBhAC0AZgBdAHsANAAwAH0AJAAnACAALQBvAHIACgAgACAAIAAgACQAbQAuAHMAbwB1AHIAYwBlAF8AYwBvAG0AbQBpAHQAIAAtAGMAbgBlACAAJABBAHAAcAByAG8AdgBlAGQAUwBvAHUAcgBjAGUAQwBvAG0AbQBpAHQAIAAtAG8AcgAgACQAbQAuAGkAbgBzAHQAYQBsAGwAZQByAF8AdgBlAHIAcwBpAG8AbgAgAC0AYwBuAGUAIAAnADEALgAxAC4AMQAnACkAIAB7ACAAdABoAHIAbwB3ACAAJwBTAE8AVQBSAEMARQBfAE8AUgBfAEkATgBTAFQAQQBMAEwARQBSAF8AVgBFAFIAUwBJAE8ATgBfAE0ASQBTAE0AQQBUAEMASAAnACAAfQAKAA==']
+
+======================================================================
+ERROR: test_exact_source_and_installer_version_gate (test_disabled_host_package.DisabledPackageTests.test_exact_source_and_installer_version_gate) (commit='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', version='1.0.0')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_disabled_host_package.py", line 78, in test_exact_source_and_installer_version_gate
+    run=subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-EncodedCommand',encoded],capture_output=True,timeout=20,creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQA9ACcAUwB0AG8AcAAnADsAJABBAHAAcAByAG8AdgBlAGQAUwBvAHUAcgBjAGUAQwBvAG0AbQBpAHQAPQAnAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAJwA7ACQAbQA9ACcAewAiAHMAbwB1AHIAYwBlAF8AYwBvAG0AbQBpAHQAIgA6ACAAIgBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhACIALAAgACIAaQBuAHMAdABhAGwAbABlAHIAXwB2AGUAcgBzAGkAbwBuACIAOgAgACIAMQAuADAALgAwACIAfQAnAHwAQwBvAG4AdgBlAHIAdABGAHIAbwBtAC0ASgBzAG8AbgA7ACMAIABUAGgAaQBzACAAYQBwAHAAcgBvAHYAYQBsACAAaQBzACAAaQBuAGQAZQBwAGUAbgBkAGUAbgB0ACAAbwBmACAAdABoAGUAIABwAGEAYwBrAGEAZwBlACcAcwAgAG8AdwBuACAAcwBvAHUAcgBjAGUAIABkAGUAYwBsAGEAcgBhAHQAaQBvAG4ALgAKAGkAZgAgACgAJABtAC4AcwBvAHUAcgBjAGUAXwBjAG8AbQBtAGkAdAAgAC0AaQBzAG4AbwB0ACAAWwBzAHQAcgBpAG4AZwBdACAALQBvAHIAIAAkAG0ALgBzAG8AdQByAGMAZQBfAGMAbwBtAG0AaQB0ACAALQBjAG4AbwB0AG0AYQB0AGMAaAAgACcAXgBbADAALQA5AGEALQBmAF0AewA0ADAAfQAkACcAIAAtAG8AcgAKACAAIAAgACAAJABtAC4AcwBvAHUAcgBjAGUAXwBjAG8AbQBtAGkAdAAgAC0AYwBuAGUAIAAkAEEAcABwAHIAbwB2AGUAZABTAG8AdQByAGMAZQBDAG8AbQBtAGkAdAAgAC0AbwByACAAJABtAC4AaQBuAHMAdABhAGwAbABlAHIAXwB2AGUAcgBzAGkAbwBuACAALQBjAG4AZQAgACcAMQAuADEALgAxACcAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAFMATwBVAFIAQwBFAF8ATwBSAF8ASQBOAFMAVABBAEwATABFAFIAXwBWAEUAUgBTAEkATwBOAF8ATQBJAFMATQBBAFQAQwBIACcAIAB9AAoA']
+
+======================================================================
+ERROR: test_exact_source_and_installer_version_gate (test_disabled_host_package.DisabledPackageTests.test_exact_source_and_installer_version_gate) (commit='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', version=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_disabled_host_package.py", line 78, in test_exact_source_and_installer_version_gate
+    run=subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-EncodedCommand',encoded],capture_output=True,timeout=20,creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQA9ACcAUwB0AG8AcAAnADsAJABBAHAAcAByAG8AdgBlAGQAUwBvAHUAcgBjAGUAQwBvAG0AbQBpAHQAPQAnAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAJwA7ACQAbQA9ACcAewAiAHMAbwB1AHIAYwBlAF8AYwBvAG0AbQBpAHQAIgA6ACAAIgBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhACIALAAgACIAaQBuAHMAdABhAGwAbABlAHIAXwB2AGUAcgBzAGkAbwBuACIAOgAgAG4AdQBsAGwAfQAnAHwAQwBvAG4AdgBlAHIAdABGAHIAbwBtAC0ASgBzAG8AbgA7ACMAIABUAGgAaQBzACAAYQBwAHAAcgBvAHYAYQBsACAAaQBzACAAaQBuAGQAZQBwAGUAbgBkAGUAbgB0ACAAbwBmACAAdABoAGUAIABwAGEAYwBrAGEAZwBlACcAcwAgAG8AdwBuACAAcwBvAHUAcgBjAGUAIABkAGUAYwBsAGEAcgBhAHQAaQBvAG4ALgAKAGkAZgAgACgAJABtAC4AcwBvAHUAcgBjAGUAXwBjAG8AbQBtAGkAdAAgAC0AaQBzAG4AbwB0ACAAWwBzAHQAcgBpAG4AZwBdACAALQBvAHIAIAAkAG0ALgBzAG8AdQByAGMAZQBfAGMAbwBtAG0AaQB0ACAALQBjAG4AbwB0AG0AYQB0AGMAaAAgACcAXgBbADAALQA5AGEALQBmAF0AewA0ADAAfQAkACcAIAAtAG8AcgAKACAAIAAgACAAJABtAC4AcwBvAHUAcgBjAGUAXwBjAG8AbQBtAGkAdAAgAC0AYwBuAGUAIAAkAEEAcABwAHIAbwB2AGUAZABTAG8AdQByAGMAZQBDAG8AbQBtAGkAdAAgAC0AbwByACAAJABtAC4AaQBuAHMAdABhAGwAbABlAHIAXwB2AGUAcgBzAGkAbwBuACAALQBjAG4AZQAgACcAMQAuADEALgAxACcAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAFMATwBVAFIAQwBFAF8ATwBSAF8ASQBOAFMAVABBAEwATABFAFIAXwBWAEUAUgBTAEkATwBOAF8ATQBJAFMATQBBAFQAQwBIACcAIAB9AAoA']
+
+======================================================================
+ERROR: test_execute_cannot_bypass_missing_formal_maintenance (test_disabled_host_package.DisabledPackageTests.test_execute_cannot_bypass_missing_formal_maintenance)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_disabled_host_package.py", line 19, in test_execute_cannot_bypass_missing_formal_maintenance
+    p=subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-EncodedCommand',base64.b64encode(command.encode('utf-16-le')).decode()],capture_output=True,timeout=15)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'JgAgAHsAIwAgAEQAaQBzAGEAYgBsAGUAZAAtAG8AbgBsAHkAIABpAG4AcwB0AGEAbABsAGEAdABpAG8AbgAuACAATgBvACAAcwBlAHIAdgBpAGMAZQAgAHMAdABhAHIAdAAsACAAcwBjAGgAZQBkAHUAbABlAHIALAAgAHAAcgBvAHgAeQAgAG8AcgAgAGQAYQB0AGEAYgBhAHMAZQAgAG8AcABlAHIAYQB0AGkAbwBuAC4ACgBbAEMAbQBkAGwAZQB0AEIAaQBuAGQAaQBuAGcAKAApAF0ACgBwAGEAcgBhAG0AKAAKACAAIAAgACAAWwBQAGEAcgBhAG0AZQB0AGUAcgAoAE0AYQBuAGQAYQB0AG8AcgB5AD0AJAB0AHIAdQBlACkAXQBbAHMAdAByAGkAbgBnAF0AJABQAGEAYwBrAGEAZwBlAFIAbwBvAHQALAAKACAAIAAgACAAWwBQAGEAcgBhAG0AZQB0AGUAcgAoAE0AYQBuAGQAYQB0AG8AcgB5AD0AJAB0AHIAdQBlACkAXQBbAFYAYQBsAGkAZABhAHQAZQBQAGEAdAB0AGUAcgBuACgAJwBeAFsAMAAtADkAYQAtAGYAXQB7ADYANAB9ACQAJwApAF0AWwBzAHQAcgBpAG4AZwBdACQAQQBwAHAAcgBvAHYAZQBkAE0AYQBuAGkAZgBlAHMAdABTAGgAYQAyADUANgAsAAoAIAAgACAAIABbAFAAYQByAGEAbQBlAHQAZQByACgATQBhAG4AZABhAHQAbwByAHkAPQAkAHQAcgB1AGUAKQBdAFsAVgBhAGwAaQBkAGEAdABlAFAAYQB0AHQAZQByAG4AKAAnAF4AWwAwAC0AOQBhAC0AZgBdAHsANAAwAH0AJAAnACkAXQBbAHMAdAByAGkAbgBnAF0AJABBAHAAcAByAG8AdgBlAGQAUwBvAHUAcgBjAGUAQwBvAG0AbQBpAHQALAAKACAAIAAgACAAWwBzAHQAcgBpAG4AZwBdACQAUgB1AG4AdABpAG0AZQBQAGwAYQBuACwACgAgACAAIAAgAFsAVgBhAGwAaQBkAGEAdABlAFAAYQB0AHQAZQByAG4AKAAnAF4AWwAwAC0AOQBhAC0AZgBdAHsANgA0AH0AJAAnACkAXQBbAHMAdAByAGkAbgBnAF0AJABBAHAAcAByAG8AdgBlAGQAUgB1AG4AdABpAG0AZQBQAGwAYQBuAFMAaABhADIANQA2ACwACgAgACAAIAAgAFsAcwB3AGkAdABjAGgAXQAkAFIAZQBjAG8AdgBlAHIAQQBjAGwALAAKACAAIAAgACAAWwBzAHcAaQB0AGMAaABdACQAVQBwAGcAcgBhAGQAZQAsAAoAIAAgACAAIABbAHMAdwBpAHQAYwBoAF0AJABSAGUAYwBvAHYAZQByAEkAbgBzAHQAYQBsAGwALAAKACAAIAAgACAAWwBzAHcAaQB0AGMAaABdACQAUgBvAGwAbABiAGEAYwBrACwACgAgACAAIAAgAFsAVgBhAGwAaQBkAGEAdABlAFAAYQB0AHQAZQByAG4AKAAnAF4AWwAwAC0AOQBhAC0AZgBdAHsANgA0AH0AJAAnACkAXQBbAHMAdAByAGkAbgBnAF0AJABPAHAAZQByAGEAdABpAG8AbgBJAGQALAAKACAAIAAgACAAWwBWAGEAbABpAGQAYQB0AGUAUABhAHQAdABlAHIAbgAoACcAXgBbADAALQA5AGEALQBmAF0AewA2ADQAfQAkACcAKQBdAFsAcwB0AHIAaQBuAGcAXQAkAEEAcABwAHIAbwB2AGUAZABQAHIAZQB2AGkAbwB1AHMAUgBlAGMAZQBpAHAAdABTAGgAYQAyADUANgAsAAoAIAAgACAAIABbAHMAdwBpAHQAYwBoAF0AJABFAHgAZQBjAHUAdABlAAoAKQAKACQARQByAHIAbwByAEEAYwB0AGkAbwBuAFAAcgBlAGYAZQByAGUAbgBjAGUAPQAnAFMAdABvAHAAJwAKACMAIABBACAAcABhAGMAawBhAGcAZQAgAGgAYQBzAGgAIABhAG4AZAAgAGEAbgAgAGkAbgBzAHQAYQBsAGwAZQByACAAbQB1AHQAZQB4ACAAZABvACAAbgBvAHQAIABlAHgAYwBsAHUAZABlACAAdABoAGUAIABvAHIAaQBnAGkAbgBhAGwAIABJAG4AdgBlAG4AdABvAHIAeQAuAAoAIwAgAE4AbwAgAHAAcgBvAGQAdQBjAHQAaQBvAG4ALQBhAHUAdABoAG8AcgBpAHQAYQB0AGkAdgBlACAAbQBhAGkAbgB0AGUAbgBhAG4AYwBlACAAYQBkAGEAcAB0AGUAcgAgAGkAcwAgAGkAbgB0AGUAZwByAGEAdABlAGQAIABpAG4AIAB0AGgAaQBzACAAcABpAG4ALgAKACMAIABGAGEAaQBsACAAYgBlAGYAbwByAGUAIABvAHAAZQBuAGkAbgBnACAAdABhAHIAZwBlAHQAcwAsACAAYwByAGUAYQB0AGkAbgBnACAAagBvAHUAcgBuAGEAbABzACwAIABvAHIAIABlAG4AdABlAHIAaQBuAGcAIABhAG4AeQAgAHIAZQBjAG8AdgBlAHIAeQAgAHAAYQB0AGgALgAKAGkAZgAgACgAJABFAHgAZQBjAHUAdABlACkAIAB7ACAAdABoAHIAbwB3ACAAJwBGAE8AUgBNAEEATABfAEkATgBWAEUATgBUAE8AUgBZAF8ATQBBAEkATgBUAEUATgBBAE4AQwBFAF8AUgBFAFEAVQBJAFIARQBEAF8AUwBUAE8AUABfAEEATgBEAF8AUABSAEUAUwBFAFIAVgBFACcAIAB9AAoAJABkAGUAcABlAG4AZABlAG4AYwB5AFAAaQBuAHMAPQBOAGUAdwAtAE8AYgBqAGUAYwB0ACAAQwBvAGwAbABlAGMAdABpAG8AbgBzAC4AQQByAHIAYQB5AEwAaQBzAHQACgBmAHUAbgBjAHQAaQBvAG4AIABQAGkAbgAtAFIAZQBmAGUAcgBlAG4AYwBlACgAWwBzAHQAcgBpAG4AZwBdACQAUABhAHQAaAAsAFsAcwB0AHIAaQBuAGcAXQAkAEUAeABwAGUAYwB0AGUAZAApACAAewAKACAAIAAgACAAQQBzAHMAZQByAHQALQBOAG8AUgBlAHAAYQByAHMAZQBBAG4AYwBlAHMAdABvAHIAcwAgACQAUABhAHQAaAAKACAAIAAgACAAJABzAHQAcgBlAGEAbQA9AE4AZQB3AC0ATwBiAGoAZQBjAHQAIABJAE8ALgBGAGkAbABlAFMAdAByAGUAYQBtACgAJABQAGEAdABoACwAWwBJAE8ALgBGAGkAbABlAE0AbwBkAGUAXQA6ADoATwBwAGUAbgAsAFsASQBPAC4ARgBpAGwAZQBBAGMAYwBlAHMAcwBdADoAOgBSAGUAYQBkACwAWwBJAE8ALgBGAGkAbABlAFMAaABhAHIAZQBdADoAOgBSAGUAYQBkACkACgAgACAAIAAgAHQAcgB5ACAAewAKACAAIAAgACAAIAAgACAAIAAkAGgAYQBzAGgAPQBbAFMAZQBjAHUAcgBpAHQAeQAuAEMAcgB5AHAAdABvAGcAcgBhAHAAaAB5AC4AUwBIAEEAMgA1ADYAXQA6ADoAQwByAGUAYQB0AGUAKAApAAoAIAAgACAAIAAgACAAIAAgAHQAcgB5ACAAewAgACQAYQBjAHQAdQBhAGwAPQAoAFsAQgBpAHQAQwBvAG4AdgBlAHIAdABlAHIAXQA6ADoAVABvAFMAdAByAGkAbgBnACgAJABoAGEAcwBoAC4AQwBvAG0AcAB1AHQAZQBIAGEAcwBoACgAJABzAHQAcgBlAGEAbQApACkAKQAuAFIAZQBwAGwAYQBjAGUAKAAnAC0AJwAsACcAJwApAC4AVABvAEwAbwB3AGUAcgBJAG4AdgBhAHIAaQBhAG4AdAAoACkAIAB9ACAAZgBpAG4AYQBsAGwAeQAgAHsAIAAkAGgAYQBzAGgALgBEAGkAcwBwAG8AcwBlACgAKQAgAH0ACgAgACAAIAAgACAAIAAgACAAaQBmACAAKAAkAGEAYwB0AHUAYQBsACAALQBjAG4AZQAgACQARQB4AHAAZQBjAHQAZQBkACkAIAB7ACAAdABoAHIAbwB3ACAAJwBQAEkATgBOAEUARABfAFIARQBGAEUAUgBFAE4AQwBFAF8ASABBAFMASAAnACAAfQAKACAAIAAgACAAIAAgACAAIABbAHYAbwBpAGQAXQAkAGQAZQBwAGUAbgBkAGUAbgBjAHkAUABpAG4AcwAuAEEAZABkACgAJABzAHQAcgBlAGEAbQApAAoAIAAgACAAIAB9ACAAYwBhAHQAYwBoACAAewAgACQAcwB0AHIAZQBhAG0ALgBEAGkAcwBwAG8AcwBlACgAKQA7ACAAdABoAHIAbwB3ACAAfQAKAH0ACgB0AHIAeQAgAHsACgAkAG4AYQBtAGUAPQAnAFIAbwBrAHQAVQAxAEIAcgBpAGQAZwBlACcACgAkAGEAYwBjAG8AdQBuAHQAPQAnAE4AVAAgAFMARQBSAFYASQBDAEUAXABSAG8AawB0AFUAMQBCAHIAaQBkAGcAZQAnAAoAJABjAG8AZABlAD0AJwBDADoAXABQAHIAbwBnAHIAYQBtACAARgBpAGwAZQBzAFwAUgBvAGsAdABVADEAQgByAGkAZABnAGUAXAB2ADEAJwAKACQAcwB0AGEAdABlAD0AJwBDADoAXABQAHIAbwBnAHIAYQBtAEQAYQB0AGEAXABSAG8AawB0AFUAMQBCAHIAaQBkAGcAZQAnAAoAZgB1AG4AYwB0AGkAbwBuACAAQQBzAHMAZQByAHQALQBOAG8AUgBlAHAAYQByAHMAZQBBAG4AYwBlAHMAdABvAHIAcwAoAFsAcwB0AHIAaQBuAGcAXQAkAFAAYQB0AGgAKQAgAHsACgAgACAAIAAgACQAYwB1AHIAcwBvAHIAPQBbAEkATwAuAFAAYQB0AGgAXQA6ADoARwBlAHQARgB1AGwAbABQAGEAdABoACgAJABQAGEAdABoACkACgAgACAAIAAgAHcAaABpAGwAZQAgACgAJABjAHUAcgBzAG8AcgApACAAewAKACAAIAAgACAAIAAgACAAIABpAGYAIAAoAFQAZQBzAHQALQBQAGEAdABoACAALQBMAGkAdABlAHIAYQBsAFAAYQB0AGgAIAAkAGMAdQByAHMAbwByACkAIAB7AAoAIAAgACAAIAAgACAAIAAgACAAIAAgACAAaQBmACAAKAAoAEcAZQB0AC0ASQB0AGUAbQAgAC0ATABpAHQAZQByAGEAbABQAGEAdABoACAAJABjAHUAcgBzAG8AcgAgAC0ARgBvAHIAYwBlACkALgBBAHQAdAByAGkAYgB1AHQAZQBzACAALQBiAGEAbgBkACAAWwBJAE8ALgBGAGkAbABlAEEAdAB0AHIAaQBiAHUAdABlAHMAXQA6ADoAUgBlAHAAYQByAHMAZQBQAG8AaQBuAHQAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAFIARQBQAEEAUgBTAEUAXwBQAEEAVABIAF8AUgBFAEoARQBDAFQARQBEACcAIAB9AAoAIAAgACAAIAAgACAAIAAgAH0ACgAgACAAIAAgACAAIAAgACAAJABwAGEAcgBlAG4AdAA9AFsASQBPAC4AUABhAHQAaABdADoAOgBHAGUAdABEAGkAcgBlAGMAdABvAHIAeQBOAGEAbQBlACgAJABjAHUAcgBzAG8AcgApAAoAIAAgACAAIAAgACAAIAAgAGkAZgAgACgAJABwAGEAcgBlAG4AdAAgAC0AZQBxACAAJABjAHUAcgBzAG8AcgApACAAewAgAGIAcgBlAGEAawAgAH0AOwAgACQAYwB1AHIAcwBvAHIAPQAkAHAAYQByAGUAbgB0AAoAIAAgACAAIAB9AAoAfQAKAGYAbwByAGUAYQBjAGgAIAAoACQAcAAgAGkAbgAgAEAAKAAkAFAAYQBjAGsAYQBnAGUAUgBvAG8AdAAsACQAYwBvAGQAZQAsACQAcwB0AGEAdABlACkAKQAgAHsAIABBAHMAcwBlAHIAdAAtAE4AbwBSAGUAcABhAHIAcwBlAEEAbgBjAGUAcwB0AG8AcgBzACAAJABwACAAfQAKACQAcABhAGMAawBhAGcAZQA9ACgARwBlAHQALQBJAHQAZQBtACAALQBMAGkAdABlAHIAYQBsAFAAYQB0AGgAIAAkAFAAYQBjAGsAYQBnAGUAUgBvAG8AdAApAC4ARgB1AGwAbABOAGEAbQBlAAoAJABtAGEAbgBpAGYAZQBzAHQAUABhAHQAaAA9AEoAbwBpAG4ALQBQAGEAdABoACAAJABwAGEAYwBrAGEAZwBlACAAJwBtAGEAbgBpAGYAZQBzAHQALgBqAHMAbwBuACcACgBpAGYAIAAoACgARwBlAHQALQBGAGkAbABlAEgAYQBzAGgAIAAtAEwAaQB0AGUAcgBhAGwAUABhAHQAaAAgACQAbQBhAG4AaQBmAGUAcwB0AFAAYQB0AGgAIAAtAEEAbABnAG8AcgBpAHQAaABtACAAUwBIAEEAMgA1ADYAKQAuAEgAYQBzAGgALgBUAG8ATABvAHcAZQByAEkAbgB2AGEAcgBpAGEAbgB0ACgAKQAgAC0AYwBuAGUAIAAkAEEAcABwAHIAbwB2AGUAZABNAGEAbgBpAGYAZQBzAHQAUwBoAGEAMgA1ADYAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAE0AQQBOAEkARgBFAFMAVABfAEgAQQBTAEgAXwBNAEkAUwBNAEEAVABDAEgAJwAgAH0ACgBQAGkAbgAtAFIAZQBmAGUAcgBlAG4AYwBlACAAJABtAGEAbgBpAGYAZQBzAHQAUABhAHQAaAAgACQAQQBwAHAAcgBvAHYAZQBkAE0AYQBuAGkAZgBlAHMAdABTAGgAYQAyADUANgAKACQAbQA9AEcAZQB0AC0AQwBvAG4AdABlAG4AdAAgAC0ATABpAHQAZQByAGEAbABQAGEAdABoACAAJABtAGEAbgBpAGYAZQBzAHQAUABhAHQAaAAgAC0AUgBhAHcAIAB8ACAAQwBvAG4AdgBlAHIAdABGAHIAbwBtAC0ASgBzAG8AbgAKACMAIABUAGgAaQBzACAAYQBwAHAAcgBvAHYAYQBsACAAaQBzACAAaQBuAGQAZQBwAGUAbgBkAGUAbgB0ACAAbwBmACAAdABoAGUAIABwAGEAYwBrAGEAZwBlACcAcwAgAG8AdwBuACAAcwBvAHUAcgBjAGUAIABkAGUAYwBsAGEAcgBhAHQAaQBvAG4ALgAKAGkAZgAgACgAJABtAC4AcwBvAHUAcgBjAGUAXwBjAG8AbQBtAGkAdAAgAC0AaQBzAG4AbwB0ACAAWwBzAHQAcgBpAG4AZwBdACAALQBvAHIAIAAkAG0ALgBzAG8AdQByAGMAZQBfAGMAbwBtAG0AaQB0ACAALQBjAG4AbwB0AG0AYQB0AGMAaAAgACcAXgBbADAALQA5AGEALQBmAF0AewA0ADAAfQAkACcAIAAtAG8AcgAKACAAIAAgACAAJABtAC4AcwBvAHUAcgBjAGUAXwBjAG8AbQBtAGkAdAAgAC0AYwBuAGUAIAAkAEEAcABwAHIAbwB2AGUAZABTAG8AdQByAGMAZQBDAG8AbQBtAGkAdAAgAC0AbwByACAAJABtAC4AaQBuAHMAdABhAGwAbABlAHIAXwB2AGUAcgBzAGkAbwBuACAALQBjAG4AZQAgACcAMQAuADEALgAxACcAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAFMATwBVAFIAQwBFAF8ATwBSAF8ASQBOAFMAVABBAEwATABFAFIAXwBWAEUAUgBTAEkATwBOAF8ATQBJAFMATQBBAFQAQwBIACcAIAB9AAoAaQBmACAAKAAkAG0ALgBzAGMAaABlAG0AYQAgAC0AYwBuAGUAIAAnAHIAbwBrAHQALgBkAGkAcwBhAGIAbABlAGQALQBoAG8AcwB0AC0AcABhAGMAawBhAGcAZQAuAHYAMQAnACAALQBvAHIAIAAkAG0ALgBpAG4AdgBlAG4AdABvAHIAeQBfAGkAZAAgAC0AYwBuAGUAIAAnADEANwA4ADQANwA3ADUAMgAyADkAMwAzADYAJwAgAC0AbwByAAoAIAAgACAAIAAkAG0ALgBzAGUAcgB2AGkAYwBlAF8AbgBhAG0AZQAgAC0AYwBuAGUAIAAkAG4AYQBtAGUAIAAtAG8AcgAgACQAbQAuAGEAYwBjAG8AdQBuAHQAIAAtAGMAbgBlACAAJABhAGMAYwBvAHUAbgB0ACAALQBvAHIAIAAkAG0ALgBzAHQAYQByAHQAXwB0AHkAcABlACAALQBjAG4AZQAgACcARABpAHMAYQBiAGwAZQBkACcAIAAtAG8AcgAKACAAIAAgACAAJABtAC4AYwBvAGQAZQBfAHIAbwBvAHQAIAAtAGMAbgBlACAAJABjAG8AZABlACAALQBvAHIAIAAkAG0ALgBzAHQAYQB0AGUAXwByAG8AbwB0ACAALQBjAG4AZQAgACQAcwB0AGEAdABlACAALQBvAHIACgAgACAAIAAgACQAbQAuAGEAbABsAG8AdwBfAHMAdABhAHIAdAAgAC0AaQBzAG4AbwB0ACAAWwBiAG8AbwBsAF0AIAAtAG8AcgAgACQAbQAuAGEAbABsAG8AdwBfAHMAdABhAHIAdAAgAC0AbwByACAAJABtAC4AYQBsAGwAbwB3AF8AZABpAHMAcABhAHQAYwBoACAALQBpAHMAbgBvAHQAIABbAGIAbwBvAGwAXQAgAC0AbwByACAAJABtAC4AYQBsAGwAbwB3AF8AZABpAHMAcABhAHQAYwBoACAALQBvAHIACgAgACAAIAAgACQAbQAuAGEAbABsAG8AdwBfAGMAYQBuAGMAZQBsAF8AZABpAHMAcABhAHQAYwBoACAALQBpAHMAbgBvAHQAIABbAGIAbwBvAGwAXQAgAC0AbwByACAAJABtAC4AYQBsAGwAbwB3AF8AYwBhAG4AYwBlAGwAXwBkAGkAcwBwAGEAdABjAGgAIAAtAG8AcgAKACAAIAAgACAAJABtAC4AcwBjAGgAZQBkAHUAbABlAHIAXwBjAHIAZQBhAHQAZQBkACAALQBpAHMAbgBvAHQAIABbAGIAbwBvAGwAXQAgAC0AbwByACAAJABtAC4AcwBjAGgAZQBkAHUAbABlAHIAXwBjAHIAZQBhAHQAZQBkACAALQBvAHIAIAAkAG0ALgByAG8AbABsAGIAYQBjAGsAXwBwAHIAZQBzAGUAcgB2AGUAcwBfAHMAdABhAHQAZQAgAC0AYwBuAGUAIAAkAHQAcgB1AGUAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAFUATgBTAEEARgBFAF8ATQBBAE4ASQBGAEUAUwBUACcAIAB9AAoAJABlAG4AdAByAGkAZQBzAD0AQAAoACQAbQAuAGYAaQBsAGUAcwApACsAQAAoACQAbQAuAHMAYwByAGkAcAB0AHMAKQAKAGkAZgAgACgAQAAoACQAbQAuAGYAaQBsAGUAcwAgAHwAIABXAGgAZQByAGUALQBPAGIAagBlAGMAdAAgAHsAJABfAC4AcABhAHQAaAAuAFQAbwBMAG8AdwBlAHIASQBuAHYAYQByAGkAYQBuAHQAKAApACAALQBpAG4AIABAACgAJwBjAG8AbgBmAGkAZwAvAGkAbgBzAHQAYQBsAGwAYQB0AGkAbwBuAC4AagBzAG8AbgAnACwAJwBjAG8AbgBmAGkAZwAvAHIAdQBuAHQAaQBtAGUALgBqAHMAbwBuACcALAAnAGMAbwBuAGYAaQBnAC8AcwB1AHAAZQByAHYAaQBzAG8AcgAuAGoAcwBvAG4AJwApACAALQBvAHIAIAAkAF8ALgBwAGEAdABoACAALQBtAGEAdABjAGgAIAAnACgAXgB8AC8AKQBbAF4ALwBdACoAWwAuAF0AdQAxAC0AbgBlAHcAKAAvAHwAJAApACcAfQApAC4AQwBvAHUAbgB0ACkAIAB7AHQAaAByAG8AdwAgACcASQBOAFMAVABBAEwATABFAFIAXwBSAEUAUwBFAFIAVgBFAEQAXwBQAEEAVABIACcAfQAKACQAcwBlAGUAbgA9AEAAewB9AAoAZgBvAHIAZQBhAGMAaAAgACgAJABmACAAaQBuACAAJABlAG4AdAByAGkAZQBzACkAIAB7AAoAIAAgACAAIABpAGYAIAAoACQAZgAuAHAAYQB0AGgAIAAtAGkAcwBuAG8AdAAgAFsAcwB0AHIAaQBuAGcAXQAgAC0AbwByACAAJABmAC4AcABhAHQAaAAgAC0AYwBuAG8AdABtAGEAdABjAGgAIAAnAF4AWwBBAC0AWgBhAC0AegAwAC0AOQBfAC4ALwAtAF0AKwAkACcAIAAtAG8AcgAgACQAZgAuAHAAYQB0AGgALgBDAG8AbgB0AGEAaQBuAHMAKAAnAC4ALgAnACkAIAAtAG8AcgAgACQAZgAuAHAAYQB0AGgALgBTAHQAYQByAHQAcwBXAGkAdABoACgAJwAvACcAKQAgAC0AbwByACAAJABzAGUAZQBuAC4AQwBvAG4AdABhAGkAbgBzAEsAZQB5ACgAJABmAC4AcABhAHQAaAAuAFQAbwBMAG8AdwBlAHIASQBuAHYAYQByAGkAYQBuAHQAKAApACkAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAFUATgBTAEEARgBFAF8AUABBAEMASwBBAEcARQBfAFAAQQBUAEgAJwAgAH0ACgAgACAAIAAgACQAcwBlAGUAbgBbACQAZgAuAHAAYQB0AGgALgBUAG8ATABvAHcAZQByAEkAbgB2AGEAcgBpAGEAbgB0ACgAKQBdAD0AJAB0AHIAdQBlAAoAIAAgACAAIAAkAHAAPQBKAG8AaQBuAC0AUABhAHQAaAAgACQAcABhAGMAawBhAGcAZQAgACQAZgAuAHAAYQB0AGgACgAgACAAIAAgAEEAcwBzAGUAcgB0AC0ATgBvAFIAZQBwAGEAcgBzAGUAQQBuAGMAZQBzAHQAbwByAHMAIAAkAHAACgAgACAAIAAgACQAaQB0AGUAbQA9AEcAZQB0AC0ASQB0AGUAbQAgAC0ATABpAHQAZQByAGEAbABQAGEAdABoACAAJABwAAoAIAAgACAAIABpAGYAIAAoACQAaQB0AGUAbQAuAFAAUwBJAHMAQwBvAG4AdABhAGkAbgBlAHIAIAAtAG8AcgAgACgAJABpAHQAZQBtAC4AQQB0AHQAcgBpAGIAdQB0AGUAcwAgAC0AYgBhAG4AZAAgAFsASQBPAC4ARgBpAGwAZQBBAHQAdAByAGkAYgB1AHQAZQBzAF0AOgA6AFIAZQBwAGEAcgBzAGUAUABvAGkAbgB0ACkAIAAtAG8AcgAgACQAaQB0AGUAbQAuAEwAZQBuAGcAdABoACAALQBuAGUAIAAkAGYALgBzAGkAegBlACAALQBvAHIACgAgACAAIAAgACAAIAAgACAAKABHAGUAdAAtAEYAaQBsAGUASABhAHMAaAAgAC0ATABpAHQAZQByAGEAbABQAGEAdABoACAAJABwACAALQBBAGwAZwBvAHIAaQB0AGgAbQAgAFMASABBADIANQA2ACkALgBIAGEAcwBoAC4AVABvAEwAbwB3AGUAcgBJAG4AdgBhAHIAaQBhAG4AdAAoACkAIAAtAGMAbgBlACAAJABmAC4AcwBoAGEAMgA1ADYAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAEEAUgBUAEkARgBBAEMAVABfAE0ASQBTAE0AQQBUAEMASAAnACAAfQAKACAAIAAgACAAUABpAG4ALQBSAGUAZgBlAHIAZQBuAGMAZQAgACQAcAAgACQAZgAuAHMAaABhADIANQA2AAoAfQAKAGYAbwByAGUAYQBjAGgAIAAoACQAcgBlAHEAdQBpAHIAZQBkACAAaQBuACAAQAAoACcAcwBlAHIAdgBpAGMAZQAvAFIAbwBrAHQAVQAxAEIAcgBpAGQAZwBlAC4AZQB4AGUAJwAsACcAcgB1AG4AdABpAG0AZQAvAGQAZQBwAGUAbgBkAGUAbgBjAGkAZQBzAC4AagBzAG8AbgAnACwAJwBjAG8AbgBmAGkAZwAvAGgAbwBzAHQALgBqAHMAbwBuACcALAAnAEkAbgBzAHQAYQBsAGwALQBEAGkAcwBhAGIAbABlAGQASABvAHMAdAAuAHAAcwAxACcALAAnAFIAbwBsAGwAYgBhAGMAawAtAEQAaQBzAGEAYgBsAGUAZABIAG8AcwB0AC4AcABzADEAJwAsACcAQQBjAGwALQBUAHIAYQBuAHMAYQBjAHQAaQBvAG4ALgBwAHMAMQAnACwAJwBIAG8AcwB0AC0ASQBuAHMAdABhAGwAbABUAHIAYQBuAHMAYQBjAHQAaQBvAG4ALgBwAHMAMQAnACwAJwBoAG8AcwB0AF8AZgBpAGwAZQBfAHQAcgBhAG4AcwBhAGMAdABpAG8AbgAuAHAAeQAnACkAKQAgAHsACgAgACAAIAAgAGkAZgAgACgALQBuAG8AdAAgACQAcwBlAGUAbgAuAEMAbwBuAHQAYQBpAG4AcwBLAGUAeQAoACQAcgBlAHEAdQBpAHIAZQBkAC4AVABvAEwAbwB3AGUAcgBJAG4AdgBhAHIAaQBhAG4AdAAoACkAKQApACAAewAgAHQAaAByAG8AdwAgACcATQBJAFMAUwBJAE4ARwBfAEQARQBQAEUATgBEAEUATgBDAFkAJwAgAH0ACgB9AAoAJABkAGUAcABzAD0ARwBlAHQALQBDAG8AbgB0AGUAbgB0ACAALQBMAGkAdABlAHIAYQBsAFAAYQB0AGgAIAAoAEoAbwBpAG4ALQBQAGEAdABoACAAJABwAGEAYwBrAGEAZwBlACAAJwByAHUAbgB0AGkAbQBlAC8AZABlAHAAZQBuAGQAZQBuAGMAaQBlAHMALgBqAHMAbwBuACcAKQAgAC0AUgBhAHcAIAB8ACAAQwBvAG4AdgBlAHIAdABGAHIAbwBtAC0ASgBzAG8AbgAKAGkAZgAgACgAJABkAGUAcABzAC4AcwBjAGgAZQBtAGEAIAAtAGMAbgBlACAAJwByAG8AawB0AC4AZABpAHMAYQBiAGwAZQBkAC0AaABvAHMAdAAtAHIAdQBuAHQAaQBtAGUALgB2ADEAJwAgAC0AbwByACAAJABkAGUAcABzAC4AZgByAGEAbQBlAHcAbwByAGsAIAAtAGMAbgBlACAAJwAuAE4ARQBUACAARgByAGEAbQBlAHcAbwByAGsAIAA0ACAAeAA2ADQAJwApACAAewAgAHQAaAByAG8AdwAgACcAUgBVAE4AVABJAE0ARQBfAEMATwBOAFQAUgBBAEMAVABfAFIARQBKAEUAQwBUAEUARAAnACAAfQAKACQAcgB1AG4AdABpAG0AZQBQAGEAdABoAHMAPQBAAHsACgAgACAAIAAgACcAYwBsAHIAJwA9ACcATQBpAGMAcgBvAHMAbwBmAHQALgBOAEUAVAAvAEYAcgBhAG0AZQB3AG8AcgBrADYANAAvAHYANAAuADAALgAzADAAMwAxADkALwBjAGwAcgAuAGQAbABsACcACgAgACAAIAAgACcAbQBzAGMAbwByAGwAaQBiACcAPQAnAE0AaQBjAHIAbwBzAG8AZgB0AC4ATgBFAFQALwBGAHIAYQBtAGUAdwBvAHIAawA2ADQALwB2ADQALgAwAC4AMwAwADMAMQA5AC8AbQBzAGMAbwByAGwAaQBiAC4AZABsAGwAJwAKACAAIAAgACAAJwBTAHkAcwB0AGUAbQAnAD0AJwBNAGkAYwByAG8AcwBvAGYAdAAuAE4ARQBUAC8ARgByAGEAbQBlAHcAbwByAGsANgA0AC8AdgA0AC4AMAAuADMAMAAzADEAOQAvAFMAeQBzAHQAZQBtAC4AZABsAGwAJwAKACAAIAAgACAAJwBTAHkAcwB0AGUAbQAuAEMAbwByAGUAJwA9ACcATQBpAGMAcgBvAHMAbwBmAHQALgBOAEUAVAAvAEYAcgBhAG0AZQB3AG8AcgBrADYANAAvAHYANAAuADAALgAzADAAMwAxADkALwBTAHkAcwB0AGUAbQAuAEMAbwByAGUALgBkAGwAbAAnAAoAIAAgACAAIAAnAFMAeQBzAHQAZQBtAC4AUwBlAHIAdgBpAGMAZQBQAHIAbwBjAGUAcwBzACcAPQAnAE0AaQBjAHIAbwBzAG8AZgB0AC4ATgBFAFQALwBGAHIAYQBtAGUAdwBvAHIAawA2ADQALwB2ADQALgAwAC4AMwAwADMAMQA5AC8AUwB5AHMAdABlAG0ALgBTAGUAcgB2AGkAYwBlAFAAcgBvAGMAZQBzAHMALgBkAGwAbAAnAAoAIAAgACAAIAAnAFMAeQBzAHQAZQBtAC4AVwBlAGIALgBFAHgAdABlAG4AcwBpAG8AbgBzACcAPQAnAE0AaQBjAHIAbwBzAG8AZgB0AC4ATgBFAFQALwBhAHMAcwBlAG0AYgBsAHkALwBHAEEAQwBfAE0AUwBJAEwALwBTAHkAcwB0AGUAbQAuAFcAZQBiAC4ARQB4AHQAZQBuAHMAaQBvAG4AcwAvAHYANAAuADAAXwA0AC4AMAAuADAALgAwAF8AXwAzADEAYgBmADMAOAA1ADYAYQBkADMANgA0AGUAMwA1AC8AUwB5AHMAdABlAG0ALgBXAGUAYgAuAEUAeAB0AGUAbgBzAGkAbwBuAHMALgBkAGwAbAAnAAoAfQAKAGkAZgAgACgAQAAoACQAZABlAHAAcwAuAGYAaQBsAGUAcwAuAFAAUwBPAGIAagBlAGMAdAAuAFAAcgBvAHAAZQByAHQAaQBlAHMAKQAuAEMAbwB1AG4AdAAgAC0AbgBlACAAJAByAHUAbgB0AGkAbQBlAFAAYQB0AGgAcwAuAEMAbwB1AG4AdAApACAAewAgAHQAaAByAG8AdwAgACcAUgBVAE4AVABJAE0ARQBfAEMATwBOAFQAUgBBAEMAVABfAFIARQBKAEUAQwBUAEUARAAnACAAfQAKAGYAbwByAGUAYQBjAGgAIAAoACQAawBlAHkAIABpAG4AIAAkAHIAdQBuAHQAaQBtAGUAUABhAHQAaABzAC4ASwBlAHkAcwApACAAewAKACAAIAAgACAAJABmAD0AJABkAGUAcABzAC4AZgBpAGwAZQBzAC4AJABrAGUAeQAKACAAIAAgACAAaQBmACAAKAAkAGYALgBwAGEAdABoACAALQBjAG4AZQAgACQAcgB1AG4AdABpAG0AZQBQAGEAdABoAHMAWwAkAGsAZQB5AF0AKQAgAHsAIAB0AGgAcgBvAHcAIAAnAFIAVQBOAFQASQBNAEUAXwBQAEEAVABIAF8AUgBFAEoARQBDAFQARQBEACcAIAB9AAoAIAAgACAAIAAkAHAAYQB0AGgAPQBKAG8AaQBuAC0AUABhAHQAaAAgACgAWwBFAG4AdgBpAHIAbwBuAG0AZQBuAHQAXQA6ADoARwBlAHQARgBvAGwAZABlAHIAUABhAHQAaAAoACcAVwBpAG4AZABvAHcAcwAnACkAKQAgACQAZgAuAHAAYQB0AGgACgAgACAAIAAgAEEAcwBzAGUAcgB0AC0ATgBvAFIAZQBwAGEAcgBzAGUAQQBuAGMAZQBzAHQAbwByAHMAIAAkAHAAYQB0AGgACgAgACAAIAAgAGkAZgAgACgAKABHAGUAdAAtAEYAaQBsAGUASABhAHMAaAAgAC0ATABpAHQAZQByAGEAbABQAGEAdABoACAAJABwAGEAdABoACAALQBBAGwAZwBvAHIAaQB0AGgAbQAgAFMASABBADIANQA2ACkALgBIAGEAcwBoAC4AVABvAEwAbwB3AGUAcgBJAG4AdgBhAHIAaQBhAG4AdAAoACkAIAAtAGMAbgBlACAAJABmAC4AcwBoAGEAMgA1ADYAIAAtAG8AcgAKACAAIAAgACAAIAAgACAAIABbAEQAaQBhAGcAbgBvAHMAdABpAGMAcwAuAEYAaQBsAGUAVgBlAHIAcwBpAG8AbgBJAG4AZgBvAF0AOgA6AEcAZQB0AFYAZQByAHMAaQBvAG4ASQBuAGYAbwAoACQAcABhAHQAaAApAC4ARgBpAGwAZQBWAGUAcgBzAGkAbwBuACAALQBjAG4AZQAgACQAZgAuAHYAZQByAHMAaQBvAG4AKQAgAHsAIAB0AGgAcgBvAHcAIAAnAFIAVQBOAFQASQBNAEUAXwBNAEkAUwBNAEEAVABDAEgAJwAgAH0ACgB9AAoAIwAgAEcAZQBuAGUAcgBhAHQAZQAgAGUAeABhAGMAdAAgAHMAdQBwAGUAcgB2AGkAcwBvAHIALwByAHUAbgB0AGkAbQBlACAAYgB5AHQAZQBzACAAYgBlAGYAbwByAGUAIABhAG4AeQAgAGkAbgBzAHQAYQBsAGwAYQB0AGkAbwBuACAAZQBmAGYAZQBjAHQALgAKACMAIABUAGgAZQAgAHAAbABhAG4AIABjAG8AbgB0AGEAaQBuAHMAIAByAGUAZgBlAHIAZQBuAGMAZQBzACwAIABuAGUAdgBlAHIAIABjAHIAZQBkAGUAbgB0AGkAYQBsAHMAOwAgAGkAdABzACAAaABhAHMAaAAgAGkAcwAgAHMAZQBwAGEAcgBhAHQAZQBsAHkAIABhAHAAcAByAG8AdgBlAGQALgAKACQAZwBlAG4AZQByAGEAdABlAGQAPQBAAHsAfQAKAGkAZgAgACgAJABSAHUAbgB0AGkAbQBlAFAAbABhAG4AKQAgAHsACgAgACAAIAAgAEEAcwBzAGUAcgB0AC0ATgBvAFIAZQBwAGEAcgBzAGUAQQBuAGMAZQBzAHQAbwByAHMAIAAkAFIAdQBuAHQAaQBtAGUAUABsAGEAbgAKACAAIAAgACAAaQBmACAAKAAtAG4AbwB0ACAAJABBAHAAcAByAG8AdgBlAGQAUgB1AG4AdABpAG0AZQBQAGwAYQBuAFMAaABhADIANQA2ACAALQBvAHIAIAAoAEcAZQB0AC0ARgBpAGwAZQBIAGEAcwBoACAALQBMAGkAdABlAHIAYQBsAFAAYQB0AGgAIAAkAFIAdQBuAHQAaQBtAGUAUABsAGEAbgAgAC0AQQBsAGcAbwByAGkAdABoAG0AIABTAEgAQQAyADUANgApAC4ASABhAHMAaAAuAFQAbwBMAG8AdwBlAHIASQBuAHYAYQByAGkAYQBuAHQAKAApACAALQBjAG4AZQAgACQAQQBwAHAAcgBvAHYAZQBkAFIAdQBuAHQAaQBtAGUAUABsAGEAbgBTAGgAYQAyADUANgApACAAewAgAHQAaAByAG8AdwAgACcAUgBVAE4AVABJAE0ARQBfAFAATABBAE4AXwBIAEEAUwBIACcAIAB9AAoAIAAgACAAIABQAGkAbgAtAFIAZQBmAGUAcgBlAG4AYwBlACAAJABSAHUAbgB0AGkAbQBlAFAAbABhAG4AIAAkAEEAcABwAHIAbwB2AGUAZABSAHUAbgB0AGkAbQBlAFAAbABhAG4AUwBoAGEAMgA1ADYACgAgACAAIAAgACQAcABsAGEAbgA9AEcAZQB0AC0AQwBvAG4AdABlAG4AdAAgAC0ATABpAHQAZQByAGEAbABQAGEAdABoACAAJABSAHUAbgB0AGkAbQBlAFAAbABhAG4AIAAtAFIAYQB3ACAAfAAgAEMAbwBuAHYAZQByAHQARgByAG8AbQAtAEoAcwBvAG4ACgAgACAAIAAgACQAawBlAHkAcwA9AEAAKAAnAHMAYwBoAGUAbQBhACcALAAnAGkAbgB2AGUAbgB0AG8AcgB5AF8AaQBkACcALAAnAHAAeQB0AGgAbwBuACcALAAnAHAAeQB0AGgAbwBuAF8AcwBoAGEAMgA1ADYAJwAsACcAcgBlAGwAZQBhAHMAZQBfAHIAbwBvAHQAJwAsACcAdABvAGsAZQBuAF8AZgBpAGwAZQAnACwAJwB0AG8AawBlAG4AXwBzAGgAYQAyADUANgAnACwAJwBjAHIAZQBkAGUAbgB0AGkAYQBsAF8AZQB4AHAAaQByAGUAcwBfAGEAdAAnACwAJwBzAG4AYQBwAHMAaABvAHQAJwAsACcAcwBuAGEAcABzAGgAbwB0AF8AcwBoAGEAMgA1ADYAJwApAAoAIAAgACAAIABpAGYAIAAoACQAcABsAGEAbgAuAFAAUwBPAGIAagBlAGMAdAAuAFAAcgBvAHAAZQByAHQAaQBlAHMALgBOAGEAbQBlACAALQBjAGMAbwBuAHQAYQBpAG4AcwAgACcAZQB2AGUAbgB0AF8AcgB1AG4AdABpAG0AZQAnACkAIAB7AAoAIAAgACAAIAAgACAAIAAgACQAawBlAHkAcwArAD0AQAAoACcAZQB2AGUAbgB0AF8AcgB1AG4AdABpAG0AZQAnACkACgAgACAAIAAgACAAIAAgACAAaQBmACAAKAAkAHAAbABhAG4ALgBlAHYAZQBuAHQAXwByAHUAbgB0AGkAbQBlACAALQBpAHMAbgBvAHQAIABbAHMAdAByAGkAbgBnAF0AIAAtAG8AcgAgAC0AbgBvAHQAIABbAEkATwAuAFAAYQB0AGgAXQA6ADoASQBzAFAAYQB0AGgAUgBvAG8AdABlAGQAKAAkAHAAbABhAG4ALgBlAHYAZQBuAHQAXwByAHUAbgB0AGkAbQBlACkAIAAtAG8AcgAgAFsASQBPAC4AUABhAHQAaABdADoAOgBHAGUAdABGAHUAbABsAFAAYQB0AGgAKAAkAHAAbABhAG4ALgBlAHYAZQBuAHQAXwByAHUAbgB0AGkAbQBlACkAIAAtAGMAbgBlACAAJABwAGwAYQBuAC4AZQB2AGUAbgB0AF8AcgB1AG4AdABpAG0AZQAgAC0AbwByACAALQBuAG8AdAAgACgAVABlAHMAdAAtAFAAYQB0AGgAIAAtAEwAaQB0AGUAcgBhAGwAUABhAHQAaAAgACQAcABsAGEAbgAuAGUAdgBlAG4AdABfAHIAdQBuAHQAaQBtAGUAIAAtAFAAYQB0AGgAVAB5AHAAZQAgAEMAbwBuAHQAYQBpAG4AZQByACkAKQAgAHsAdABoAHIAbwB3ACAAJwBFAFYARQBOAFQAXwBSAFUATgBUAEkATQBFAF8AUgBFAFEAVQBJAFIARQBEACcAfQAKACAAIAAgACAAIAAgACAAIABBAHMAcwBlAHIAdAAtAE4AbwBSAGUAcABhAHIAcwBlAEEAbgBjAGUAcwB0AG8AcgBzACAAJABwAGwAYQBuAC4AZQB2AGUAbgB0AF8AcgB1AG4AdABpAG0AZQAKACAAIAAgACAAfQAKACAAIAAgACAAaQBmACAAKABAACgAJABwAGwAYQBuAC4AUABTAE8AYgBqAGUAYwB0AC4AUAByAG8AcABlAHIAdABpAGUAcwAuAE4AYQBtAGUAKQAuAEMAbwB1AG4AdAAgAC0AbgBlACAAJABrAGUAeQBzAC4AQwBvAHUAbgB0ACAALQBvAHIAIABAACgAJABwAGwAYQBuAC4AUABTAE8AYgBqAGUAYwB0AC4AUAByAG8AcABlAHIAdABpAGUAcwAuAE4AYQBtAGUAIAB8ACAAVwBoAGUAcgBlAC0ATwBiAGoAZQBjAHQAIAB7ACQAXwAgAC0AYwBuAG8AdABpAG4AIAAkAGsAZQB5AHMAfQApAC4AQwBvAHUAbgB0ACAALQBuAGUAIAAwACAALQBvAHIAIAAkAHAAbABhAG4ALgBzAGMAaABlAG0AYQAgAC0AYwBuAGUAIAAnAHIAbwBrAHQALgB1ADEALQBwAHIAbwB2AGkAcwBpAG8AbgAtAHAAbABhAG4ALgB2ADEAJwAgAC0AbwByACAAJABwAGwAYQBuAC4AaQBuAHYAZQBuAHQAbwByAHkAXwBpAGQAIAAtAGMAbgBlACAAJwAxADcAOAA0ADcANwA1ADIAMgA5ADMAMwA2ACcAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAFIAVQBOAFQASQBNAEUAXwBQAEwAQQBOAF8AUwBDAEgARQBNAEEAJwAgAH0ACgAgACAAIAAgAGYAbwByAGUAYQBjAGgAIAAoACQAawBlAHkAIABpAG4AIABAACgAJwBwAHkAdABoAG8AbgAnACwAJwB0AG8AawBlAG4AXwBmAGkAbABlACcALAAnAHMAbgBhAHAAcwBoAG8AdAAnACwAJwByAGUAbABlAGEAcwBlAF8AcgBvAG8AdAAnACkAKQAgAHsACgAgACAAIAAgACAAIAAgACAAJAB2AGEAbAB1AGUAPQAkAHAAbABhAG4ALgAkAGsAZQB5AAoAIAAgACAAIAAgACAAIAAgAGkAZgAgACgAJAB2AGEAbAB1AGUAIAAtAGkAcwBuAG8AdAAgAFsAcwB0AHIAaQBuAGcAXQAgAC0AbwByACAALQBuAG8AdAAgAFsASQBPAC4AUABhAHQAaABdADoAOgBJAHMAUABhAHQAaABSAG8AbwB0AGUAZAAoACQAdgBhAGwAdQBlACkAIAAtAG8AcgAgACQAdgBhAGwAdQBlACAALQBtAGEAdABjAGgAIAAnAFsAIgBcAHIAXABuAF0AJwAgAC0AbwByACAAWwBJAE8ALgBQAGEAdABoAF0AOgA6AEcAZQB0AEYAdQBsAGwAUABhAHQAaAAoACQAdgBhAGwAdQBlACkAIAAtAGMAbgBlACAAJAB2AGEAbAB1AGUAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAFIAVQBOAFQASQBNAEUAXwBQAEwAQQBOAF8AUABBAFQASAAnACAAfQAKACAAIAAgACAAIAAgACAAIABBAHMAcwBlAHIAdAAtAE4AbwBSAGUAcABhAHIAcwBlAEEAbgBjAGUAcwB0AG8AcgBzACAAJAB2AGEAbAB1AGUACgAgACAAIAAgAH0ACgAgACAAIAAgAGYAbwByAGUAYQBjAGgAIAAoACQAawBlAHkAIABpAG4AIABAACgAJwBwAHkAdABoAG8AbgAnACwAJwB0AG8AawBlAG4AXwBmAGkAbABlACcALAAnAHMAbgBhAHAAcwBoAG8AdAAnACkAKQAgAHsACgAgACAAIAAgACAAIAAgACAAJABoAGEAcwBoAEsAZQB5AD0AaQBmACAAKAAkAGsAZQB5ACAALQBjAGUAcQAgACcAdABvAGsAZQBuAF8AZgBpAGwAZQAnACkAIAB7ACcAdABvAGsAZQBuAF8AcwBoAGEAMgA1ADYAJwB9ACAAZQBsAHMAZQAgAHsAJABrAGUAeQArACcAXwBzAGgAYQAyADUANgAnAH0ACgAgACAAIAAgACAAIAAgACAAaQBmACAAKAAkAHAAbABhAG4ALgAkAGgAYQBzAGgASwBlAHkAIAAtAGMAbgBvAHQAbQBhAHQAYwBoACAAJwBeAFsAMAAtADkAYQAtAGYAXQB7ADYANAB9ACQAJwAgAC0AbwByACAAKABHAGUAdAAtAEYAaQBsAGUASABhAHMAaAAgAC0ATABpAHQAZQByAGEAbABQAGEAdABoACAAJABwAGwAYQBuAC4AJABrAGUAeQAgAC0AQQBsAGcAbwByAGkAdABoAG0AIABTAEgAQQAyADUANgApAC4ASABhAHMAaAAuAFQAbwBMAG8AdwBlAHIASQBuAHYAYQByAGkAYQBuAHQAKAApACAALQBjAG4AZQAgACQAcABsAGEAbgAuACQAaABhAHMAaABLAGUAeQApACAAewAgAHQAaAByAG8AdwAgACcAUgBVAE4AVABJAE0ARQBfAFIARQBGAEUAUgBFAE4AQwBFAF8ASABBAFMASAAnACAAfQAKACAAIAAgACAAIAAgACAAIABQAGkAbgAtAFIAZQBmAGUAcgBlAG4AYwBlACAAJABwAGwAYQBuAC4AJABrAGUAeQAgACQAcABsAGEAbgAuACQAaABhAHMAaABLAGUAeQAKACAAIAAgACAAfQAKACAAIAAgACAAaQBmACAAKAAkAHAAbABhAG4ALgBjAHIAZQBkAGUAbgB0AGkAYQBsAF8AZQB4AHAAaQByAGUAcwBfAGEAdAAgAC0AaQBzAG4AbwB0ACAAWwBsAG8AbgBnAF0AIAAtAGEAbgBkACAAJABwAGwAYQBuAC4AYwByAGUAZABlAG4AdABpAGEAbABfAGUAeABwAGkAcgBlAHMAXwBhAHQAIAAtAGkAcwBuAG8AdAAgAFsAaQBuAHQAXQApACAAewAgAHQAaAByAG8AdwAgACcAQwBSAEUARABFAE4AVABJAEEATABfAEUAWABQAEkAUgBZAF8AVABZAFAARQAnACAAfQAKACAAIAAgACAAaQBmACAAKAAkAHAAbABhAG4ALgBjAHIAZQBkAGUAbgB0AGkAYQBsAF8AZQB4AHAAaQByAGUAcwBfAGEAdAAgAC0AbABlACAAWwBEAGEAdABlAFQAaQBtAGUATwBmAGYAcwBlAHQAXQA6ADoAVQB0AGMATgBvAHcALgBUAG8AVQBuAGkAeABUAGkAbQBlAFMAZQBjAG8AbgBkAHMAKAApACkAIAB7ACAAdABoAHIAbwB3ACAAJwBDAFIARQBEAEUATgBUAEkAQQBMAF8ARQBYAFAASQBSAEUARAAnACAAfQAKACAAIAAgACAAJABiAG8AbwB0AHMAdAByAGEAcABFAG4AdAByAHkAPQBAACgAJABtAC4AZgBpAGwAZQBzACAAfAAgAFcAaABlAHIAZQAtAE8AYgBqAGUAYwB0ACAAewAkAF8ALgBwAGEAdABoACAALQBjAGUAcQAgACcAcwBlAHIAdgBpAGMAZQAvAHUAMQBfAGIAbwBvAHQAcwB0AHIAYQBwAC4AcAB5ACcAfQApAAoAIAAgACAAIABpAGYAIAAoACQAYgBvAG8AdABzAHQAcgBhAHAARQBuAHQAcgB5AC4AQwBvAHUAbgB0ACAALQBuAGUAIAAxACkAIAB7ACAAdABoAHIAbwB3ACAAJwBCAE8ATwBUAFMAVABSAEEAUABfAFIARQBRAFUASQBSAEUARAAnACAAfQAKACAAIAAgACAAJAByAHUAbgB0AGkAbQBlAD0AWwBvAHIAZABlAHIAZQBkAF0AQAB7AHMAYwBoAGUAbQBhAD0AJwByAG8AawB0AC4AdQAxAC0AcAB5AHQAaABvAG4ALQByAHUAbgB0AGkAbQBlAC4AdgAxACcAOwBpAG4AdgBlAG4AdABvAHIAeQBfAGkAZAA9ACcAMQA3ADgANAA3ADcANQAyADIAOQAzADMANgAnADsAcgBlAGwAZQBhAHMAZQBfAHIAbwBvAHQAPQAkAHAAbABhAG4ALgByAGUAbABlAGEAcwBlAF8AcgBvAG8AdAA7AHMAdABhAHQAZQBfAHIAbwBvAHQAPQAkAHMAdABhAHQAZQA7AHQAbwBrAGUAbgBfAGYAaQBsAGUAPQAkAHAAbABhAG4ALgB0AG8AawBlAG4AXwBmAGkAbABlADsAYwByAGUAZABlAG4AdABpAGEAbABfAGUAeABwAGkAcgBlAHMAXwBhAHQAPQAkAHAAbABhAG4ALgBjAHIAZQBkAGUAbgB0AGkAYQBsAF8AZQB4AHAAaQByAGUAcwBfAGEAdAA7AHMAbgBhAHAAcwBoAG8AdAA9ACQAcABsAGEAbgAuAHMAbgBhAHAAcwBoAG8AdAA7AHMAbgBhAHAAcwBoAG8AdABfAHMAaABhADIANQA2AD0AJABwAGwAYQBuAC4AcwBuAGEAcABzAGgAbwB0AF8AcwBoAGEAMgA1ADYAOwBhAGwAbABvAHcAXwBkAGkAcwBwAGEAdABjAGgAPQAkAGYAYQBsAHMAZQA7AGEAbABsAG8AdwBfAGMAYQBuAGMAZQBsAF8AZABpAHMAcABhAHQAYwBoAD0AJABmAGEAbABzAGUAOwBzAG0AdABwAF8AZQBuAGEAYgBsAGUAZAA9ACQAZgBhAGwAcwBlAH0ACgAgACAAIAAgAGkAZgAgACgAJABrAGUAeQBzACAALQBjAGMAbwBuAHQAYQBpAG4AcwAgACcAZQB2AGUAbgB0AF8AcgB1AG4AdABpAG0AZQAnACkAIAB7ACQAcgB1AG4AdABpAG0AZQBbACcAZQB2AGUAbgB0AF8AcgB1AG4AdABpAG0AZQAnAF0APQAkAHAAbABhAG4ALgBlAHYAZQBuAHQAXwByAHUAbgB0AGkAbQBlAH0ACgAgACAAIAAgACQAdQB0AGYAOAA9AE4AZQB3AC0ATwBiAGoAZQBjAHQAIABUAGUAeAB0AC4AVQBUAEYAOABFAG4AYwBvAGQAaQBuAGcAKAAkAGYAYQBsAHMAZQApAAoAIAAgACAAIAAkAHIAdQBuAHQAaQBtAGUAQgB5AHQAZQBzAD0AJAB1AHQAZgA4AC4ARwBlAHQAQgB5AHQAZQBzACgAKAAkAHIAdQBuAHQAaQBtAGUAIAB8ACAAQwBvAG4AdgBlAHIAdABUAG8ALQBKAHMAbwBuACAALQBDAG8AbQBwAHIAZQBzAHMAKQApAAoAIAAgACAAIAAkAGgAYQBzAGgAZQByAD0AWwBTAGUAYwB1AHIAaQB0AHkALgBDAHIAeQBwAHQAbwBnAHIAYQBwAGgAeQAuAFMASABBADIANQA2AF0AOgA6AEMAcgBlAGEAdABlACgAKQAKACAAIAAgACAAdAByAHkAIAB7ACAAJAByAHUAbgB0AGkAbQBlAEgAYQBzAGgAPQAoAFsAQgBpAHQAQwBvAG4AdgBlAHIAdABlAHIAXQA6ADoAVABvAFMAdAByAGkAbgBnACgAJABoAGEAcwBoAGUAcgAuAEMAbwBtAHAAdQB0AGUASABhAHMAaAAoACQAcgB1AG4AdABpAG0AZQBCAHkAdABlAHMAKQApACkALgBSAGUAcABsAGEAYwBlACgAJwAtACcALAAnACcAKQAuAFQAbwBMAG8AdwBlAHIASQBuAHYAYQByAGkAYQBuAHQAKAApACAAfQAgAGYAaQBuAGEAbABsAHkAIAB7ACAAJABoAGEAcwBoAGUAcgAuAEQAaQBzAHAAbwBzAGUAKAApACAAfQAKACAAIAAgACAAJABzAHUAcABlAHIAdgBpAHMAbwByAD0AWwBvAHIAZABlAHIAZQBkAF0AQAB7AHMAYwBoAGUAbQBhAD0AJwByAG8AawB0AC4AdQAxAC0AcwB1AHAAZQByAHYAaQBzAG8AcgAuAHYAMQAnADsAaQBuAHYAZQBuAHQAbwByAHkAXwBpAGQAPQAnADEANwA4ADQANwA3ADUAMgAyADkAMwAzADYAJwA7AHAAeQB0AGgAbwBuAD0AJABwAGwAYQBuAC4AcAB5AHQAaABvAG4AOwBwAHkAdABoAG8AbgBfAHMAaABhADIANQA2AD0AJABwAGwAYQBuAC4AcAB5AHQAaABvAG4AXwBzAGgAYQAyADUANgA7AGIAbwBvAHQAcwB0AHIAYQBwAD0AKAAkAGMAbwBkAGUAKwAnAFwAcwBlAHIAdgBpAGMAZQBcAHUAMQBfAGIAbwBvAHQAcwB0AHIAYQBwAC4AcAB5ACcAKQA7AGIAbwBvAHQAcwB0AHIAYQBwAF8AcwBoAGEAMgA1ADYAPQAkAGIAbwBvAHQAcwB0AHIAYQBwAEUAbgB0AHIAeQBbADAAXQAuAHMAaABhADIANQA2ADsAcgB1AG4AdABpAG0AZQBfAGMAbwBuAGYAaQBnAD0AKAAkAGMAbwBkAGUAKwAnAFwAYwBvAG4AZgBpAGcAXAByAHUAbgB0AGkAbQBlAC4AagBzAG8AbgAnACkAOwByAHUAbgB0AGkAbQBlAF8AYwBvAG4AZgBpAGcAXwBzAGgAYQAyADUANgA9ACQAcgB1AG4AdABpAG0AZQBIAGEAcwBoAH0ACgAgACAAIAAgACQAZwBlAG4AZQByAGEAdABlAGQAWwAnAGMAbwBuAGYAaQBnAC8AcgB1AG4AdABpAG0AZQAuAGoAcwBvAG4AJwBdAD0AJAByAHUAbgB0AGkAbQBlAEIAeQB0AGUAcwAKACAAIAAgACAAJABnAGUAbgBlAHIAYQB0AGUAZABbACcAYwBvAG4AZgBpAGcALwBzAHUAcABlAHIAdgBpAHMAbwByAC4AagBzAG8AbgAnAF0APQAkAHUAdABmADgALgBHAGUAdABCAHkAdABlAHMAKAAoACQAcwB1AHAAZQByAHYAaQBzAG8AcgAgAHwAIABDAG8AbgB2AGUAcgB0AFQAbwAtAEoAcwBvAG4AIAAtAEMAbwBtAHAAcgBlAHMAcwApACkACgAgACAAIAAgAGkAZgAgACgAQAAoACQAbQAuAGYAaQBsAGUAcwAgAHwAIABXAGgAZQByAGUALQBPAGIAagBlAGMAdAAgAHsAJABnAGUAbgBlAHIAYQB0AGUAZAAuAEMAbwBuAHQAYQBpAG4AcwBLAGUAeQAoACQAXwAuAHAAYQB0AGgAKQB9ACkALgBDAG8AdQBuAHQAIAAtAG4AZQAgADAAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAEcARQBOAEUAUgBBAFQARQBEAF8AQwBPAE4ARgBJAEcAXwBDAE8ATABMAEkAUwBJAE8ATgAnACAAfQAKAH0ACgAjACAAVABoAGUAIABoAGUAbABwAGUAcgAgAGkAcwAgAG0AYQBuAGkAZgBlAHMAdAAtAGgAYQBzAGgAZQBkACAAYQBuAGQAIABoAGUAbABkACAAbwBwAGUAbgAgAGIAeQAgAFAAaQBuAC0AUgBlAGYAZQByAGUAbgBjAGUAIABhAGIAbwB2AGUALgAKAC4AIAAoAEoAbwBpAG4ALQBQAGEAdABoACAAJABwAGEAYwBrAGEAZwBlACAAJwBBAGMAbAAtAFQAcgBhAG4AcwBhAGMAdABpAG8AbgAuAHAAcwAxACcAKQAKACQAYQBjAGwASgBvAHUAcgBuAGEAbAA9ACcAQwA6AFwAUAByAG8AZwByAGEAbQBEAGEAdABhAFwAUgBvAGsAdABVADEASQBuAHMAdABhAGwAbABBAHUAZABpAHQAXABkAGkAcwBhAGIAbABlAGQALQBoAG8AcwB0AC0AYQBjAGwALgBqAHMAbwBuAGwAJwAKAGkAZgAgACgAJABSAGUAYwBvAHYAZQByAEEAYwBsACkAIAB7AAoAIAAgACAAIABpAGYAIAAoAC0AbgBvAHQAIAAkAEUAeABlAGMAdQB0AGUAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAFIARQBDAE8AVgBFAFIAWQBfAFIARQBRAFUASQBSAEUAUwBfAEUAWABQAEwASQBDAEkAVABfAEUAWABFAEMAVQBUAEUAJwAgAH0ACgAgACAAIAAgACQAcAByAGkAbgBjAGkAcABhAGwAPQBOAGUAdwAtAE8AYgBqAGUAYwB0ACAAUwBlAGMAdQByAGkAdAB5AC4AUAByAGkAbgBjAGkAcABhAGwALgBXAGkAbgBkAG8AdwBzAFAAcgBpAG4AYwBpAHAAYQBsACgAWwBTAGUAYwB1AHIAaQB0AHkALgBQAHIAaQBuAGMAaQBwAGEAbAAuAFcAaQBuAGQAbwB3AHMASQBkAGUAbgB0AGkAdAB5AF0AOgA6AEcAZQB0AEMAdQByAHIAZQBuAHQAKAApACkACgAgACAAIAAgAGkAZgAgACgALQBuAG8AdAAgACQAcAByAGkAbgBjAGkAcABhAGwALgBJAHMASQBuAFIAbwBsAGUAKABbAFMAZQBjAHUAcgBpAHQAeQAuAFAAcgBpAG4AYwBpAHAAYQBsAC4AVwBpAG4AZABvAHcAcwBCAHUAaQBsAHQASQBuAFIAbwBsAGUAXQA6ADoAQQBkAG0AaQBuAGkAcwB0AHIAYQB0AG8AcgApACkAIAB7ACAAdABoAHIAbwB3ACAAJwBBAEQATQBJAE4ASQBTAFQAUgBBAFQATwBSAF8AUgBFAFEAVQBJAFIARQBEACcAIAB9AAoAIAAgACAAIAAkAHIAZQBjAG8AdgBlAHIAeQBNAHUAdABlAHgAPQBOAGUAdwAtAE8AYgBqAGUAYwB0ACAAVABoAHIAZQBhAGQAaQBuAGcALgBNAHUAdABlAHgAKAAkAGYAYQBsAHMAZQAsACcARwBsAG8AYgBhAGwAXABSAG8AawB0AFUAMQBCAHIAaQBkAGcAZQBJAG4AcwB0AGEAbABsACcAKQAKACAAIAAgACAAJABoAGUAbABkAD0AJABmAGEAbABzAGUACgAgACAAIAAgAHQAcgB5ACAAewAKACAAIAAgACAAIAAgACAAIAB0AHIAeQAgAHsAIAAkAGgAZQBsAGQAPQAkAHIAZQBjAG8AdgBlAHIAeQBNAHUAdABlAHgALgBXAGEAaQB0AE8AbgBlACgAMAApACAAfQAgAGMAYQB0AGMAaAAgAFsAVABoAHIAZQBhAGQAaQBuAGcALgBBAGIAYQBuAGQAbwBuAGUAZABNAHUAdABlAHgARQB4AGMAZQBwAHQAaQBvAG4AXQAgAHsAIAAkAGgAZQBsAGQAPQAkAHQAcgB1AGUAIAB9AAoAIAAgACAAIAAgACAAIAAgAGkAZgAgACgALQBuAG8AdAAgACQAaABlAGwAZAApACAAewAgAHQAaAByAG8AdwAgACcASQBOAFMAVABBAEwATABBAFQASQBPAE4AXwBMAE8AQwBLAEUARAAnACAAfQAKACAAIAAgACAAIAAgACAAIAAkAHIAZQBjAG8AdgBlAHIAUwBlAHIAdgBpAGMAZQA9AEcAZQB0AC0AQwBpAG0ASQBuAHMAdABhAG4AYwBlACAAVwBpAG4AMwAyAF8AUwBlAHIAdgBpAGMAZQAgAC0ARgBpAGwAdABlAHIAIAAiAE4AYQBtAGUAPQAnACQAbgBhAG0AZQAnACIACgAgACAAIAAgACAAIAAgACAAQQBzAHMAZQByAHQALQBBAGMAbABSAGUAYwBvAHYAZQByAHkAQQBkAG0AaQBzAHMAaQBvAG4AIAAtAEMAbwBkAGUAIAAkAGMAbwBkAGUAIAAtAFMAZQByAHYAaQBjAGUAIAAkAHIAZQBjAG8AdgBlAHIAUwBlAHIAdgBpAGMAZQAKACAAIAAgACAAIAAgACAAIABJAG4AdgBvAGsAZQAtAEEAYwBsAFQAcgBhAG4AcwBhAGMAdABpAG8AbgAgAC0AQwBvAGQAZQAgACQAYwBvAGQAZQAgAC0AUwB0AGEAdABlACAAJABzAHQAYQB0AGUAIAAtAEoAbwB1AHIAbgBhAGwAIAAkAGEAYwBsAEoAbwB1AHIAbgBhAGwAIAAtAE0AYQBuAGkAZgBlAHMAdABIAGEAcwBoACAAJABBAHAAcAByAG8AdgBlAGQATQBhAG4AaQBmAGUAcwB0AFMAaABhADIANQA2ACAALQBSAGUAYwBvAHYAZQByAAoAIAAgACAAIAAgACAAIAAgAHIAZQB0AHUAcgBuAAoAIAAgACAAIAB9ACAAZgBpAG4AYQBsAGwAeQAgAHsAIABpAGYAIAAoACQAaABlAGwAZAApACAAewAgACQAcgBlAGMAbwB2AGUAcgB5AE0AdQB0AGUAeAAuAFIAZQBsAGUAYQBzAGUATQB1AHQAZQB4ACgAKQAgAH0AOwAgACQAcgBlAGMAbwB2AGUAcgB5AE0AdQB0AGUAeAAuAEQAaQBzAHAAbwBzAGUAKAApACAAfQAKAH0ACgAuACAAKABKAG8AaQBuAC0AUABhAHQAaAAgACQAcABhAGMAawBhAGcAZQAgACcASABvAHMAdAAtAEkAbgBzAHQAYQBsAGwAVAByAGEAbgBzAGEAYwB0AGkAbwBuAC4AcABzADEAJwApAAoASQBuAHYAbwBrAGUALQBIAG8AcwB0AEkAbgBzAHQAYQBsAGwAVAByAGEAbgBzAGEAYwB0AGkAbwBuACAALQBVAHAAZwByAGEAZABlADoAJABVAHAAZwByAGEAZABlACAALQBSAGUAYwBvAHYAZQByAEkAbgBzAHQAYQBsAGwAOgAkAFIAZQBjAG8AdgBlAHIASQBuAHMAdABhAGwAbAAgAC0AUgBvAGwAbABiAGEAYwBrADoAJABSAG8AbABsAGIAYQBjAGsAIAAtAE8AcABlAHIAYQB0AGkAbwBuAEkAZAAgACQATwBwAGUAcgBhAHQAaQBvAG4ASQBkACAALQBBAHAAcAByAG8AdgBlAGQAUAByAGUAdgBpAG8AdQBzAFIAZQBjAGUAaQBwAHQAUwBoAGEAMgA1ADYAIAAkAEEAcABwAHIAbwB2AGUAZABQAHIAZQB2AGkAbwB1AHMAUgBlAGMAZQBpAHAAdABTAGgAYQAyADUANgAgAC0ARQB4AGUAYwB1AHQAZQA6ACQARQB4AGUAYwB1AHQAZQAKAAoAfQAgAGYAaQBuAGEAbABsAHkAIAB7ACAAZgBvAHIAZQBhAGMAaAAgACgAJABwAGkAbgAgAGkAbgAgACQAZABlAHAAZQBuAGQAZQBuAGMAeQBQAGkAbgBzACkAIAB7ACAAJABwAGkAbgAuAEQAaQBzAHAAbwBzAGUAKAApACAAfQAgAH0ACgB9ACAALQBQAGEAYwBrAGEAZwBlAFIAbwBvAHQAIAAnAEMAOgBcAG0AaQBzAHMAaQBuAGcALQB1ADEALQBwAGEAYwBrAGEAZwBlACcAIAAtAEEAcABwAHIAbwB2AGUAZABNAGEAbgBpAGYAZQBzAHQAUwBoAGEAMgA1ADYAIABhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhAGEAYQBhACAALQBBAHAAcAByAG8AdgBlAGQAUwBvAHUAcgBjAGUAQwBvAG0AbQBpAHQAIABiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiACAALQBFAHgAZQBjAHUAdABlACAA']
+
+======================================================================
+ERROR: test_powershell_actual_parser_and_no_start_or_state_delete (test_disabled_host_package.DisabledPackageTests.test_powershell_actual_parser_and_no_start_or_state_delete)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_disabled_host_package.py", line 89, in test_powershell_actual_parser_and_no_start_or_state_delete
+    p=subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-EncodedCommand',encoded],capture_output=True,timeout=20,creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', 'JAByAG8AbwB0AD0AJwBDADoAXABVAHMAZQByAHMAXAAxADUANgA5ADAAXABEAG8AYwB1AG0AZQBuAHQAcwBcAEMAaABhAHQARwBQAFQAXAC/fgtOXAByAG8AawB0AGEAbgBkAHIAYQB6AG8ALQBvAHUAdAByAGUAYQBjAGgALQBhAHUAdABvAG4AbwBtAHkAXABhAHUAdABvAG4AbwBtAHkAXAB3AGkAbgBkAG8AdwBzACcAOwBmAG8AcgBlAGEAYwBoACgAJABwACAAaQBuACAARwBlAHQALQBDAGgAaQBsAGQASQB0AGUAbQAgAC0ATABpAHQAZQByAGEAbABQAGEAdABoACAAJAByAG8AbwB0ACAALQBGAGkAbAB0AGUAcgAgACoALgBwAHMAMQApAHsAJAB0AD0AJABuAHUAbABsADsAJABlAD0AJABuAHUAbABsADsAWwBTAHkAcwB0AGUAbQAuAE0AYQBuAGEAZwBlAG0AZQBuAHQALgBBAHUAdABvAG0AYQB0AGkAbwBuAC4ATABhAG4AZwB1AGEAZwBlAC4AUABhAHIAcwBlAHIAXQA6ADoAUABhAHIAcwBlAEYAaQBsAGUAKAAkAHAALgBGAHUAbABsAE4AYQBtAGUALABbAHIAZQBmAF0AJAB0ACwAWwByAGUAZgBdACQAZQApAHwATwB1AHQALQBOAHUAbABsADsAaQBmACgAJABlAC4AQwBvAHUAbgB0ACkAewB0AGgAcgBvAHcAIAAkAGUAWwAwAF0ALgBNAGUAcwBzAGEAZwBlAH0AfQA=']
+
+======================================================================
+ERROR: test_real_pe_compiles_and_config_cli_is_fail_closed (test_disabled_host_package.DisabledPackageTests.test_real_pe_compiles_and_config_cli_is_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_disabled_host_package.py", line 99, in test_real_pe_compiles_and_config_cli_is_fail_closed
+    p=subprocess.run([str(compiler),'/nologo','/target:exe','/platform:x64','/reference:System.ServiceProcess.dll','/reference:System.Web.Extensions.dll','/out:'+str(target),str(Path(__file__).parent/'autonomy/windows/RoktU1Bridge.cs')],capture_output=True,timeout=30,creationflags=subprocess.CREATE_NO_WINDOW)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe', '/nologo', '/target:exe', '/platform:x64', '/reference:System.ServiceProcess.dll', '/reference:System.Web.Extensions.dll', '/out:C:\\Users\\15690\\AppData\\Local\\Temp\\u1-disabled-package-bn2xh3kq\\RoktU1Bridge.exe', 'C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-autonomy\\autonomy\\windows\\RoktU1Bridge.cs']
+
+======================================================================
+ERROR: test_actual_receipt_writer_and_rollback_pins (test_u1_provision.OwnershipReceiptTests.test_actual_receipt_writer_and_rollback_pins)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_u1_provision.py", line 43, in test_actual_receipt_writer_and_rollback_pins
+    run=subprocess.run(['pwsh','-NoProfile','-Command',code],capture_output=True,text=True,timeout=15)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['pwsh', '-NoProfile', '-Command', "$ErrorActionPreference='Stop'; function Assert-NoReparseAncestors($p) {}; $code='C:\\Users\\15690\\AppData\\Local\\Temp\\tmp7kk2cl2h';$ownershipPins=New-Object Collections.ArrayList\nfunction Read-PinnedOwnership([string]$Path) {\n    Assert-NoReparseAncestors $Path\n    $stream=[IO.FileStream]::new($Path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)\n    [void]$ownershipPins.Add($stream)\n    if ($stream.Length -gt 16777216) { throw 'OWNERSHIP_FILE_TOO_LARGE' }\n    $memory=[IO.MemoryStream]::new()\n    try { $stream.CopyTo($memory); return ,$memory.ToArray() } finally { $memory.Dispose() }\n}\n; $path=Join-Path $code 'config/installation.json'; $bytes=Read-PinnedOwnership $path; $w=Read-PinnedOwnership 'C:\\Users\\15690\\AppData\\Local\\Temp\\tmp7kk2cl2h\\wrapper.exe';foreach ($p in @($path,'C:\\Users\\15690\\AppData\\Local\\Temp\\tmp7kk2cl2h\\wrapper.exe')) {$blocked=$false; try {[IO.File]::WriteAllText($p,'changed')} catch [IO.IOException] {$blocked=$true}; if (-not $blocked) {throw 'WRITE_NOT_BLOCKED'}}; foreach ($pin in $ownershipPins) {$pin.Dispose()};"]
+
+======================================================================
+ERROR: test_generated_configs_and_tamper (test_u1_provision.ProvisionTests.test_generated_configs_and_tamper)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_u1_provision.py", line 20, in test_generated_configs_and_tamper
+    good=run(sha);self.assertEqual(good.returncode,0,good.stderr)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_u1_provision.py", line 19, in run
+    def run(digest):return subprocess.run(['pwsh','-NoProfile','-Command', '& { '+script.read_text(encoding='utf-8-sig')+" } '"+str(path).replace("'","''")+"' '"+digest+"'"],capture_output=True,text=True,encoding="utf-8",errors="replace",timeout=15)
+                           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['pwsh', '-NoProfile', '-Command', '& { param($RuntimePlan,$ApprovedRuntimePlanSha256)\n$ErrorActionPreference=\'Stop\'\nfunction Assert-NoReparseAncestors($p) {}\n$code=\'C:\\Program Files\\RoktU1Bridge\\v1\'\n$state=\'C:\\ProgramData\\RoktU1Bridge\'\n$m=@{files=@(@{path=\'service/u1_bootstrap.py\';sha256=(\'a\'*64)})}\n$dependencyPins=New-Object Collections.ArrayList\nfunction Pin-Reference([string]$Path,[string]$Expected) {\n    Assert-NoReparseAncestors $Path\n    $stream=New-Object IO.FileStream($Path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)\n    try {\n        $hash=[Security.Cryptography.SHA256]::Create()\n        try { $actual=([BitConverter]::ToString($hash.ComputeHash($stream))).Replace(\'-\',\'\').ToLowerInvariant() } finally { $hash.Dispose() }\n        if ($actual -cne $Expected) { throw \'PINNED_REFERENCE_HASH\' }\n        [void]$dependencyPins.Add($stream)\n    } catch { $stream.Dispose(); throw }\n}\n# Generate exact supervisor/runtime bytes before any installation effect.\n# The plan contains references, never credentials; its hash is separately approved.\n$generated=@{}\nif ($RuntimePlan) {\n    Assert-NoReparseAncestors $RuntimePlan\n    if (-not $ApprovedRuntimePlanSha256 -or (Get-FileHash -LiteralPath $RuntimePlan -Algorithm SHA256).Hash.ToLowerInvariant() -cne $ApprovedRuntimePlanSha256) { throw \'RUNTIME_PLAN_HASH\' }\n    Pin-Reference $RuntimePlan $ApprovedRuntimePlanSha256\n    $plan=Get-Content -LiteralPath $RuntimePlan -Raw | ConvertFrom-Json\n    $keys=@(\'schema\',\'inventory_id\',\'python\',\'python_sha256\',\'release_root\',\'token_file\',\'token_sha256\',\'credential_expires_at\',\'snapshot\',\'snapshot_sha256\')\n    if ($plan.PSObject.Properties.Name -ccontains \'event_runtime\') {\n        $keys+=@(\'event_runtime\')\n        if ($plan.event_runtime -isnot [string] -or -not [IO.Path]::IsPathRooted($plan.event_runtime) -or [IO.Path]::GetFullPath($plan.event_runtime) -cne $plan.event_runtime -or -not (Test-Path -LiteralPath $plan.event_runtime -PathType Container)) {throw \'EVENT_RUNTIME_REQUIRED\'}\n        Assert-NoReparseAncestors $plan.event_runtime\n    }\n    if (@($plan.PSObject.Properties.Name).Count -ne $keys.Count -or @($plan.PSObject.Properties.Name | Where-Object {$_ -cnotin $keys}).Count -ne 0 -or $plan.schema -cne \'rokt.u1-provision-plan.v1\' -or $plan.inventory_id -cne \'1784775229336\') { throw \'RUNTIME_PLAN_SCHEMA\' }\n    foreach ($key in @(\'python\',\'token_file\',\'snapshot\',\'release_root\')) {\n        $value=$plan.$key\n        if ($value -isnot [string] -or -not [IO.Path]::IsPathRooted($value) -or $value -match \'["\\r\\n]\' -or [IO.Path]::GetFullPath($value) -cne $value) { throw \'RUNTIME_PLAN_PATH\' }\n        Assert-NoReparseAncestors $value\n    }\n    foreach ($key in @(\'python\',\'token_file\',\'snapshot\')) {\n        $hashKey=if ($key -ceq \'token_file\') {\'token_sha256\'} else {$key+\'_sha256\'}\n        if ($plan.$hashKey -cnotmatch \'^[0-9a-f]{64}$\' -or (Get-FileHash -LiteralPath $plan.$key -Algorithm SHA256).Hash.ToLowerInvariant() -cne $plan.$hashKey) { throw \'RUNTIME_REFERENCE_HASH\' }\n        Pin-Reference $plan.$key $plan.$hashKey\n    }\n    if ($plan.credential_expires_at -isnot [long] -and $plan.credential_expires_at -isnot [int]) { throw \'CREDENTIAL_EXPIRY_TYPE\' }\n    if ($plan.credential_expires_at -le [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) { throw \'CREDENTIAL_EXPIRED\' }\n    $bootstrapEntry=@($m.files | Where-Object {$_.path -ceq \'service/u1_bootstrap.py\'})\n    if ($bootstrapEntry.Count -ne 1) { throw \'BOOTSTRAP_REQUIRED\' }\n    $runtime=[ordered]@{schema=\'rokt.u1-python-runtime.v1\';inventory_id=\'1784775229336\';release_root=$plan.release_root;state_root=$state;token_file=$plan.token_file;credential_expires_at=$plan.credential_expires_at;snapshot=$plan.snapshot;snapshot_sha256=$plan.snapshot_sha256;allow_dispatch=$false;allow_cancel_dispatch=$false;smtp_enabled=$false}\n    if ($keys -ccontains \'event_runtime\') {$runtime[\'event_runtime\']=$plan.event_runtime}\n    $utf8=New-Object Text.UTF8Encoding($false)\n    $runtimeBytes=$utf8.GetBytes(($runtime | ConvertTo-Json -Compress))\n    $hasher=[Security.Cryptography.SHA256]::Create()\n    try { $runtimeHash=([BitConverter]::ToString($hasher.ComputeHash($runtimeBytes))).Replace(\'-\',\'\').ToLowerInvariant() } finally { $hasher.Dispose() }\n    $supervisor=[ordered]@{schema=\'rokt.u1-supervisor.v1\';inventory_id=\'1784775229336\';python=$plan.python;python_sha256=$plan.python_sha256;bootstrap=($code+\'\\service\\u1_bootstrap.py\');bootstrap_sha256=$bootstrapEntry[0].sha256;runtime_config=($code+\'\\config\\runtime.json\');runtime_config_sha256=$runtimeHash}\n    $generated[\'config/runtime.json\']=$runtimeBytes\n    $generated[\'config/supervisor.json\']=$utf8.GetBytes(($supervisor | ConvertTo-Json -Compress))\n    if (@($m.files | Where-Object {$generated.ContainsKey($_.path)}).Count -ne 0) { throw \'GENERATED_CONFIG_COLLISION\' }\n}\n\n[Text.Encoding]::UTF8.GetString($generated[\'config/runtime.json\'])\n[Text.Encoding]::UTF8.GetString($generated[\'config/supervisor.json\'])\n$blocked=$false; try {[IO.File]::WriteAllBytes($plan.snapshot,[byte[]]@(1))} catch [IO.IOException] {$blocked=$true}; if (-not $blocked) {throw \'PIN_WRITE_NOT_BLOCKED\'}\nforeach ($pin in $dependencyPins) {$pin.Dispose()} } \'C:\\Users\\15690\\AppData\\Local\\Temp\\tmpjsm1ote4\\plan.json\' \'5979df5ba087cea1d5b30dd6e6e75c4b696b844b459b70a653469190c6fcbbea\'']
+
+======================================================================
+ERROR: test_missing_local_dependency_does_not_fall_back_to_checkout (test_u1_manifest_closure.ManifestClosureTests.test_missing_local_dependency_does_not_fall_back_to_checkout)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_u1_manifest_closure.py", line 57, in test_missing_local_dependency_does_not_fall_back_to_checkout
+    root=Path(temp);result=self.probe(root,self.stage(root,'autonomy/unattended_policy.py'))
+                                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_u1_manifest_closure.py", line 23, in stage
+    blob=subprocess.check_output(['git','show',manifest['source_commit']+':'+entry['path']],cwd=ROOT)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 472, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+               **kwargs).stdout
+               ^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['git', 'show', '9b28eb9cfe78bdc1bb5fffe42f07560d6fa94a30:autonomy/durable_slots.py']
+
+======================================================================
+ERROR: test_pinned_manifest_imports_without_checkout (test_u1_manifest_closure.ManifestClosureTests.test_pinned_manifest_imports_without_checkout)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_u1_manifest_closure.py", line 51, in test_pinned_manifest_imports_without_checkout
+    root=Path(temp);result=self.probe(root,self.stage(root))
+                                           ~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_u1_manifest_closure.py", line 23, in stage
+    blob=subprocess.check_output(['git','show',manifest['source_commit']+':'+entry['path']],cwd=ROOT)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 472, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+               **kwargs).stdout
+               ^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['git', 'show', '9b28eb9cfe78bdc1bb5fffe42f07560d6fa94a30:autonomy/durable_slots.py']
+
+======================================================================
+ERROR: test_authenticated_listener_and_exclusive_lifetime (test_u1_host_runtime.HostRuntimeTests.test_authenticated_listener_and_exclusive_lifetime)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_u1_host_runtime.py", line 42, in test_authenticated_listener_and_exclusive_lifetime
+    client.request('GET','/v1/health',headers=headers);reply=client.getresponse()
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+======================================================================
+ERROR: test_authentication_precedes_health_or_backend_reads (test_host_readonly_http.HostReadOnlyHTTPTests.test_authentication_precedes_health_or_backend_reads)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 57, in test_authentication_precedes_health_or_backend_reads
+    self.assertEqual(self.request(path,auth=False)[0],401)
+                     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 45, in request
+    connection.request(method,path,headers=h)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+======================================================================
+ERROR: test_backend_read_cannot_release_status_after_clock_failure (test_host_readonly_http.HostReadOnlyHTTPTests.test_backend_read_cannot_release_status_after_clock_failure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 151, in test_backend_read_cannot_release_status_after_clock_failure
+    code,result=self.request('/v1/recovery-status/'+'a'*64)
+                ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 45, in request
+    connection.request(method,path,headers=h)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+======================================================================
+ERROR: test_backend_read_cannot_release_status_after_expiry (test_host_readonly_http.HostReadOnlyHTTPTests.test_backend_read_cannot_release_status_after_expiry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 142, in test_backend_read_cannot_release_status_after_expiry
+    code,result=self.request('/v1/recovery-status/'+'a'*64)
+                ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 45, in request
+    connection.request(method,path,headers=h)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+======================================================================
+ERROR: test_clock_rollback_permanently_fences_credential_across_requests (test_host_readonly_http.HostReadOnlyHTTPTests.test_clock_rollback_permanently_fences_credential_across_requests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 119, in test_clock_rollback_permanently_fences_credential_across_requests
+    self.assertEqual(self.request(path)[0],200)
+                     ~~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 45, in request
+    connection.request(method,path,headers=h)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+======================================================================
+ERROR: test_duplicate_authorization_rejected_without_backend_read (test_host_readonly_http.HostReadOnlyHTTPTests.test_duplicate_authorization_rejected_without_backend_read)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 164, in test_duplicate_authorization_rejected_without_backend_read
+    connection.endheaders();response=connection.getresponse()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+======================================================================
+ERROR: test_existing_operation_status_never_replays_unknown (test_host_readonly_http.HostReadOnlyHTTPTests.test_existing_operation_status_never_replays_unknown)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 68, in test_existing_operation_status_never_replays_unknown
+    code,result=self.request('/v1/recovery-status/'+operation)
+                ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 45, in request
+    connection.request(method,path,headers=h)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+======================================================================
+ERROR: test_expired_and_invalid_clock_reject_before_any_backend_read (test_host_readonly_http.HostReadOnlyHTTPTests.test_expired_and_invalid_clock_reject_before_any_backend_read)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 107, in test_expired_and_invalid_clock_reject_before_any_backend_read
+    self.assertEqual(self.request('/v1/recovery-status/'+'a'*64,method)[0],401)
+                     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 45, in request
+    connection.request(method,path,headers=h)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+======================================================================
+ERROR: test_expiry_cannot_be_revived_by_clock_rollback (test_host_readonly_http.HostReadOnlyHTTPTests.test_expiry_cannot_be_revived_by_clock_rollback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 128, in test_expiry_cannot_be_revived_by_clock_rollback
+    self.assertEqual(self.request('/v1/health')[0],401)
+                     ~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 45, in request
+    connection.request(method,path,headers=h)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+======================================================================
+ERROR: test_explicit_deadline_required_and_head_has_no_body (test_host_readonly_http.HostReadOnlyHTTPTests.test_explicit_deadline_required_and_head_has_no_body)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 113, in test_explicit_deadline_required_and_head_has_no_body
+    self.assertEqual(self.request('/v1/health','HEAD'),(405,{}))
+                     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 45, in request
+    connection.request(method,path,headers=h)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+======================================================================
+ERROR: test_failed_clock_remains_fenced_after_clock_recovers (test_host_readonly_http.HostReadOnlyHTTPTests.test_failed_clock_remains_fenced_after_clock_recovers)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 135, in test_failed_clock_remains_fenced_after_clock_recovers
+    self.assertEqual(self.request('/v1/health')[0],401)
+                     ~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 45, in request
+    connection.request(method,path,headers=h)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+======================================================================
+ERROR: test_hash_failure_and_forged_authority_never_become_http_success (test_host_readonly_http.HostReadOnlyHTTPTests.test_hash_failure_and_forged_authority_never_become_http_success)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 92, in test_hash_failure_and_forged_authority_never_become_http_success
+    self.assertEqual(self.request('/v1/recovery-status/'+'a'*64)[0],503)
+                     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 45, in request
+    connection.request(method,path,headers=h)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+======================================================================
+ERROR: test_invalid_backend_or_methods_routes_and_body_fail_closed (test_host_readonly_http.HostReadOnlyHTTPTests.test_invalid_backend_or_methods_routes_and_body_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 79, in test_invalid_backend_or_methods_routes_and_body_fail_closed
+    self.value=value;code,result=self.request('/v1/recovery-status/'+'c'*64)
+                                 ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_readonly_http.py", line 45, in request
+    connection.request(method,path,headers=h)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+======================================================================
+ERROR: test_acl_failure_compensates_actual_files_and_registration (test_host_install_transaction.HostInstallTests.test_acl_failure_compensates_actual_files_and_registration)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_install_transaction.py", line 115, in test_acl_failure_compensates_actual_files_and_registration
+    r=self.run_coordinator(fail='ACL');self.assertNotEqual(r.returncode,0)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_install_transaction.py", line 61, in run_coordinator
+    return subprocess.run(['pwsh','-NoProfile','-File',str(path)],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['pwsh', '-NoProfile', '-File', 'C:\\Users\\15690\\AppData\\Local\\Temp\\u1-install-isolated-jtudcwsu\\run.ps1']
+
+======================================================================
+ERROR: test_early_root_creation_process_exit_restores_absent (test_host_install_transaction.HostInstallTests.test_early_root_creation_process_exit_restores_absent) (phase='CODE_CREATE_VERIFIED')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_install_transaction.py", line 131, in test_early_root_creation_process_exit_restores_absent
+    self.assertEqual(self.run_coordinator(death=phase,operation=operation).returncode,31)
+                     ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_install_transaction.py", line 61, in run_coordinator
+    return subprocess.run(['pwsh','-NoProfile','-File',str(path)],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['pwsh', '-NoProfile', '-File', 'C:\\Users\\15690\\AppData\\Local\\Temp\\u1-install-isolated-p04hf1fo\\run.ps1']
+
+======================================================================
+ERROR: test_early_root_creation_process_exit_restores_absent (test_host_install_transaction.HostInstallTests.test_early_root_creation_process_exit_restores_absent) (phase='STATE_CREATE_VERIFIED')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_install_transaction.py", line 131, in test_early_root_creation_process_exit_restores_absent
+    self.assertEqual(self.run_coordinator(death=phase,operation=operation).returncode,31)
+                     ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_install_transaction.py", line 61, in run_coordinator
+    return subprocess.run(['pwsh','-NoProfile','-File',str(path)],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['pwsh', '-NoProfile', '-File', 'C:\\Users\\15690\\AppData\\Local\\Temp\\u1-install-isolated-p04hf1fo\\run.ps1']
+
+======================================================================
+ERROR: test_install_upgrade_full_rollback_and_duplicate (test_host_install_transaction.HostInstallTests.test_install_upgrade_full_rollback_and_duplicate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_install_transaction.py", line 94, in test_install_upgrade_full_rollback_and_duplicate
+    self.assert_ok(self.run_coordinator())
+                   ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_install_transaction.py", line 61, in run_coordinator
+    return subprocess.run(['pwsh','-NoProfile','-File',str(path)],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['pwsh', '-NoProfile', '-File', 'C:\\Users\\15690\\AppData\\Local\\Temp\\u1-install-isolated-_lik16rj\\run.ps1']
+
+======================================================================
+ERROR: test_lost_maintenance_after_files_preserves_state_without_scm_or_compensation (test_host_install_transaction.HostInstallTests.test_lost_maintenance_after_files_preserves_state_without_scm_or_compensation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_install_transaction.py", line 84, in test_lost_maintenance_after_files_preserves_state_without_scm_or_compensation
+    r=self.run_coordinator(maintenance_fail='FILES_VERIFIED')
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_install_transaction.py", line 61, in run_coordinator
+    return subprocess.run(['pwsh','-NoProfile','-File',str(path)],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['pwsh', '-NoProfile', '-File', 'C:\\Users\\15690\\AppData\\Local\\Temp\\u1-install-isolated-hg8_3b75\\run.ps1']
+
+======================================================================
+ERROR: test_missing_maintenance_authority_refuses_before_any_target_creation (test_host_install_transaction.HostInstallTests.test_missing_maintenance_authority_refuses_before_any_target_creation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_install_transaction.py", line 69, in test_missing_maintenance_authority_refuses_before_any_target_creation
+    r=self.run_coordinator(authority=False)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_install_transaction.py", line 61, in run_coordinator
+    return subprocess.run(['pwsh','-NoProfile','-File',str(path)],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['pwsh', '-NoProfile', '-File', 'C:\\Users\\15690\\AppData\\Local\\Temp\\u1-install-isolated-fm_5ol3v\\run.ps1']
+
+======================================================================
+ERROR: test_real_coordinator_process_exit_recovery_no_forward_replay (test_host_install_transaction.HostInstallTests.test_real_coordinator_process_exit_recovery_no_forward_replay)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_install_transaction.py", line 121, in test_real_coordinator_process_exit_recovery_no_forward_replay
+    self.assertEqual(self.run_coordinator(death='FILES_VERIFIED').returncode,31)
+                     ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_install_transaction.py", line 61, in run_coordinator
+    return subprocess.run(['pwsh','-NoProfile','-File',str(path)],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['pwsh', '-NoProfile', '-File', 'C:\\Users\\15690\\AppData\\Local\\Temp\\u1-install-isolated-ivdy_jt8\\run.ps1']
+
+======================================================================
+ERROR: test_unknown_state_content_preserved_before_registration_or_acl_rollback (test_host_install_transaction.HostInstallTests.test_unknown_state_content_preserved_before_registration_or_acl_rollback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_install_transaction.py", line 136, in test_unknown_state_content_preserved_before_registration_or_acl_rollback
+    self.assert_ok(self.run_coordinator())
+                   ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_install_transaction.py", line 61, in run_coordinator
+    return subprocess.run(['pwsh','-NoProfile','-File',str(path)],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['pwsh', '-NoProfile', '-File', 'C:\\Users\\15690\\AppData\\Local\\Temp\\u1-install-isolated-h72b_wq4\\run.ps1']
+
+======================================================================
+ERROR: test_wrong_action_or_multiple_actions_refused_before_target_creation (test_host_install_transaction.HostInstallTests.test_wrong_action_or_multiple_actions_refused_before_target_creation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_install_transaction.py", line 76, in test_wrong_action_or_multiple_actions_refused_before_target_creation
+    r=self.run_coordinator(rollback=True,authority_action='install')
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_host_install_transaction.py", line 61, in run_coordinator
+    return subprocess.run(['pwsh','-NoProfile','-File',str(path)],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 141, in __init__
+    raise DevelopmentSafetyError(f"DEVELOPMENT_SUBPROCESS_BLOCKED: {args!r}")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_SUBPROCESS_BLOCKED: ['pwsh', '-NoProfile', '-File', 'C:\\Users\\15690\\AppData\\Local\\Temp\\u1-install-isolated-wt5625bm\\run.ps1']
+
+======================================================================
+ERROR: test_actual_service_event_existing_owner_child_and_settlement (test_inventory_event_bridge.EventBridgeTests.test_actual_service_event_existing_owner_child_and_settlement)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_inventory_event_bridge.py", line 59, in test_actual_service_event_existing_owner_child_and_settlement
+    event=self.event();result=bridge.consume(event)
+                              ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\autonomy\inventory_event_bridge.py", line 197, in consume
+    identity=self.request('/v1/inventory-events',dict(event=event,owner=owner))['event_id']
+             ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\autonomy\inventory_event_bridge.py", line 171, in request
+    with urllib.request.build_opener(urllib.request.ProxyHandler({}),NoRedirect()).open(request,timeout=5) as response:
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 489, in open
+    response = self._open(req, data)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 506, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+                              '_open', req)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 466, in _call_chain
+    result = func(*args)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 1348, in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 1319, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+======================================================================
+ERROR: test_ambiguous_request_cannot_create_or_reserve_event (test_inventory_event_bridge.EventBridgeTests.test_ambiguous_request_cannot_create_or_reserve_event)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_inventory_event_bridge.py", line 31, in test_ambiguous_request_cannot_create_or_reserve_event
+    urllib.request.build_opener(urllib.request.ProxyHandler({})).open(request,timeout=5)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 489, in open
+    response = self._open(req, data)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 506, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+                              '_open', req)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 466, in _call_chain
+    result = func(*args)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 1348, in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 1319, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+======================================================================
+ERROR: test_expiry_during_reserve_withholds_event_and_preserves_reservation (test_inventory_event_bridge.EventBridgeTests.test_expiry_during_reserve_withholds_event_and_preserves_reservation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_inventory_event_bridge.py", line 122, in test_expiry_during_reserve_withholds_event_and_preserves_reservation
+    with self.assertRaises(urllib.error.HTTPError) as caught:bridge.request('/v1/inventory-events/'+identity+'/reserve',dict(owner=owner))
+                                                             ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\autonomy\inventory_event_bridge.py", line 171, in request
+    with urllib.request.build_opener(urllib.request.ProxyHandler({}),NoRedirect()).open(request,timeout=5) as response:
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 489, in open
+    response = self._open(req, data)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 506, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+                              '_open', req)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 466, in _call_chain
+    result = func(*args)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 1348, in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 1319, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+======================================================================
+ERROR: test_lost_report_does_not_repeat_completed_child (test_inventory_event_bridge.EventBridgeTests.test_lost_report_does_not_repeat_completed_child)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_inventory_event_bridge.py", line 98, in test_lost_report_does_not_repeat_completed_child
+    with self.assertRaises(OSError):bridge.consume(event)
+                                    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\autonomy\inventory_event_bridge.py", line 197, in consume
+    identity=self.request('/v1/inventory-events',dict(event=event,owner=owner))['event_id']
+             ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_inventory_event_bridge.py", line 96, in lost_report
+    return original(route,value)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\autonomy\inventory_event_bridge.py", line 171, in request
+    with urllib.request.build_opener(urllib.request.ProxyHandler({}),NoRedirect()).open(request,timeout=5) as response:
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 489, in open
+    response = self._open(req, data)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 506, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+                              '_open', req)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 466, in _call_chain
+    result = func(*args)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 1348, in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 1319, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+======================================================================
+ERROR: test_no_lease_foreign_owner_bad_auth_and_bad_admission (test_inventory_event_bridge.EventBridgeTests.test_no_lease_foreign_owner_bad_auth_and_bad_admission)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_inventory_event_bridge.py", line 84, in test_no_lease_foreign_owner_bad_auth_and_bad_admission
+    with self.assertRaises(urllib.error.HTTPError) as caught:bad.consume(event)
+                                                             ~~~~~~~~~~~^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\autonomy\inventory_event_bridge.py", line 197, in consume
+    identity=self.request('/v1/inventory-events',dict(event=event,owner=owner))['event_id']
+             ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\autonomy\inventory_event_bridge.py", line 171, in request
+    with urllib.request.build_opener(urllib.request.ProxyHandler({}),NoRedirect()).open(request,timeout=5) as response:
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 489, in open
+    response = self._open(req, data)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 506, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+                              '_open', req)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 466, in _call_chain
+    result = func(*args)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 1348, in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 1319, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+======================================================================
+ERROR: test_reserved_after_process_loss_reopen_cannot_dispatch (test_inventory_event_bridge.EventBridgeTests.test_reserved_after_process_loss_reopen_cannot_dispatch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\test_inventory_event_bridge.py", line 70, in test_reserved_after_process_loss_reopen_cannot_dispatch
+    identity=bridge.request('/v1/inventory-events',dict(event=event,owner=owner))['event_id']
+             ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\autonomy\inventory_event_bridge.py", line 171, in request
+    with urllib.request.build_opener(urllib.request.ProxyHandler({}),NoRedirect()).open(request,timeout=5) as response:
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 489, in open
+    response = self._open(req, data)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 506, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+                              '_open', req)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 466, in _call_chain
+    result = func(*args)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 1348, in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 1319, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 119, in guarded_create_connection
+    return _blocked_transport(address, *args, **kwargs)
+  File "C:\Users\15690\Documents\ChatGPT\线下\roktandrazo-outreach-autonomy\development_safety.py", line 62, in _blocked_transport
+    raise DevelopmentSafetyError("DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED")
+development_safety.DevelopmentSafetyError: DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED
+
+----------------------------------------------------------------------
+Ran 172 tests in 75.757s
+
+FAILED (errors=58)

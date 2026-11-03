@@ -1,0 +1,168 @@
+{
+  "schema": "rokt.u1-publisher-scoped-independent-review.v1",
+  "source_commit": "a90b28fdfb7da4caca97fab33b2d414aee8e1919",
+  "head_at_report": "1006e2ff91757e5be6e31b2d9940c500703a82d3",
+  "reviewed_at": "2026-11-03T02:02:08.964689+00:00",
+  "status": "OFFLINE_SCOPED_REVIEW_PASSED",
+  "complete_call_chain_review_passed": false,
+  "release_ready": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "smtp_enabled": false,
+  "new_actionable_findings": [],
+  "closed_findings": [
+    {
+      "id": "action_binding",
+      "status": "CLOSED",
+      "zh": "实际动作绑定与多 flags 拒绝。",
+      "en": "Actual action binding and rejection of multiple action flags."
+    },
+    {
+      "id": "atomic_acquire_context",
+      "status": "CLOSED",
+      "zh": "marker、墓碑和 HELD 完整上下文同事务提交，事务内退出无孤标记。",
+      "en": "Marker, tombstone and complete HELD context commit together; transaction death leaves no orphan marker."
+    },
+    {
+      "id": "explicit_partial_compensation",
+      "status": "CLOSED",
+      "zh": "同一维护权下显式补偿，需旧进程停止证明；不重放正向安装。",
+      "en": "Explicit compensation retains exclusion and requires prior-process termination proof, without forward replay."
+    },
+    {
+      "id": "handoff_late_transition",
+      "status": "CLOSED",
+      "zh": "父子交接、状态机与最终释放前态在写事务中复验，迟到父回执不可释放。",
+      "en": "Handoff, transitions and final release recheck prior state in write transactions; late parent replies cannot release."
+    },
+    {
+      "id": "handoff_child_held_cut",
+      "status": "CLOSED",
+      "zh": "handoff 提交后、child intent 前真实退出43后，HELD 子可用新 recovery_id 恢复。",
+      "en": "Real exit 43 after handoff commit and before child intent permits fresh explicit recovery from HELD."
+    }
+  ],
+  "delivery_blockers": [
+    {
+      "zh": "正式入口到受控安装进程的适配器、真实进程创建身份及停止/存活复验未完成。",
+      "en": "The supported publisher-to-controlled-installer adapter and real process identity/termination revalidation are incomplete."
+    },
+    {
+      "zh": "独立目标文件/安装日志/真实 SCM/ACL 最终核验器未完成；注入 callback 不等于现场核验。",
+      "en": "The independent target/journal/real SCM/ACL final verifier is incomplete; callback injection is not site verification."
+    },
+    {
+      "zh": "现场 seal 刷新、通道变更授权和原 owner 接线未完成。",
+      "en": "Site seal refresh, channel-update authorization and original-owner wiring remain incomplete."
+    }
+  ],
+  "tests": [
+    {
+      "command": "python -m unittest test_publisher_maintenance test_publisher_install_maintenance test_inventory_maintenance -q",
+      "count": 26,
+      "duration_seconds": 1.412,
+      "exit_code": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "command": "python -m unittest test_host_install_transaction.HostInstallTests.test_wrong_action_or_multiple_actions_refused_before_target_creation test_host_install_transaction.HostInstallTests.test_missing_maintenance_authority_refuses_before_any_target_creation test_host_install_transaction.HostInstallTests.test_lost_maintenance_after_files_preserves_state_without_scm_or_compensation -q",
+      "count": 3,
+      "duration_seconds": 4.974,
+      "exit_code": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "successful_test_count": 29,
+  "nonacceptance_attempt": {
+    "count": 28,
+    "errors": 2,
+    "zh": "最初混合进程导入 bd_db 安装开发 guard，按设计阻断两项 pwsh；未修改/绕过 guard，随后分进程复跑。",
+    "en": "The initial mixed process imported bd_db and correctly blocked two pwsh tests with the development guard; the guard was unchanged and tests reran separately."
+  },
+  "source_binding": {
+    "original_path": "C:\\Users\\15690\\WorkBuddy\\deploy-channel\\bin\\executor.py",
+    "original_sha256": "a3c271424131b4d42d8b0ed3f46e8355e3ff9d0556406e2199a5da093043105b",
+    "candidate_sha256": "cf7e07b4c52608dcb231b475c64bcd37a1c6ecc7802b34d352cabc54b69ff7cd",
+    "original_matches_record": true,
+    "candidate_matches_record": true,
+    "production_modified": false
+  },
+  "file_hashes": [
+    {
+      "path": "autonomy/inventory_maintenance.py",
+      "working_tree_sha256": "72d62c2e6b04bdd9943f589227d8c047325fa53966c46a0661bc8838464e45e7",
+      "git_blob_sha256": "72d62c2e6b04bdd9943f589227d8c047325fa53966c46a0661bc8838464e45e7",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "autonomy/windows/Host-InstallTransaction.ps1",
+      "working_tree_sha256": "1afa1476ff74df07d5b7d0756c23c309a61f993a52818b5f8543868c0cf54b01",
+      "git_blob_sha256": "be56080d5252b2b2255700f8efbc3ff58f8123ba87f0acf54c51a56318f7e7e7",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "autonomy/windows/Install-DisabledHost.ps1",
+      "working_tree_sha256": "c41df1d4a2377f239319a20c3f71e97fc63323a1445c9758f98b4a2a2c3f8a10",
+      "git_blob_sha256": "43320bbe6b52c2641b294782d6d1565fd37d5240dc1a8575aa70538e8400c020",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "publisher_channel/MAINTENANCE_ADMISSION.patch",
+      "working_tree_sha256": "fdc63e2eeaf5bb98b64d4300d332a1bca6ae958ebd4641d2371b99b74cd95f5d",
+      "git_blob_sha256": "fdc63e2eeaf5bb98b64d4300d332a1bca6ae958ebd4641d2371b99b74cd95f5d",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "publisher_channel/README.md",
+      "working_tree_sha256": "9b60b26091887780730e500c91c37209e503be5f29dbdcd33c79e1c0694eae26",
+      "git_blob_sha256": "9b60b26091887780730e500c91c37209e503be5f29dbdcd33c79e1c0694eae26",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "publisher_channel/SOURCE_BINDING.json",
+      "working_tree_sha256": "7f051833c3e54614553138576cd49c5874dcf275ee926c4bb04a528d0cd2fc1a",
+      "git_blob_sha256": "54b610dcaaa1ffad789de5edef49044fe553e021253ab45a9ebf87286b315994",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "publisher_channel/executor.py",
+      "working_tree_sha256": "cf7e07b4c52608dcb231b475c64bcd37a1c6ecc7802b34d352cabc54b69ff7cd",
+      "git_blob_sha256": "cf7e07b4c52608dcb231b475c64bcd37a1c6ecc7802b34d352cabc54b69ff7cd",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "publisher_channel/install_maintenance.py",
+      "working_tree_sha256": "4a4037f4b51b3c46e02e06de3d060181c85c83923de7b8796bedb735902b8870",
+      "git_blob_sha256": "4a4037f4b51b3c46e02e06de3d060181c85c83923de7b8796bedb735902b8870",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "test_host_install_transaction.py",
+      "working_tree_sha256": "63c63a7717abec443d34648fdc6a9c082aa9a49990c9f2469347775d70658a49",
+      "git_blob_sha256": "4e41dcadd07b2c11228c6cd5268b1033264d50069d2d813cc01735ca0068d4e5",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "test_inventory_maintenance.py",
+      "working_tree_sha256": "0ae26e9d2a602c90bdf736c63ccf33e6f556fef2ea4848473db50bd0590e8155",
+      "git_blob_sha256": "0ae26e9d2a602c90bdf736c63ccf33e6f556fef2ea4848473db50bd0590e8155",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "test_publisher_install_maintenance.py",
+      "working_tree_sha256": "413d18a04b9d86b016688ef1ddd64966df5c62d0d0d76f96f369d941d6488c4b",
+      "git_blob_sha256": "413d18a04b9d86b016688ef1ddd64966df5c62d0d0d76f96f369d941d6488c4b",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "test_publisher_maintenance.py",
+      "working_tree_sha256": "3c09f6210ec9fe1c2bfcddcae7225f5619e238a3a362f0a5e73a68df7f049398",
+      "git_blob_sha256": "3c09f6210ec9fe1c2bfcddcae7225f5619e238a3a362f0a5e73a68df7f049398",
+      "normalized_matches_fixed_source": true
+    }
+  ]
+}

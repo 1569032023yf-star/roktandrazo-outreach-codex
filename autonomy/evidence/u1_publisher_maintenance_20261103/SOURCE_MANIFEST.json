@@ -1,0 +1,78 @@
+{
+  "description_zh": "当前源码逐文件核对；原发布器现场源码只读、哈希未变。",
+  "description_en": "Per-file pinned source verification; original publisher source remains unchanged after read-only access.",
+  "source_commit": "1006e2ff91757e5be6e31b2d9940c500703a82d3",
+  "files": [
+    {
+      "path": "autonomy/inventory_maintenance.py",
+      "worktree_sha256": "72d62c2e6b04bdd9943f589227d8c047325fa53966c46a0661bc8838464e45e7",
+      "git_bytes_sha256": "72d62c2e6b04bdd9943f589227d8c047325fa53966c46a0661bc8838464e45e7",
+      "normalized_match": true
+    },
+    {
+      "path": "autonomy/windows/Host-InstallTransaction.ps1",
+      "worktree_sha256": "1afa1476ff74df07d5b7d0756c23c309a61f993a52818b5f8543868c0cf54b01",
+      "git_bytes_sha256": "be56080d5252b2b2255700f8efbc3ff58f8123ba87f0acf54c51a56318f7e7e7",
+      "normalized_match": true
+    },
+    {
+      "path": "publisher_channel/MAINTENANCE_ADMISSION.patch",
+      "worktree_sha256": "fdc63e2eeaf5bb98b64d4300d332a1bca6ae958ebd4641d2371b99b74cd95f5d",
+      "git_bytes_sha256": "fdc63e2eeaf5bb98b64d4300d332a1bca6ae958ebd4641d2371b99b74cd95f5d",
+      "normalized_match": true
+    },
+    {
+      "path": "publisher_channel/README.md",
+      "worktree_sha256": "9b60b26091887780730e500c91c37209e503be5f29dbdcd33c79e1c0694eae26",
+      "git_bytes_sha256": "9b60b26091887780730e500c91c37209e503be5f29dbdcd33c79e1c0694eae26",
+      "normalized_match": true
+    },
+    {
+      "path": "publisher_channel/SOURCE_BINDING.json",
+      "worktree_sha256": "7f051833c3e54614553138576cd49c5874dcf275ee926c4bb04a528d0cd2fc1a",
+      "git_bytes_sha256": "54b610dcaaa1ffad789de5edef49044fe553e021253ab45a9ebf87286b315994",
+      "normalized_match": true
+    },
+    {
+      "path": "publisher_channel/executor.py",
+      "worktree_sha256": "cf7e07b4c52608dcb231b475c64bcd37a1c6ecc7802b34d352cabc54b69ff7cd",
+      "git_bytes_sha256": "cf7e07b4c52608dcb231b475c64bcd37a1c6ecc7802b34d352cabc54b69ff7cd",
+      "normalized_match": true
+    },
+    {
+      "path": "publisher_channel/install_maintenance.py",
+      "worktree_sha256": "4a4037f4b51b3c46e02e06de3d060181c85c83923de7b8796bedb735902b8870",
+      "git_bytes_sha256": "4a4037f4b51b3c46e02e06de3d060181c85c83923de7b8796bedb735902b8870",
+      "normalized_match": true
+    },
+    {
+      "path": "test_host_install_transaction.py",
+      "worktree_sha256": "63c63a7717abec443d34648fdc6a9c082aa9a49990c9f2469347775d70658a49",
+      "git_bytes_sha256": "4e41dcadd07b2c11228c6cd5268b1033264d50069d2d813cc01735ca0068d4e5",
+      "normalized_match": true
+    },
+    {
+      "path": "test_publisher_install_maintenance.py",
+      "worktree_sha256": "413d18a04b9d86b016688ef1ddd64966df5c62d0d0d76f96f369d941d6488c4b",
+      "git_bytes_sha256": "413d18a04b9d86b016688ef1ddd64966df5c62d0d0d76f96f369d941d6488c4b",
+      "normalized_match": true
+    },
+    {
+      "path": "test_publisher_maintenance.py",
+      "worktree_sha256": "3c09f6210ec9fe1c2bfcddcae7225f5619e238a3a362f0a5e73a68df7f049398",
+      "git_bytes_sha256": "3c09f6210ec9fe1c2bfcddcae7225f5619e238a3a362f0a5e73a68df7f049398",
+      "normalized_match": true
+    },
+    {
+      "path": "tools/validate_u1_candidate.py",
+      "worktree_sha256": "e3e2da4fd0f8b5456818fb5b9290860b728c4c2ee3fc31a5ee8d3581119009d7",
+      "git_bytes_sha256": "e3e2da4fd0f8b5456818fb5b9290860b728c4c2ee3fc31a5ee8d3581119009d7",
+      "normalized_match": true
+    }
+  ],
+  "original_publisher_sha256": "a3c271424131b4d42d8b0ed3f46e8355e3ff9d0556406e2199a5da093043105b",
+  "original_publisher_unchanged": true,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "smtp_enabled": false
+}

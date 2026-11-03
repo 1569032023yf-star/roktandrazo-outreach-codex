@@ -1,3 +1,24 @@
+# U1 原Publisher维护接线 / Publisher maintenance wiring
+
+固定当前源码 / Current source: `1006e2ff91757e5be6e31b2d9940c500703a82d3` | 2026-11-03T10:05:29.868174+08:00
+
+原Executor维护准入、维护会话及恢复交接源码已完成本轮增量；组合173 PASS、范围独审29 PASS。完整进程适配/独立最终核验器仍未完成，目标继续执行；不要提前进入真实安装或无人值守验收。
+Publisher admission/session/recovery source progressed; 173 combined tests and 29 scoped independent tests passed. The controlled process adapter and independent final verifier remain incomplete; the full goal continues.
+
+下一步 / Next: 继续完成原认证Publisher到安装进程的受控适配器、进程身份与约束、旧进程终止核验及独立目标/日志/SCM/ACL最终核验；再独审完整链并制作可安装版本，所有生产门禁保持关闭。
+
+Complete the original authenticated publisher-to-installer process adapter with pinned process identity/containment, stopped-child verification and independent target/journal/SCM/ACL final verification; then review the complete chain before producing an installable release. Keep all production gates closed.
+
+本轮没有新安装包或833项回归；旧结果保留原SHA。No new package or 833-test regression is assigned to this source.
+
+`DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false`
+
+`allow_install=false; allow_dispatch=false; allow_cancel_dispatch=false; SMTP=false`
+
+[双语报告 / Bilingual report](../u1_publisher_maintenance_20261103/REPORT.md)
+
+---
+
 # U1 原Inventory维护排斥接线 / Original Inventory maintenance admission
 
 时间 / Updated: 2026-11-03T00:01:50.143893+00:00
