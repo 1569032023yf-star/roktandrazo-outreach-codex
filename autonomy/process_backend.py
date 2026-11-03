@@ -29,7 +29,12 @@ def _receipts(raw):
             value[key] = item
         return value
     def nonfinite(_):raise ExecutionUnknown('NONFINITE_RECEIPT')
-    value = json.loads(raw, object_pairs_hook=unique, parse_constant=nonfinite)
+    def finite_float(raw):
+        value = float(raw)
+        if not math.isfinite(value):raise ExecutionUnknown('NONFINITE_RECEIPT')
+        return value
+    value = json.loads(raw, object_pairs_hook=unique, parse_constant=nonfinite,
+                       parse_float=finite_float)
     if type(value) is not dict or set(value)!={'slot_receipt','budget_receipt'}:
         raise ExecutionUnknown('RECEIPTS_MISSING')
     return value

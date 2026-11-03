@@ -57,7 +57,9 @@ class BackendTests(unittest.TestCase):
  def test_ambiguous_worker_receipts_are_unknown_and_never_replayed(self):
   for raw in ('{"slot_receipt":{},"slot_receipt":{},"budget_receipt":{}}',
               '{"slot_receipt":{"state":1,"state":2},"budget_receipt":{}}',
-              '{"slot_receipt":{},"budget_receipt":{"actual":NaN}}'):
+              '{"slot_receipt":{},"budget_receipt":{"actual":NaN}}',
+              '{"slot_receipt":{},"budget_receipt":{"actual":1e999}}',
+              '{"slot_receipt":{},"budget_receipt":{"actual":-1e999}}'):
    with self.subTest(raw=raw):
     self.worker.write_text('import sys\nsys.stdin.read()\nprint('+repr(raw)+')',encoding='utf-8')
     b=self.backend();o=self.operation();o['case']=raw
