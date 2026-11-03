@@ -4,12 +4,41 @@ Composes the version store, lifetime process exclusion and existing 8791 handler
 SCM child supervision and production execution backend remain release blockers.
 """
 import argparse
+import sqlite3
 from contextlib import contextmanager
 from http.server import HTTPServer
 from pathlib import Path
 from autonomy.host_readonly_http import readonly_handler, snapshot_status_reader
-from autonomy.release_store import ReleaseStore, read_file
+from autonomy.release_store import ReleaseStore, read_file, ordinary
 from autonomy.growth_snapshot import MAX_SNAPSHOT_BYTES
+
+
+def original_owner_reader(path):
+    """Provisioned local DB reference; never create, migrate or write the DB.
+
+    Capture file identity once. Replacement requires a new approved bootstrap;
+    it must not silently switch the authority observed by a running service.
+    """
+    path = Path(path)
+    if not path.is_absolute():raise ValueError('ABSOLUTE_ORIGINAL_DB_REQUIRED')
+    def identity():
+        ordinary(path)
+        stat = path.stat()
+        if not path.is_file() or stat.st_nlink != 1:
+            raise ValueError('ORDINARY_ORIGINAL_DB_REQUIRED')
+        return stat.st_dev, stat.st_ino
+    expected = identity()
+    def connect():
+        if identity() != expected:raise ValueError('ORIGINAL_DB_REPLACED')
+        conn = sqlite3.connect(path.as_uri()+'?mode=ro', uri=True, timeout=5)
+        try:
+            conn.execute('PRAGMA query_only=ON')
+            if identity() != expected:raise ValueError('ORIGINAL_DB_REPLACED')
+            return conn
+        except BaseException:
+            conn.close()
+            raise
+    return connect
 
 
 @contextmanager
@@ -48,11 +77,15 @@ def main():
     p.add_argument('--release-root',required=True);p.add_argument('--state-root',required=True)
     p.add_argument('--token-file',required=True);p.add_argument('--credential-expires-at',type=int,required=True)
     p.add_argument('--snapshot',required=True);p.add_argument('--snapshot-sha256',required=True)
-    p.add_argument('--event-runtime')
+    owner=p.add_mutually_exclusive_group()
+    owner.add_argument('--event-runtime')
+    owner.add_argument('--original-owner-db')
     a=p.parse_args()
     token=read_file(Path(a.token_file),128).decode('ascii').strip()
     snapshot=read_file(Path(a.snapshot),MAX_SNAPSHOT_BYTES)
-    with open_host(a.release_root,a.state_root,token,a.credential_expires_at,snapshot,a.snapshot_sha256,event_runtime=a.event_runtime) as server:
+    connect=original_owner_reader(a.original_owner_db) if a.original_owner_db else None
+    with open_host(a.release_root,a.state_root,token,a.credential_expires_at,snapshot,a.snapshot_sha256,
+                   event_runtime=a.event_runtime,original_owner_connect=connect) as server:
         try: server.serve_forever(poll_interval=0.5)
         except KeyboardInterrupt: pass
 

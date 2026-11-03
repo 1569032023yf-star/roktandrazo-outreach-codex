@@ -6,9 +6,28 @@ import threading
 import time
 import unittest
 from autonomy.release_store import ReleaseStore,build_bundle,sha
-from autonomy.u1_host_runtime import open_host
+from autonomy.u1_host_runtime import open_host,original_owner_reader
 
 class HostRuntimeTests(unittest.TestCase):
+    def test_original_db_bootstrap_is_readonly_and_rejects_replacement(self):
+        import sqlite3
+        from contextlib import closing
+        with tempfile.TemporaryDirectory() as temp:
+            path=Path(temp)/'original.sqlite'
+            with self.assertRaises(FileNotFoundError):original_owner_reader(path)
+            self.assertFalse(path.exists())
+            with closing(sqlite3.connect(path)) as conn:
+                conn.execute('CREATE TABLE proof(value TEXT)');conn.commit()
+            connect=original_owner_reader(path)
+            with closing(connect()) as conn:
+                self.assertEqual(conn.execute('SELECT count(*) FROM proof').fetchone()[0],0)
+                with self.assertRaises(sqlite3.OperationalError):conn.execute("INSERT INTO proof VALUES('write')")
+            replacement=path.with_name('replacement.sqlite')
+            with closing(sqlite3.connect(replacement)) as conn:
+                conn.execute('CREATE TABLE proof(value TEXT)');conn.commit()
+            replacement.replace(path)
+            with self.assertRaisesRegex(ValueError,'ORIGINAL_DB_REPLACED'):connect()
+
     def test_uncertain_publication_blocks_host_and_standalone_bootstrap(self):
         import importlib.util
         from unittest.mock import patch
