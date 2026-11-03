@@ -1,3 +1,22 @@
+# U1 逐步维护权IPC / Per-step maintenance IPC
+
+固定源码 / Fixed source: `b4332e4e2144c36076849ecd5315eeae758ee56a` | 2026-11-03T02:29:42.003922+00:00
+
+真实PowerShell协调器经有界私有stdio逐步核验原维护会话；组合195项、范围独审43项及2探针通过。独审发现的已知协议失败后仍ACK竞态已修复。完整安装身份适配与独立终态核验仍未完成。
+Real PowerShell coordinator checks the original maintenance session through bounded private stdio; 195 combined tests, 43 independent tests and 2 probes passed. The review's acknowledgement-after-known-failure race was fixed. Complete installer identity adaptation and independent terminal verification remain unfinished.
+
+下一步 / Next: 完成固定命令/进程身份的受控安装适配、启动及终止持久凭据和独立文件/日志/SCM/ACL终态核验器；再对完整认证调用链独审，冻结安装包并重跑生命周期及可比全量回归。
+
+Complete the pinned-command/process-identity installer adapter, durable launch/termination evidence and independent file/journal/SCM/ACL terminal verifier; then review the full authenticated chain, freeze artifacts and rerun lifecycle/comparable regression tests.
+
+`DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false`
+
+`allow_install=false; allow_dispatch=false; allow_cancel_dispatch=false; SMTP=false`
+
+[双语报告 / Bilingual report](../u1_maintenance_ipc_20261103/REPORT.md)
+
+---
+
 # U1 安装进程维护监管 / Install process maintenance supervision
 
 固定源码 / Fixed source: `8dde11230772484cc86ee7dfc3d2d45f891ec58a` | 2026-11-03T02:14:37.558455+00:00

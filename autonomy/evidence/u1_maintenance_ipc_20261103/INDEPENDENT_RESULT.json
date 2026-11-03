@@ -1,0 +1,137 @@
+{
+  "schema": "rokt.u1-maintenance-ipc-independent-review.v1",
+  "source_commit": "b4332e4e2144c36076849ecd5315eeae758ee56a",
+  "base_commit": "30284684317bf6310c2b1d8eea3f464c22da6fd4",
+  "reviewed_at": "2026-11-03T02:28:00.755333+00:00",
+  "status": "OFFLINE_SCOPED_REVIEW_PASSED",
+  "complete_adapter": false,
+  "complete_call_chain_review_passed": false,
+  "release_ready": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "smtp_enabled": false,
+  "closed_findings": [
+    {
+      "id": "ack_after_known_protocol_failure",
+      "priority": "P1",
+      "status": "CLOSED",
+      "reproduced_source": "49a36e7a521e08d3cb79674208cf70fd04fad4b8",
+      "zh": "旧版本reader重叠失败后仍发held ACK已复现；固定版本用sticky failure、Capture/control同锁及ACK前重查，失败后零ACK。",
+      "en": "An ACK after known reader overlap failure was reproduced in the old source. Sticky failure, shared Capture/control lock and pre-ACK recheck now guarantee zero ACK after known failure."
+    }
+  ],
+  "new_actionable_findings": [],
+  "independent_tests": {
+    "command": "python -m unittest test_maintenance_control autonomy.test_process_job test_publisher_install_maintenance test_disabled_host_package -q",
+    "count": 43,
+    "duration_seconds": 21.565,
+    "exit_code": 0,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "additional_isolated_probes": [
+    {
+      "case": "actual_unread_pipe_fill",
+      "acknowledgements": 145,
+      "elapsed_seconds": 0.002,
+      "result": "ControlProtocolError",
+      "blocked": false
+    },
+    {
+      "case": "actual_parent_death_before_ack",
+      "parent_exit_code": 44,
+      "child_alive": false,
+      "post_ack_effect_exists": false
+    }
+  ],
+  "limitations": [
+    {
+      "zh": "真实 IPC 已连接隔离协调器的 AssertHeld 边界；不能推导每个 helper 内部文件/ACE 操作均单独 RPC，也不构成维护数据库事务与文件系统副作用的原子提交。",
+      "en": "Real IPC connects the isolated coordinator AssertHeld boundaries; it does not prove a separate RPC for every internal helper file/ACE action or atomic commit across maintenance DB and filesystem effects."
+    },
+    {
+      "zh": "正式命令构造、固定身份/进程适配器、独立目标/真实 SCM/ACL final verifier 和 seal/部署授权仍未完成。",
+      "en": "Formal command construction, pinned identity/process adaptation, independent target/real SCM/ACL final verification and seal/deployment authorization remain incomplete."
+    },
+    {
+      "zh": "本次真实执行仅 Windows 临时目录/SQLite/Job；POSIX 分支仅静态审查；SCM/ACL 及最终核验器仍是隔离替身。",
+      "en": "Actual execution is Windows temporary files/SQLite/Jobs only; POSIX received static review. SCM/ACL and final verification remain isolated fixtures."
+    }
+  ],
+  "file_hashes": [
+    {
+      "path": "autonomy/build_u1_delivery.py",
+      "actual_sha256": "980e4334baf9d0d7152c5083d07d53f60bebb011788fbb29bba41de2cc9e6927",
+      "git_blob_sha256": "a3bf8201ff469783009624e3c415bd7328abb9abc3ac2f498e9ab8d57a979073",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "autonomy/disabled_host_package.py",
+      "actual_sha256": "4ae54032b3bf6991a3f85adf9daaf9354f122283467f77691ca42280205bfed1",
+      "git_blob_sha256": "9344739a647482da6baa0e3ed38a01592a8b41f9c6ae4faca3920875622ca8d8",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "autonomy/process_control.py",
+      "actual_sha256": "0e9cc47420865dba5ae89a52acb564a8ddd107bb6d8060f6dcaf63c9924bfd56",
+      "git_blob_sha256": "0e9cc47420865dba5ae89a52acb564a8ddd107bb6d8060f6dcaf63c9924bfd56",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "autonomy/process_job.py",
+      "actual_sha256": "17af243db0181b4cf9b68516cff96e5c23442b8729102659e73a67b400faec17",
+      "git_blob_sha256": "6b25509a65a017c48e68a380ea2427f6d7b6e79e7ba1436f9225d0412d606ca9",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "autonomy/test_process_job.py",
+      "actual_sha256": "8fbabcddc70fcb16ac853eaefeeb3eea1d91fd332bdd341d1544f09cffaadc06",
+      "git_blob_sha256": "1ab6eaeec41c4ac9d5118f3c6acf922eb71d97491b01e4ce1b90e66489391d96",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "autonomy/windows/Install-DisabledHost.ps1",
+      "actual_sha256": "adaa68f1cbb00e4893da51d4556ac631e97b2545f79d8e2698c4fb5d0b7bd877",
+      "git_blob_sha256": "62059ba316ce32855af716dad6fc252077ab0e04dfbec8311b8e14be722bb2d4",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "autonomy/windows/Maintenance-Authority.ps1",
+      "actual_sha256": "070bf93e5ad5c3e3af5334a65e59597d330f9a946f2ac7f26380c8c00e1bc049",
+      "git_blob_sha256": "070bf93e5ad5c3e3af5334a65e59597d330f9a946f2ac7f26380c8c00e1bc049",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "publisher_channel/install_maintenance.py",
+      "actual_sha256": "469d5383dfb854c9e95eda03885d0c32f29e058ba20c79dbe5d9c1f6a0537083",
+      "git_blob_sha256": "469d5383dfb854c9e95eda03885d0c32f29e058ba20c79dbe5d9c1f6a0537083",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "test_disabled_host_package.py",
+      "actual_sha256": "14252bd74a430b1487b6ccfff4d157b808f10b56afa407852397e3318121817d",
+      "git_blob_sha256": "b6d436cd6401db5a8ddac821abc07b62797eec9c4d78c92eec714814e9a1ffa2",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "test_host_install_transaction.py",
+      "actual_sha256": "8806e3b117f1cf4718e6b4d50c3c5b9171458afaa5bb566b77a8f714978e2083",
+      "git_blob_sha256": "71239bd02b7e424d7f14ba721d86670a2d0e8dcdd4a7f399470ebbbc527b1da2",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "test_maintenance_control.py",
+      "actual_sha256": "900925a05319ea8168d9e8cd67589cbba28928ad855cd975924bcaa7743ee1b8",
+      "git_blob_sha256": "900925a05319ea8168d9e8cd67589cbba28928ad855cd975924bcaa7743ee1b8",
+      "normalized_matches_fixed_source": true
+    },
+    {
+      "path": "tools/validate_u1_candidate.py",
+      "actual_sha256": "3624b233b3c7852953deafea2912842e44382561f95a859ef08da74f8ff1e00d",
+      "git_blob_sha256": "3624b233b3c7852953deafea2912842e44382561f95a859ef08da74f8ff1e00d",
+      "normalized_matches_fixed_source": true
+    }
+  ],
+  "production_modified": false
+}

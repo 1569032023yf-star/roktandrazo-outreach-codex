@@ -203,13 +203,13 @@
   "current_release_ready": false,
   "historical_plan_source_preserved": true,
   "current_engineering_checkpoint": {
-    "updated_at": "2026-11-03T02:14:37.558455+00:00",
-    "source_commit": "8dde11230772484cc86ee7dfc3d2d45f891ec58a",
-    "description_zh": "原安装维护会话接入真实进程树的主线程维护权监管；完整进程适配仍未完成。",
-    "description_en": "Live parent-thread authority supervision connects the install session to real process trees; complete process adaptation remains unfinished.",
-    "report": "autonomy/evidence/u1_process_maintenance_20261103/REPORT.md",
+    "source_commit": "b4332e4e2144c36076849ecd5315eeae758ee56a",
+    "updated_at": "2026-11-03T02:29:42.003922+00:00",
+    "report": "autonomy/evidence/u1_maintenance_ipc_20261103/REPORT.md",
+    "description_zh": "安装维护会话经私有有界stdio与真实PowerShell协调器逐步核验；完整安装身份适配和独立终态核验仍未完成。",
+    "description_en": "Private bounded stdio connects live install maintenance checks to the real PowerShell coordinator; complete installer identity adaptation and independent terminal verification remain unfinished.",
     "tests": {
-      "source_commit": "8dde11230772484cc86ee7dfc3d2d45f891ec58a",
+      "source_commit": "b4332e4e2144c36076849ecd5315eeae758ee56a",
       "modules": [
         "test_windows_acl_transaction",
         "test_disabled_host_package",
@@ -229,15 +229,16 @@
         "test_host_file_transaction",
         "test_host_install_transaction",
         "test_inventory_event_bridge",
+        "test_maintenance_control",
         "test_inventory_maintenance",
         "test_publisher_maintenance",
         "test_publisher_install_maintenance"
       ],
-      "tests_run": 187,
+      "tests_run": 195,
       "failures": [],
       "errors": [],
       "skips": [],
-      "seconds": 173.032,
+      "seconds": 173.024,
       "passed": true,
       "isolation_groups": [
         "host",
@@ -248,10 +249,12 @@
       "allow_cancel_dispatch": false
     },
     "independent_review": "OFFLINE_SCOPED_REVIEW_PASSED",
-    "independent_tests": 27,
+    "independent_tests": 43,
     "independent_additional_probes": 2,
+    "cross_process_assertion_bridge_implemented": true,
+    "protocol_failure_ack_race_closed": true,
+    "explicit_windows_handle_inheritance": true,
     "complete_call_chain_review_passed": false,
-    "parent_process_watchdog_implemented": true,
     "process_adapter_complete": false,
     "independent_final_verifier_complete": false,
     "formal_maintenance_integrated": false,
@@ -266,8 +269,8 @@
     "inventory_id": "1784775229336",
     "current_full_regression": "NOT_RUN_FOR_THIS_SOURCE",
     "current_package": "NOT_BUILT_INCOMPLETE_INTEGRATION",
-    "next_action": "Complete per-step cross-process maintenance checks, pinned process identity and independent file/journal/SCM/ACL final verification; review the complete chain before producing the installable release. Keep production gates closed.",
-    "next_action_zh": "完成受控安装进程的逐步维护权跨进程核验、固定身份及独立文件/日志/SCM/ACL最终核验；完整调用链独审后再制作可安装版本，保持生产门禁关闭。"
+    "next_action": "Complete the pinned-command/process-identity installer adapter, durable launch/termination evidence and independent file/journal/SCM/ACL terminal verifier; then review the full authenticated chain, freeze artifacts and rerun lifecycle/comparable regression tests.",
+    "next_action_zh": "完成固定命令/进程身份的受控安装适配、启动及终止持久凭据和独立文件/日志/SCM/ACL终态核验器；再对完整认证调用链独审，冻结安装包并重跑生命周期及可比全量回归。"
   },
-  "latest_engineering_commit": "8dde11230772484cc86ee7dfc3d2d45f891ec58a"
+  "latest_engineering_commit": "b4332e4e2144c36076849ecd5315eeae758ee56a"
 }

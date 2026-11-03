@@ -1,0 +1,40 @@
+{
+  "source_commit": "b4332e4e2144c36076849ecd5315eeae758ee56a",
+  "modules": [
+    "test_windows_acl_transaction",
+    "test_disabled_host_package",
+    "test_install_journal",
+    "test_install_contract",
+    "test_independent_install_plan",
+    "test_u1_provision",
+    "test_u1_manifest_closure",
+    "test_u1_host_runtime",
+    "test_host_remediation",
+    "test_host_preparation",
+    "test_release_store",
+    "test_process_backend",
+    "autonomy.test_process_job",
+    "test_single_slot_adapter",
+    "test_host_readonly_http",
+    "test_host_file_transaction",
+    "test_host_install_transaction",
+    "test_inventory_event_bridge",
+    "test_maintenance_control",
+    "test_inventory_maintenance",
+    "test_publisher_maintenance",
+    "test_publisher_install_maintenance"
+  ],
+  "tests_run": 195,
+  "failures": [],
+  "errors": [],
+  "skips": [],
+  "seconds": 173.024,
+  "passed": true,
+  "isolation_groups": [
+    "host",
+    "authority"
+  ],
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false
+}

@@ -1,0 +1,8 @@
+{
+  "source_commit": "49a36e7a521e08d3cb79674208cf70fd04fad4b8",
+  "raw_output": "validation/TARGETED.json",
+  "classification": "DIAGNOSTIC_SOURCE_CHANGED_DURING_RUN",
+  "accepted_as_current_evidence": false,
+  "description_zh": "中间193项表面通过，但运行期间源码修复，保留原输出，不计最终验收；最终源码独立重跑。",
+  "description_en": "The intermediate 193-test run was superficially green, but source changed during execution. Retain raw output as diagnostic only; rerun final source independently."
+}
