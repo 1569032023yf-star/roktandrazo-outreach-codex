@@ -439,6 +439,15 @@ class DiscoveryService:
             return DiscoveryRunSummary(status="places_matrix_completed_web_pending", city=city, state=state, provider=self.provider.provider_name)
 
         query_family, query, page_cursor = active
+        query_state = self._query_row(city_id, self.provider.provider_name, query_family)
+        if query_state["status"] == "provider_outcome_unknown":
+            # A persisted transport ambiguity requires external reconciliation;
+            # neither a new service object nor a scheduler cycle may replay it.
+            return DiscoveryRunSummary(
+                status="provider_outcome_unknown", city=city, state=state,
+                provider=self.provider.provider_name, query_family=query_family,
+                page_cursor=page_cursor, error="provider_unknown_requires_reconciliation",
+            )
         if not self.provider.configured:
             self._record_provider_failure(city_id, query_family, page_cursor, "configuration_blocked", "provider_not_configured")
             return DiscoveryRunSummary(

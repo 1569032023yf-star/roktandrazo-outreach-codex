@@ -1,0 +1,49 @@
+"""Offline transport tests; no provider calls or cost acceptance."""
+import unittest
+import urllib.error
+from unittest.mock import patch
+from discovery.providers.google_places import GooglePlacesProvider
+
+
+class UnknownTransportTests(unittest.TestCase):
+    def test_disconnect_is_not_retried_even_with_retry_budget(self):
+        for failure in (urllib.error.URLError("secret-marker"),
+                        urllib.error.HTTPError("https://example.invalid", 503, "secret-marker", {}, None)):
+            with self.subTest(failure=type(failure).__name__):
+                provider = GooglePlacesProvider(api_key="fixture", max_retries=5,
+                                                min_interval_seconds=0)
+                with patch("urllib.request.urlopen", side_effect=failure) as request:
+                    page = provider.search_places("fixture", "fixture", "TN")
+                self.assertEqual(request.call_count, 1)
+                self.assertEqual(page.status, "provider_outcome_unknown")
+                self.assertFalse(page.ok)
+                self.assertEqual(page.request_count, 1)
+                self.assertNotIn("secret-marker", page.error)
+                self.assertEqual(page.results, [])
+
+    def test_persisted_unknown_blocks_new_service_instance(self):
+        from tests.test_discovery_service import DiscoveryDb
+        from discovery.discovery_service import DiscoveryService
+        from retail_city_queue import activate_next_city
+        with DiscoveryDb() as conn:
+            city = activate_next_city(conn)
+            provider = GooglePlacesProvider(api_key="fixture", min_interval_seconds=0)
+            with patch("urllib.request.urlopen", side_effect=urllib.error.URLError("lost")) as request:
+                first = DiscoveryService(conn, provider=provider).run_places_batch(city)
+                conn.commit()
+                resumed = activate_next_city(conn)
+                second = DiscoveryService(conn, provider=GooglePlacesProvider(api_key="fixture")).run_places_batch(resumed)
+            self.assertEqual(first.status, "provider_outcome_unknown")
+            self.assertEqual(second.status, "provider_outcome_unknown")
+            self.assertEqual(request.call_count, 1)
+            self.assertEqual(conn.execute("SELECT COUNT(*) FROM lead_discovery_results").fetchone()[0], 0)
+
+    def test_missing_configuration_does_not_submit(self):
+        with patch.dict("os.environ", {}, clear=True), patch("urllib.request.urlopen") as request:
+            page = GooglePlacesProvider().search_places("fixture", "fixture", "TN")
+        request.assert_not_called()
+        self.assertEqual(page.status, "provider_not_configured")
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -136,19 +136,22 @@ class GooglePlacesProvider(SearchProvider):
                     request_count=1,
                     cost_units=1,
                 )
-            except urllib.error.URLError as exc:
-                if attempt >= self.max_retries:
-                    return ProviderPage(
-                        provider=self.provider_name,
-                        query=query,
-                        city=city,
-                        state=state,
-                        page_cursor=page_cursor,
-                        status="provider_timeout" if "timed out" in str(exc).lower() else "provider_error",
-                        error=str(exc.reason if hasattr(exc, "reason") else exc),
-                        request_count=attempt + 1,
-                        cost_units=attempt + 1,
-                    )
+            except urllib.error.URLError:
+                # The request may already have reached the provider. Transport
+                # failure does not authorize another potentially billable POST.
+                # Preserve an unknown result; do not expose credential-bearing
+                # exception text or claim that request counts are billing proof.
+                return ProviderPage(
+                    provider=self.provider_name,
+                    query=query,
+                    city=city,
+                    state=state,
+                    page_cursor=page_cursor,
+                    status="provider_outcome_unknown",
+                    error="provider_transport_unknown_no_replay",
+                    request_count=attempt + 1,
+                    cost_units=attempt + 1,
+                )
             except Exception as exc:
                 return ProviderPage(
                     provider=self.provider_name,
