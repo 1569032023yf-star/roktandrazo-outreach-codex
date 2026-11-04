@@ -42,3 +42,39 @@ def pinned_provider_environment(path, expected_sha256):
 def load_pinned_provider_environment(path, expected_sha256):
     with pinned_provider_environment(path, expected_sha256) as environment:
         return dict(environment)
+
+
+@contextmanager
+def pinned_provider_adapter(path, expected_sha256):
+    """Construct an existing real adapter without inheriting unapproved settings.
+
+    This binds configuration only; it does not grant dispatch or billing authority.
+    The caller must retain this context for the whole adapter lifetime.
+    """
+    with pinned_provider_environment(path, expected_sha256) as environment:
+        name = environment['WORKBUDDY_DISCOVERY_PROVIDER']
+        if name == 'google_places':
+            from discovery.providers.google_places import GooglePlacesProvider
+            def location(key):
+                raw = environment.get(key, '').strip()
+                if not raw:
+                    return None
+                value = json.loads(raw)
+                if type(value) is not dict:
+                    raise ValueError('PROVIDER_LOCATION_OBJECT_REQUIRED')
+                return value
+            adapter = GooglePlacesProvider(
+                api_key=environment.get('GOOGLE_MAPS_API_KEY', ''),
+                location_bias=location('GOOGLE_PLACES_LOCATION_BIAS_JSON'),
+                location_restriction=location('GOOGLE_PLACES_LOCATION_RESTRICTION_JSON'),
+                use_environment=False,
+            )
+        else:
+            from discovery.providers.browser_maps import BrowserMapsProvider
+            adapter = BrowserMapsProvider(
+                cache_dir=environment.get('BROWSER_MAPS_CACHE_DIR'),
+                mode=environment.get('BROWSER_MAPS_MODE', 'file'),
+                json_file=environment.get('BROWSER_MAPS_JSON_FILE', ''),
+                use_environment=False,
+            )
+        yield adapter

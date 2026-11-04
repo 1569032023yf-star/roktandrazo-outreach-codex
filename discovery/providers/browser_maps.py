@@ -64,9 +64,9 @@ def _cache_key(query: str, city: str, state: str, page: str) -> str:
     return safe + '.json'
 
 
-def _load_cache(query: str, city: str, state: str, page: str) -> ProviderPage | None:
+def _load_cache(query: str, city: str, state: str, page: str, *, cache_dir: Path | None = None) -> ProviderPage | None:
     """Try to load cached results from a JSON file."""
-    cache_path = CACHE_DIR / _cache_key(query, city, state, page)
+    cache_path = (CACHE_DIR if cache_dir is None else cache_dir) / _cache_key(query, city, state, page)
     if not cache_path.exists():
         return None
 
@@ -106,10 +106,11 @@ def _load_cache(query: str, city: str, state: str, page: str) -> ProviderPage | 
         )
 
 
-def _save_cache(page: ProviderPage) -> None:
+def _save_cache(page: ProviderPage, *, cache_dir: Path | None = None) -> None:
     """Save scraper results to cache JSON."""
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    cache_path = CACHE_DIR / _cache_key(page.query, page.city, page.state, page.page_cursor)
+    directory = CACHE_DIR if cache_dir is None else cache_dir
+    directory.mkdir(parents=True, exist_ok=True)
+    cache_path = directory / _cache_key(page.query, page.city, page.state, page.page_cursor)
 
     output = {
         'provider': page.provider,
@@ -240,11 +241,18 @@ class BrowserMapsProvider(SearchProvider):
         cache_dir: str | None = None,
         mode: str | None = None,  # env BROWSER_MAPS_MODE, else file
         headless: bool = True,
+        *,
+        json_file: str | None = None,
+        use_environment: bool = True,
     ):
-        self._cache_dir = Path(cache_dir or os.getenv("BROWSER_MAPS_CACHE_DIR", str(CACHE_DIR)))
-        self._mode = mode or os.getenv("BROWSER_MAPS_MODE", "file")
+        environment = os.environ if use_environment else {}
+        self._cache_dir = Path(cache_dir if cache_dir is not None else environment.get("BROWSER_MAPS_CACHE_DIR", str(PROJECT_DIR / "data" / "browser_maps_cache")))
+        self._mode = mode if mode is not None else environment.get("BROWSER_MAPS_MODE", "file")
+        if self._mode not in ("file", "direct", "auto"):
+            raise ValueError("BROWSER_MODE_REJECTED")
+        self._json_file = json_file
+        self._use_environment = use_environment
         self._headless = headless
-        self._cache_dir.mkdir(parents=True, exist_ok=True)
 
     @property
     def configured(self) -> bool:
@@ -347,12 +355,14 @@ class BrowserMapsProvider(SearchProvider):
         """
         # Try cache first
         cache_key_page = page_cursor or '0'
-        cached = _load_cache(query, city, state, cache_key_page)
+        cached = _load_cache(query, city, state, cache_key_page, cache_dir=self._cache_dir)
         if cached and cached.ok and cached.results:
             return cached
 
         # Check for specific JSON file path
-        json_file_env = os.getenv("BROWSER_MAPS_JSON_FILE", "")
+        json_file_env = self._json_file
+        if json_file_env is None:
+            json_file_env = os.getenv("BROWSER_MAPS_JSON_FILE", "") if self._use_environment else ""
         if json_file_env:
             return self._load_from_json_file(json_file_env, query, city, state)
 
@@ -372,7 +382,7 @@ class BrowserMapsProvider(SearchProvider):
         if self._mode in ('direct', 'auto'):
             page = _scrape_direct(query, city, state, page_size, headless=self._headless)
             if page.ok:
-                _save_cache(page)
+                _save_cache(page, cache_dir=self._cache_dir)
             return page
 
         # No data available

@@ -57,13 +57,15 @@ class GooglePlacesProvider(SearchProvider):
         min_interval_seconds: float = 0.2,
         location_bias: dict[str, Any] | None = None,
         location_restriction: dict[str, Any] | None = None,
+        *,
+        use_environment: bool = True,
     ) -> None:
-        self.api_key = api_key or os.getenv("GOOGLE_MAPS_API_KEY", "")
+        self.api_key = (api_key or os.getenv("GOOGLE_MAPS_API_KEY", "")) if use_environment else (api_key or "")
         self.timeout_seconds = timeout_seconds
         self.max_retries = max_retries
         self.min_interval_seconds = min_interval_seconds
-        self.location_bias = location_bias or self._location_bias_from_env()
-        self.location_restriction = location_restriction or self._location_restriction_from_env()
+        self.location_bias = (location_bias or self._location_bias_from_env()) if use_environment else location_bias
+        self.location_restriction = (location_restriction or self._location_restriction_from_env()) if use_environment else location_restriction
         self._last_request_at = 0.0
 
     @property
