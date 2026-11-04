@@ -36,6 +36,41 @@ print(json.dumps(dict(module_origins=origins,child_stdout=child.stdout)))
 '''
 
 
+HTTP_PROBE = r'''
+import sys,json,tempfile,secrets,time,threading,http.client,socket
+from pathlib import Path
+sys.path.insert(0,sys.argv[1])
+from autonomy.release_store import ReleaseStore,build_bundle,sha
+from autonomy.u1_host_runtime import open_host
+original_connect=socket.socket.connect
+def local_only(self,address):
+ if not isinstance(address,tuple) or address[0]!='127.0.0.1':
+  raise RuntimeError('EXTERNAL_NETWORK_FORBIDDEN')
+ return original_connect(self,address)
+socket.socket.connect=local_only
+with tempfile.TemporaryDirectory(prefix='u1-offline-http-',dir=sys.argv[2]) as tmp:
+ root=Path(tmp);release=root/'release';state=root/'state';release.mkdir();state.mkdir()
+ version=build_bundle(root/'fixture',{'fixture.txt':b'offline release fixture'},'a'*40)
+ store=ReleaseStore(release);store.stage(root/'fixture',version);store.activate(version,expected_current=None)
+ token=secrets.token_hex(32);snapshot=b'offline snapshot fixture'
+ with open_host(release,state,token,int(time.time())+60,snapshot,sha(snapshot),port=0) as server:
+  worker=threading.Thread(target=server.serve_forever,kwargs={'poll_interval':0.01});worker.start()
+  statuses=[]
+  try:
+   for headers,expected in [({},401),({'Authorization':'Bearer '+token},200)]:
+    client=http.client.HTTPConnection('127.0.0.1',server.server_port,timeout=5)
+    try:
+     client.request('GET','/v1/health',headers=headers);reply=client.getresponse()
+     assert reply.status==expected,(reply.status,expected)
+     reply.read();statuses.append(reply.status)
+    finally:client.close()
+  finally:server.shutdown();worker.join(10)
+  assert not worker.is_alive()
+print(json.dumps(dict(local_http_statuses=statuses,fixture_release=True,
+ fixture_snapshot=True,formal_provider=False,production_ports_tested=False)))
+'''
+
+
 def verify(args):
     root=extract_checked(args.archive,args.archive_sha256,args.output)
     manifest=ReleaseStore(root)._verify(root,args.manifest_sha256)
@@ -57,6 +92,7 @@ def verify(args):
         env={k:v for k,v in os.environ.items() if not k.upper().startswith(('PYTHON','PIP_'))}
         commands=[
             [str(runtime/'python.exe'),'-I','-B','-c',IMPORT_PROBE,str(root/'payload/python')],
+            [str(runtime/'python.exe'),'-I','-B','-c',HTTP_PROBE,str(root/'payload/python'),str(root.parent)],
             [str(runtime/'python.exe'),'-I','-B','-m','pip','--isolated','--disable-pip-version-check','check'],
             [str(host/'service/RoktU1Bridge.exe'),'--validate-runtime',str(runtime/'U1_RUNTIME_CONTENT.json'),content_digest,str(runtime/'python.exe')]]
         for command in commands:
@@ -67,6 +103,7 @@ def verify(args):
     # Recheck after subprocess probes to detect unexpected package writes.
     ReleaseStore(root)._verify(root,args.manifest_sha256)
     return dict(checks=results,manifest_files=len(manifest['files']),offline_entrypoint_imports_verified=True,
+                loopback_http_with_fixtures_verified=True,production_ports_verified=False,
                 full_business_import_closure=False,bootstrap_arguments_verified=False,
                 installation_verified=False,rollback_verified=False,provider_accepted=False)
 
