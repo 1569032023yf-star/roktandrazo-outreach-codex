@@ -1,0 +1,16 @@
+test_exact_archive_empty_file_and_timezone_path (test_runtime_host_extraction.RuntimeHostExtractionTests.test_exact_archive_empty_file_and_timezone_path) ... ok
+test_wrong_hash_and_unsafe_members_leave_output_absent (test_runtime_host_extraction.RuntimeHostExtractionTests.test_wrong_hash_and_unsafe_members_leave_output_absent) ... FAIL
+
+======================================================================
+FAIL: test_wrong_hash_and_unsafe_members_leave_output_absent (test_runtime_host_extraction.RuntimeHostExtractionTests.test_wrong_hash_and_unsafe_members_leave_output_absent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\test_runtime_host_extraction.py", line 31, in test_wrong_hash_and_unsafe_members_leave_output_absent
+    with self.assertRaises(ValueError):extract_checked(archive,digest,output)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.103s
+
+FAILED (failures=1)

@@ -83,3 +83,10 @@ Fixed source c7124cc: explicit v3 plan uses packaged Python for installation hel
 固定源码1b14f6e：运行时组包使用已有固定句柄读取源文件，仍复核摘要并最终重验证全部身份；阶段日志progress.jsonl在关键阶段与每128文件记录并fsync，区分输入固定、布局核验、复制、最终重核与压缩。定向2项通过（1.746秒），仅证明小型测试输入行为，不证明完整CPython组包性能或完成。旧固定03eca14构建句柄39800仍确认运行，无阶段日志，不重启、不判定失败或完成。
 
 Fixed source1b14f6e reads runtime sources through existing pinned handles, retains digest checks and final identity revalidation. Durable progress.jsonl records major stages and every128 files with fsync, distinguishing pinning, layout validation, copying, final validation and archive creation. Two focused tests pass in1.746s; these small fixtures do not prove full CPython assembly completion or performance. Older03eca14 build handle39800 remains confirmed running without stage logs; it is neither restarted nor declared failed/complete.
+
+
+## 独立解压验证工具 / Independent extracted verification tool
+
+固定源码3c7395e：新增独立解压验证工具，批准压缩包摘要后检查ZIP成员再解压；随后固定宿主/运行时清单，用包内Python隔离导入及pip check，并调用原生只读运行时校验。真实压缩包尚未产出，以上真实包验证未执行。解压边界2项通过（0.090秒）；首次测试失败因Windows ZIP写入器规范化反斜杠样本，修正原始成员名称后通过，初次失败保留。03eca14旧构建句柄39800仍运行，不能重复启动或继承旧SHA结果。
+
+Fixed source3c7395e adds independent extracted verification: approved archive digest, ZIP boundary validation, pinned host/runtime manifests, isolated imports/pip check using packaged Python, and native read-only runtime verification. Real archive probes have NOT run because the archive is not yet available. Two extraction boundary tests pass in0.090s. Initial failure arose because the Windows ZIP writer normalized the raw backslash attack fixture; preserving its raw member name fixes the fixture. Initial failure is retained. Older03eca14 build handle39800 remains running; no restart or cross-SHA result inheritance.
