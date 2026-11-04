@@ -1,0 +1,66 @@
+{
+  "updated_at": "2026-11-04T13:29:22.362233+00:00",
+  "source_commit": "594cd0a513af461baac867a00e1f431339de3d7d",
+  "checkpoint": "autonomy/evidence/u1_adapter_binding_20261104/REPORT.md",
+  "targeted_tests": {
+    "run": 27,
+    "failures": 0,
+    "errors": 0,
+    "log": "autonomy/evidence/u1_adapter_binding_20261104/TARGETED.txt"
+  },
+  "full_regression": {
+    "source_commit": "594cd0a513af461baac867a00e1f431339de3d7d",
+    "baseline_source_commit": "ec45401ad7b0ca016fe6e1b15f58462e929623ff",
+    "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+    "candidate_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+    "baseline_run": 848,
+    "candidate_run": 848,
+    "failures": 37,
+    "errors": 17,
+    "new_failure_ids": [],
+    "new_error_ids": [],
+    "resolved_failure_ids": [],
+    "resolved_error_ids": []
+  },
+  "package": {
+    "artifacts": {
+      "install.zip": "38497049c86b6bb2c76f474d45a98d22f90a938285d7420242b6559eaa0c8aba",
+      "rollback-tools.zip": "aa6d36e3a390004c421c92e659767e02656ad770dfc20b771e21a44606f96f18"
+    },
+    "files": 5056,
+    "independent_review": "PENDING",
+    "manifest_sha256": "4abd7f23e3d1219ace575a9e6a17bb61ecda8b94443ecef151ce36d42e0a42fc",
+    "package_complete": false,
+    "production_ready": false,
+    "python_runtime_bundled": true,
+    "source_commit": "594cd0a513af461baac867a00e1f431339de3d7d"
+  },
+  "extracted_verification": "VERIFIED",
+  "packaged_adapter_probe": {
+    "returncode": 0,
+    "stdout": "{\"packaged_adapter\": true, \"inherited_direct_mode_ignored\": true, \"readonly_cache_construction\": true, \"config_lifetime_pinned\": true, \"provider_accepted\": false, \"allow_dispatch\": false}\n",
+    "stderr": "",
+    "source_commit": "594cd0a513af461baac867a00e1f431339de3d7d",
+    "initial_invocation": "Wrong runtime/python.exe path failed before launch; corrected to runtime/python/python.exe"
+  },
+  "rollback_matched_host_components": 4960,
+  "rollback_verified": false,
+  "independent_review": "PENDING",
+  "provider_contract": "CONTRACT_MISSING",
+  "worker_entrypoint": "PENDING",
+  "statuses": {
+    "DEVELOPMENT_COMPLETE": false,
+    "PACKAGE_COMPLETE": false,
+    "PROVIDER_ACCEPTED": false,
+    "WINDOWS_ACCEPTED": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "BUSINESS_GROWTH": "UNKNOWN"
+  },
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "next_action": "Consume the approved-adapter context in the original owner-controlled business Worker entrypoint; reject formal settlement without authoritative cost/terminal contracts and never replay UNKNOWN."
+}

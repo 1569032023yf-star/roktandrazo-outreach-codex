@@ -1,0 +1,12 @@
+{
+  "actual_started_at": "2026-11-04T20:52:53+08:00",
+  "stop_before": "2026-11-04T21:37:53+08:00",
+  "max_heavy_workstreams": 2,
+  "platform_hard_timeout_available": false,
+  "source_commit": "594cd0a513af461baac867a00e1f431339de3d7d",
+  "targeted": "27 PASS",
+  "regression": "848 run,37 failures,17 errors; identical baseline IDs",
+  "build": "RUNNING, child timeout1200 seconds",
+  "initial_build_invocation": "Script path entry failed before output creation: ModuleNotFoundError autonomy; corrected to -m autonomy.build_u1_delivery",
+  "updated_at": "2026-11-04T13:07:32.310259+00:00"
+}

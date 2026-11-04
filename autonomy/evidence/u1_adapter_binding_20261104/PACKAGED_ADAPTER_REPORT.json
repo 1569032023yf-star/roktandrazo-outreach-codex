@@ -1,0 +1,7 @@
+{
+  "returncode": 0,
+  "stdout": "{\"packaged_adapter\": true, \"inherited_direct_mode_ignored\": true, \"readonly_cache_construction\": true, \"config_lifetime_pinned\": true, \"provider_accepted\": false, \"allow_dispatch\": false}\n",
+  "stderr": "",
+  "source_commit": "594cd0a513af461baac867a00e1f431339de3d7d",
+  "initial_invocation": "Wrong runtime/python.exe path failed before launch; corrected to runtime/python/python.exe"
+}

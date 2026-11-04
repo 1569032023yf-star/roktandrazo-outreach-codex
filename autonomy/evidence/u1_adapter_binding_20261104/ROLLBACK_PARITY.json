@@ -1,0 +1,9 @@
+{
+  "source_commit": "594cd0a513af461baac867a00e1f431339de3d7d",
+  "matched_components": 4960,
+  "mismatches": [],
+  "outcome": "VERIFIED",
+  "rollback_verified": false,
+  "description_zh": "仅回滚工具组件逐文件对应；未执行安装或回滚。",
+  "description_en": "Rollback-tool component parity only; no installation or rollback executed."
+}

@@ -1,0 +1,1 @@
+Fixture construction error: PlaceSearchResult missing five required fields; 27 tests ran, 1 ERROR. No production request made.
