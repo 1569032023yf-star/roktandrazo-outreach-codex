@@ -1,0 +1,14 @@
+{
+  "source_commit": "df4327e19182e9183f93a58480bedc945156dc5b",
+  "run": 14,
+  "failures": 0,
+  "errors": 1,
+  "seconds": 76.059,
+  "error_id": "test_host_file_transaction.FileTransactionTests.test_read_rejects_hardlink_created_before_open",
+  "error": "PermissionError: [WinError 5] os.link(target, alias)",
+  "baseline_commit": "5a8394d",
+  "baseline_targeted_run": 1,
+  "baseline_same_error": true,
+  "raw_full_output_location": "tool session 74455 terminal output; no raw file captured",
+  "acceptance": false
+}

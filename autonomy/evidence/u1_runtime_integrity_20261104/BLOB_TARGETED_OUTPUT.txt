@@ -1,0 +1,8 @@
+test_blob_backed_large_payload_compensates_without_inline_journal (test_host_file_transaction.FileTransactionTests.test_blob_backed_large_payload_compensates_without_inline_journal) ... ok
+test_blob_tampering_stops_before_effect (test_host_file_transaction.FileTransactionTests.test_blob_tampering_stops_before_effect) ... ok
+test_blob_backed_interrupted_effect_is_compensated_not_replayed (test_host_file_transaction.FileTransactionTests.test_blob_backed_interrupted_effect_is_compensated_not_replayed) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 6.084s
+
+OK

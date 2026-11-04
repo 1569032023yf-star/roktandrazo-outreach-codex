@@ -31,3 +31,15 @@ English: DEVELOPMENT_COMPLETE, PACKAGE_COMPLETE, PROVIDER_ACCEPTED, WINDOWS_ACCE
 完整回归已结束：候选05783f2与基线均运行842项，均37项失败；候选19项错误，基线18项错误。新增测试初始化被开发子进程保护阻止，完整回归未通过。原始输出已保留，不放宽保护。运行时安装事务待开发，Provider CONTRACT_MISSING，全部门禁及最终验收状态false。
 
 New test initialization is blocked by development subprocess protection; neither protection nor tests are bypassed. Candidate:842/37 failures/19 errors; baseline:842/37 failures/18 errors. NOT ACCEPTED.
+
+
+## 大运行时事务开发 / Large-runtime transaction development
+
+新增原文件事务磁盘备份模式，17MiB文件安装/回滚、备份篡改拦截、写入后中断且禁止向前重放：3项定向测试通过。固定代码df4327e。原内嵌模式限制保持；磁盘备份模式每侧最多1GiB、单文件256MiB，日志记录摘要和备份目录身份。尚未接入PowerShell安装入口；全CPython事务、独立审核、最新整包与完整回归未完成。
+
+Original file transaction now supports disk-backed payloads. Three focused tests pass:17MiB apply/rollback, blob tamper rejection, and post-effect interruption compensation with no forward replay. Fixed code df4327e. Inline limits remain unchanged; disk-backed mode permits1GiB per side and256MiB per file with digest references and store identity in the journal. PowerShell installer integration, full CPython transaction, independent review, updated package and full regression remain incomplete.
+
+
+追加结果：df4327e原文件事务14项、0失败1错误（76.059秒）。错误为旧硬链接注入os.link触发WinError5；5a8394d基线单独复现同项同错。新增3项通过不等于全组通过。全组原始输出保留在工具会话74455，未保存原始输出文件。
+
+Additional result:df4327e original file suite ran14 tests,0 failures/1 error in76.059s. Legacy hardlink injection raises WinError5 at os.link; targeted baseline5a8394d reproduces the same error. Three new passing tests do not establish a green full group. Full raw output exists in tool session74455; no raw file was captured.
