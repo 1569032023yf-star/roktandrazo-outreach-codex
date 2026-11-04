@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import patch
 import zipfile
 
-from autonomy.build_u1_delivery import build
+from autonomy.build_u1_delivery import build, DISCOVERY_ROOT_SOURCES
 
 
 class DeliveryDocumentsTests(unittest.TestCase):
@@ -31,7 +31,7 @@ class DeliveryDocumentsTests(unittest.TestCase):
                     self.assertEqual(z.read('OFFLINE-DELIVERY.md' if name=='README.md' else name),expected)
             for path in ('discovery/providers/contracts.py', 'discovery/providers/base.py',
                          'discovery/providers/google_places.py', 'discovery/providers/browser_maps.py',
-                         'discovery/providers/serpapi_maps.py'):
+                         'discovery/providers/serpapi_maps.py', *DISCOVERY_ROOT_SOURCES):
                 expected=subprocess.check_output(['git','show',source+':'+path])
                 with zipfile.ZipFile(out/'install.zip') as z:
                     self.assertEqual(z.read('payload/python/'+path),expected)

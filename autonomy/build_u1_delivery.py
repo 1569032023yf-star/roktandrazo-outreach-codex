@@ -11,6 +11,15 @@ from autonomy.release_store import build_bundle, build_bundle_from_paths, canoni
 from autonomy.disabled_host_package import build_runtime_package
 
 
+# Transitive repository-level dependencies of discovery.discovery_service.
+# Keep this narrow: never ship unrelated root entrypoints, credentials or data.
+DISCOVERY_ROOT_SOURCES = (
+    'bd_db.py', 'history_crosscheck.py', 'lead_hygiene_gate.py',
+    'outreach_control.py', 'retail_city_queue.py', 'broad_outreach_gate.py',
+    'email_hygiene.py', 'timezone_resolver.py', 'development_safety.py',
+)
+
+
 def build(output, source_commit, *, python_runtime=None, runtime_manifest_sha256=None):
     if (python_runtime is None)!=(runtime_manifest_sha256 is None):
         raise ValueError('EXACT_RUNTIME_INPUTS_REQUIRED')
@@ -45,6 +54,8 @@ def build(output, source_commit, *, python_runtime=None, runtime_manifest_sha256
     for name in names:
         if name.startswith(('autonomy/','publisher_channel/','discovery/')) and name.endswith('.py') and '/evidence/' not in name:
             files['python/'+name]=subprocess.check_output(['git','show',resolved+':'+name],cwd=repo)
+    for name in DISCOVERY_ROOT_SOURCES:
+        files['python/'+name]=subprocess.check_output(['git','show',resolved+':'+name],cwd=repo)
     documentation={
         'README.md':'autonomy/windows/U1-OFFLINE-DELIVERY.md',
         'dependencies/cpython-input.lock.json':'autonomy/windows/cpython-input.lock.json',

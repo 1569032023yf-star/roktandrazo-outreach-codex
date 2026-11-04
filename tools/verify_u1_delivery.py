@@ -11,26 +11,31 @@ from tools.verify_u1_runtime_host import extract_checked
 
 
 IMPORT_PROBE = r'''
-import sys,json,importlib,socket,subprocess
+import sys,json,importlib,socket,subprocess,sqlite3,smtplib
 from pathlib import Path
 app=Path(sys.argv[1]).resolve(); runtime=Path(sys.executable).resolve().parent
 assert sys.flags.isolated and all(Path(p).resolve().is_relative_to(runtime) for p in sys.path)
 sys.path.insert(0,str(app))
 def deny(*args,**kwargs): raise RuntimeError('NETWORK_FORBIDDEN_OFFLINE_PROBE')
 socket.socket.connect=deny; socket.create_connection=deny
+sqlite3.connect=deny; smtplib.SMTP=deny; smtplib.SMTP_SSL=deny
 names=['autonomy.u1_host_runtime','autonomy.inventory_event_bridge',
        'autonomy.original_inventory_owner','autonomy.process_backend',
        'publisher_channel.install_command','autonomy.windows.u1_bootstrap',
        'discovery.providers.google_places','discovery.providers.browser_maps',
-       'discovery.providers.serpapi_maps','discovery.providers.contracts']
+       'discovery.providers.serpapi_maps','discovery.providers.contracts',
+       'discovery.discovery_service']
+business_roots={'bd_db','history_crosscheck','lead_hygiene_gate','outreach_control',
+                'retail_city_queue','broad_outreach_gate','email_hygiene','timezone_resolver'}
 for name in names: importlib.import_module(name)
 origins={}
 for name,module in list(sys.modules.items()):
- if name.split('.')[0] in ('autonomy','publisher_channel','discovery'):
+ if name.split('.')[0] in ('autonomy','publisher_channel','discovery') or name in business_roots:
   origin=getattr(module,'__file__',None)
   if origin:
    assert Path(origin).resolve().is_relative_to(app),(name,origin)
    origins[name]=str(Path(origin).resolve().relative_to(app))
+assert business_roots <= set(origins), sorted(business_roots-set(origins))
 child=subprocess.run([sys.executable,'-I','-B','-c',
  'import sys; assert sys.flags.isolated; print("ISOLATED_CHILD_OK")'],
  capture_output=True,text=True,timeout=20,check=True)
@@ -113,6 +118,7 @@ def verify(args, progress=None):
     # Recheck after subprocess probes to detect unexpected package writes.
     ReleaseStore(root)._verify(root,args.manifest_sha256)
     return dict(checks=results,manifest_files=len(manifest['files']),offline_entrypoint_imports_verified=True,
+                discovery_business_imports_verified=True,
                 loopback_http_with_fixtures_verified=True,production_ports_verified=False,
                 full_business_import_closure=False,bootstrap_arguments_verified=False,
                 installation_verified=False,rollback_verified=False,provider_accepted=False)
