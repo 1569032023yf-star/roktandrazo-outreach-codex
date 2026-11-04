@@ -2,9 +2,11 @@
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import tempfile
+import time
 import zipfile
 
 from autonomy.build_dev_disabled_host import build_development
@@ -20,10 +22,17 @@ def build(output,source_commit,runtime,runtime_sha256):
             'tools/build_u1_runtime_host.py']
     subprocess.run(['git','diff','--exit-code',source,'--',*inputs],cwd=repo,check=True,capture_output=True)
     out=Path(output).absolute();out.mkdir()
+    def progress(stage,count=0):
+        with (out/'progress.jsonl').open('a',encoding='utf-8') as f:
+            f.write(json.dumps(dict(stage=stage,count=count,time_ns=time.time_ns()))+'\n')
+            f.flush();os.fsync(f.fileno())
+    progress('BUILD_STARTED')
     with tempfile.TemporaryDirectory(prefix='u1-runtime-host-') as temp:
         host=Path(temp)/'host';base=build_development(host,source)
-        combined=build_runtime_package(out/'host',host,base['manifest_sha256'],runtime,runtime_sha256)
+        progress('BASE_HOST_BUILT')
+        combined=build_runtime_package(out/'host',host,base['manifest_sha256'],runtime,runtime_sha256,progress=progress)
     archive=out/'host-runtime.zip'
+    progress('ARCHIVE_STARTED')
     with zipfile.ZipFile(archive,'x',compression=zipfile.ZIP_DEFLATED) as z:
         for path in sorted((out/'host').rglob('*')):
             if path.is_file():z.write(path,path.relative_to(out/'host').as_posix())
@@ -36,6 +45,7 @@ def build(output,source_commit,runtime,runtime_sha256):
                 production_ready=False,package_complete=False,
                 independent_review='PENDING',runtime_plan_install_path_binding='PENDING')
     (out/'BUILD.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8')
+    progress('BUILD_COMPLETED',result['files'])
     return result
 
 

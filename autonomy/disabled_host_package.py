@@ -128,7 +128,7 @@ def build_package(destination, artifacts, approved_hashes, *, source_commit, scr
 
 
 def build_runtime_package(destination, host_package, host_manifest_sha256,
-                          python_runtime, runtime_manifest_sha256):
+                          python_runtime, runtime_manifest_sha256, *, progress=lambda stage,count:None):
     """Combine independently pinned host/runtime inputs offline, one file at a time.
 
     This produces a v2 disabled candidate, never an installation approval.
@@ -142,34 +142,45 @@ def build_runtime_package(destination, host_package, host_manifest_sha256,
     source=json.loads(raw).get('source_commit')
     destination=Path(destination)
     with InstallInputPins() as pins:
+        progress('HOST_PIN_START',0)
         manifest=pin_package(pins,host,host_manifest_sha256,source)
         if manifest['schema']!=SCHEMA:raise PackageError('BASE_HOST_V1_REQUIRED')
+        progress('RUNTIME_PIN_START',0)
         content=pin_python_runtime(pins,str(runtime/'U1_RUNTIME_CONTENT.json'),
-                                   runtime_manifest_sha256,str(runtime/'python.exe'))
+                                   runtime_manifest_sha256,str(runtime/'python.exe'),progress=progress)
+        progress('RUNTIME_PIN_VERIFIED',len(content['files']))
         rows=list(manifest['files']);sources={r['path']:host/r['path'] for r in rows+manifest['scripts']}
         runtime_files=dict(content['files'],**{'U1_RUNTIME_CONTENT.json':runtime_manifest_sha256})
         total=sum(r['size'] for r in rows+manifest['scripts'])
         seen={r['path'].casefold() for r in rows+manifest['scripts']}
-        for relative,expected in sorted(runtime_files.items()):
+        for count,(relative,expected) in enumerate(sorted(runtime_files.items()),1):
             name=safe_name('runtime/python/'+relative)
             if name.casefold() in seen:raise PackageError('PATH_COLLISION')
-            seen.add(name.casefold());data=read(runtime/relative)
+            seen.add(name.casefold())
+            limit=2*1024*1024 if relative=='U1_RUNTIME_CONTENT.json' else 256*1024*1024
+            # Consume the already-pinned handle, not a newly opened path.
+            data=pins.add(runtime/relative,expected,limit=limit)
             if data is None or digest(data)!=expected:raise PackageError('RUNTIME_SOURCE_CHANGED')
             total+=len(data)
             if total>MAX_TOTAL:raise PackageError('PACKAGE_TOO_LARGE')
             rows.append(dict(path=name,sha256=expected,size=len(data)));sources[name]=runtime/relative
+            if count%128==0:progress('RUNTIME_ROWS_VERIFIED',count)
         if len(rows)>8192:raise PackageError('TOO_MANY_FILES')
         combined=dict(manifest,schema=RUNTIME_SCHEMA,files=sorted(rows,key=lambda r:r['path']))
         output=canonical(combined)
         if len(output)>2*1024*1024:raise PackageError('MANIFEST_TOO_LARGE')
         destination.mkdir(exist_ok=False)
         expected={r['path']:r['sha256'] for r in combined['files']+combined['scripts']}
-        for name,path in sources.items():
-            data=read(path)
+        for count,(name,path) in enumerate(sources.items(),1):
+            limit=2*1024*1024 if name=='runtime/python/U1_RUNTIME_CONTENT.json' else 256*1024*1024
+            data=pins.add(path,expected[name],limit=limit)
             if data is None or digest(data)!=expected[name]:raise PackageError('SOURCE_CHANGED')
             target=destination/name;target.parent.mkdir(parents=True,exist_ok=True)
             with target.open('xb') as f:
                 f.write(data)
+            if count%128==0:progress('FILES_COPIED',count)
+        progress('FINAL_PIN_REVALIDATE_START',len(sources))
         pins.revalidate()
         with (destination/'manifest.json').open('xb') as f:f.write(output)
+        progress('HOST_MANIFEST_WRITTEN',len(sources))
     return dict(manifest_sha256=digest(output),manifest=combined,allow_install=False,production_ready=False)

@@ -19,7 +19,7 @@ from publisher_channel.install_verifier import parse,sha
 def reject(reason):raise ValueError('STOP_AND_PRESERVE_INPUT_'+reason)
 
 
-def pin_python_runtime(pins, manifest_path, expected, python):
+def pin_python_runtime(pins, manifest_path, expected, python, *, progress=lambda stage,count:None):
     """Pin the complete external runtime before installation admission.
 
     This is a reference contract, not a runtime installation grant.
@@ -33,18 +33,20 @@ def pin_python_runtime(pins, manifest_path, expected, python):
         'python.exe' not in data['files']):reject('PYTHON_RUNTIME_MANIFEST')
     seen=set();total=0
     reserved={'CON','PRN','AUX','NUL'}|{a+str(i) for a in ('COM','LPT') for i in range(1,10)}
-    for path,digest in data['files'].items():
+    for count,(path,digest) in enumerate(data['files'].items(),1):
         if (type(path) is not str or not re.fullmatch('[A-Za-z0-9_./+-]+',path) or
             path.casefold()=='u1_runtime_content.json' or
             any(p in ('','.','..') or p.endswith('.') or p.split('.')[0].upper() in reserved for p in path.split('/')) or
             path.casefold() in seen):reject('PYTHON_RUNTIME_ENTRY')
         seen.add(path.casefold());total+=len(pins.add(root/path,digest))
         if total>1024*1024*1024:reject('PYTHON_RUNTIME_SIZE')
+        if count%128==0:progress('RUNTIME_FILES_PINNED',count)
     actual=set()
     for path in root.rglob('*'):
         if path.is_symlink() or path.stat().st_file_attributes&0x400:reject('PYTHON_RUNTIME_REPARSE')
         if path.is_file():actual.add(path.relative_to(root).as_posix().casefold())
     if actual!=seen|{'u1_runtime_content.json'}:reject('PYTHON_RUNTIME_UNMANAGED')
+    progress('RUNTIME_LAYOUT_VERIFIED',len(data['files']))
     return data
 
 

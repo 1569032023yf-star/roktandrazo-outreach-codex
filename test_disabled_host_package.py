@@ -24,7 +24,12 @@ class DisabledPackageTests(unittest.TestCase):
                                 files={n:hashlib.sha256(v).hexdigest() for n,v in contents.items()}))
         (runtime/'U1_RUNTIME_CONTENT.json').write_bytes(manifest)
         output=self.root/'combined'
-        result=build_runtime_package(output,host,base['manifest_sha256'],runtime,hashlib.sha256(manifest).hexdigest())
+        events=[]
+        result=build_runtime_package(output,host,base['manifest_sha256'],runtime,hashlib.sha256(manifest).hexdigest(),
+                                     progress=lambda stage,count:events.append((stage,count)))
+        self.assertEqual(events[0],('HOST_PIN_START',0))
+        self.assertIn(('RUNTIME_LAYOUT_VERIFIED',3),events)
+        self.assertEqual(events[-1][0],'HOST_MANIFEST_WRITTEN')
         self.assertEqual(result['manifest']['schema'],'rokt.disabled-host-package.v2')
         self.assertFalse(result['allow_install'])
         self.assertEqual((output/'runtime/python/Lib/empty.py').read_bytes(),b'')
