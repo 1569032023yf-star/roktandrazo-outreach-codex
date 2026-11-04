@@ -2,6 +2,9 @@
 import unittest
 import http.client
 import io
+import importlib.util
+from pathlib import Path
+import sys
 import urllib.error
 from unittest.mock import patch
 from discovery.providers.google_places import GooglePlacesProvider
@@ -37,7 +40,16 @@ class UnknownTransportTests(unittest.TestCase):
 
     def test_persisted_unknown_blocks_new_service_instance(self):
         from tests.test_discovery_service import DiscoveryDb
-        from discovery.discovery_service import DiscoveryService
+        # The legacy compatibility suite deliberately replaces this canonical
+        # module in sys.modules with a historical production snapshot. Load the
+        # actual candidate file under a private name without changing that suite.
+        source = Path(__file__).resolve().parents[1] / "discovery/discovery_service.py"
+        spec = importlib.util.spec_from_file_location("_u1_current_discovery_service", source)
+        module = importlib.util.module_from_spec(spec)
+        with patch.dict(sys.modules, {spec.name: module}):
+            spec.loader.exec_module(module)
+        DiscoveryService = module.DiscoveryService
+        self.assertEqual(Path(module.__file__).resolve(), source.resolve())
         from retail_city_queue import activate_next_city
         with DiscoveryDb() as conn:
             city = activate_next_city(conn)
