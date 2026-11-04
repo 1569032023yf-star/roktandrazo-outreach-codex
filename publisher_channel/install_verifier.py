@@ -4,14 +4,13 @@ The trusted publisher supplies exact approved payload hashes, a pinned Windows
 observer and verified process-instance quiescence. No command/DB/path discovery,
 installation, recovery, replay or release operation is provided by this module.
 """
-import base64
 import hashlib
 import json
 from pathlib import Path
 import re
 import secrets
 
-from autonomy.host_file_transaction import ordinary, read, name, fingerprint
+from autonomy.host_file_transaction import HostFileTransaction, ordinary, read, name, fingerprint
 
 CODE=Path(r'C:\Program Files\RoktU1Bridge\v1')
 STATE=Path(r'C:\ProgramData\RoktU1Bridge')
@@ -20,6 +19,8 @@ SERVICE='RoktU1Bridge'
 ACCOUNT=r'NT SERVICE\RoktU1Bridge'
 RECEIPT='config/installation.json'
 TRUSTED={'S-1-5-18','S-1-5-32-544'}
+# Package admission allows 8192 files plus two generated runtime configs.
+MAX_RELEASE_FILES=8194
 
 
 def reject(reason):raise ValueError('STOP_AND_PRESERVE_FINAL_'+reason)
@@ -52,7 +53,7 @@ def identity(path):
 class InstallVerifier:
     def __init__(self, expected_files, *, previous_receipt_sha256=None, observe, confirm_stopped):
         # Internal trusted inputs; roots cannot be overridden by an API request.
-        if (type(expected_files) is not dict or not 0<len(expected_files)<512 or
+        if (type(expected_files) is not dict or not 0<len(expected_files)<=MAX_RELEASE_FILES or
             RECEIPT in expected_files or any(not sha(v) for v in expected_files.values()) or
             (previous_receipt_sha256 is not None and not sha(previous_receipt_sha256)) or
             not callable(observe) or not callable(confirm_stopped)):
@@ -107,7 +108,7 @@ class InstallVerifier:
         image='"'+str(CODE)+r'\service\RoktU1Bridge.exe"'
         if (type(r) is not dict or r.get('schema')!='rokt.disabled-host-install-receipt.v2' or
             r.get('service_name')!=SERVICE or r.get('account')!=ACCOUNT or r.get('image')!=image or
-            type(r.get('files')) is not dict or RECEIPT in r['files'] or not 0<len(r['files'])<512 or
+            type(r.get('files')) is not dict or RECEIPT in r['files'] or not 0<len(r['files'])<=MAX_RELEASE_FILES or
             any(not sha(v) for v in r['files'].values())):reject('OWNERSHIP_RECEIPT')
         for path in r['files']:name(path)
         if current and (r.get('source_commit')!=session.binding['source_commit'] or
@@ -133,21 +134,26 @@ class InstallVerifier:
             type(header.get('root_created')) is not bool or header['root_created']==upgrade or
             header.get('previous_receipt_sha256')!=self.previous or type(header.get('plan')) is not list):reject('FILE_PLAN_BINDING')
         plan=header['plan'];scope={};folded=[]
+        if not 0<len(plan)<=2*(MAX_RELEASE_FILES+1):reject('FILE_PLAN_SIZE')
+        # Read only: reuse the transaction's inline/blob decoder, including
+        # fixed sibling store identity and content digest checks. No replay.
+        transaction=HostFileTransaction(CODE,AUDIT/f"files-{session.context['target_operation_id']}.jsonl")
+        payload=lambda value:transaction._payload(value,header)
         for item in plan:
             path=name(item['path']);lower=path.casefold()
             if any(lower==p or lower.startswith(p+'/') or p.startswith(lower+'/') for p in folded):reject('PLAN_PATH_COLLISION')
             folded.append(lower);scope[path]=item
             for field,blob in (('before','backup'),('after','content')):
-                raw=None if item[blob] is None else base64.b64decode(item[blob],validate=True)
+                raw=payload(item[blob])
                 if fingerprint(raw)!=item[field]:reject('PLAN_CONTENT_HASH')
         if RECEIPT not in scope:reject('PLAN_RECEIPT')
         old={}
         if upgrade:
-            raw=base64.b64decode(scope[RECEIPT]['backup'],validate=True)
+            raw=payload(scope[RECEIPT]['backup'])
             if digest(raw)!=self.previous:reject('PREVIOUS_RECEIPT')
             old=self._receipt(raw,session,False);old[RECEIPT]=self.previous
         current=dict(self.files)
-        raw=base64.b64decode(scope[RECEIPT]['content'],validate=True)
+        raw=payload(scope[RECEIPT]['content'])
         self._receipt(raw,session,True);current[RECEIPT]=digest(raw)
         if set(scope)!=set(old)|set(current):reject('EXACT_FILE_SCOPE')
         observed={}

@@ -128,6 +128,30 @@ class InstallVerifierTests(unittest.TestCase):
                     if before is None:path.unlink()
                     else:path.write_bytes(before)
 
+    def test_blob_content_tamper_preserves_original_maintenance(self):
+        self.install()
+        journal=v.AUDIT/('files-'+'a'*64+'.jsonl')
+        header=json.loads(journal.read_bytes().splitlines()[0])
+        self.assertIsNotNone(header['blob_store_identity'])
+        reference=next(item['content'] for item in header['plan'] if item['content'] is not None)
+        blob=journal.with_name(journal.name+'.blobs')/reference['sha256']
+        blob.write_bytes(b'tampered isolated backup')
+        session=self.session()
+        with self.assertRaisesRegex(ValueError,'STOP_AND_PRESERVE_BLOB_CHANGED'):
+            session.execute(lambda s:'COMMITTED',self.verifier())
+        self.assertTrue(authority.blocked(self.conn))
+        self.assertEqual(session._records()[0][-1]['phase'],'UNKNOWN')
+        with self.assertRaisesRegex(ValueError,'REPLAY'):
+            session.execute(lambda s:self.fail('replayed'),self.verifier())
+
+    def test_complete_runtime_receipt_count_uses_package_admission_bound(self):
+        files={f'runtime/file{i}.bin':'a'*64 for i in range(513)}
+        verifier=v.InstallVerifier(files,observe=lambda *a:None,confirm_stopped=lambda *a:None)
+        self.assertEqual(len(verifier.files),513)
+        files={f'runtime/file{i}.bin':'a'*64 for i in range(v.MAX_RELEASE_FILES+1)}
+        with self.assertRaisesRegex(ValueError,'EXPECTED_RELEASE'):
+            v.InstallVerifier(files,observe=lambda *a:None,confirm_stopped=lambda *a:None)
+
     def test_early_process_death_explicit_recovery_restores_absent(self):
         result=self.host.run_coordinator(death='CODE_CREATE_VERIFIED')
         self.assertEqual(result.returncode,31)
