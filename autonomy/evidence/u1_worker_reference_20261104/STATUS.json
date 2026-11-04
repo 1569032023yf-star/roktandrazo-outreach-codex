@@ -1,0 +1,36 @@
+{
+  "updated_at": "2026-11-04T11:34:36.294895+00:00",
+  "source_commit": "f85a5f070a848823ffd5abe438afe4a41687583a",
+  "checkpoint": "autonomy/evidence/u1_worker_reference_20261104/REPORT.md",
+  "targeted_tests": {
+    "run": 38,
+    "failures": 0,
+    "errors": 0,
+    "log": "autonomy\\evidence\\u1_worker_reference_20261104\\TARGETED.txt"
+  },
+  "initial_targeted": {
+    "run": 37,
+    "errors": 1,
+    "log": "autonomy\\evidence\\u1_worker_reference_20261104\\INITIAL_TARGETED.txt"
+  },
+  "full_regression": "PENDING_NEW_SOURCE",
+  "package": "NOT_BUILT_FOR_NEW_SOURCE",
+  "independent_review": "PENDING",
+  "worker_configuration_propagation": "PROCESS_BACKEND_REFERENCE_TRANSPORT_IMPLEMENTED_ENTRYPOINT_PENDING",
+  "provider_contract": "CONTRACT_MISSING",
+  "statuses": {
+    "DEVELOPMENT_COMPLETE": false,
+    "PACKAGE_COMPLETE": false,
+    "PROVIDER_ACCEPTED": false,
+    "WINDOWS_ACCEPTED": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "BUSINESS_GROWTH": "UNKNOWN"
+  },
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "next_action": "Wire the host-pinned Provider reference into the original owner-controlled business Worker construction and entrypoint consumption; preserve missing authoritative charge/terminal contracts and gates; then run regression/package verification for the final fixed source without inheriting69eb results."
+}
