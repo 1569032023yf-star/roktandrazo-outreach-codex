@@ -57,7 +57,10 @@
   },
   "rollback_archive_parity": {
     "session": 72208,
-    "last_observed": "RUNNING",
-    "source_commit": "a3ce4a5f05930adb0fb26dd076f82a692d6cfc61"
+    "last_observed": "SESSION_UNAVAILABLE_DURABLE_REPORT_VERIFIED",
+    "source_commit": "a3ce4a5f05930adb0fb26dd076f82a692d6cfc61",
+    "outcome": "ARCHIVE_PARITY_VERIFIED_ONLY",
+    "matched_components": 4961,
+    "rollback_verified": false
   }
 }
