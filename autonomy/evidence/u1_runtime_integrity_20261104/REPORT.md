@@ -43,3 +43,15 @@ Original file transaction now supports disk-backed payloads. Three focused tests
 追加结果：df4327e原文件事务14项、0失败1错误（76.059秒）。错误为旧硬链接注入os.link触发WinError5；5a8394d基线单独复现同项同错。新增3项通过不等于全组通过。全组原始输出保留在工具会话74455，未保存原始输出文件。
 
 Additional result:df4327e original file suite ran14 tests,0 failures/1 error in76.059s. Legacy hardlink injection raises WinError5 at os.link; targeted baseline5a8394d reproduces the same error. Three new passing tests do not establish a green full group. Full raw output exists in tool session74455; no raw file was captured.
+
+
+## 原安装入口接入 / Original installer integration
+
+固定代码8525fb7：原PowerShell安装事务已传递file_sources路径与已批准SHA256；Python接收端逐文件复核后进入原磁盘备份事务。生成配置和安装回执仍随原请求传递，维护授权与补偿顺序未更改。5项Python请求/磁盘事务测试通过；实际PowerShell请求生成块与Python安装/回滚测试通过（不运行服务安装）。完整CPython仍受包清单、发布仓库和Bootstrap容量/路径协议限制，完整运行时安装尚未验收。最新SHA完整回归、独立审核、真实Windows生命周期未完成。
+
+Fixed code8525fb7: original PowerShell installer passes file_sources paths with approved SHA256; Python verifies each file before entering the original disk-backed transaction. Generated configuration and installation receipt remain in the original request; maintenance authority and compensation order are unchanged. Five Python request/disk transaction tests pass; actual PowerShell request construction plus Python apply/rollback passes, without service installation. Complete CPython integration still requires package, release-store and Bootstrap manifest capacity/path contracts. Full-runtime installation is NOT ACCEPTED; full regression for this SHA, independent review and real Windows lifecycle remain incomplete.
+
+
+兼容检查：4项通过，21.641秒；原始输出INSTALL_REQUEST_COMPAT_OUTPUT.txt。未执行真实服务安装。
+
+Compatibility:4 tests pass in21.641s; raw output INSTALL_REQUEST_COMPAT_OUTPUT.txt. No real service installation performed.

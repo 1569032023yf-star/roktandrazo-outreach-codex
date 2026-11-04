@@ -1,0 +1,10 @@
+test_installer_source_request_checks_hash_and_generated_bytes (test_host_file_transaction.FileTransactionTests.test_installer_source_request_checks_hash_and_generated_bytes) ... ok
+test_source_map_cannot_replace_generated_file (test_host_file_transaction.FileTransactionTests.test_source_map_cannot_replace_generated_file) ... ok
+test_blob_backed_large_payload_compensates_without_inline_journal (test_host_file_transaction.FileTransactionTests.test_blob_backed_large_payload_compensates_without_inline_journal) ... ok
+test_blob_tampering_stops_before_effect (test_host_file_transaction.FileTransactionTests.test_blob_tampering_stops_before_effect) ... ok
+test_blob_backed_interrupted_effect_is_compensated_not_replayed (test_host_file_transaction.FileTransactionTests.test_blob_backed_interrupted_effect_is_compensated_not_replayed) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 10.987s
+
+OK

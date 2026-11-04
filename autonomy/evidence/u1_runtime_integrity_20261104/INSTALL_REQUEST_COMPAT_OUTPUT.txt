@@ -1,0 +1,9 @@
+test_actual_powershell_request_and_python_compensation (test_host_install_sources.HostInstallSourcesTests.test_actual_powershell_request_and_python_compensation) ... ok
+test_first_install_repeat_and_absent_rollback (test_host_file_transaction.FileTransactionTests.test_first_install_repeat_and_absent_rollback) ... ok
+test_upgrade_new_replace_delete_and_restore_previous_receipt (test_host_file_transaction.FileTransactionTests.test_upgrade_new_replace_delete_and_restore_previous_receipt) ... ok
+test_unowned_and_forged_receipt_rejected_before_intent (test_host_file_transaction.FileTransactionTests.test_unowned_and_forged_receipt_rejected_before_intent) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 21.641s
+
+OK

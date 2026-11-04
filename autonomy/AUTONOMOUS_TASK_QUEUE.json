@@ -8047,7 +8047,7 @@
     "next_action_zh": "完成正式Provider执行、费用实测和受信运行配置，随后对完整候选审核；经授权后由WorkBuddy进行隔离Windows首次安装、升级、进程退出恢复、回滚中断恢复及Disabled/Stopped验收。不得用测试worker或SAFE替身代替业务验收。"
   },
   "u1_continuous_development_current": {
-    "source_commit": "df4327e19182e9183f93a58480bedc945156dc5b",
+    "source_commit": "8525fb7309c1d71ebb67dad50f70c3c6446cd999",
     "phase": "1_CONTRACT_MISSING_AND_2_OFFLINE_INTEGRATION",
     "report": "autonomy/evidence/u1_runtime_integrity_20261104/REPORT.md",
     "current_package": "NOT_BUILT",
@@ -8076,8 +8076,8 @@
     "allow_dispatch": false,
     "allow_cancel_dispatch": false,
     "smtp_enabled": false,
-    "next_action_zh": "收取原文件事务测试结果，接入原安装入口和回执，并验证升级、首次安装与补偿。",
-    "next_action_en": "Collect original file transaction tests; integrate original installer entry and receipts; verify upgrade, fresh install and compensation.",
+    "next_action_zh": "收取兼容性测试；继续统一完整运行时的包清单、Publisher和Bootstrap协议并实测安装补偿。",
+    "next_action_en": "Collect compatibility results; align full-runtime package, Publisher and Bootstrap contracts and verify compensation.",
     "pollution_reproduction": {
       "tests": 27,
       "passed": true
@@ -8160,6 +8160,16 @@
       "file_suite_run": 14,
       "file_suite_errors": 1,
       "baseline_same_hardlink_error": true
+    },
+    "installer_file_sources": {
+      "entry_connected": true,
+      "full_runtime_installed": false,
+      "python_focused_passed": 5,
+      "powershell_request_test_passed": true,
+      "full_regression": "NOT_RUN_FOR_THIS_SHA",
+      "compat_session": 86318,
+      "compatibility_passed": 4,
+      "compat_session_status": "EXITED_0"
     }
   },
   "u1_provider_regression_9abe85a": {

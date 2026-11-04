@@ -1,0 +1,6 @@
+test_actual_powershell_request_and_python_compensation (test_host_install_sources.HostInstallSourcesTests.test_actual_powershell_request_and_python_compensation) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 7.686s
+
+OK
