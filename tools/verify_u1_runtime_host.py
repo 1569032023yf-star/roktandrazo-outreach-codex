@@ -82,11 +82,34 @@ def verify(archive,archive_sha256,manifest_sha256,source_commit,output):
     return report
 
 
+def verify_with_report(args):
+    # Reserve the evidence path before extraction. Existing evidence is immutable.
+    with Path(args.report).open('x',encoding='utf-8') as record:
+        def persist(value):
+            record.seek(0);json.dump(value,record,indent=2,ensure_ascii=False)
+            record.truncate();record.flush();os.fsync(record.fileno())
+        state=dict(source_commit=args.source_commit,archive_sha256=args.archive_sha256,
+                   manifest_sha256=args.manifest_sha256,outcome='RUNNING',
+                   extracted_runtime_verified=False,production_ready=False,
+                   allow_install=False,allow_dispatch=False,allow_cancel_dispatch=False,smtp_enabled=False,
+                   description_zh='验证未完成时不得视为验收通过。',
+                   description_en='Incomplete verification never establishes acceptance.')
+        persist(state)
+        try:
+            result=verify(args.archive,args.archive_sha256,args.manifest_sha256,args.source_commit,args.output)
+        except BaseException as exc:
+            state.update(outcome='UNKNOWN' if isinstance(exc,(subprocess.TimeoutExpired,KeyboardInterrupt,SystemExit)) else 'FAILED',
+                         error_type=type(exc).__name__,error=str(exc))
+            persist(state)
+            raise
+        result['outcome']='VERIFIED';persist(result)
+        return result
+
+
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     for key in ('archive','archive-sha256','manifest-sha256','source-commit','output','report'):
         parser.add_argument('--'+key,required=True)
     args=parser.parse_args()
-    result=verify(args.archive,args.archive_sha256,args.manifest_sha256,args.source_commit,args.output)
-    with Path(args.report).open('x',encoding='utf-8') as f:json.dump(result,f,indent=2)
+    result=verify_with_report(args)
     print(json.dumps(dict(extracted_runtime_verified=True,production_ready=False)))
