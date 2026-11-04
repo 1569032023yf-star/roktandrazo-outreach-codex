@@ -37,6 +37,29 @@ class InstallCommandTests(unittest.TestCase):
             allow_install=False,full_chain_review_passed=False,allow_dispatch=False,allow_cancel_dispatch=False,smtp_enabled=False)
         p=patch.object(command,'RELEASES',self.releases);p.start();self.addCleanup(p.stop)
 
+    def test_original_owner_plan_admission_preserves_mutable_database(self):
+        import sqlite3
+        database=self.root/'original.sqlite'
+        connection=sqlite3.connect(database);self.addCleanup(connection.close)
+        connection.execute('CREATE TABLE owner(value TEXT)');connection.commit()
+        path=self.release/'u1-runtime-plan.json';plan=json.loads(path.read_bytes())
+        plan['original_owner_db']=str(database)
+        raw=json.dumps(plan,separators=(',',':')).encode();path.write_bytes(raw)
+        approval=dict(self.approval,runtime_plan_sha256=digest(raw))
+        with command.InstallCommand('isolated',approval) as adapter:
+            connection.execute("INSERT INTO owner VALUES('original owner continues writing')");connection.commit()
+            self.assertTrue(adapter.pins.revalidate())
+            with self.assertRaises(OSError):database.unlink()
+            with self.assertRaises(OSError):database.rename(self.root/'replaced.sqlite')
+            with self.assertRaisesRegex(ValueError,'INSTALL_GATE_CLOSED'):adapter(None)
+        self.assertEqual(connection.execute('SELECT value FROM owner').fetchone()[0],'original owner continues writing')
+        connection.close()
+        database.rename(self.root/'released.sqlite')
+        plan['event_runtime']=str(self.runtime)
+        raw=json.dumps(plan,separators=(',',':')).encode();path.write_bytes(raw)
+        with self.assertRaisesRegex(ValueError,'RUNTIME_PLAN'):
+            with command.InstallCommand('isolated',dict(approval,runtime_plan_sha256=digest(raw))):pass
+
     def test_real_runtime_pins_and_closed_install_gate(self):
         with command.InstallCommand('isolated',self.approval) as adapter:
             self.assertTrue(adapter.pins.revalidate())

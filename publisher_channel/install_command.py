@@ -55,10 +55,12 @@ class InstallCommand:
             self.plan=parse(self.pins.add(self.plan_path,a['runtime_plan_sha256'],limit=1024*1024))
             keys={'schema','inventory_id','python','python_sha256','release_root','token_file','token_sha256','credential_expires_at','snapshot','snapshot_sha256'}
             p=self.plan
-            if (type(p) is not dict or set(p) not in (keys,keys|{'event_runtime'}) or p.get('schema')!='rokt.u1-provision-plan.v1' or
+            if (type(p) is not dict or set(p) not in (keys,keys|{'event_runtime'},keys|{'original_owner_db'}) or p.get('schema')!='rokt.u1-provision-plan.v1' or
                 p.get('inventory_id')!='1784775229336' or type(p.get('credential_expires_at')) is not int):reject('RUNTIME_PLAN')
             for key,digest in (('python','python_sha256'),('token_file','token_sha256'),('snapshot','snapshot_sha256')):
                 self.pins.add(p[key],p[digest])
+            if 'original_owner_db' in p:
+                self.pins.add_mutable_reference(p['original_owner_db'])
             # Every ancestor of referenced runtime directories is also held;
             # reference directories are not supplied as installation targets.
             for key in ('release_root','event_runtime'):

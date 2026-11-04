@@ -24,6 +24,20 @@ class InstallInputTests(unittest.TestCase):
     @staticmethod
     def sha(raw):return hashlib.sha256(raw).hexdigest()
 
+    def test_mutable_reference_rejects_links_and_missing_files_without_creation(self):
+        path=self.root/'original.sqlite';path.write_bytes(b'fixture')
+        alias=self.root/'alias.sqlite';os.link(path,alias)
+        with InstallInputPins() as pins:
+            with self.assertRaisesRegex(ValueError,'MUTABLE_REFERENCE_CHANGED'):pins.add_mutable_reference(path)
+        with InstallInputPins() as pins:
+            missing=self.root/'absent.sqlite'
+            with self.assertRaises(OSError):pins.add_mutable_reference(missing)
+            self.assertFalse(missing.exists())
+        alias.unlink()
+        with InstallInputPins() as pins:
+            pins.add_mutable_reference(path)
+            with self.assertRaisesRegex(ValueError,'CONFLICTING_PIN'):pins.add(path,self.sha(b'fixture'))
+
     def test_package_pins_deny_file_write_delete_and_ancestor_rename_until_closed(self):
         path=self.package/'service/RoktU1Bridge.exe'
         with InstallInputPins() as pins:

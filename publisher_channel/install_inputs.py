@@ -41,7 +41,7 @@ class InstallInputPins:
         self.api.SetFilePointerEx.argtypes=[w.HANDLE,c.c_longlong,c.POINTER(c.c_longlong),w.DWORD]
         self.api.SetFilePointerEx.restype=w.BOOL
         self.api.CloseHandle.argtypes=[w.HANDLE];self.api.CloseHandle.restype=w.BOOL
-        self.handles=[];self.directories={};self.files={};self.active=False;self.used=False
+        self.handles=[];self.directories={};self.files={};self.references={};self.active=False;self.used=False
 
     @staticmethod
     def path(value):
@@ -92,6 +92,28 @@ class InstallInputPins:
     def add(self,path,expected,*,limit=256*1024*1024):
         return self._add(path,expected,limit=limit,system_component=False)
 
+    def add_mutable_reference(self,path):
+        """Hold only identity: allow original DB writes, deny replacement/deletion.
+
+        Never read, hash, copy, open SQLite or migrate the referenced database.
+        """
+        if not self.active:reject('PINS_NOT_ACTIVE')
+        path=self.path(path);key=str(path).casefold()
+        if key in self.files:reject('CONFLICTING_PIN')
+        if key not in self.references:
+            self._parents(path)
+            # Attribute-only handles do not reliably exclude Windows deletion.
+            # Request read access but never ReadFile; share both read and write.
+            handle=self.api.CreateFileW(str(path),0x80000000,3,None,3,0x00200000,None)
+            if handle==c.c_void_p(-1).value:raise c.WinError(c.get_last_error())
+            self.handles.append(handle)
+            identity=self._identity(handle,False)
+            self.references[key]=(handle,identity)
+        handle,identity=self.references[key]
+        info=FileInformation();self._checked(self.api.GetFileInformationByHandle(handle,c.byref(info)))
+        if info.links!=1 or self._identity(handle,False)!=identity:reject('MUTABLE_REFERENCE_CHANGED')
+        return identity
+
     def add_system_component(self,path,expected):
         # Windows servicing legitimately hardlinks these exact seven components.
         # This is read-only input admission, never an installation target list.
@@ -106,6 +128,7 @@ class InstallInputPins:
     def _add(self,path,expected,*,limit,system_component):
         if not self.active or not sha(expected) or type(limit) is not int or not 0<limit<=256*1024*1024:reject('PIN_CONTRACT')
         path=self.path(path);key=str(path).casefold()
+        if key in self.references:reject('CONFLICTING_PIN')
         if key in self.files:
             handle,identity,digest,old_limit,old_system=self.files[key]
             if digest!=expected or old_limit!=limit or old_system!=system_component:reject('CONFLICTING_PIN')
@@ -122,6 +145,8 @@ class InstallInputPins:
             if self._identity(handle,True)!=identity:reject('DIRECTORY_IDENTITY_CHANGED')
         for handle,identity,expected,limit,system_component in self.files.values():
             if self._identity(handle,False)!=identity or hashlib.sha256(self._read(handle,limit,system_component)).hexdigest()!=expected:reject('FILE_CHANGED')
+        for path in self.references:
+            self.add_mutable_reference(path)
         return True
 
     def __enter__(self):
