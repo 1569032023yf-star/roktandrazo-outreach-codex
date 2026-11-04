@@ -1,0 +1,15 @@
+{
+  "description_zh": "固定源码与已解压旧运行时组合预检；不是最终归档独立验收。",
+  "description_en": "Fixed application bytes with an older extracted runtime preflight; not independent acceptance of the final archive.",
+  "application_source": "a3ce4a5f05930adb0fb26dd076f82a692d6cfc61",
+  "runtime_source": "03eca14940bb69413cff0ea9f336be14a0bb1c10",
+  "application_files_compared_to_git": 67,
+  "returncode": 0,
+  "stdout": "{\"module_origins\": {\"autonomy.unattended_policy\": \"autonomy\\\\unattended_policy.py\", \"autonomy.lock_recovery\": \"autonomy\\\\lock_recovery.py\", \"autonomy.growth_ledger\": \"autonomy\\\\growth_ledger.py\", \"autonomy.bridge_acceptance\": \"autonomy\\\\bridge_acceptance.py\", \"autonomy.host_preparation\": \"autonomy\\\\host_preparation.py\", \"autonomy.cancellation_terminal\": \"autonomy\\\\cancellation_terminal.py\", \"autonomy.single_slot_adapter\": \"autonomy\\\\single_slot_adapter.py\", \"autonomy.cancellation_recovery\": \"autonomy\\\\cancellation_recovery.py\", \"autonomy.growth_snapshot\": \"autonomy\\\\growth_snapshot.py\", \"autonomy.recovery_status\": \"autonomy\\\\recovery_status.py\", \"autonomy.host_readonly_http\": \"autonomy\\\\host_readonly_http.py\", \"autonomy.release_store\": \"autonomy\\\\release_store.py\", \"autonomy.u1_host_runtime\": \"autonomy\\\\u1_host_runtime.py\", \"autonomy.process_control\": \"autonomy\\\\process_control.py\", \"autonomy.process_job\": \"autonomy\\\\process_job.py\", \"autonomy.process_backend\": \"autonomy\\\\process_backend.py\", \"autonomy.inventory_event_bridge\": \"autonomy\\\\inventory_event_bridge.py\", \"autonomy.inventory_maintenance\": \"autonomy\\\\inventory_maintenance.py\", \"autonomy.original_inventory_owner\": \"autonomy\\\\original_inventory_owner.py\", \"autonomy.disabled_host_package\": \"autonomy\\\\disabled_host_package.py\", \"autonomy.directory_identity\": \"autonomy\\\\directory_identity.py\", \"autonomy.host_file_transaction\": \"autonomy\\\\host_file_transaction.py\", \"publisher_channel.install_verifier\": \"publisher_channel\\\\install_verifier.py\", \"publisher_channel.install_inputs\": \"publisher_channel\\\\install_inputs.py\", \"publisher_channel.install_maintenance\": \"publisher_channel\\\\install_maintenance.py\", \"publisher_channel.install_process\": \"publisher_channel\\\\install_process.py\", \"publisher_channel.install_command\": \"publisher_channel\\\\install_command.py\", \"autonomy.windows.u1_bootstrap\": \"autonomy\\\\windows\\\\u1_bootstrap.py\"}, \"child_stdout\": \"ISOLATED_CHILD_OK\\n\"}\n",
+  "stderr": "",
+  "final_archive_verified": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false
+}

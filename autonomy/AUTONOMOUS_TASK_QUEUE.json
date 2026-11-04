@@ -8227,7 +8227,7 @@
       "session": 29556,
       "last_observed": "RUNNING"
     },
-    "delivery_verifier_source": "2c52595f702e48e4d073f7c64be58fae97f250a0",
+    "delivery_verifier_source": "d897067",
     "delivery_verifier_targeted": {
       "run": 5,
       "failures": 0,
@@ -8243,6 +8243,14 @@
       "status": "FAILED",
       "winerror": 10013,
       "formal_provider": false
+    },
+    "application_import_preflight": {
+      "application_source": "a3ce4a5",
+      "runtime_source": "03eca14",
+      "files_git_matched": 67,
+      "loaded_module_origins_checked": 28,
+      "returncode": 0,
+      "final_archive_verified": false
     }
   },
   "u1_provider_regression_9abe85a": {

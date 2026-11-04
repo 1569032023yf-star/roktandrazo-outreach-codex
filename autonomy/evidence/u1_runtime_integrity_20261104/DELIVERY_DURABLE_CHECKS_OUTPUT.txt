@@ -1,0 +1,10 @@
+test_completed_checks_survive_later_failure (test_delivery_verification.DeliveryVerificationTests.test_completed_checks_survive_later_failure) ... ok
+test_failure_timeout_and_existing_report_preserve_false_gates (test_delivery_verification.DeliveryVerificationTests.test_failure_timeout_and_existing_report_preserve_false_gates) ... ok
+test_source_and_gate_rejected_before_runtime_execution (test_delivery_verification.DeliveryVerificationTests.test_source_and_gate_rejected_before_runtime_execution) ... ok
+test_enabled_gates_and_conflicting_owner_modes_reject_before_release (test_bootstrap_arguments.BootstrapArgumentTests.test_enabled_gates_and_conflicting_owner_modes_reject_before_release) ... ok
+test_optional_owner_modes_forward_exact_arguments (test_bootstrap_arguments.BootstrapArgumentTests.test_optional_owner_modes_forward_exact_arguments) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.371s
+
+OK

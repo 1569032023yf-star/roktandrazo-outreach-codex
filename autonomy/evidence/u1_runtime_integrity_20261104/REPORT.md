@@ -129,3 +129,8 @@ English: Fixed verifier b51b08e adds read-only extracted delivery checks: outer 
 
 English: Fixed2c52595: two Bootstrap tests pass in0.089s for exact owner-mode forwarding and closed-gate/mutual-owner rejection. run_module is an entrypoint capture fixture, not service acceptance. Delivery verifier adds temporary loopback HTTP fixtures. Actual development-interpreter probe fails with client WinError10013 and exit1; server thread cleanup completed. Raw HTTP_PROBE_DEVELOPMENT_OUTPUT.txt retained without relaxing permissions or skipping checks. This does not establish a business defect; cause remains unlocalized, and ports7877/8791 are unverified. Archive build29556 is confirmed live; source-test results cannot establish package completion.
 
+
+中文：验证器固定d897067逐项持久化检查开始/结束与输出，后续失败保留此前证据；5项相关测试通过（0.371秒）。新增实际预检：a3ce4a5的67个待打包应用Python文件逐字节匹配Git；使用旧03eca14解压包内CPython隔离导入六个入口，28个已加载仓库模块来源均位于待打包应用目录，包内隔离子进程返回ISOLATED_CHILD_OK，整体返回0。APP_IMPORT_PREFLIGHT.json明确这是旧运行时与固定应用的组合预检，不是最终归档验收。构建29556仍运行，所有最终状态与门禁false。
+
+English: Fixed verifier d897067 persists each check start/completion/output and preserves evidence after later failures; five related tests pass in0.371s. Actual preflight compares all67 staged a3ce4a5 application Python files byte-for-byte against Git, then uses the older03eca14 extracted CPython for isolated imports of six entrypoints. All28 loaded repository module origins remain within staged application files; an isolated packaged child returns ISOLATED_CHILD_OK; overall exit0. APP_IMPORT_PREFLIGHT.json explicitly scopes this to an old-runtime/fixed-application preflight, not final archive acceptance. Build29556 remains running; all acceptance states and gates false.
+
