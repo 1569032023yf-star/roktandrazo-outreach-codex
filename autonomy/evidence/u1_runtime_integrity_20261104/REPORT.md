@@ -90,3 +90,10 @@ Fixed source1b14f6e reads runtime sources through existing pinned handles, retai
 固定源码3c7395e：新增独立解压验证工具，批准压缩包摘要后检查ZIP成员再解压；随后固定宿主/运行时清单，用包内Python隔离导入及pip check，并调用原生只读运行时校验。真实压缩包尚未产出，以上真实包验证未执行。解压边界2项通过（0.090秒）；首次测试失败因Windows ZIP写入器规范化反斜杠样本，修正原始成员名称后通过，初次失败保留。03eca14旧构建句柄39800仍运行，不能重复启动或继承旧SHA结果。
 
 Fixed source3c7395e adds independent extracted verification: approved archive digest, ZIP boundary validation, pinned host/runtime manifests, isolated imports/pip check using packaged Python, and native read-only runtime verification. Real archive probes have NOT run because the archive is not yet available. Two extraction boundary tests pass in0.090s. Initial failure arose because the Windows ZIP writer normalized the raw backslash attack fixture; preserving its raw member name fixes the fixture. Initial failure is retained. Older03eca14 build handle39800 remains running; no restart or cross-SHA result inheritance.
+
+
+## 失败证据与可比回归 / Failure evidence and comparable regression
+
+固定代码75024e3：解压验证在任何操作前以新文件独占预留报告；失败记录FAILED，超时/中断记录UNKNOWN，全部门禁false，已有报告禁止覆盖。3项边界及失败状态测试通过（0.155秒）。另固定deeec72回归执行器先运行原生准入，再发现业务测试，不卸载保护、每个测试只计一次；候选5项原生准入已通过，剩余回归运行中。基线5a8394d受跟踪文件无差异，两端使用同一执行器；句柄7375/65011。03eca14组包句柄39800仍运行。完整回归与真实解压验收均未完成。
+
+Fixed code75024e3 reserves a new report before extraction, records FAILED or timeout/interruption UNKNOWN, retains false gates, and refuses existing reports. Three boundary/failure-state tests pass in0.155s. Separately, fixed deeec72 regression runner executes offline native admission before business discovery without uninstalling guards or dropping test counts. Five candidate native checks pass; remaining regression is running. Baseline5a8394d has no tracked differences and both sides use the same runner under handles7375/65011. Older03eca14 build handle39800 remains running. Neither full regression nor actual extracted acceptance is complete.

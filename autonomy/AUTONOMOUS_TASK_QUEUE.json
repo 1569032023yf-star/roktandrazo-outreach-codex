@@ -8047,7 +8047,7 @@
     "next_action_zh": "完成正式Provider执行、费用实测和受信运行配置，随后对完整候选审核；经授权后由WorkBuddy进行隔离Windows首次安装、升级、进程退出恢复、回滚中断恢复及Disabled/Stopped验收。不得用测试worker或SAFE替身代替业务验收。"
   },
   "u1_continuous_development_current": {
-    "source_commit": "3c7395e",
+    "source_commit": "75024e3286db35de7f731434495fdb6e728b89a6",
     "phase": "1_CONTRACT_MISSING_AND_2_OFFLINE_INTEGRATION",
     "report": "autonomy/evidence/u1_runtime_integrity_20261104/REPORT.md",
     "current_package": "NOT_BUILT",
@@ -8206,7 +8206,16 @@
       "actual_archive_probes": "NOT_RUN",
       "full_regression": "NOT_RUN_FOR_THIS_SHA",
       "initial_fixture_failure_preserved": true
-    }
+    },
+    "ordered_regression": {
+      "source_commit": "deeec72ab6d3a09dfbacc103d432eeebb6924d30",
+      "baseline_session": 7375,
+      "candidate_session": 65011,
+      "status": "RUNNING",
+      "native_passed": 5
+    },
+    "verification_failure_tests_passed": 3,
+    "latest_source_full_regression": "NOT_RUN_FOR_THIS_SHA"
   },
   "u1_provider_regression_9abe85a": {
     "source_commit": "9abe85a2bdb3227078ec87514727625ec5fec4e6",

@@ -1,0 +1,8 @@
+test_exact_archive_empty_file_and_timezone_path (test_runtime_host_extraction.RuntimeHostExtractionTests.test_exact_archive_empty_file_and_timezone_path) ... ok
+test_failure_and_timeout_reports_never_claim_verification (test_runtime_host_extraction.RuntimeHostExtractionTests.test_failure_and_timeout_reports_never_claim_verification) ... ok
+test_wrong_hash_and_unsafe_members_leave_output_absent (test_runtime_host_extraction.RuntimeHostExtractionTests.test_wrong_hash_and_unsafe_members_leave_output_absent) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.155s
+
+OK

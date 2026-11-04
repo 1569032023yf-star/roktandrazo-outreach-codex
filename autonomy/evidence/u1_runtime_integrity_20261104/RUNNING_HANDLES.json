@@ -7,5 +7,19 @@
   "full_candidate": 12397,
   "last_observed": "EXITED",
   "baseline_exit_code": 1,
-  "candidate_exit_code": 1
+  "candidate_exit_code": 1,
+  "ordered_regression": {
+    "runner_source": "deeec72ab6d3a09dfbacc103d432eeebb6924d30",
+    "baseline": "5a8394d",
+    "candidate": "deeec72ab6d3a09dfbacc103d432eeebb6924d30",
+    "baseline_session": 7375,
+    "candidate_session": 65011,
+    "last_observed": "RUNNING",
+    "candidate_native_phase_passed": 5
+  },
+  "host_runtime_build": {
+    "source_commit": "03eca14940bb69413cff0ea9f336be14a0bb1c10",
+    "session": 39800,
+    "last_observed": "RUNNING"
+  }
 }
