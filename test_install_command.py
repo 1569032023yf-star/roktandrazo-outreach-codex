@@ -42,6 +42,24 @@ class InstallCommandTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'PACKAGED_RUNTIME_BINDING'):
             with command.InstallCommand('isolated',dict(approval,runtime_plan_sha256=digest(raw))):pass
 
+    def test_provider_reference_is_validated_and_held_under_closed_install_gate(self):
+        provider=self.root/'provider.json'
+        provider.write_text(json.dumps({'schema':'rokt.provider-environment.v1','environment':{
+            'WORKBUDDY_DISCOVERY_PROVIDER':'google_places','GOOGLE_MAPS_API_KEY':'fixture-only'}}))
+        path=self.release/'u1-runtime-plan.json';plan=json.loads(path.read_bytes())
+        plan.update(provider_config=str(provider),provider_config_sha256=digest(provider.read_bytes()))
+        raw=json.dumps(plan).encode();path.write_bytes(raw)
+        approval=dict(self.approval,runtime_plan_sha256=digest(raw))
+        with command.InstallCommand('isolated',approval) as adapter:
+            with self.assertRaises(OSError):provider.write_bytes(b'changed')
+            with self.assertRaisesRegex(ValueError,'INSTALL_GATE_CLOSED'):adapter(None)
+        provider.write_bytes(b'changed')
+        with self.assertRaises(ValueError):
+            with command.InstallCommand('isolated',approval):pass
+        del plan['provider_config_sha256'];raw=json.dumps(plan).encode();path.write_bytes(raw)
+        with self.assertRaisesRegex(ValueError,'RUNTIME_PLAN'):
+            with command.InstallCommand('isolated',dict(approval,runtime_plan_sha256=digest(raw))):pass
+
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory(prefix='u1-command-');self.addCleanup(self.temp.cleanup)
         self.root=Path(self.temp.name);self.releases=self.root/'releases';self.release=self.releases/'isolated'

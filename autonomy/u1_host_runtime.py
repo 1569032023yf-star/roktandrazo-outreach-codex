@@ -7,7 +7,7 @@ import argparse
 import hashlib
 import re
 import sqlite3
-from contextlib import contextmanager
+from contextlib import contextmanager, ExitStack
 from http.server import HTTPServer
 from pathlib import Path
 from autonomy.host_readonly_http import readonly_handler, snapshot_status_reader
@@ -79,11 +79,14 @@ def main():
     p.add_argument('--release-root',required=True);p.add_argument('--state-root',required=True)
     p.add_argument('--token-file',required=True);p.add_argument('--credential-expires-at',type=int,required=True)
     p.add_argument('--token-sha256')
+    p.add_argument('--provider-config');p.add_argument('--provider-config-sha256')
     p.add_argument('--snapshot',required=True);p.add_argument('--snapshot-sha256',required=True)
     owner=p.add_mutually_exclusive_group()
     owner.add_argument('--event-runtime')
     owner.add_argument('--original-owner-db')
     a=p.parse_args()
+    if (a.provider_config is None)!=(a.provider_config_sha256 is None):
+        raise ValueError('PROVIDER_CONFIG_PAIR_REQUIRED')
     token_bytes=read_file(Path(a.token_file),128)
     # Hash the exact bytes read, before decoding or normalization, and before
     # opening original authority, creating state or binding the listener.
@@ -91,12 +94,20 @@ def main():
         if not re.fullmatch('[0-9a-f]{64}',a.token_sha256):raise ValueError('APPROVED_TOKEN_DIGEST_REQUIRED')
         if hashlib.sha256(token_bytes).hexdigest()!=a.token_sha256:raise ValueError('APPROVED_TOKEN_CHANGED')
     token=token_bytes.decode('ascii').strip()
-    snapshot=read_file(Path(a.snapshot),MAX_SNAPSHOT_BYTES)
-    connect=original_owner_reader(a.original_owner_db) if a.original_owner_db else None
-    with open_host(a.release_root,a.state_root,token,a.credential_expires_at,snapshot,a.snapshot_sha256,
-                   event_runtime=a.event_runtime,original_owner_connect=connect) as server:
-        try: server.serve_forever(poll_interval=0.5)
-        except KeyboardInterrupt: pass
+    with ExitStack() as lifetime:
+        if a.provider_config is not None:
+            from autonomy.provider_environment import pinned_provider_environment
+            # Validate and hold the approved external file for this host lifetime.
+            # Never expose keys through HTTP, inherit them into the service env,
+            # or treat this reference as authority to start a Worker.
+            lifetime.enter_context(pinned_provider_environment(a.provider_config,a.provider_config_sha256))
+        snapshot=read_file(Path(a.snapshot),MAX_SNAPSHOT_BYTES)
+        connect=original_owner_reader(a.original_owner_db) if a.original_owner_db else None
+        with open_host(a.release_root,a.state_root,token,a.credential_expires_at,snapshot,a.snapshot_sha256,
+                       event_runtime=a.event_runtime,original_owner_connect=connect) as server:
+            try: server.serve_forever(poll_interval=0.5)
+            except KeyboardInterrupt: pass
+
 
 
 if __name__=='__main__':main()

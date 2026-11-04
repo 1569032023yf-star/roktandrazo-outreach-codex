@@ -6,7 +6,7 @@ import runpy
 import tempfile
 import unittest
 from unittest.mock import patch
-from autonomy.provider_environment import load_pinned_provider_environment
+from autonomy.provider_environment import load_pinned_provider_environment, pinned_provider_environment
 
 
 class ProviderEnvironmentTests(unittest.TestCase):
@@ -24,6 +24,18 @@ class ProviderEnvironmentTests(unittest.TestCase):
             with self.assertRaises(ValueError):load_pinned_provider_environment(path,'0'*64)
             os.link(path,root/'alias.json')
             with self.assertRaises(ValueError):load_pinned_provider_environment(path,digest)
+
+    def test_lifetime_pin_blocks_mutation_and_releases_without_environment_changes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);path,digest=self.config(root)
+            before=dict(os.environ)
+            with pinned_provider_environment(path,digest) as environment:
+                self.assertEqual(environment['WORKBUDDY_DISCOVERY_PROVIDER'],'google_places')
+                with self.assertRaises(OSError):path.write_bytes(b'changed')
+                with self.assertRaises(OSError):path.unlink()
+                self.assertEqual(dict(os.environ),before)
+            path.write_bytes(b'released')
+            self.assertEqual(path.read_bytes(),b'released')
 
     def test_no_security_switch_or_mock_provider_or_duplicate_key(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -1,5 +1,6 @@
 """Pinned provider-only configuration, not dispatch or credential authorization."""
 import json
+from contextlib import contextmanager
 from publisher_channel.install_inputs import InstallInputPins
 
 SCHEMA = 'rokt.provider-environment.v1'
@@ -10,7 +11,8 @@ KEYS = frozenset({
 })
 
 
-def load_pinned_provider_environment(path, expected_sha256):
+@contextmanager
+def pinned_provider_environment(path, expected_sha256):
     # Handles deny input writes/deletion and ancestor renames while parsing.
     # The digest must come from the approved runtime plan, never this file.
     with InstallInputPins() as pins:
@@ -33,4 +35,10 @@ def load_pinned_provider_environment(path, expected_sha256):
         if 'BROWSER_MAPS_MODE' in environment and environment['BROWSER_MAPS_MODE'] not in ('file', 'direct', 'auto'):
             raise ValueError('BROWSER_MODE_REJECTED')
         pins.revalidate()
+        yield dict(environment)
+        pins.revalidate()
+
+
+def load_pinned_provider_environment(path, expected_sha256):
+    with pinned_provider_environment(path, expected_sha256) as environment:
         return dict(environment)

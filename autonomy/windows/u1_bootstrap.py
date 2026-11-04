@@ -67,6 +67,13 @@ def main(config):
     keys={'schema','inventory_id','release_root','state_root','token_file','credential_expires_at','snapshot','snapshot_sha256','allow_dispatch','allow_cancel_dispatch','smtp_enabled'}
     bound=c.get('schema')=='rokt.u1-python-runtime.v2'
     if bound:keys|={'token_sha256'}
+    provider={'provider_config','provider_config_sha256'}
+    if provider & set(c):
+        if not provider <= set(c):raise ValueError('PROVIDER_CONFIG_PAIR_REQUIRED')
+        if (type(c['provider_config']) is not str or not Path(c['provider_config']).is_absolute() or
+            type(c['provider_config_sha256']) is not str or not re.fullmatch('[0-9a-f]{64}',c['provider_config_sha256'])):
+            raise ValueError('PROVIDER_CONFIG_REFERENCE_REQUIRED')
+        keys|=provider
     if (set(c) not in (keys,keys|{'event_runtime'},keys|{'original_owner_db'}) or c['schema'] not in ('rokt.u1-python-runtime.v1','rokt.u1-python-runtime.v2') or c['inventory_id']!='1784775229336' or
         any(c[k] is not False for k in ('allow_dispatch','allow_cancel_dispatch','smtp_enabled')) or
         type(c['credential_expires_at']) is not int):raise ValueError('RUNTIME_CONFIG_REJECTED')
@@ -77,6 +84,8 @@ def main(config):
               '--token-file',c['token_file'],'--credential-expires-at',str(c['credential_expires_at']),
               '--snapshot',c['snapshot'],'--snapshot-sha256',c['snapshot_sha256']]
     if bound:sys.argv+=['--token-sha256',c['token_sha256']]
+    if provider <= set(c):
+        sys.argv+=['--provider-config',c['provider_config'],'--provider-config-sha256',c['provider_config_sha256']]
     if 'event_runtime' in c:
         if type(c['event_runtime']) is not str or not Path(c['event_runtime']).is_absolute():
             raise ValueError('EVENT_RUNTIME_REQUIRED')

@@ -59,6 +59,8 @@ class InstallCommand:
             installed=type(p) is dict and p.get('schema')=='rokt.u1-provision-plan.v3'
             complete=type(p) is dict and p.get('schema') in ('rokt.u1-provision-plan.v2','rokt.u1-provision-plan.v3')
             if complete:keys|={'python_runtime_manifest','python_runtime_manifest_sha256'}
+            if type(p) is dict and ({'provider_config','provider_config_sha256'} & set(p)):
+                keys|={'provider_config','provider_config_sha256'}
             if (type(p) is not dict or set(p) not in (keys,keys|{'event_runtime'},keys|{'original_owner_db'}) or p.get('schema') not in ('rokt.u1-provision-plan.v1','rokt.u1-provision-plan.v2','rokt.u1-provision-plan.v3') or
                 p.get('inventory_id')!='1784775229336' or type(p.get('credential_expires_at')) is not int):reject('RUNTIME_PLAN')
             if installed:
@@ -70,6 +72,10 @@ class InstallCommand:
                     p['python_runtime_manifest_sha256']!=rows.get('runtime/python/U1_RUNTIME_CONTENT.json')):reject('PACKAGED_RUNTIME_BINDING')
             for key,digest in (('python','python_sha256'),('token_file','token_sha256'),('snapshot','snapshot_sha256')):
                 self.pins.add(p[key],p[digest])
+            if 'provider_config' in p:
+                from autonomy.provider_environment import load_pinned_provider_environment
+                self.pins.add(p['provider_config'],p['provider_config_sha256'],limit=65536)
+                load_pinned_provider_environment(p['provider_config'],p['provider_config_sha256'])
             if complete:pin_python_runtime(self.pins,p['python_runtime_manifest'],p['python_runtime_manifest_sha256'],p['python'])
             if 'original_owner_db' in p:
                 self.pins.add_mutable_reference(p['original_owner_db'])

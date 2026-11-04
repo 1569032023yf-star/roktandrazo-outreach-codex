@@ -128,6 +128,15 @@ if ($RuntimePlan) {
             $plan.python_runtime_manifest -cne $packageRuntimeManifest -or $pythonEntry.Count -ne 1 -or $manifestEntry.Count -ne 1 -or
             $plan.python_sha256 -cne $pythonEntry[0].sha256 -or $plan.python_runtime_manifest_sha256 -cne $manifestEntry[0].sha256) {throw 'PACKAGED_RUNTIME_BINDING_REQUIRED'}
     }
+    $providerKeys=@('provider_config','provider_config_sha256')
+    $providerPresent=@($providerKeys | Where-Object {$plan.PSObject.Properties.Name -ccontains $_})
+    if ($providerPresent.Count -ne 0) {
+        if ($providerPresent.Count -ne 2) {throw 'PROVIDER_CONFIG_PAIR_REQUIRED'}
+        $keys+=$providerKeys
+        $providerPath=$plan.provider_config
+        if ($providerPath -isnot [string] -or -not [IO.Path]::IsPathRooted($providerPath) -or $providerPath -match '["\r\n]' -or [IO.Path]::GetFullPath($providerPath) -cne $providerPath -or $plan.provider_config_sha256 -cnotmatch '^[0-9a-f]{64}$') {throw 'PROVIDER_CONFIG_REFERENCE_REQUIRED'}
+        Pin-Reference $providerPath $plan.provider_config_sha256
+    }
     if (($plan.PSObject.Properties.Name -ccontains 'event_runtime') -and ($plan.PSObject.Properties.Name -ccontains 'original_owner_db')) {throw 'EXACTLY_ONE_OWNER_AUTHORITY_REQUIRED'}
     if ($plan.PSObject.Properties.Name -ccontains 'original_owner_db') {
         $keys+=@('original_owner_db')
@@ -161,6 +170,10 @@ if ($RuntimePlan) {
     $runtime=[ordered]@{schema='rokt.u1-python-runtime.v2';inventory_id='1784775229336';release_root=$plan.release_root;state_root=$state;token_file=$plan.token_file;token_sha256=$plan.token_sha256;credential_expires_at=$plan.credential_expires_at;snapshot=$plan.snapshot;snapshot_sha256=$plan.snapshot_sha256;allow_dispatch=$false;allow_cancel_dispatch=$false;smtp_enabled=$false}
     if ($keys -ccontains 'event_runtime') {$runtime['event_runtime']=$plan.event_runtime}
     if ($keys -ccontains 'original_owner_db') {$runtime['original_owner_db']=$plan.original_owner_db}
+    if ($providerPresent.Count -eq 2) {
+        $runtime['provider_config']=$plan.provider_config
+        $runtime['provider_config_sha256']=$plan.provider_config_sha256
+    }
     $utf8=New-Object Text.UTF8Encoding($false)
     $runtimeBytes=$utf8.GetBytes(($runtime | ConvertTo-Json -Compress))
     $hasher=[Security.Cryptography.SHA256]::Create()

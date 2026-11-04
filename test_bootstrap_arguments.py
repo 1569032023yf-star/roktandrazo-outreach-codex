@@ -55,6 +55,26 @@ class BootstrapArgumentTests(unittest.TestCase):
                 self.assertEqual(captured[0][:3],('autonomy.u1_host_runtime','__main__',expected))
                 self.assertEqual(captured[0][3][0],str(app))
 
+    def test_provider_pair_is_forwarded_and_partial_or_invalid_reference_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            config=Path(tmp)/'runtime.json'
+            base=dict(schema='rokt.u1-python-runtime.v2',inventory_id='1784775229336',
+                      release_root=tmp,state_root=tmp,token_file=tmp,token_sha256='b'*64,
+                      credential_expires_at=12345,snapshot=tmp,snapshot_sha256='a'*64,
+                      allow_dispatch=False,allow_cancel_dispatch=False,smtp_enabled=False)
+            pair=dict(provider_config=str(Path(tmp)/'provider.json'),provider_config_sha256='c'*64)
+            config.write_text(json.dumps(dict(base,**pair)))
+            captured=[]
+            with patch.object(sys,'argv',list(sys.argv)),patch.object(sys,'path',list(sys.path)),patch.object(bootstrap,'resolve_release',return_value=Path(tmp)),patch.object(bootstrap.runpy,'run_module',side_effect=lambda *a,**k:captured.append(list(sys.argv))):
+                bootstrap.main(str(config))
+            self.assertEqual(captured[0][-4:],['--provider-config',pair['provider_config'],'--provider-config-sha256','c'*64])
+            for bad in ({'provider_config':pair['provider_config']}, {'provider_config_sha256':'c'*64},
+                        dict(pair,provider_config='relative.json'),dict(pair,provider_config_sha256='invalid')):
+                config.write_text(json.dumps(dict(base,**bad)))
+                with patch.object(bootstrap,'resolve_release') as release:
+                    with self.assertRaises(ValueError):bootstrap.main(str(config))
+                    release.assert_not_called()
+
     def test_enabled_gates_and_conflicting_owner_modes_reject_before_release(self):
         with tempfile.TemporaryDirectory() as tmp:
             config=Path(tmp)/'runtime.json'

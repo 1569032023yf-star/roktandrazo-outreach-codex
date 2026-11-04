@@ -8,6 +8,38 @@ import unittest
 from autonomy.release_store import ReleaseStore,build_bundle,sha
 from autonomy.u1_host_runtime import open_host,original_owner_reader
 
+class ProviderHostLifetimeTests(unittest.TestCase):
+    def test_main_holds_provider_config_without_exporting_credentials(self):
+        import hashlib,json,os,sys
+        from contextlib import contextmanager
+        from unittest.mock import patch
+        from autonomy import u1_host_runtime as host
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);config=root/'provider.json'
+            config.write_text(json.dumps({'schema':'rokt.provider-environment.v1','environment':{
+                'WORKBUDDY_DISCOVERY_PROVIDER':'google_places','GOOGLE_MAPS_API_KEY':'fixture-only'}}))
+            digest=hashlib.sha256(config.read_bytes()).hexdigest()
+            args=['host','--release-root',directory,'--state-root',directory,'--token-file',str(root/'token'),
+                  '--credential-expires-at','12345','--snapshot',str(root/'snapshot'),'--snapshot-sha256','a'*64,
+                  '--provider-config',str(config),'--provider-config-sha256',digest]
+            before=dict(os.environ)
+            class Server:
+                def serve_forever(self,**kwargs):
+                    with self_test.assertRaises(OSError):config.write_bytes(b'changed')
+                    self_test.assertEqual(dict(os.environ),before)
+            self_test=self
+            @contextmanager
+            def opened(*args,**kwargs):yield Server()
+            with patch.object(sys,'argv',args),patch.object(host,'read_file',side_effect=[b'fixture-token',b'{}']),patch.object(host,'open_host',opened):
+                host.main()
+            config.write_bytes(b'released')
+            # Invalid digest must fail before snapshot, original owner or listener.
+            args[-1]='0'*64
+            with patch.object(sys,'argv',args),patch.object(host,'read_file',return_value=b'fixture-token') as read,patch.object(host,'open_host') as opened:
+                with self.assertRaises(ValueError):host.main()
+                self.assertEqual(read.call_count,1);opened.assert_not_called()
+
+
 class HostRuntimeTests(unittest.TestCase):
     def test_changed_provisioned_token_rejects_before_listener_or_state(self):
         import hashlib
