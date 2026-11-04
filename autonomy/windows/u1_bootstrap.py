@@ -33,22 +33,24 @@ def resolve_release(root):
     if (set(pointer)!={'schema','inventory_id','version'} or pointer['schema']!='rokt.release-store.v1' or
         pointer['inventory_id']!='1784775229336' or not re.fullmatch('[0-9a-f]{64}',pointer['version'] or '')):
         raise ValueError('ACTIVE_RELEASE_REQUIRED')
-    folder=root/'versions'/pointer['version'];raw=read(folder/'manifest.json',131072)
+    folder=root/'versions'/pointer['version'];raw=read(folder/'manifest.json',2*1024*1024)
     if hashlib.sha256(raw).hexdigest()!=pointer['version']:raise ValueError('MANIFEST_HASH')
     m=json.loads(raw)
-    if (set(m)!={'schema','inventory_id','source_commit','files'} or m['schema']!='rokt.release-store.v1' or
+    large=m.get('schema')=='rokt.release-manifest.v2'
+    if (set(m)!={'schema','inventory_id','source_commit','files'} or m['schema'] not in ('rokt.release-store.v1','rokt.release-manifest.v2') or
         m['inventory_id']!='1784775229336' or not re.fullmatch('[0-9a-f]{40}',m['source_commit']) or
-        type(m['files']) is not dict or not 1<=len(m['files'])<=512):raise ValueError('MANIFEST_SCHEMA')
+        type(m['files']) is not dict or not 1<=len(m['files'])<=(8192 if large else 512)):raise ValueError('MANIFEST_SCHEMA')
+    if raw!=json.dumps(m,sort_keys=True,separators=(',', ':'),allow_nan=False).encode():raise ValueError('NONCANONICAL_MANIFEST')
     seen=set();total=0
     reserved={'CON','PRN','AUX','NUL'}|{f'{p}{i}' for p in ('COM','LPT') for i in range(1,10)}
     for name,digest in m['files'].items():
-        if (type(name) is not str or not re.fullmatch('[A-Za-z0-9_./-]+',name) or
+        if (type(name) is not str or not re.fullmatch('[A-Za-z0-9_./+-]+',name) or
             any(x in ('','.','..') or x.endswith('.') or x.split('.')[0].upper() in reserved for x in name.split('/')) or
             not re.fullmatch('[0-9a-f]{64}',digest)):raise ValueError('ARTIFACT_PATH')
         lower=name.casefold()
         if any(lower==x or lower.startswith(x+'/') or x.startswith(lower+'/') for x in seen):raise ValueError('PATH_COLLISION')
-        seen.add(lower);data=read(folder/'payload'/name,128*1024*1024);total+=len(data)
-        if total>128*1024*1024 or hashlib.sha256(data).hexdigest()!=digest:raise ValueError('ARTIFACT_HASH')
+        seen.add(lower);data=read(folder/'payload'/name,(256 if large else 128)*1024*1024);total+=len(data)
+        if total>(1024 if large else 128)*1024*1024 or hashlib.sha256(data).hexdigest()!=digest:raise ValueError('ARTIFACT_HASH')
     required={'python/autonomy/u1_host_runtime.py','python/autonomy/host_readonly_http.py','python/autonomy/release_store.py'}
     if not required<=set(m['files']):raise ValueError('HOST_MISSING')
     # Reject unmanifested importable files before putting this directory on sys.path.

@@ -15,6 +15,10 @@ import uuid
 SCHEMA = 'rokt.release-store.v1'
 INVENTORY = '1784775229336'
 MAX_TOTAL = 128 * 1024 * 1024
+LARGE_SCHEMA = 'rokt.release-manifest.v2'
+MAX_LARGE_TOTAL = 1024 * 1024 * 1024
+MAX_FILE = 256 * 1024 * 1024
+MAX_MANIFEST = 2 * 1024 * 1024
 
 
 def canonical(value):
@@ -36,7 +40,7 @@ def ordinary(path):
 
 
 def safe_path(name):
-    if type(name) is not str or not re.fullmatch(r'[A-Za-z0-9_./-]+', name):
+    if type(name) is not str or not re.fullmatch(r'[A-Za-z0-9_./+-]+', name):
         raise ValueError('UNSAFE_PATH')
     reserved = {'CON', 'PRN', 'AUX', 'NUL'} | {f'{p}{n}' for p in ('COM','LPT') for n in range(1,10)}
     if any(p in ('', '.', '..') or p.endswith('.') or p.split('.')[0].upper() in reserved
@@ -47,9 +51,9 @@ def safe_path(name):
 
 def checked_manifest(raw):
     m = json.loads(raw)
-    if (set(m) != {'schema','inventory_id','source_commit','files'} or m['schema'] != SCHEMA or
+    if (set(m) != {'schema','inventory_id','source_commit','files'} or m['schema'] not in (SCHEMA,LARGE_SCHEMA) or
         m['inventory_id'] != INVENTORY or not re.fullmatch('[0-9a-f]{40}', m['source_commit']) or
-        type(m['files']) is not dict or not 1 <= len(m['files']) <= 512):
+        type(m['files']) is not dict or not 1 <= len(m['files']) <= (8192 if m['schema']==LARGE_SCHEMA else 512)):
         raise ValueError('INVALID_MANIFEST')
     seen = set()
     for name, digest in m['files'].items():
@@ -63,7 +67,7 @@ def checked_manifest(raw):
     return m
 
 
-def read_file(path, limit=MAX_TOTAL):
+def read_file(path, limit=MAX_FILE):
     path = ordinary(path)
     if path.stat().st_nlink != 1: raise ValueError('HARDLINK_REJECTED')
     with path.open('rb') as f: data = f.read(limit+1)
@@ -87,6 +91,33 @@ def build_bundle(destination, files, source_commit):
         target = dest/'payload'/name; target.parent.mkdir(parents=True, exist_ok=True)
         durable_new(target, raw)
     durable_new(dest/'manifest.json', manifest)
+    return sha(manifest)
+
+
+def build_bundle_from_paths(destination, files, source_commit):
+    """Large-runtime packaging, one bounded file at a time; never installs.
+
+    The new manifest schema is explicit; legacy size/count limits remain intact.
+    Sources are checked again while copied. A failed destination is retained.
+    """
+    if type(files) is not dict or not 1<=len(files)<=8192:
+        raise ValueError('EXACT_FILE_SOURCES_REQUIRED')
+    hashes={};total=0
+    for name,path in files.items():
+        safe_path(name);raw=read_file(path);total+=len(raw)
+        if total>MAX_LARGE_TOTAL:raise ValueError('PACKAGE_TOO_LARGE')
+        hashes[name]=sha(raw)
+    manifest=canonical(dict(schema=LARGE_SCHEMA,inventory_id=INVENTORY,
+                            source_commit=source_commit,files=hashes))
+    if len(manifest)>MAX_MANIFEST:raise ValueError('MANIFEST_TOO_LARGE')
+    checked_manifest(manifest)
+    dest=ordinary(destination);dest.mkdir()
+    for name,path in files.items():
+        raw=read_file(path)
+        if sha(raw)!=hashes[name]:raise ValueError('SOURCE_CHANGED')
+        target=dest/'payload'/name;target.parent.mkdir(parents=True,exist_ok=True)
+        durable_new(target,raw)
+    durable_new(dest/'manifest.json',manifest)
     return sha(manifest)
 
 
@@ -121,12 +152,12 @@ class ReleaseStore:
         return ordinary(self.root/'versions'/version)
 
     def _verify(self, folder, version):
-        raw = read_file(folder/'manifest.json', 131072)
+        raw = read_file(folder/'manifest.json', MAX_MANIFEST)
         if sha(raw) != version: raise ValueError('MANIFEST_HASH_MISMATCH')
         m = checked_manifest(raw); total = 0
         for name, digest in m['files'].items():
             data = read_file(folder/'payload'/name); total += len(data)
-            if total > MAX_TOTAL or sha(data) != digest: raise ValueError('ARTIFACT_MISMATCH')
+            if total > (MAX_LARGE_TOTAL if m['schema']==LARGE_SCHEMA else MAX_TOTAL) or sha(data) != digest: raise ValueError('ARTIFACT_MISMATCH')
         actual = set()
         for p in folder.rglob('*'):
             ordinary(p)
