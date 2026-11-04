@@ -71,6 +71,19 @@ class ProcessBackend:
         with self._db() as c:
             c.execute('CREATE TABLE IF NOT EXISTS executions (key TEXT PRIMARY KEY, binding TEXT NOT NULL, state TEXT NOT NULL, result TEXT)')
 
+    @classmethod
+    def for_provider_worker(cls, journal, *, python, python_sha256,
+                            worker_sha256, backend_id, provider_config,
+                            provider_config_sha256, original_owner=None):
+        """Bind the packaged Worker; hashes must come from the approved manifest.
+        绑定包内固定入口；不自算可信摘要，不授权派发。
+        """
+        return cls(journal,python=python,python_sha256=python_sha256,
+                   worker=str(Path(__file__).with_name('provider_worker.py').absolute()),
+                   worker_sha256=worker_sha256,backend_id=backend_id,offline_only=True,
+                   original_owner=original_owner,provider_config=provider_config,
+                   provider_config_sha256=provider_config_sha256)
+
     def _verify_files(self):
         for p,h in zip((self.python,self.worker),self.hashes):
             if hashlib.sha256(read_file(p)).hexdigest()!=h:raise ValueError('EXECUTABLE_HASH_MISMATCH')
