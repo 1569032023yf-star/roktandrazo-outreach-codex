@@ -20,11 +20,13 @@ def deny(*args,**kwargs): raise RuntimeError('NETWORK_FORBIDDEN_OFFLINE_PROBE')
 socket.socket.connect=deny; socket.create_connection=deny
 names=['autonomy.u1_host_runtime','autonomy.inventory_event_bridge',
        'autonomy.original_inventory_owner','autonomy.process_backend',
-       'publisher_channel.install_command','autonomy.windows.u1_bootstrap']
+       'publisher_channel.install_command','autonomy.windows.u1_bootstrap',
+       'discovery.providers.google_places','discovery.providers.browser_maps',
+       'discovery.providers.serpapi_maps','discovery.providers.contracts']
 for name in names: importlib.import_module(name)
 origins={}
 for name,module in list(sys.modules.items()):
- if name.split('.')[0] in ('autonomy','publisher_channel'):
+ if name.split('.')[0] in ('autonomy','publisher_channel','discovery'):
   origin=getattr(module,'__file__',None)
   if origin:
    assert Path(origin).resolve().is_relative_to(app),(name,origin)
