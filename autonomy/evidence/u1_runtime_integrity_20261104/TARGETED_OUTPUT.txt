@@ -1,0 +1,13 @@
+======================================================================
+FAIL: test_real_suspended_job_launch_and_descendant_cleanup (test_service_child.ServiceChildTests.test_real_suspended_job_launch_and_descendant_cleanup)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\test_service_child.py", line 28, in test_real_suspended_job_launch_and_descendant_cleanup
+    self.assertEqual(r.returncode,0,r.stderr);self.assertIn('JOB_TREE_CLEANED',r.stdout)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 2 != 0 : 
+
+----------------------------------------------------------------------
+Ran 27 tests in 29.826s
+
+FAILED (failures=1)

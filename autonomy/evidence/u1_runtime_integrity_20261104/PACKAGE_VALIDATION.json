@@ -1,0 +1,8 @@
+{
+  "source_commit": "05783f2c560825e0b5095b99afdc6b9b86f47955",
+  "manifest_files": 84,
+  "all_hashes_match": true,
+  "python_files_match_git_bytes": 67,
+  "full_runtime_inside_install_zip": false,
+  "production_ready": false
+}

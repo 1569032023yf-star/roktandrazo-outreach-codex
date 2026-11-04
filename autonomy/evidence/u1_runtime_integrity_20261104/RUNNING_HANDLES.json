@@ -1,0 +1,9 @@
+{
+  "description_zh": "\u4ec5\u5b9a\u4f4d\u4fe1\u606f\uff0c\u6d3b\u6027\u987b\u901a\u8fc7\u53e5\u67c4\u6838\u9a8c\u3002",
+  "description_en": "Locators only; liveness requires handle verification.",
+  "source_commit": "05783f2c560825e0b5095b99afdc6b9b86f47955",
+  "baseline_commit": "5a8394d",
+  "full_baseline": 74787,
+  "full_candidate": 12397,
+  "last_observed": "RUNNING"
+}

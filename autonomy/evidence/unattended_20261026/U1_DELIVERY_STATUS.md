@@ -1,3 +1,7 @@
+中文：当前05783f2。C#启动Python前与Publisher固定清单4943文件校验通过；26项定向测试通过。旧服务子进程测试在基线和候选都失败，未抹去。当前完整回归运行中（74787/12397）。完整运行时安装事务未集成，独审PENDING，所有状态及门禁false。详见u1_runtime_integrity_20261104/REPORT.md。
+
+English: Current05783f2. Native pre-Python and Publisher integrity validation passes on4943 files;26 focused tests pass. Legacy service-child test fails on baseline and candidate and is preserved. Full regression running(74787/12397). Full runtime installation remains unintegrated; independent review PENDING; all acceptance states and gates false. Seeu1_runtime_integrity_20261104/REPORT.md.
+
 中文：当前e110302；32f0246完成12个固定wheel离线装配，4942文件237213734字节，pip check及关键导入通过，5项准入测试通过。浏览器610文件735085650字节已下载；驱动启动25秒超时，进程树清理核验通过，根因UNKNOWN。完整运行时安装事务及Bootstrap绑定未完成，未继承旧完整回归，独审PENDING。所有门禁false。
 
 English: Current sourcee110302;32f0246 assembles12 pinned wheels offline:4942 files/237213734 bytes, passing pip check, key imports and five admission tests. Browser inputs:610 files/735085650 bytes downloaded. Driver start times out after25seconds; process-tree cleanup verified, root cause UNKNOWN. Full-runtime install transactions and Bootstrap binding remain incomplete. No inherited full-regression result; review PENDING. All gates false.

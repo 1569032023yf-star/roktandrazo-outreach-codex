@@ -1,0 +1,13 @@
+{
+  "source_commit": "02798cf63c14cb67fe9e637f307e0e10b3f23383",
+  "runtime_base_assembly_source": "32f02469233f4571d7aab5ecb79204570485ba26",
+  "content_manifest_sha256": "5ca4bd5242a6432ea41d18e0140ae0b7b0a999565cb8319aa7cb2dca392a897e",
+  "files": 4943,
+  "returncode": 2,
+  "stdout": "REJECTED_RUNTIME\n",
+  "stderr": "",
+  "service_installed": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "smtp_enabled": false
+}

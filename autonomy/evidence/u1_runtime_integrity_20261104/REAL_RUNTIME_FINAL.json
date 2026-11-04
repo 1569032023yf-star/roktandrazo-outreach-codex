@@ -1,0 +1,14 @@
+{
+  "source_commit": "05783f2c560825e0b5095b99afdc6b9b86f47955",
+  "content_manifest_sha256": "5ca4bd5242a6432ea41d18e0140ae0b7b0a999565cb8319aa7cb2dca392a897e",
+  "files": 4943,
+  "returncode": 0,
+  "stdout": "VALID_PINNED_RUNTIME\n",
+  "stderr": "",
+  "service_installed": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "smtp_enabled": false,
+  "publisher_revalidation_passed": true,
+  "publisher_file_count": 4943
+}

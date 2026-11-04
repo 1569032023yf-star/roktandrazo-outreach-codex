@@ -583,13 +583,15 @@
       "review_status": "PENDING_FOR_CURRENT_PIN",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "e110302d89854f7c964fa58d9cec4324f929eb26",
+      "candidate_commit": "05783f2c560825e0b5095b99afdc6b9b86f47955",
       "trust_boundary_review": "SCOPED_PASS",
       "schedule_contract_review": "SCOPED_PASS",
       "regression_runner_candidate": "b69214d",
       "full_regression": {
-        "source_commit": "e110302d89854f7c964fa58d9cec4324f929eb26",
-        "status": "NOT_RUN_FOR_THIS_SHA"
+        "source_commit": "05783f2c560825e0b5095b99afdc6b9b86f47955",
+        "status": "RUNNING",
+        "baseline_session": 74787,
+        "candidate_session": 12397
       },
       "adapter_review": "SCOPED_PASS_E3F3220",
       "bridge_candidate": "68802d5",
@@ -1654,9 +1656,9 @@
         "allow_cancel_dispatch": false
       },
       "u1_actual_delivery_latest": {
-        "source_commit": "e110302d89854f7c964fa58d9cec4324f929eb26",
+        "source_commit": "05783f2c560825e0b5095b99afdc6b9b86f47955",
         "phase": "1_CONTRACT_MISSING_AND_2_OFFLINE_INTEGRATION",
-        "report": "autonomy/evidence/u1_provider_unknown_20261104/REPORT.md",
+        "report": "autonomy/evidence/u1_runtime_integrity_20261104/REPORT.md",
         "current_package": "NOT_BUILT",
         "publisher_fix_included": "6c60dba1f70f998ad933510750aba865597c8c12",
         "targeted_tests": {
@@ -1666,7 +1668,7 @@
           "duration_seconds": 1.33
         },
         "independent_review": "PENDING",
-        "full_regression": "NOT_RUN_FOR_THIS_SHA",
+        "full_regression": "RUNNING_FOR_THIS_SHA",
         "previous_source_regression": "032e219_HAS_NEW_FAILURE_REPAIRED_IN_9abe85a",
         "formal_backend_integrated": false,
         "installable_release": false,
@@ -1683,8 +1685,8 @@
         "allow_dispatch": false,
         "allow_cancel_dispatch": false,
         "smtp_enabled": false,
-        "next_action_zh": "开发完整运行时的固定清单和安装/升级/回滚事务绑定，以及C#预启动完整性校验；定位离线Playwright驱动启动超时；正式Provider合同不阻塞独立工程。",
-        "next_action_en": "Develop pinned full-runtime manifest and install/upgrade/rollback transaction binding with pre-launch C# integrity checks; diagnose offline Playwright driver-start timeout. Missing Provider contracts do not block independent engineering.",
+        "next_action_zh": "完成当前SHA回归；开发固定运行时子树暂存/提交/补偿与原安装事务绑定；保留CONTRACT_MISSING及全false门禁。",
+        "next_action_en": "Finish current-SHA regression; implement pinned runtime subtree staging/commit/compensation within original installation transactions; retain CONTRACT_MISSING and false gates.",
         "pollution_reproduction": {
           "tests": 27,
           "passed": true
@@ -1741,6 +1743,20 @@
           "bootstrap_integrated": false,
           "complete_business_closure": false,
           "admission_tests": 5
+        },
+        "full_regression_sessions": {
+          "baseline": 74787,
+          "candidate": 12397
+        },
+        "prelaunch_runtime_integrity": {
+          "files": 4943,
+          "native_passed": true,
+          "publisher_revalidation_passed": true,
+          "content_manifest_sha256": "5ca4bd5242a6432ea41d18e0140ae0b7b0a999565cb8319aa7cb2dca392a897e",
+          "targeted_tests": 26,
+          "targeted_passed": true,
+          "legacy_service_test": "FAILED_ON_BASELINE_AND_CANDIDATE",
+          "install_transaction_integrated": false
         }
       },
       "u1_scm_integration_latest": {
@@ -8031,6 +8047,178 @@
     "next_action_zh": "完成正式Provider执行、费用实测和受信运行配置，随后对完整候选审核；经授权后由WorkBuddy进行隔离Windows首次安装、升级、进程退出恢复、回滚中断恢复及Disabled/Stopped验收。不得用测试worker或SAFE替身代替业务验收。"
   },
   "u1_continuous_development_current": {
+    "source_commit": "05783f2c560825e0b5095b99afdc6b9b86f47955",
+    "phase": "1_CONTRACT_MISSING_AND_2_OFFLINE_INTEGRATION",
+    "report": "autonomy/evidence/u1_runtime_integrity_20261104/REPORT.md",
+    "current_package": "NOT_BUILT",
+    "publisher_fix_included": "6c60dba1f70f998ad933510750aba865597c8c12",
+    "targeted_tests": {
+      "count": 4,
+      "failures": 0,
+      "errors": 0,
+      "duration_seconds": 1.33
+    },
+    "independent_review": "PENDING",
+    "full_regression": "RUNNING_FOR_THIS_SHA",
+    "previous_source_regression": "032e219_HAS_NEW_FAILURE_REPAIRED_IN_9abe85a",
+    "formal_backend_integrated": false,
+    "installable_release": false,
+    "states": {
+      "DEVELOPMENT_COMPLETE": false,
+      "PACKAGE_COMPLETE": false,
+      "PROVIDER_ACCEPTED": false,
+      "WINDOWS_ACCEPTED": false,
+      "RELEASE_READY": false,
+      "PRODUCTION_DEPLOYED": false,
+      "PRODUCTION_ACCEPTED": false
+    },
+    "allow_install": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "smtp_enabled": false,
+    "next_action_zh": "完成当前SHA回归；开发固定运行时子树暂存/提交/补偿与原安装事务绑定；保留CONTRACT_MISSING及全false门禁。",
+    "next_action_en": "Finish current-SHA regression; implement pinned runtime subtree staging/commit/compensation within original installation transactions; retain CONTRACT_MISSING and false gates.",
+    "pollution_reproduction": {
+      "tests": 27,
+      "passed": true
+    },
+    "active_session_locators": {
+      "full_final": 54579,
+      "publisher_chain": 31239
+    },
+    "formal_provider_contract": "CONTRACT_MISSING",
+    "full_regression_evidence": "autonomy/evidence/u1_provider_unknown_20261104/FINAL_COMPARISON.json",
+    "publisher_chain": {
+      "tests": 72,
+      "failures": 1,
+      "errors": 15,
+      "passed": false,
+      "output": "autonomy/evidence/u1_provider_unknown_20261104/PUBLISHER_CHAIN_OUTPUT.txt"
+    },
+    "runtime_increment": {
+      "source_commit": "665f4992d0ad6cc7f670c3ccd5e817fb4e2ec612",
+      "admission_tests": 4,
+      "admission_passed": true,
+      "full_regression": "NOT_RUN_FOR_THIS_SHA",
+      "runtime_integration": "STANDALONE_STDLIB_PROBE_PASSED_BOOTSTRAP_TRANSACTION_PENDING",
+      "provider_contract": "CONTRACT_MISSING",
+      "production_ready": false
+    },
+    "publisher_packaging_increment": {
+      "source_commit": "37c694ca35bcda6c7e3d8e8eecc06cdbe4bf8e35",
+      "files": 84,
+      "isolated_imports_passed": 6,
+      "complete_package": false,
+      "full_regression": "NOT_RUN_FOR_THIS_SHA",
+      "independent_review": "PENDING",
+      "build_report": "autonomy/evidence/u1_provider_unknown_20261104/PUBLISHER_BUILD.json"
+    },
+    "last_comparable_regression": {
+      "source_commit": "9abe85a2bdb3227078ec87514727625ec5fec4e6",
+      "run": 837,
+      "failures": 37,
+      "errors": 18,
+      "no_new_regression": true,
+      "all_green": false
+    },
+    "business_runtime_increment": {
+      "assembly_source": "32f02469233f4571d7aab5ecb79204570485ba26",
+      "wheel_count": 12,
+      "files": 4942,
+      "bytes": 237213734,
+      "pip_check_passed": true,
+      "imports_passed": true,
+      "browser_files": 610,
+      "browser_bytes": 735085650,
+      "browser_probe": "TIMEOUT_AT_DRIVER_START_CLEANUP_VERIFIED",
+      "bootstrap_integrated": false,
+      "complete_business_closure": false,
+      "admission_tests": 5
+    },
+    "full_regression_sessions": {
+      "baseline": 74787,
+      "candidate": 12397
+    },
+    "prelaunch_runtime_integrity": {
+      "files": 4943,
+      "native_passed": true,
+      "publisher_revalidation_passed": true,
+      "content_manifest_sha256": "5ca4bd5242a6432ea41d18e0140ae0b7b0a999565cb8319aa7cb2dca392a897e",
+      "targeted_tests": 26,
+      "targeted_passed": true,
+      "legacy_service_test": "FAILED_ON_BASELINE_AND_CANDIDATE",
+      "install_transaction_integrated": false
+    }
+  },
+  "u1_provider_regression_9abe85a": {
+    "source_commit": "9abe85a2bdb3227078ec87514727625ec5fec4e6",
+    "phase": 1,
+    "report": "autonomy/evidence/u1_provider_unknown_20261104/REPORT.md",
+    "current_package": "NOT_BUILT",
+    "publisher_fix_included": "6c60dba1f70f998ad933510750aba865597c8c12",
+    "targeted_tests": {
+      "count": 4,
+      "failures": 0,
+      "errors": 0,
+      "duration_seconds": 1.33
+    },
+    "independent_review": "PENDING",
+    "full_regression": "COMPLETE_NO_NEW_FAILURE_OR_ERROR_IDS_NOT_ALL_GREEN",
+    "previous_source_regression": "032e219_HAS_NEW_FAILURE_REPAIRED_IN_9abe85a",
+    "formal_backend_integrated": false,
+    "installable_release": false,
+    "states": {
+      "DEVELOPMENT_COMPLETE": false,
+      "PACKAGE_COMPLETE": false,
+      "PROVIDER_ACCEPTED": false,
+      "WINDOWS_ACCEPTED": false,
+      "RELEASE_READY": false,
+      "PRODUCTION_DEPLOYED": false,
+      "PRODUCTION_ACCEPTED": false
+    },
+    "allow_install": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "smtp_enabled": false,
+    "next_action_zh": "继续完整CPython、依赖闭包、最新Publisher及Bootstrap离线整合；正式Provider接入等待服务与合同确认，不阻塞独立开发。",
+    "next_action_en": "Continue offline CPython/dependency closure, latest Publisher and Bootstrap integration. Formal Provider contracts remain pending without blocking independent development.",
+    "pollution_reproduction": {
+      "tests": 27,
+      "passed": true
+    },
+    "active_session_locators": {
+      "full_final": 54579,
+      "publisher_chain": 31239
+    },
+    "formal_provider_contract": "CONTRACT_MISSING",
+    "full_regression_evidence": "autonomy/evidence/u1_provider_unknown_20261104/FINAL_COMPARISON.json",
+    "publisher_chain": {
+      "tests": 72,
+      "failures": 1,
+      "errors": 15,
+      "passed": false,
+      "output": "autonomy/evidence/u1_provider_unknown_20261104/PUBLISHER_CHAIN_OUTPUT.txt"
+    },
+    "runtime_increment": {
+      "source_commit": "665f4992d0ad6cc7f670c3ccd5e817fb4e2ec612",
+      "admission_tests": 4,
+      "admission_passed": true,
+      "full_regression": "NOT_RUN_FOR_THIS_SHA",
+      "runtime_integration": "STANDALONE_STDLIB_PROBE_PASSED_BOOTSTRAP_TRANSACTION_PENDING",
+      "provider_contract": "CONTRACT_MISSING",
+      "production_ready": false
+    },
+    "publisher_packaging_increment": {
+      "source_commit": "37c694ca35bcda6c7e3d8e8eecc06cdbe4bf8e35",
+      "files": 84,
+      "isolated_imports_passed": 6,
+      "complete_package": false,
+      "full_regression": "NOT_RUN_FOR_THIS_SHA",
+      "independent_review": "PENDING",
+      "build_report": "autonomy/evidence/u1_provider_unknown_20261104/PUBLISHER_BUILD.json"
+    }
+  },
+  "u1_previous_e110302_progress": {
     "source_commit": "e110302d89854f7c964fa58d9cec4324f929eb26",
     "phase": "1_CONTRACT_MISSING_AND_2_OFFLINE_INTEGRATION",
     "report": "autonomy/evidence/u1_provider_unknown_20261104/REPORT.md",
@@ -8118,74 +8306,6 @@
       "bootstrap_integrated": false,
       "complete_business_closure": false,
       "admission_tests": 5
-    }
-  },
-  "u1_provider_regression_9abe85a": {
-    "source_commit": "9abe85a2bdb3227078ec87514727625ec5fec4e6",
-    "phase": 1,
-    "report": "autonomy/evidence/u1_provider_unknown_20261104/REPORT.md",
-    "current_package": "NOT_BUILT",
-    "publisher_fix_included": "6c60dba1f70f998ad933510750aba865597c8c12",
-    "targeted_tests": {
-      "count": 4,
-      "failures": 0,
-      "errors": 0,
-      "duration_seconds": 1.33
-    },
-    "independent_review": "PENDING",
-    "full_regression": "COMPLETE_NO_NEW_FAILURE_OR_ERROR_IDS_NOT_ALL_GREEN",
-    "previous_source_regression": "032e219_HAS_NEW_FAILURE_REPAIRED_IN_9abe85a",
-    "formal_backend_integrated": false,
-    "installable_release": false,
-    "states": {
-      "DEVELOPMENT_COMPLETE": false,
-      "PACKAGE_COMPLETE": false,
-      "PROVIDER_ACCEPTED": false,
-      "WINDOWS_ACCEPTED": false,
-      "RELEASE_READY": false,
-      "PRODUCTION_DEPLOYED": false,
-      "PRODUCTION_ACCEPTED": false
-    },
-    "allow_install": false,
-    "allow_dispatch": false,
-    "allow_cancel_dispatch": false,
-    "smtp_enabled": false,
-    "next_action_zh": "继续完整CPython、依赖闭包、最新Publisher及Bootstrap离线整合；正式Provider接入等待服务与合同确认，不阻塞独立开发。",
-    "next_action_en": "Continue offline CPython/dependency closure, latest Publisher and Bootstrap integration. Formal Provider contracts remain pending without blocking independent development.",
-    "pollution_reproduction": {
-      "tests": 27,
-      "passed": true
-    },
-    "active_session_locators": {
-      "full_final": 54579,
-      "publisher_chain": 31239
-    },
-    "formal_provider_contract": "CONTRACT_MISSING",
-    "full_regression_evidence": "autonomy/evidence/u1_provider_unknown_20261104/FINAL_COMPARISON.json",
-    "publisher_chain": {
-      "tests": 72,
-      "failures": 1,
-      "errors": 15,
-      "passed": false,
-      "output": "autonomy/evidence/u1_provider_unknown_20261104/PUBLISHER_CHAIN_OUTPUT.txt"
-    },
-    "runtime_increment": {
-      "source_commit": "665f4992d0ad6cc7f670c3ccd5e817fb4e2ec612",
-      "admission_tests": 4,
-      "admission_passed": true,
-      "full_regression": "NOT_RUN_FOR_THIS_SHA",
-      "runtime_integration": "STANDALONE_STDLIB_PROBE_PASSED_BOOTSTRAP_TRANSACTION_PENDING",
-      "provider_contract": "CONTRACT_MISSING",
-      "production_ready": false
-    },
-    "publisher_packaging_increment": {
-      "source_commit": "37c694ca35bcda6c7e3d8e8eecc06cdbe4bf8e35",
-      "files": 84,
-      "isolated_imports_passed": 6,
-      "complete_package": false,
-      "full_regression": "NOT_RUN_FOR_THIS_SHA",
-      "independent_review": "PENDING",
-      "build_report": "autonomy/evidence/u1_provider_unknown_20261104/PUBLISHER_BUILD.json"
     }
   }
 }
