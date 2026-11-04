@@ -55,3 +55,10 @@ Fixed code8525fb7: original PowerShell installer passes file_sources paths with 
 兼容检查：4项通过，21.641秒；原始输出INSTALL_REQUEST_COMPAT_OUTPUT.txt。未执行真实服务安装。
 
 Compatibility:4 tests pass in21.641s; raw output INSTALL_REQUEST_COMPAT_OUTPUT.txt. No real service installation performed.
+
+
+## 大运行时发布清单 / Large-runtime release manifest
+
+固定源码b008663：新增显式rokt.release-manifest.v2，最多8192文件、总1GiB、单文件256MiB；逐文件构建，旧v1仍512文件/128MiB。Bootstrap同步识别v2与规范化清单，允许合法加号路径，保留逐文件哈希及未列文件拒绝。原宿主包及Publisher仍待统一；未生成完整安装包，最新完整回归与独审未完成。
+
+Fixed source b008663: explicit rokt.release-manifest.v2 supports8192 files,1GiB total and256MiB per file with file-at-a-time construction. Legacy v1 retains512 files/128MiB. Bootstrap shares v2 and canonical manifest checks, permits legitimate plus paths, and retains digest/unlisted-file rejection. Host package and Publisher alignment, complete installation archive, full regression and independent review remain pending.
