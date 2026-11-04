@@ -8226,6 +8226,13 @@
       "source_commit": "a3ce4a5f05930adb0fb26dd076f82a692d6cfc61",
       "session": 29556,
       "last_observed": "RUNNING"
+    },
+    "delivery_verifier_source": "b51b08ee58a420fba81a9b26511520e7b3694086",
+    "delivery_verifier_targeted": {
+      "run": 5,
+      "failures": 0,
+      "errors": 0,
+      "actual_delivery_verified": false
     }
   },
   "u1_provider_regression_9abe85a": {

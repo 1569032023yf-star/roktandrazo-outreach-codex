@@ -1,3 +1,7 @@
+中文：固定验证器b51b08e新增整包独立解压只读验证：先校验外层清单/源码/关闭门禁，再固定宿主和Python内容清单，用包内-I -B导入六个离线入口并核对仓库模块来源，验证包内子进程、pip check和原生运行时，执行后复核整包。失败/超时持久化FAILED/UNKNOWN，已有报告不覆盖。5项安全边界测试通过（0.407秒），均为测试输入，不是实际整包通过。a3ce4a5成对归档构建29556仍确认运行；install目录已出现，尚无终态。下一步收取构建结果后对该固定包运行验证器。正式合同CONTRACT_MISSING，所有最终验收及门禁保持false。
+
+English: Fixed verifier b51b08e adds read-only extracted delivery checks: outer manifest/source/closed gates, pinned host and Python content, packaged -I -B imports of six offline entrypoints with origin checks, packaged child process, pip check and native integrity; package rechecked afterward. Failure/timeout persist FAILED/UNKNOWN, existing reports are immutable. Five safety-boundary tests pass in0.407s using test inputs, not actual delivery acceptance. Paired a3ce4a5 archive build29556 is confirmed live; install directory has appeared without terminal result. Next run the verifier against that fixed completed archive. Formal contract remains CONTRACT_MISSING; all acceptance states/gates false.
+
 中文：固定deeec72完整tests/回归结束：基线842项/37失败/19错误；候选847项/37失败/18错误。逐ID比较无新增失败或错误；减少一项基线错误不构成根因修复证明。5项原生检查通过。全套仍未通过，结果不继承至a3ce4a5；根目录测试另计。成对归档构建29556仍在运行。
 
 English: Fixed deeec72 tests/ regression completed: baseline842/37 failures/19 errors; candidate847/37 failures/18 errors. ID comparison shows no added failures/errors; one absent baseline error is not proof of a root-cause fix. Five native checks pass. The suite remains failing, results do not transfer to a3ce4a5, and root-level tests are separate. Paired archive build29556 remains running.

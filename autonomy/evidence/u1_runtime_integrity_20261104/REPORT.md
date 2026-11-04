@@ -119,3 +119,8 @@ English: Fixed deeec72 tests/ regression completed: baseline842/37 failures/19 e
 中文：a3ce4a5五个离线宿主/事件/Owner/Backend/Publisher入口静态遍历27个仓库模块，未发现这些入口可达的仓库模块漏包；非仓库根均为标准库名称（含平台条件fcntl/msvcrt）。仅静态证据，未执行正式Provider，不证明全部动态业务依赖闭包。
 
 English: Static traversal from five offline host/event/owner/backend/Publisher entrypoints in a3ce4a5 visits27 repository modules without missing reachable repository modules. External roots are standard-library names, including platform-conditional fcntl/msvcrt. Static evidence only; no formal Provider execution or complete dynamic business closure established.
+
+中文：固定验证器b51b08e新增整包独立解压只读验证：先校验外层清单/源码/关闭门禁，再固定宿主和Python内容清单，用包内-I -B导入六个离线入口并核对仓库模块来源，验证包内子进程、pip check和原生运行时，执行后复核整包。失败/超时持久化FAILED/UNKNOWN，已有报告不覆盖。5项安全边界测试通过（0.407秒），均为测试输入，不是实际整包通过。a3ce4a5成对归档构建29556仍确认运行；install目录已出现，尚无终态。下一步收取构建结果后对该固定包运行验证器。正式合同CONTRACT_MISSING，所有最终验收及门禁保持false。
+
+English: Fixed verifier b51b08e adds read-only extracted delivery checks: outer manifest/source/closed gates, pinned host and Python content, packaged -I -B imports of six offline entrypoints with origin checks, packaged child process, pip check and native integrity; package rechecked afterward. Failure/timeout persist FAILED/UNKNOWN, existing reports are immutable. Five safety-boundary tests pass in0.407s using test inputs, not actual delivery acceptance. Paired a3ce4a5 archive build29556 is confirmed live; install directory has appeared without terminal result. Next run the verifier against that fixed completed archive. Formal contract remains CONTRACT_MISSING; all acceptance states/gates false.
+
