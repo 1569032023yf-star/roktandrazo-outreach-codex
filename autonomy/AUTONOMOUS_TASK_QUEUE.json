@@ -576,40 +576,39 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/u1_adapter_binding_20261104/REPORT.md",
-      "next_action": "Consume the approved-adapter context in the original owner-controlled business Worker entrypoint; reject formal settlement without authoritative cost/terminal contracts and never replay UNKNOWN.",
+      "checkpoint": "autonomy/evidence/u1_executable_pins_20261104/REPORT.md",
+      "next_action": "Wire the approved adapter context into the original owner-controlled business Worker; reject formal settlement without authoritative cost and terminal contracts.",
       "phase": "U1",
       "baseline_commit": "91aa60c6cf52b0c0a9c9e0ff2ddfb5ee39a7f7fc",
       "review_status": "PENDING",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "594cd0a513af461baac867a00e1f431339de3d7d",
+      "candidate_commit": "240f614fd694d48eb19edcfd8f8d3e187722875d",
       "trust_boundary_review": "SCOPED_PASS",
       "schedule_contract_review": "SCOPED_PASS",
       "regression_runner_candidate": "b69214d",
       "full_regression": {
-        "source_commit": "594cd0a513af461baac867a00e1f431339de3d7d",
-        "baseline_source_commit": "ec45401ad7b0ca016fe6e1b15f58462e929623ff",
+        "source_commit": "240f614fd694d48eb19edcfd8f8d3e187722875d",
+        "baseline_source_commit": "594cd0a513af461baac867a00e1f431339de3d7d",
         "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
         "candidate_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
         "baseline_run": 848,
         "candidate_run": 848,
         "failures": 37,
         "errors": 17,
-        "new_failure_ids": [],
-        "new_error_ids": [],
-        "resolved_failure_ids": [],
-        "resolved_error_ids": []
+        "new_failures_ids": [],
+        "resolved_failures_ids": [],
+        "new_errors_ids": [],
+        "resolved_errors_ids": []
       },
       "adapter_review": "SCOPED_PASS_E3F3220",
       "bridge_candidate": "68802d5",
       "bridge_review": "SCOPED_PASS_68802D5",
       "handoff_comment": 6435605069,
       "targeted_tests": {
-        "run": 27,
+        "run": 22,
         "failures": 0,
-        "errors": 0,
-        "log": "autonomy/evidence/u1_adapter_binding_20261104/TARGETED.txt"
+        "errors": 0
       },
       "snapshot_review": "SCOPED_PASS_DA443FD",
       "history_import_review": "SCOPED_PASS_DBDC424",
@@ -1124,8 +1123,8 @@
           }
         }
       },
-      "next_action_zh": "将批准配置适配器上下文接入原Owner控制的实际业务Worker入口，继续保持费用/终态合同缺失时拒绝正式结算及UNKNOWN不重放。",
-      "next_action_en": "Consume the approved-adapter context in the original owner-controlled business Worker entrypoint; reject formal settlement without authoritative cost/terminal contracts and never replay UNKNOWN.",
+      "next_action_zh": "将批准配置适配器上下文接入原Owner控制的业务Worker入口，费用和终态合同缺失时继续拒绝正式结算。",
+      "next_action_en": "Wire the approved adapter context into the original owner-controlled business Worker; reject formal settlement without authoritative cost and terminal contracts.",
       "namespace_revalidation_latest": {
         "schema": "codex.u1.namespace-revalidation.v1",
         "summary_zh": "源身份复核在hash前后核对名字对象ID，拒绝同内容替换；返回后窗口仍未锁定。",
@@ -1813,7 +1812,7 @@
         "production_deployed": false,
         "next_action": "Integrate bounded execution backend with existing signed SingleSlotAdapter admission and original Inventory lease; close installer upgrade/rollback, dependency ACL and TOCTOU blockers before independent review. No service install/start."
       },
-      "updated_at": "2026-11-04T13:29:22.362233+00:00",
+      "updated_at": "2026-11-04T16:28:35.547978+00:00",
       "u1_execution_wiring_latest": {
         "updated_at": "2026-11-02T08:40:48.546343+00:00",
         "source_commit": "cc9b7a7b672eb2098fa02d7e57c266b4ec57d76e",
@@ -3996,6 +3995,71 @@
         "allow_cancel_dispatch": false,
         "smtp_enabled": false,
         "next_action": "Consume the approved-adapter context in the original owner-controlled business Worker entrypoint; reject formal settlement without authoritative cost/terminal contracts and never replay UNKNOWN."
+      },
+      "u1_executable_pins_latest": {
+        "updated_at": "2026-11-04T16:28:35.547978+00:00",
+        "source_commit": "240f614fd694d48eb19edcfd8f8d3e187722875d",
+        "checkpoint": "autonomy/evidence/u1_executable_pins_20261104/REPORT.md",
+        "targeted_tests": {
+          "run": 22,
+          "failures": 0,
+          "errors": 0
+        },
+        "isolated_bridge_tests": 7,
+        "isolated_owner_tests": 12,
+        "combined_stage_bridge": {
+          "run": 18,
+          "errors": 6,
+          "reason": "DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED"
+        },
+        "full_regression": {
+          "source_commit": "240f614fd694d48eb19edcfd8f8d3e187722875d",
+          "baseline_source_commit": "594cd0a513af461baac867a00e1f431339de3d7d",
+          "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+          "candidate_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+          "baseline_run": 848,
+          "candidate_run": 848,
+          "failures": 37,
+          "errors": 17,
+          "new_failures_ids": [],
+          "resolved_failures_ids": [],
+          "new_errors_ids": [],
+          "resolved_errors_ids": []
+        },
+        "package": {
+          "artifacts": {
+            "install.zip": "fde8581e29e4395820a1b5ba8c7d0ac3f3c8a1ac44bd45b5aa5f176dbf6a4020",
+            "rollback-tools.zip": "3783b939a76fda00e21b71586b62dd5f1b87feeed4ee605b82a5e5cc9bfcfd31"
+          },
+          "files": 5056,
+          "independent_review": "PENDING",
+          "manifest_sha256": "9e681a1f7d761526ca593918c1405725d1cfc42d80f431876a908a6ef6dc799d",
+          "package_complete": false,
+          "production_ready": false,
+          "python_runtime_bundled": true,
+          "source_commit": "240f614fd694d48eb19edcfd8f8d3e187722875d"
+        },
+        "extracted_verification": "VERIFIED",
+        "independent_review": "PENDING",
+        "worker_entrypoint": "PENDING",
+        "provider_contract": "CONTRACT_MISSING",
+        "rollback_verified": false,
+        "rollback_matched_host_components": 4960,
+        "statuses": {
+          "DEVELOPMENT_COMPLETE": false,
+          "PACKAGE_COMPLETE": false,
+          "PROVIDER_ACCEPTED": false,
+          "WINDOWS_ACCEPTED": false,
+          "RELEASE_READY": false,
+          "PRODUCTION_DEPLOYED": false,
+          "PRODUCTION_ACCEPTED": false,
+          "BUSINESS_GROWTH": "UNKNOWN"
+        },
+        "allow_install": false,
+        "allow_dispatch": false,
+        "allow_cancel_dispatch": false,
+        "smtp_enabled": false,
+        "next_action": "Wire the approved adapter context into the original owner-controlled business Worker; reject formal settlement without authoritative cost and terminal contracts."
       }
     },
     {
@@ -5831,7 +5895,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-04T13:29:22.362233+00:00",
+  "updated_at": "2026-11-04T16:28:35.547978+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -6129,7 +6193,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "autonomy/evidence/u1_adapter_binding_20261104/REPORT.md",
+  "checkpoint": "autonomy/evidence/u1_executable_pins_20261104/REPORT.md",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
@@ -8289,55 +8353,54 @@
     "next_action_zh": "完成正式Provider执行、费用实测和受信运行配置，随后对完整候选审核；经授权后由WorkBuddy进行隔离Windows首次安装、升级、进程退出恢复、回滚中断恢复及Disabled/Stopped验收。不得用测试worker或SAFE替身代替业务验收。"
   },
   "u1_continuous_development_current": {
-    "updated_at": "2026-11-04T13:29:22.362233+00:00",
-    "source_commit": "594cd0a513af461baac867a00e1f431339de3d7d",
-    "checkpoint": "autonomy/evidence/u1_adapter_binding_20261104/REPORT.md",
+    "updated_at": "2026-11-04T16:28:35.547978+00:00",
+    "source_commit": "240f614fd694d48eb19edcfd8f8d3e187722875d",
+    "checkpoint": "autonomy/evidence/u1_executable_pins_20261104/REPORT.md",
     "targeted_tests": {
-      "run": 27,
+      "run": 22,
       "failures": 0,
-      "errors": 0,
-      "log": "autonomy/evidence/u1_adapter_binding_20261104/TARGETED.txt"
+      "errors": 0
+    },
+    "isolated_bridge_tests": 7,
+    "isolated_owner_tests": 12,
+    "combined_stage_bridge": {
+      "run": 18,
+      "errors": 6,
+      "reason": "DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED"
     },
     "full_regression": {
-      "source_commit": "594cd0a513af461baac867a00e1f431339de3d7d",
-      "baseline_source_commit": "ec45401ad7b0ca016fe6e1b15f58462e929623ff",
+      "source_commit": "240f614fd694d48eb19edcfd8f8d3e187722875d",
+      "baseline_source_commit": "594cd0a513af461baac867a00e1f431339de3d7d",
       "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
       "candidate_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
       "baseline_run": 848,
       "candidate_run": 848,
       "failures": 37,
       "errors": 17,
-      "new_failure_ids": [],
-      "new_error_ids": [],
-      "resolved_failure_ids": [],
-      "resolved_error_ids": []
+      "new_failures_ids": [],
+      "resolved_failures_ids": [],
+      "new_errors_ids": [],
+      "resolved_errors_ids": []
     },
     "package": {
       "artifacts": {
-        "install.zip": "38497049c86b6bb2c76f474d45a98d22f90a938285d7420242b6559eaa0c8aba",
-        "rollback-tools.zip": "aa6d36e3a390004c421c92e659767e02656ad770dfc20b771e21a44606f96f18"
+        "install.zip": "fde8581e29e4395820a1b5ba8c7d0ac3f3c8a1ac44bd45b5aa5f176dbf6a4020",
+        "rollback-tools.zip": "3783b939a76fda00e21b71586b62dd5f1b87feeed4ee605b82a5e5cc9bfcfd31"
       },
       "files": 5056,
       "independent_review": "PENDING",
-      "manifest_sha256": "4abd7f23e3d1219ace575a9e6a17bb61ecda8b94443ecef151ce36d42e0a42fc",
+      "manifest_sha256": "9e681a1f7d761526ca593918c1405725d1cfc42d80f431876a908a6ef6dc799d",
       "package_complete": false,
       "production_ready": false,
       "python_runtime_bundled": true,
-      "source_commit": "594cd0a513af461baac867a00e1f431339de3d7d"
+      "source_commit": "240f614fd694d48eb19edcfd8f8d3e187722875d"
     },
     "extracted_verification": "VERIFIED",
-    "packaged_adapter_probe": {
-      "returncode": 0,
-      "stdout": "{\"packaged_adapter\": true, \"inherited_direct_mode_ignored\": true, \"readonly_cache_construction\": true, \"config_lifetime_pinned\": true, \"provider_accepted\": false, \"allow_dispatch\": false}\n",
-      "stderr": "",
-      "source_commit": "594cd0a513af461baac867a00e1f431339de3d7d",
-      "initial_invocation": "Wrong runtime/python.exe path failed before launch; corrected to runtime/python/python.exe"
-    },
-    "rollback_matched_host_components": 4960,
-    "rollback_verified": false,
     "independent_review": "PENDING",
-    "provider_contract": "CONTRACT_MISSING",
     "worker_entrypoint": "PENDING",
+    "provider_contract": "CONTRACT_MISSING",
+    "rollback_verified": false,
+    "rollback_matched_host_components": 4960,
     "statuses": {
       "DEVELOPMENT_COMPLETE": false,
       "PACKAGE_COMPLETE": false,
@@ -8352,7 +8415,7 @@
     "allow_dispatch": false,
     "allow_cancel_dispatch": false,
     "smtp_enabled": false,
-    "next_action": "Consume the approved-adapter context in the original owner-controlled business Worker entrypoint; reject formal settlement without authoritative cost/terminal contracts and never replay UNKNOWN."
+    "next_action": "Wire the approved adapter context into the original owner-controlled business Worker; reject formal settlement without authoritative cost and terminal contracts."
   },
   "u1_provider_regression_9abe85a": {
     "source_commit": "9abe85a2bdb3227078ec87514727625ec5fec4e6",
@@ -8979,11 +9042,76 @@
     "next_action": "Consume the approved-adapter context in the original owner-controlled business Worker entrypoint; reject formal settlement without authoritative cost/terminal contracts and never replay UNKNOWN."
   },
   "u1_cycle_boundary": {
-    "actual_started_at": "2026-11-04T20:52:53+08:00",
-    "stop_before": "2026-11-04T21:37:53+08:00",
+    "actual_started_at": "2026-11-04T23:53:18+08:00",
+    "stop_before": "2026-11-05T00:38:18+08:00",
     "state": "CHECKPOINTED",
-    "work_stopped_at": "2026-11-04T13:29:22.362233+00:00",
+    "work_stopped_at": "2026-11-04T16:28:35.547978+00:00",
     "platform_hard_timeout_available": false,
     "max_heavy_workstreams": 2
+  },
+  "u1_executable_pins_latest": {
+    "updated_at": "2026-11-04T16:28:35.547978+00:00",
+    "source_commit": "240f614fd694d48eb19edcfd8f8d3e187722875d",
+    "checkpoint": "autonomy/evidence/u1_executable_pins_20261104/REPORT.md",
+    "targeted_tests": {
+      "run": 22,
+      "failures": 0,
+      "errors": 0
+    },
+    "isolated_bridge_tests": 7,
+    "isolated_owner_tests": 12,
+    "combined_stage_bridge": {
+      "run": 18,
+      "errors": 6,
+      "reason": "DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED"
+    },
+    "full_regression": {
+      "source_commit": "240f614fd694d48eb19edcfd8f8d3e187722875d",
+      "baseline_source_commit": "594cd0a513af461baac867a00e1f431339de3d7d",
+      "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+      "candidate_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+      "baseline_run": 848,
+      "candidate_run": 848,
+      "failures": 37,
+      "errors": 17,
+      "new_failures_ids": [],
+      "resolved_failures_ids": [],
+      "new_errors_ids": [],
+      "resolved_errors_ids": []
+    },
+    "package": {
+      "artifacts": {
+        "install.zip": "fde8581e29e4395820a1b5ba8c7d0ac3f3c8a1ac44bd45b5aa5f176dbf6a4020",
+        "rollback-tools.zip": "3783b939a76fda00e21b71586b62dd5f1b87feeed4ee605b82a5e5cc9bfcfd31"
+      },
+      "files": 5056,
+      "independent_review": "PENDING",
+      "manifest_sha256": "9e681a1f7d761526ca593918c1405725d1cfc42d80f431876a908a6ef6dc799d",
+      "package_complete": false,
+      "production_ready": false,
+      "python_runtime_bundled": true,
+      "source_commit": "240f614fd694d48eb19edcfd8f8d3e187722875d"
+    },
+    "extracted_verification": "VERIFIED",
+    "independent_review": "PENDING",
+    "worker_entrypoint": "PENDING",
+    "provider_contract": "CONTRACT_MISSING",
+    "rollback_verified": false,
+    "rollback_matched_host_components": 4960,
+    "statuses": {
+      "DEVELOPMENT_COMPLETE": false,
+      "PACKAGE_COMPLETE": false,
+      "PROVIDER_ACCEPTED": false,
+      "WINDOWS_ACCEPTED": false,
+      "RELEASE_READY": false,
+      "PRODUCTION_DEPLOYED": false,
+      "PRODUCTION_ACCEPTED": false,
+      "BUSINESS_GROWTH": "UNKNOWN"
+    },
+    "allow_install": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "smtp_enabled": false,
+    "next_action": "Wire the approved adapter context into the original owner-controlled business Worker; reject formal settlement without authoritative cost and terminal contracts."
   }
 }

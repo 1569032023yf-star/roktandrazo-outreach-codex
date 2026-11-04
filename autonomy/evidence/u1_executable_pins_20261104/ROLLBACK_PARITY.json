@@ -1,0 +1,9 @@
+{
+  "source_commit": "240f614fd694d48eb19edcfd8f8d3e187722875d",
+  "matched_components": 4960,
+  "mismatches": [],
+  "outcome": "VERIFIED",
+  "rollback_verified": false,
+  "description_zh": "仅回滚组件对应，未安装或实际回滚。",
+  "description_en": "Component parity only; no installation or actual rollback."
+}
