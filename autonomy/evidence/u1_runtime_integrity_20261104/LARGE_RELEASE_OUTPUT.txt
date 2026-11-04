@@ -1,0 +1,15 @@
+test_case_collision_and_traversal_rejected_before_destination (test_large_runtime_release.LargeRuntimeReleaseTests.test_case_collision_and_traversal_rejected_before_destination) ... ok
+test_large_file_count_empty_files_and_timezone_paths (test_large_runtime_release.LargeRuntimeReleaseTests.test_large_file_count_empty_files_and_timezone_paths) ... ok
+test_failed_commit_keeps_old_pointer_and_backup (test_release_store.ReleaseStoreTests.test_failed_commit_keeps_old_pointer_and_backup) ... ok
+test_failed_pointer_commit_is_inspect_only_and_all_writers_fenced (test_release_store.ReleaseStoreTests.test_failed_pointer_commit_is_inspect_only_and_all_writers_fenced) ... ok
+test_final_sha_layout_rejected_before_staging (test_release_store.ReleaseStoreTests.test_final_sha_layout_rejected_before_staging) ... ok
+test_first_install_upgrade_and_complete_pointer_rollback (test_release_store.ReleaseStoreTests.test_first_install_upgrade_and_complete_pointer_rollback) ... ok
+test_namespace_paths_rejected (test_release_store.ReleaseStoreTests.test_namespace_paths_rejected) ... ok
+test_process_exit_after_real_commit_keeps_unknown_and_does_not_replay (test_release_store.ReleaseStoreTests.test_process_exit_after_real_commit_keeps_unknown_and_does_not_replay) ... ok
+test_tamper_refused_and_inactive_delete_preserves_backups (test_release_store.ReleaseStoreTests.test_tamper_refused_and_inactive_delete_preserves_backups) ... ok
+test_torn_intent_blocks_publication_without_clearing_evidence (test_release_store.ReleaseStoreTests.test_torn_intent_blocks_publication_without_clearing_evidence) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 182.509s
+
+OK

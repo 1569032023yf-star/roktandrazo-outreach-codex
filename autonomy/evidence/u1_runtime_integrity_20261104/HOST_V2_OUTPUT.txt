@@ -1,0 +1,7 @@
+test_v2_runtime_combination_and_publisher_validation (test_disabled_host_package.DisabledPackageTests.test_v2_runtime_combination_and_publisher_validation) ... ok
+test_actual_powershell_request_and_python_compensation (test_host_install_sources.HostInstallSourcesTests.test_actual_powershell_request_and_python_compensation) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 8.779s
+
+OK

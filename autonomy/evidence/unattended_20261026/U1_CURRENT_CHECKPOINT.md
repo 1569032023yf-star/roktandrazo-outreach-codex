@@ -1,3 +1,7 @@
+中文：固定源码03eca14：宿主v2组包工具已纳入，固定宿主清单及完整运行时摘要，逐文件复制；Publisher接受显式v2和零字节依赖，允许合法加号路径，仍检查文件摘要与所有权保留路径。b008663发布/Bootstrap及原发布回滚10项通过（182.509秒）；本轮宿主v2组包/Publisher及实际PowerShell请求2项通过（8.779秒）。真实CPython宿主组包运行中，句柄39800。该宿主包尚未含完整应用发布包，运行计划安装路径绑定仍待完成；不标记PACKAGE_COMPLETE。
+
+English: Fixed source03eca14 adds pinned host-v2 assembly from host/runtime manifests, copying one file at a time. Publisher supports explicit v2, empty dependency files and legitimate plus paths while retaining digest and reserved ownership checks. b008663 release/Bootstrap and original publication rollback:10 tests passed in182.509s. Current host-v2/Publisher and actual PowerShell request:2 tests passed in8.779s. Real CPython host assembly is running under handle39800. This host candidate is not the complete application release; installed runtime-plan path binding remains pending. PACKAGE_COMPLETE remains false.
+
 中文：固定源码b008663：新增显式rokt.release-manifest.v2，最多8192文件、总1GiB、单文件256MiB；逐文件构建，旧v1仍512文件/128MiB。Bootstrap同步识别v2与规范化清单，允许合法加号路径，保留逐文件哈希及未列文件拒绝。原宿主包及Publisher仍待统一；未生成完整安装包，最新完整回归与独审未完成。
 
 English: Fixed source b008663: explicit rokt.release-manifest.v2 supports8192 files,1GiB total and256MiB per file with file-at-a-time construction. Legacy v1 retains512 files/128MiB. Bootstrap shares v2 and canonical manifest checks, permits legitimate plus paths, and retains digest/unlisted-file rejection. Host package and Publisher alignment, complete installation archive, full regression and independent review remain pending.
