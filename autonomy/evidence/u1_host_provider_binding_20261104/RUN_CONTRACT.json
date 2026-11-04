@@ -1,0 +1,16 @@
+{
+  "actual_started_at": "2026-11-04T18:52:23+08:00",
+  "stop_before": "2026-11-04T19:37:23+08:00",
+  "whole_turn_hard_timeout_field_available": false,
+  "whole_turn_hard_timeout_configured": false,
+  "max_heavy_workstreams": 2,
+  "verification_subprocess_timeout_seconds": 600,
+  "source_commit": "69eb1887800f046b6d860cbefad6bd99f3c35169",
+  "unique_inventory": "1784775229336",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "description_zh": "整轮没有平台硬超时字段，不声称已强制45分钟；仅最终核验子进程600秒硬超时。未安装系统任务或服务。",
+  "description_en": "No whole-turn platform hard-timeout field is available; a forced45-minute limit is not claimed. Only the final verification subprocess has a600-second hard timeout. No system task or service is installed."
+}

@@ -576,14 +576,14 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/u1_provider_environment_20261104/REPORT.md",
-      "next_action": "Propagate approved Provider configuration path and SHA256 through pinned host runtime plan into original business Worker without opening safety gates",
+      "checkpoint": "autonomy/evidence/u1_host_provider_binding_20261104/REPORT.md",
+      "next_action": "Connect the approved Provider reference pair through the original owner-controlled ProcessBackend/Worker launch, retaining isolated_offline and closed production gates; authoritative settlement remains CONTRACT_MISSING.",
       "phase": "U1",
       "baseline_commit": "91aa60c6cf52b0c0a9c9e0ff2ddfb5ee39a7f7fc",
-      "review_status": "PENDING_FOR_CURRENT_PIN",
+      "review_status": "PENDING",
       "production_deployed": false,
       "release_ready": false,
-      "candidate_commit": "ec45401ad7b0ca016fe6e1b15f58462e929623ff",
+      "candidate_commit": "69eb1887800f046b6d860cbefad6bd99f3c35169",
       "trust_boundary_review": "SCOPED_PASS",
       "schedule_contract_review": "SCOPED_PASS",
       "regression_runner_candidate": "b69214d",
@@ -1111,8 +1111,8 @@
           }
         }
       },
-      "next_action_zh": "通过固定宿主运行计划向原业务Worker传播批准Provider配置绝对路径及摘要；保持原Inventory锁和全部门禁关闭。",
-      "next_action_en": "Propagate approved Provider configuration path and SHA256 through pinned host runtime plan into original business Worker without opening safety gates",
+      "next_action_zh": "将批准Provider路径/摘要对接入原Owner控制的ProcessBackend/业务Worker启动；保留isolated_offline与生产门禁关闭，权威结算仍CONTRACT_MISSING。",
+      "next_action_en": "Connect the approved Provider reference pair through the original owner-controlled ProcessBackend/Worker launch, retaining isolated_offline and closed production gates; authoritative settlement remains CONTRACT_MISSING.",
       "namespace_revalidation_latest": {
         "schema": "codex.u1.namespace-revalidation.v1",
         "summary_zh": "源身份复核在hash前后核对名字对象ID，拒绝同内容替换；返回后窗口仍未锁定。",
@@ -1800,7 +1800,7 @@
         "production_deployed": false,
         "next_action": "Integrate bounded execution backend with existing signed SingleSlotAdapter admission and original Inventory lease; close installer upgrade/rollback, dependency ACL and TOCTOU blockers before independent review. No service install/start."
       },
-      "updated_at": "2026-11-04T10:50:24.184725+00:00",
+      "updated_at": "2026-11-04T11:28:41.327647+00:00",
       "u1_execution_wiring_latest": {
         "updated_at": "2026-11-02T08:40:48.546343+00:00",
         "source_commit": "cc9b7a7b672eb2098fa02d7e57c266b4ec57d76e",
@@ -3809,6 +3809,78 @@
         "PRODUCTION_DEPLOYED": false,
         "PRODUCTION_ACCEPTED": false,
         "BUSINESS_GROWTH": "UNKNOWN"
+      },
+      "u1_host_provider_binding_latest": {
+        "updated_at": "2026-11-04T11:28:41.327647+00:00",
+        "source_commit": "69eb1887800f046b6d860cbefad6bd99f3c35169",
+        "checkpoint": "autonomy/evidence/u1_host_provider_binding_20261104/REPORT.md",
+        "targeted_tests": {
+          "run": 42,
+          "failures": 0,
+          "errors": 0,
+          "log": "autonomy/evidence/u1_host_provider_binding_20261104/TARGETED.txt"
+        },
+        "full_regression": {
+          "baseline_commit": "ec45401ad7b0ca016fe6e1b15f58462e929623ff",
+          "candidate_commit": "69eb1887800f046b6d860cbefad6bd99f3c35169",
+          "scope": "tests/ only; clean detached worktrees; root installation/host tests separately run42",
+          "baseline_result": "autonomy\\evidence\\u1_provider_environment_20261104\\clean-candidate-suite\\result.json",
+          "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+          "baseline_reused_fixed_result": true,
+          "candidate_run": 848,
+          "baseline_run": 848,
+          "all_tests_passed": false,
+          "failures": {
+            "baseline_count": 37,
+            "candidate_count": 37,
+            "added": [],
+            "removed": []
+          },
+          "errors": {
+            "baseline_count": 17,
+            "candidate_count": 17,
+            "added": [],
+            "removed": []
+          },
+          "failure_error_ids_equal": true
+        },
+        "package": {
+          "artifacts": {
+            "install.zip": "0b9f67081afbf481775c0228591df0f89f41a414457a5530ad69a1862a636f7b",
+            "rollback-tools.zip": "1c74cd2cddb99624c7dd5b82d18462c42ef730bf11f2ab00ad959044917f2ede"
+          },
+          "files": 5056,
+          "independent_review": "PENDING",
+          "manifest_sha256": "664361ecd462d29e0f862fabcda6c6e507112bad44c759168bb06d286f3de96e",
+          "package_complete": false,
+          "production_ready": false,
+          "python_runtime_bundled": true,
+          "source_commit": "69eb1887800f046b6d860cbefad6bd99f3c35169"
+        },
+        "extracted_verification": "UNKNOWN_TIMEOUT_FINAL_INTEGRITY",
+        "packaged_reference_probe": "PASS",
+        "rollback_matched_components": 4964,
+        "rollback_verified": false,
+        "independent_review": "PENDING",
+        "host_configuration_propagation": "INSTALL_PLAN_TO_HOST_LIFETIME_PIN_VERIFIED",
+        "worker_configuration_propagation": "NOT_IMPLEMENTED",
+        "package_verification_recovery": "Inspect preserved extracted tree and verifier final revalidation performance; do not claim VERIFIED or replay installation",
+        "provider_contract": "CONTRACT_MISSING",
+        "statuses": {
+          "DEVELOPMENT_COMPLETE": false,
+          "PACKAGE_COMPLETE": false,
+          "PROVIDER_ACCEPTED": false,
+          "WINDOWS_ACCEPTED": false,
+          "RELEASE_READY": false,
+          "PRODUCTION_DEPLOYED": false,
+          "PRODUCTION_ACCEPTED": false,
+          "BUSINESS_GROWTH": "UNKNOWN"
+        },
+        "allow_install": false,
+        "allow_dispatch": false,
+        "allow_cancel_dispatch": false,
+        "smtp_enabled": false,
+        "next_action": "Connect the approved Provider reference pair through the original owner-controlled ProcessBackend/Worker launch, retaining isolated_offline and closed production gates; authoritative settlement remains CONTRACT_MISSING."
       }
     },
     {
@@ -5644,7 +5716,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-04T10:50:24.184725+00:00",
+  "updated_at": "2026-11-04T11:28:41.327647+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -5942,7 +6014,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "autonomy/evidence/u1_provider_environment_20261104/REPORT.md",
+  "checkpoint": "autonomy/evidence/u1_host_provider_binding_20261104/REPORT.md",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
@@ -8102,41 +8174,76 @@
     "next_action_zh": "完成正式Provider执行、费用实测和受信运行配置，随后对完整候选审核；经授权后由WorkBuddy进行隔离Windows首次安装、升级、进程退出恢复、回滚中断恢复及Disabled/Stopped验收。不得用测试worker或SAFE替身代替业务验收。"
   },
   "u1_continuous_development_current": {
-    "updated_at": "2026-11-04T10:50:24.184725+00:00",
-    "source_commit": "ec45401ad7b0ca016fe6e1b15f58462e929623ff",
-    "checkpoint": "autonomy/evidence/u1_provider_environment_20261104/REPORT.md",
-    "tests": "14 targeted PASS + 1 pinned-manifest PASS in separate processes; packaged configuration probe PASS",
-    "full_regression": "848 per clean fixed revision; identical 37 FAIL / 17 ERROR IDs; not all passed",
-    "regression_comparison": "autonomy/evidence/u1_provider_environment_20261104/CLEAN_REGRESSION_COMPARISON.json",
-    "main_tree_extra_errors": "2 historical extracted-path FileNotFoundErrors retained",
-    "independent_review": "PENDING",
-    "package_files": 5056,
-    "artifacts": {
-      "install.zip": "784bc00b14f7826843c86eebbb0ff9d34c0855047d50821e94b45b2103259698",
-      "rollback-tools.zip": "b2ad6de36dfc47307188b7eafc43e42849a5c559e77c696128da74dbb52d0bcf"
+    "updated_at": "2026-11-04T11:28:41.327647+00:00",
+    "source_commit": "69eb1887800f046b6d860cbefad6bd99f3c35169",
+    "checkpoint": "autonomy/evidence/u1_host_provider_binding_20261104/REPORT.md",
+    "targeted_tests": {
+      "run": 42,
+      "failures": 0,
+      "errors": 0,
+      "log": "autonomy/evidence/u1_host_provider_binding_20261104/TARGETED.txt"
     },
-    "manifest_sha256": "181bc70d1fefae94b2e7a3453cb269d7588a3b6b29d535e21cc3aa8b8f3f844a",
-    "extracted_verification": "VERIFIED_OFFLINE_SCOPE_ONLY",
-    "rollback_archive_parity": "4964 MATCHED; ACTUAL_ROLLBACK_NOT_RUN",
+    "full_regression": {
+      "baseline_commit": "ec45401ad7b0ca016fe6e1b15f58462e929623ff",
+      "candidate_commit": "69eb1887800f046b6d860cbefad6bd99f3c35169",
+      "scope": "tests/ only; clean detached worktrees; root installation/host tests separately run42",
+      "baseline_result": "autonomy\\evidence\\u1_provider_environment_20261104\\clean-candidate-suite\\result.json",
+      "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+      "baseline_reused_fixed_result": true,
+      "candidate_run": 848,
+      "baseline_run": 848,
+      "all_tests_passed": false,
+      "failures": {
+        "baseline_count": 37,
+        "candidate_count": 37,
+        "added": [],
+        "removed": []
+      },
+      "errors": {
+        "baseline_count": 17,
+        "candidate_count": 17,
+        "added": [],
+        "removed": []
+      },
+      "failure_error_ids_equal": true
+    },
+    "package": {
+      "artifacts": {
+        "install.zip": "0b9f67081afbf481775c0228591df0f89f41a414457a5530ad69a1862a636f7b",
+        "rollback-tools.zip": "1c74cd2cddb99624c7dd5b82d18462c42ef730bf11f2ab00ad959044917f2ede"
+      },
+      "files": 5056,
+      "independent_review": "PENDING",
+      "manifest_sha256": "664361ecd462d29e0f862fabcda6c6e507112bad44c759168bb06d286f3de96e",
+      "package_complete": false,
+      "production_ready": false,
+      "python_runtime_bundled": true,
+      "source_commit": "69eb1887800f046b6d860cbefad6bd99f3c35169"
+    },
+    "extracted_verification": "UNKNOWN_TIMEOUT_FINAL_INTEGRITY",
+    "packaged_reference_probe": "PASS",
+    "rollback_matched_components": 4964,
+    "rollback_verified": false,
+    "independent_review": "PENDING",
+    "host_configuration_propagation": "INSTALL_PLAN_TO_HOST_LIFETIME_PIN_VERIFIED",
+    "worker_configuration_propagation": "NOT_IMPLEMENTED",
+    "package_verification_recovery": "Inspect preserved extracted tree and verifier final revalidation performance; do not claim VERIFIED or replay installation",
     "provider_contract": "CONTRACT_MISSING",
-    "host_configuration_propagation": "NOT_IMPLEMENTED",
-    "next_action": "Propagate approved Provider configuration path and SHA256 through pinned host runtime plan into original business Worker without opening safety gates",
+    "statuses": {
+      "DEVELOPMENT_COMPLETE": false,
+      "PACKAGE_COMPLETE": false,
+      "PROVIDER_ACCEPTED": false,
+      "WINDOWS_ACCEPTED": false,
+      "RELEASE_READY": false,
+      "PRODUCTION_DEPLOYED": false,
+      "PRODUCTION_ACCEPTED": false,
+      "BUSINESS_GROWTH": "UNKNOWN"
+    },
     "allow_install": false,
     "allow_dispatch": false,
     "allow_cancel_dispatch": false,
     "smtp_enabled": false,
-    "DEVELOPMENT_COMPLETE": false,
-    "PACKAGE_COMPLETE": false,
-    "PROVIDER_ACCEPTED": false,
-    "WINDOWS_ACCEPTED": false,
-    "RELEASE_READY": false,
-    "PRODUCTION_DEPLOYED": false,
-    "PRODUCTION_ACCEPTED": false,
-    "BUSINESS_GROWTH": "UNKNOWN",
-    "report": "autonomy/evidence/u1_provider_environment_20261104/REPORT.md",
-    "phase": "PROVIDER_CONFIGURATION_CONSUMER_COMPLETE_HOST_PROPAGATION_PENDING",
-    "formal_backend_integrated": false,
-    "installable_release": false
+    "next_action": "Connect the approved Provider reference pair through the original owner-controlled ProcessBackend/Worker launch, retaining isolated_offline and closed production gates; authoritative settlement remains CONTRACT_MISSING."
   },
   "u1_provider_regression_9abe85a": {
     "source_commit": "9abe85a2bdb3227078ec87514727625ec5fec4e6",
@@ -8585,5 +8692,77 @@
       "last_observed": "RUNNING",
       "source_commit": "a3ce4a5f05930adb0fb26dd076f82a692d6cfc61"
     }
+  },
+  "u1_host_provider_binding_latest": {
+    "updated_at": "2026-11-04T11:28:41.327647+00:00",
+    "source_commit": "69eb1887800f046b6d860cbefad6bd99f3c35169",
+    "checkpoint": "autonomy/evidence/u1_host_provider_binding_20261104/REPORT.md",
+    "targeted_tests": {
+      "run": 42,
+      "failures": 0,
+      "errors": 0,
+      "log": "autonomy/evidence/u1_host_provider_binding_20261104/TARGETED.txt"
+    },
+    "full_regression": {
+      "baseline_commit": "ec45401ad7b0ca016fe6e1b15f58462e929623ff",
+      "candidate_commit": "69eb1887800f046b6d860cbefad6bd99f3c35169",
+      "scope": "tests/ only; clean detached worktrees; root installation/host tests separately run42",
+      "baseline_result": "autonomy\\evidence\\u1_provider_environment_20261104\\clean-candidate-suite\\result.json",
+      "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+      "baseline_reused_fixed_result": true,
+      "candidate_run": 848,
+      "baseline_run": 848,
+      "all_tests_passed": false,
+      "failures": {
+        "baseline_count": 37,
+        "candidate_count": 37,
+        "added": [],
+        "removed": []
+      },
+      "errors": {
+        "baseline_count": 17,
+        "candidate_count": 17,
+        "added": [],
+        "removed": []
+      },
+      "failure_error_ids_equal": true
+    },
+    "package": {
+      "artifacts": {
+        "install.zip": "0b9f67081afbf481775c0228591df0f89f41a414457a5530ad69a1862a636f7b",
+        "rollback-tools.zip": "1c74cd2cddb99624c7dd5b82d18462c42ef730bf11f2ab00ad959044917f2ede"
+      },
+      "files": 5056,
+      "independent_review": "PENDING",
+      "manifest_sha256": "664361ecd462d29e0f862fabcda6c6e507112bad44c759168bb06d286f3de96e",
+      "package_complete": false,
+      "production_ready": false,
+      "python_runtime_bundled": true,
+      "source_commit": "69eb1887800f046b6d860cbefad6bd99f3c35169"
+    },
+    "extracted_verification": "UNKNOWN_TIMEOUT_FINAL_INTEGRITY",
+    "packaged_reference_probe": "PASS",
+    "rollback_matched_components": 4964,
+    "rollback_verified": false,
+    "independent_review": "PENDING",
+    "host_configuration_propagation": "INSTALL_PLAN_TO_HOST_LIFETIME_PIN_VERIFIED",
+    "worker_configuration_propagation": "NOT_IMPLEMENTED",
+    "package_verification_recovery": "Inspect preserved extracted tree and verifier final revalidation performance; do not claim VERIFIED or replay installation",
+    "provider_contract": "CONTRACT_MISSING",
+    "statuses": {
+      "DEVELOPMENT_COMPLETE": false,
+      "PACKAGE_COMPLETE": false,
+      "PROVIDER_ACCEPTED": false,
+      "WINDOWS_ACCEPTED": false,
+      "RELEASE_READY": false,
+      "PRODUCTION_DEPLOYED": false,
+      "PRODUCTION_ACCEPTED": false,
+      "BUSINESS_GROWTH": "UNKNOWN"
+    },
+    "allow_install": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "smtp_enabled": false,
+    "next_action": "Connect the approved Provider reference pair through the original owner-controlled ProcessBackend/Worker launch, retaining isolated_offline and closed production gates; authoritative settlement remains CONTRACT_MISSING."
   }
 }

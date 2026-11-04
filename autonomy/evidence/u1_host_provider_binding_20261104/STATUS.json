@@ -1,0 +1,72 @@
+{
+  "updated_at": "2026-11-04T11:28:41.327647+00:00",
+  "source_commit": "69eb1887800f046b6d860cbefad6bd99f3c35169",
+  "checkpoint": "autonomy/evidence/u1_host_provider_binding_20261104/REPORT.md",
+  "targeted_tests": {
+    "run": 42,
+    "failures": 0,
+    "errors": 0,
+    "log": "autonomy/evidence/u1_host_provider_binding_20261104/TARGETED.txt"
+  },
+  "full_regression": {
+    "baseline_commit": "ec45401ad7b0ca016fe6e1b15f58462e929623ff",
+    "candidate_commit": "69eb1887800f046b6d860cbefad6bd99f3c35169",
+    "scope": "tests/ only; clean detached worktrees; root installation/host tests separately run42",
+    "baseline_result": "autonomy\\evidence\\u1_provider_environment_20261104\\clean-candidate-suite\\result.json",
+    "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+    "baseline_reused_fixed_result": true,
+    "candidate_run": 848,
+    "baseline_run": 848,
+    "all_tests_passed": false,
+    "failures": {
+      "baseline_count": 37,
+      "candidate_count": 37,
+      "added": [],
+      "removed": []
+    },
+    "errors": {
+      "baseline_count": 17,
+      "candidate_count": 17,
+      "added": [],
+      "removed": []
+    },
+    "failure_error_ids_equal": true
+  },
+  "package": {
+    "artifacts": {
+      "install.zip": "0b9f67081afbf481775c0228591df0f89f41a414457a5530ad69a1862a636f7b",
+      "rollback-tools.zip": "1c74cd2cddb99624c7dd5b82d18462c42ef730bf11f2ab00ad959044917f2ede"
+    },
+    "files": 5056,
+    "independent_review": "PENDING",
+    "manifest_sha256": "664361ecd462d29e0f862fabcda6c6e507112bad44c759168bb06d286f3de96e",
+    "package_complete": false,
+    "production_ready": false,
+    "python_runtime_bundled": true,
+    "source_commit": "69eb1887800f046b6d860cbefad6bd99f3c35169"
+  },
+  "extracted_verification": "UNKNOWN_TIMEOUT_FINAL_INTEGRITY",
+  "packaged_reference_probe": "PASS",
+  "rollback_matched_components": 4964,
+  "rollback_verified": false,
+  "independent_review": "PENDING",
+  "host_configuration_propagation": "INSTALL_PLAN_TO_HOST_LIFETIME_PIN_VERIFIED",
+  "worker_configuration_propagation": "NOT_IMPLEMENTED",
+  "package_verification_recovery": "Inspect preserved extracted tree and verifier final revalidation performance; do not claim VERIFIED or replay installation",
+  "provider_contract": "CONTRACT_MISSING",
+  "statuses": {
+    "DEVELOPMENT_COMPLETE": false,
+    "PACKAGE_COMPLETE": false,
+    "PROVIDER_ACCEPTED": false,
+    "WINDOWS_ACCEPTED": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "BUSINESS_GROWTH": "UNKNOWN"
+  },
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "next_action": "Connect the approved Provider reference pair through the original owner-controlled ProcessBackend/Worker launch, retaining isolated_offline and closed production gates; authoritative settlement remains CONTRACT_MISSING."
+}

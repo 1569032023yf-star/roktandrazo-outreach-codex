@@ -1,0 +1,24 @@
+{
+  "baseline_commit": "ec45401ad7b0ca016fe6e1b15f58462e929623ff",
+  "candidate_commit": "69eb1887800f046b6d860cbefad6bd99f3c35169",
+  "scope": "tests/ only; clean detached worktrees; root installation/host tests separately run42",
+  "baseline_result": "autonomy\\evidence\\u1_provider_environment_20261104\\clean-candidate-suite\\result.json",
+  "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+  "baseline_reused_fixed_result": true,
+  "candidate_run": 848,
+  "baseline_run": 848,
+  "all_tests_passed": false,
+  "failures": {
+    "baseline_count": 37,
+    "candidate_count": 37,
+    "added": [],
+    "removed": []
+  },
+  "errors": {
+    "baseline_count": 17,
+    "candidate_count": 17,
+    "added": [],
+    "removed": []
+  },
+  "failure_error_ids_equal": true
+}

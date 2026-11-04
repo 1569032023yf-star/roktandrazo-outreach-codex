@@ -1,0 +1,8 @@
+{
+  "source_commit": "69eb1887800f046b6d860cbefad6bd99f3c35169",
+  "returncode": 0,
+  "stdout": "{\"outcome\": \"PASS\", \"actual_packaged_origins\": 3, \"lifetime_write_blocked\": true, \"bootstrap_arguments_forwarded\": true, \"complete_scope_accepted\": 4952, \"credentials_exported\": false, \"fixture_only\": true, \"worker_executed\": false, \"installation_verified\": false}\n",
+  "stderr": "",
+  "provider_accepted": false,
+  "installation_verified": false
+}

@@ -1,0 +1,10 @@
+{
+  "outcome": "UNKNOWN",
+  "driver_stdout": "EXTRACTED_CHECK_TIMEOUT_UNKNOWN",
+  "driver_exit_code": 1,
+  "timeout_seconds": 600,
+  "remaining_verifier_processes": 0,
+  "raw_child_output_empty": true,
+  "description_zh": "父驱动输出与空子进程输出分别保留；四项探针通过，最终完整性未确认。不重放安装。",
+  "description_en": "Parent driver output is recorded separately from empty child output. Four probes pass; final integrity is unconfirmed. No installation replay."
+}
