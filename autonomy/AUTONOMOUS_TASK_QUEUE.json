@@ -8059,7 +8059,7 @@
       "duration_seconds": 1.33
     },
     "independent_review": "PENDING",
-    "full_regression": "RUNNING_FOR_THIS_SHA",
+    "full_regression": "NOT_ACCEPTED_NEW_SETUP_ERROR",
     "previous_source_regression": "032e219_HAS_NEW_FAILURE_REPAIRED_IN_9abe85a",
     "formal_backend_integrated": false,
     "installable_release": false,
@@ -8076,8 +8076,8 @@
     "allow_dispatch": false,
     "allow_cancel_dispatch": false,
     "smtp_enabled": false,
-    "next_action_zh": "完成当前SHA回归；开发固定运行时子树暂存/提交/补偿与原安装事务绑定；保留CONTRACT_MISSING及全false门禁。",
-    "next_action_en": "Finish current-SHA regression; implement pinned runtime subtree staging/commit/compensation within original installation transactions; retain CONTRACT_MISSING and false gates.",
+    "next_action_zh": "在不放宽开发保护的前提下分离原生验证执行边界，继续大运行时安装事务开发。",
+    "next_action_en": "Separate native verification execution boundary without weakening development protection; continue large-runtime installation transaction development.",
     "pollution_reproduction": {
       "tests": 27,
       "passed": true
@@ -8148,7 +8148,8 @@
       "targeted_passed": true,
       "legacy_service_test": "FAILED_ON_BASELINE_AND_CANDIDATE",
       "install_transaction_integrated": false
-    }
+    },
+    "full_regression_comparison": "autonomy\\evidence\\u1_runtime_integrity_20261104\\FULL_COMPARISON.json"
   },
   "u1_provider_regression_9abe85a": {
     "source_commit": "9abe85a2bdb3227078ec87514727625ec5fec4e6",

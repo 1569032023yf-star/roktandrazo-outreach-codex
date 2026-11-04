@@ -1,3 +1,7 @@
+中文：完整回归已结束：候选05783f2与基线均运行842项，均37项失败；候选19项错误，基线18项错误。新增测试初始化被开发子进程保护阻止，完整回归未通过。原始输出已保留，不放宽保护。运行时安装事务待开发，Provider CONTRACT_MISSING，全部门禁及最终验收状态false。
+
+English: Full regression ended: candidate05783f2 ran842 tests with37 failures/19 errors; baseline5a8394d ran842 with37 failures/18 errors. New setUpClass is blocked by development subprocess protection on git. Full regression NOT ACCEPTED. Raw outputs preserved; protection unchanged. Runtime installation transaction remains pending; Provider CONTRACT_MISSING. All gates and final acceptance states false.
+
 中文：当前05783f2。C#启动Python前与Publisher固定清单4943文件校验通过；26项定向测试通过。旧服务子进程测试在基线和候选都失败，未抹去。当前完整回归运行中（74787/12397）。完整运行时安装事务未集成，独审PENDING，所有状态及门禁false。详见u1_runtime_integrity_20261104/REPORT.md。
 
 English: Current05783f2. Native pre-Python and Publisher integrity validation passes on4943 files;26 focused tests pass. Legacy service-child test fails on baseline and candidate and is preserved. Full regression running(74787/12397). Full runtime installation remains unintegrated; independent review PENDING; all acceptance states and gates false. Seeu1_runtime_integrity_20261104/REPORT.md.

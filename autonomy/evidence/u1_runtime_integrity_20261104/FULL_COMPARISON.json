@@ -1,0 +1,18 @@
+{
+  "source_commit": "05783f2c560825e0b5095b99afdc6b9b86f47955",
+  "baseline_commit": "5a8394d",
+  "baseline_run": 842,
+  "candidate_run": 842,
+  "baseline_failures": 37,
+  "candidate_failures": 37,
+  "baseline_errors": 18,
+  "candidate_errors": 19,
+  "new_failures": [],
+  "new_errors": [
+    "setUpClass (test_u1_runtime_content.RuntimeContentTests)"
+  ],
+  "removed_errors": [],
+  "full_regression_accepted": false,
+  "reason_zh": "新增测试初始化被开发子进程保护阻止；不放宽保护，不跳过测试。",
+  "reason_en": "New test initialization is blocked by development subprocess protection; neither protection nor tests are bypassed."
+}

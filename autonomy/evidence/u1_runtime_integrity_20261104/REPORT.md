@@ -24,3 +24,10 @@ English: Existing file transactions inline/base64 old/new contents into journals
 
 中文：DEVELOPMENT_COMPLETE、PACKAGE_COMPLETE、PROVIDER_ACCEPTED、WINDOWS_ACCEPTED、RELEASE_READY、PRODUCTION_DEPLOYED、PRODUCTION_ACCEPTED全部false。allow_install、allow_dispatch、allow_cancel_dispatch、smtp_enabled全部false。未安装服务、修改生产ACL/数据库、触发Inventory、进行生产请求、扣费或SMTP。输入和包内未加入真实凭据。
 English: DEVELOPMENT_COMPLETE, PACKAGE_COMPLETE, PROVIDER_ACCEPTED, WINDOWS_ACCEPTED, RELEASE_READY, PRODUCTION_DEPLOYED and PRODUCTION_ACCEPTED are allfalse. allow_install, allow_dispatch, allow_cancel_dispatch and smtp_enabled remainfalse. No service install, production ACL/database mutation, Inventory trigger, production request, charge or SMTP action occurred. No real credentials were added to inputs or archives.
+
+
+## 完整回归收尾 / Full regression closeout
+
+完整回归已结束：候选05783f2与基线均运行842项，均37项失败；候选19项错误，基线18项错误。新增测试初始化被开发子进程保护阻止，完整回归未通过。原始输出已保留，不放宽保护。运行时安装事务待开发，Provider CONTRACT_MISSING，全部门禁及最终验收状态false。
+
+New test initialization is blocked by development subprocess protection; neither protection nor tests are bypassed. Candidate:842/37 failures/19 errors; baseline:842/37 failures/18 errors. NOT ACCEPTED.
