@@ -1,0 +1,6 @@
+test_exact_component_set_and_tamper (test_rollback_archive_parity.RollbackArchiveParityTests.test_exact_component_set_and_tamper) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.850s
+
+OK

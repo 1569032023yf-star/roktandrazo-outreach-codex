@@ -43,6 +43,21 @@
   "full_delivery_build": {
     "source_commit": "a3ce4a5f05930adb0fb26dd076f82a692d6cfc61",
     "session": 29556,
-    "last_observed": "RUNNING"
+    "last_observed": "EXITED_0"
+  },
+  "delivery_extracted_verification": {
+    "session": 80348,
+    "last_observed": "EXITED_1",
+    "source_commit": "a3ce4a5f05930adb0fb26dd076f82a692d6cfc61",
+    "verifier_source": "536a9a31f4cedb266bcb5405c60ce9c20c0c02db",
+    "outcome": "FAILED",
+    "passed_checks": 3,
+    "failed_checks": 1,
+    "http_winerror": 10013
+  },
+  "rollback_archive_parity": {
+    "session": 72208,
+    "last_observed": "RUNNING",
+    "source_commit": "a3ce4a5f05930adb0fb26dd076f82a692d6cfc61"
   }
 }

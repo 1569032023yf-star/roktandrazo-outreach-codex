@@ -8224,8 +8224,14 @@
     "latest_source_full_regression": "NOT_RUN_FOR_THIS_SHA",
     "full_delivery_build": {
       "source_commit": "a3ce4a5f05930adb0fb26dd076f82a692d6cfc61",
-      "session": 29556,
-      "last_observed": "RUNNING"
+      "status": "EXITED_0",
+      "files": 5028,
+      "artifacts": {
+        "install.zip": "1e753098a2424745b8423a10b74b03dc1244ca5091d6b53674b0c977ed39917b",
+        "rollback-tools.zip": "52f9c951623b8bcc3c0237046d56e345ec7501377dcbe9d8a328da1087169e8d"
+      },
+      "manifest_sha256": "d940f542ab2d074f8b07def277697ffd5a46747af152ff072b9e5e28aab3786a",
+      "package_complete": false
     },
     "delivery_verifier_source": "d897067",
     "delivery_verifier_targeted": {
@@ -8258,6 +8264,21 @@
       "passed": true,
       "host_compiler_fixture": true,
       "actual_runtime_archive_verified": false
+    },
+    "delivery_extracted_verification": {
+      "session": 80348,
+      "last_observed": "EXITED_1",
+      "source_commit": "a3ce4a5f05930adb0fb26dd076f82a692d6cfc61",
+      "verifier_source": "536a9a31f4cedb266bcb5405c60ce9c20c0c02db",
+      "outcome": "FAILED",
+      "passed_checks": 3,
+      "failed_checks": 1,
+      "http_winerror": 10013
+    },
+    "rollback_archive_parity": {
+      "session": 72208,
+      "last_observed": "RUNNING",
+      "source_commit": "a3ce4a5f05930adb0fb26dd076f82a692d6cfc61"
     }
   },
   "u1_provider_regression_9abe85a": {

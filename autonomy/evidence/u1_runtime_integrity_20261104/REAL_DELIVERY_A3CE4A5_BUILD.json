@@ -1,0 +1,15 @@
+{
+  "artifacts": {
+    "install.zip": "1e753098a2424745b8423a10b74b03dc1244ca5091d6b53674b0c977ed39917b",
+    "rollback-tools.zip": "52f9c951623b8bcc3c0237046d56e345ec7501377dcbe9d8a328da1087169e8d"
+  },
+  "files": 5028,
+  "independent_review": "PENDING",
+  "manifest_sha256": "d940f542ab2d074f8b07def277697ffd5a46747af152ff072b9e5e28aab3786a",
+  "package_complete": false,
+  "production_ready": false,
+  "python_runtime_bundled": true,
+  "source_commit": "a3ce4a5f05930adb0fb26dd076f82a692d6cfc61",
+  "description_zh": "真实成对归档构建完成；完整验收未完成。",
+  "description_en": "Actual paired archives built; complete acceptance remains pending."
+}
