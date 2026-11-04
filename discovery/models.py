@@ -50,6 +50,7 @@ class ProviderPage:
     status: str = "ok"
     error: str = ""
     request_count: int = 0
+    # Local reservation/accounting units, never an authoritative billed amount.
     cost_units: int = 0
     fetched_at: str = field(default_factory=utc_now)
 

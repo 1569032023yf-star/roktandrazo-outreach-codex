@@ -21,7 +21,7 @@ class SerpApiMapsProvider(SearchProvider):
 
     @property
     def configured(self) -> bool:
-        return bool(self.api_key)
+        return False  # Disabled even when a credential is present.
 
     def search_places(self, query: str, city: str, state: str, page_cursor: str = "", page_size: int = 20) -> ProviderPage:
         return ProviderPage(

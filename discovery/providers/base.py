@@ -5,6 +5,7 @@ import os
 from abc import ABC, abstractmethod
 
 from discovery.models import ProviderPage
+from discovery.providers.contracts import ProviderContract, provider_contract
 
 
 class ProviderError(RuntimeError):
@@ -13,6 +14,11 @@ class ProviderError(RuntimeError):
 
 class SearchProvider(ABC):
     provider_name = "base"
+
+    @property
+    def contract(self) -> ProviderContract:
+        """Capabilities of the existing adapter, without contacting its service."""
+        return provider_contract(self.provider_name, getattr(self, "_mode", ""))
 
     @property
     def configured(self) -> bool:

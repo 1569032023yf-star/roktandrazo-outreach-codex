@@ -41,9 +41,9 @@ def build(output, source_commit, *, python_runtime=None, runtime_manifest_sha256
             files={}
         else:
             files={'host/'+p.relative_to(dev).as_posix():p.read_bytes() for p in dev.rglob('*') if p.is_file()}
-    names=subprocess.check_output(['git','ls-tree','-r','--name-only',resolved,'autonomy','publisher_channel'],cwd=repo,text=True).splitlines()
+    names=subprocess.check_output(['git','ls-tree','-r','--name-only',resolved,'autonomy','publisher_channel','discovery'],cwd=repo,text=True).splitlines()
     for name in names:
-        if name.startswith(('autonomy/','publisher_channel/')) and name.endswith('.py') and '/evidence/' not in name:
+        if name.startswith(('autonomy/','publisher_channel/','discovery/')) and name.endswith('.py') and '/evidence/' not in name:
             files['python/'+name]=subprocess.check_output(['git','show',resolved+':'+name],cwd=repo)
     documentation={
         'README.md':'autonomy/windows/U1-OFFLINE-DELIVERY.md',

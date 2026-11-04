@@ -29,6 +29,12 @@ class DeliveryDocumentsTests(unittest.TestCase):
                 with zipfile.ZipFile(out/'install.zip') as z:self.assertEqual(z.read('payload/'+name),expected)
                 with zipfile.ZipFile(out/'rollback-tools.zip') as z:
                     self.assertEqual(z.read('OFFLINE-DELIVERY.md' if name=='README.md' else name),expected)
+            for path in ('discovery/providers/contracts.py', 'discovery/providers/base.py',
+                         'discovery/providers/google_places.py', 'discovery/providers/browser_maps.py',
+                         'discovery/providers/serpapi_maps.py'):
+                expected=subprocess.check_output(['git','show',source+':'+path])
+                with zipfile.ZipFile(out/'install.zip') as z:
+                    self.assertEqual(z.read('payload/python/'+path),expected)
             self.assertFalse(result['package_complete'])
             self.assertFalse(result['python_runtime_bundled'])
             self.assertEqual(set(result['artifacts']),{'install.zip','rollback-tools.zip'})
