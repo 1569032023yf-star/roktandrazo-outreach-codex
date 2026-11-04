@@ -22,7 +22,7 @@ def digest(raw):
 
 
 def name(value):
-    if type(value) is not str or not re.fullmatch(r'(service|runtime|config)/[A-Za-z0-9_./-]+', value):
+    if type(value) is not str or not re.fullmatch(r'(service|runtime|config)/[A-Za-z0-9_./+-]+', value):
         raise ValueError('OWNED_PATH_REQUIRED')
     reserved = {'CON', 'PRN', 'AUX', 'NUL'} | {x+str(n) for x in ('COM', 'LPT') for n in range(1, 10)}
     if any(p in ('', '.', '..') or p.endswith('.') or p.casefold().endswith('.u1-new') or p.split('.')[0].upper() in reserved for p in value.split('/')):

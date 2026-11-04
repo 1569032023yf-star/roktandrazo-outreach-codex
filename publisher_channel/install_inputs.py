@@ -199,23 +199,25 @@ def pin_package(pins,root,manifest_sha256,source_commit):
     """Bind exact approved manifest bytes and every declared file; never self-approve hashes."""
     root=pins.path(root)
     if not re.fullmatch('[0-9a-f]{40}',source_commit or ''):reject('SOURCE_APPROVAL')
-    manifest=parse(pins.add(root/'manifest.json',manifest_sha256,limit=1024*1024))
-    if (type(manifest) is not dict or manifest.get('schema')!='rokt.disabled-host-package.v1' or
+    manifest=parse(pins.add(root/'manifest.json',manifest_sha256,limit=2*1024*1024))
+    large=manifest.get('schema')=='rokt.disabled-host-package.v2' if type(manifest) is dict else False
+    if (type(manifest) is not dict or manifest.get('schema') not in ('rokt.disabled-host-package.v1','rokt.disabled-host-package.v2') or
         manifest.get('source_commit')!=source_commit or manifest.get('installer_version')!='1.1.1' or
         manifest.get('inventory_id')!='1784775229336' or manifest.get('service_name')!='RoktU1Bridge' or
         manifest.get('account')!=r'NT SERVICE\RoktU1Bridge' or manifest.get('start_type')!='Disabled' or
         manifest.get('code_root')!=r'C:\Program Files\RoktU1Bridge\v1' or manifest.get('state_root')!=r'C:\ProgramData\RoktU1Bridge' or
         any(manifest.get(k) is not False for k in ('allow_start','allow_dispatch','allow_cancel_dispatch','scheduler_created','allow_install')) or
         manifest.get('rollback_preserves_state') is not True or type(manifest.get('files')) is not list or
-        type(manifest.get('scripts')) is not list or not 0<len(manifest['files'])<=256):reject('MANIFEST_CONTRACT')
+        type(manifest.get('scripts')) is not list or not 0<len(manifest['files'])<=(8192 if large else 256)):reject('MANIFEST_CONTRACT')
     if any(type(row) is not dict for row in manifest['scripts']+manifest['files']):reject('ENTRY_CONTRACT')
     if {row.get('path') for row in manifest['scripts']}!=SCRIPTS:reject('EXACT_SCRIPT_SET')
     entries=manifest['files']+manifest['scripts'];seen=[];total=0
     if not {'service/RoktU1Bridge.exe','runtime/dependencies.json','config/host.json'}<={r.get('path') for r in manifest['files']}:reject('REQUIRED_FILES')
+    if large and not {'runtime/python/python.exe','runtime/python/U1_RUNTIME_CONTENT.json'}<={r.get('path') for r in manifest['files']}:reject('RUNTIME_FILES_REQUIRED')
     for row in entries:
         path=row['path'] if row in manifest['scripts'] else name(row['path']);lower=path.casefold()
         if (any(lower==s or lower.startswith(s+'/') or s.startswith(lower+'/') for s in seen) or
-            type(row.get('size')) is not int or not 0<row['size']<=256*1024*1024 or not sha(row.get('sha256'))):reject('ENTRY_CONTRACT')
+            type(row.get('size')) is not int or not (0 if large else 1)<=row['size']<=256*1024*1024 or not sha(row.get('sha256'))):reject('ENTRY_CONTRACT')
         if row in manifest['files'] and (path.split('/')[0] not in ('service','runtime','config') or lower in ('config/installation.json','config/runtime.json','config/supervisor.json') or any(p.endswith('.u1-new') for p in lower.split('/'))):reject('RESERVED_FILE')
         seen.append(lower);total+=row['size']
         if total>1024*1024*1024:reject('TOTAL_SIZE')

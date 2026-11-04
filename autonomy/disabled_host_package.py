@@ -9,6 +9,7 @@ import re
 from pathlib import Path, PurePosixPath
 
 SCHEMA = 'rokt.disabled-host-package.v1'
+RUNTIME_SCHEMA = 'rokt.disabled-host-package.v2'
 INSTALLER_VERSION = '1.1.1'
 INVENTORY = '1784775229336'
 SERVICE = 'RoktU1Bridge'
@@ -45,7 +46,7 @@ def safe_name(name):
     reserved = {'CON','PRN','AUX','NUL'} | {x + str(i) for x in ('COM','LPT') for i in range(1,10)}
     if name != '/'.join(parts) or len(parts) < 2 or parts[0] not in ('service','runtime','config'):
         raise PackageError('INVALID_ARTIFACT_PATH')
-    if any(not re.fullmatch(r'[A-Za-z0-9_.-]+', p) or p in ('.','..') or
+    if any(not re.fullmatch(r'[A-Za-z0-9_.+-]+', p) or p in ('.','..') or
            p.endswith(('.', ' ')) or p.split('.')[0].upper() in reserved for p in parts):
         raise PackageError('INVALID_ARTIFACT_PATH')
     return name
@@ -124,3 +125,51 @@ def build_package(destination, artifacts, approved_hashes, *, source_commit, scr
     raw=canonical(manifest);(destination/'manifest.json').write_bytes(raw)
     return dict(manifest_sha256=hashlib.sha256(raw).hexdigest(),manifest=manifest,
                 allow_install=False,production_ready=False)
+
+
+def build_runtime_package(destination, host_package, host_manifest_sha256,
+                          python_runtime, runtime_manifest_sha256):
+    """Combine independently pinned host/runtime inputs offline, one file at a time.
+
+    This produces a v2 disabled candidate, never an installation approval.
+    The caller must subsequently bind the resulting manifest and runtime plan.
+    """
+    from publisher_channel.install_inputs import InstallInputPins,pin_package,pin_python_runtime
+    from autonomy.host_file_transaction import read,digest
+    host=Path(host_package).absolute();runtime=Path(python_runtime).absolute()
+    raw=read(host/'manifest.json')
+    if raw is None or digest(raw)!=host_manifest_sha256:raise PackageError('HOST_MANIFEST_HASH')
+    source=json.loads(raw).get('source_commit')
+    destination=Path(destination)
+    with InstallInputPins() as pins:
+        manifest=pin_package(pins,host,host_manifest_sha256,source)
+        if manifest['schema']!=SCHEMA:raise PackageError('BASE_HOST_V1_REQUIRED')
+        content=pin_python_runtime(pins,str(runtime/'U1_RUNTIME_CONTENT.json'),
+                                   runtime_manifest_sha256,str(runtime/'python.exe'))
+        rows=list(manifest['files']);sources={r['path']:host/r['path'] for r in rows+manifest['scripts']}
+        runtime_files=dict(content['files'],**{'U1_RUNTIME_CONTENT.json':runtime_manifest_sha256})
+        total=sum(r['size'] for r in rows+manifest['scripts'])
+        seen={r['path'].casefold() for r in rows+manifest['scripts']}
+        for relative,expected in sorted(runtime_files.items()):
+            name=safe_name('runtime/python/'+relative)
+            if name.casefold() in seen:raise PackageError('PATH_COLLISION')
+            seen.add(name.casefold());data=read(runtime/relative)
+            if data is None or digest(data)!=expected:raise PackageError('RUNTIME_SOURCE_CHANGED')
+            total+=len(data)
+            if total>MAX_TOTAL:raise PackageError('PACKAGE_TOO_LARGE')
+            rows.append(dict(path=name,sha256=expected,size=len(data)));sources[name]=runtime/relative
+        if len(rows)>8192:raise PackageError('TOO_MANY_FILES')
+        combined=dict(manifest,schema=RUNTIME_SCHEMA,files=sorted(rows,key=lambda r:r['path']))
+        output=canonical(combined)
+        if len(output)>2*1024*1024:raise PackageError('MANIFEST_TOO_LARGE')
+        destination.mkdir(exist_ok=False)
+        expected={r['path']:r['sha256'] for r in combined['files']+combined['scripts']}
+        for name,path in sources.items():
+            data=read(path)
+            if data is None or digest(data)!=expected[name]:raise PackageError('SOURCE_CHANGED')
+            target=destination/name;target.parent.mkdir(parents=True,exist_ok=True)
+            with target.open('xb') as f:
+                f.write(data)
+        pins.revalidate()
+        with (destination/'manifest.json').open('xb') as f:f.write(output)
+    return dict(manifest_sha256=digest(output),manifest=combined,allow_install=False,production_ready=False)

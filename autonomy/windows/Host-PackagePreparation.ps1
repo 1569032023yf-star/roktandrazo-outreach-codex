@@ -59,17 +59,19 @@ $m=Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
 # This approval is independent of the package's own source declaration.
 if ($m.source_commit -isnot [string] -or $m.source_commit -cnotmatch '^[0-9a-f]{40}$' -or
     $m.source_commit -cne $ApprovedSourceCommit -or $m.installer_version -cne '1.1.1') { throw 'SOURCE_OR_INSTALLER_VERSION_MISMATCH' }
-if ($m.schema -cne 'rokt.disabled-host-package.v1' -or $m.inventory_id -cne '1784775229336' -or
+if ($m.schema -cnotin @('rokt.disabled-host-package.v1','rokt.disabled-host-package.v2') -or $m.inventory_id -cne '1784775229336' -or
     $m.service_name -cne $name -or $m.account -cne $account -or $m.start_type -cne 'Disabled' -or
     $m.code_root -cne $code -or $m.state_root -cne $state -or
     $m.allow_start -isnot [bool] -or $m.allow_start -or $m.allow_dispatch -isnot [bool] -or $m.allow_dispatch -or
     $m.allow_cancel_dispatch -isnot [bool] -or $m.allow_cancel_dispatch -or
     $m.scheduler_created -isnot [bool] -or $m.scheduler_created -or $m.rollback_preserves_state -cne $true) { throw 'UNSAFE_MANIFEST' }
 $entries=@($m.files)+@($m.scripts)
+$maxFiles=if ($m.schema -ceq 'rokt.disabled-host-package.v2') {8192} else {256}
+if (@($m.files).Count -lt 1 -or @($m.files).Count -gt $maxFiles) {throw 'PACKAGE_FILE_COUNT'}
 if (@($m.files | Where-Object {$_.path.ToLowerInvariant() -in @('config/installation.json','config/runtime.json','config/supervisor.json') -or $_.path -match '(^|/)[^/]*[.]u1-new(/|$)'}).Count) {throw 'INSTALLER_RESERVED_PATH'}
 $seen=@{}
 foreach ($f in $entries) {
-    if ($f.path -isnot [string] -or $f.path -cnotmatch '^[A-Za-z0-9_./-]+$' -or $f.path.Contains('..') -or $f.path.StartsWith('/') -or $seen.ContainsKey($f.path.ToLowerInvariant())) { throw 'UNSAFE_PACKAGE_PATH' }
+    if ($f.path -isnot [string] -or $f.path -cnotmatch '^[A-Za-z0-9_./+-]+$' -or $f.path.Contains('..') -or $f.path.StartsWith('/') -or $seen.ContainsKey($f.path.ToLowerInvariant())) { throw 'UNSAFE_PACKAGE_PATH' }
     $seen[$f.path.ToLowerInvariant()]=$true
     $p=Join-Path $package $f.path
     Assert-NoReparseAncestors $p

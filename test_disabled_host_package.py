@@ -10,6 +10,32 @@ from autonomy.disabled_host_package import build_package, validate_inputs, Packa
 
 
 class DisabledPackageTests(unittest.TestCase):
+    @unittest.skipUnless(os.name=='nt','Windows handle pins')
+    def test_v2_runtime_combination_and_publisher_validation(self):
+        # Synthetic bytes prove packaging only, never a usable CPython runtime.
+        from autonomy.disabled_host_package import build_runtime_package
+        from publisher_channel.install_inputs import InstallInputPins,pin_package
+        host=self.root/'host';base=build_package(host,self.artifacts,self.hashes,source_commit='a'*40)
+        runtime=self.root/'runtime';runtime.mkdir()
+        contents={'python.exe':b'fixture-not-executable','Lib/empty.py':b'','Lib/GMT+0':b'timezone fixture'}
+        for name,raw in contents.items():
+            p=runtime/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(raw)
+        manifest=canonical(dict(schema='rokt.u1-runtime-content.v1',python='python.exe',
+                                files={n:hashlib.sha256(v).hexdigest() for n,v in contents.items()}))
+        (runtime/'U1_RUNTIME_CONTENT.json').write_bytes(manifest)
+        output=self.root/'combined'
+        result=build_runtime_package(output,host,base['manifest_sha256'],runtime,hashlib.sha256(manifest).hexdigest())
+        self.assertEqual(result['manifest']['schema'],'rokt.disabled-host-package.v2')
+        self.assertFalse(result['allow_install'])
+        self.assertEqual((output/'runtime/python/Lib/empty.py').read_bytes(),b'')
+        with InstallInputPins() as pins:
+            pinned=pin_package(pins,output,result['manifest_sha256'],'a'*40)
+            self.assertEqual(pinned['files'],result['manifest']['files'])
+        (runtime/'python.exe').write_bytes(b'tampered')
+        with self.assertRaises(ValueError):
+            build_runtime_package(self.root/'bad',host,base['manifest_sha256'],runtime,hashlib.sha256(manifest).hexdigest())
+        self.assertFalse((self.root/'bad').exists())
+
     @unittest.skipUnless(os.name=='nt','Actual Windows installer entrypoints')
     def test_execute_cannot_bypass_missing_formal_maintenance(self):
         import base64
