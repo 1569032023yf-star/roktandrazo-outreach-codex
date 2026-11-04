@@ -58,7 +58,17 @@ from bd_db import (
 )
 
 OUT_DIR = PROJECT_DIR / 'output'
-OUT_DIR.mkdir(exist_ok=True)
+
+def configure_output_directory(value: str | None) -> None:
+    """Select an explicit writable output path without creating it at startup."""
+    global OUT_DIR
+    if value is None:
+        return
+    candidate = Path(value)
+    if not candidate.is_absolute():
+        raise ValueError('output directory must be an absolute path')
+    OUT_DIR = candidate
+
 
 # ── Constants ──────────────────────────────────────────────
 from outreach_control import (
@@ -562,6 +572,9 @@ def stage_end_of_day(run_id: str, business_date: str, dry_run: bool):
     total_sent_all = c.execute("SELECT COUNT(*) FROM send_log WHERE status='sent'").fetchone()[0]
     conn.close()
 
+    # Create output only at the report-writing boundary, never on import.
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+
     # 3. Generate dashboard
     log("Generating dashboard...")
     try:
@@ -657,7 +670,12 @@ def main():
                         choices=['morning', 'pre-send', 'outreach', 'post-send', 'inventory', 'end-of-day', 'status'])
     parser.add_argument('--dry-run', action='store_true', default=True, help='Dry run (default)')
     parser.add_argument('--live', action='store_true', help='Actually send emails')
+    parser.add_argument('--output-dir', help='Explicit absolute report directory in writable state storage')
     args = parser.parse_args()
+    try:
+        configure_output_directory(args.output_dir)
+    except ValueError as exc:
+        parser.error(str(exc))
 
     dry_run = not args.live
     business_date = business_date_shanghai()
