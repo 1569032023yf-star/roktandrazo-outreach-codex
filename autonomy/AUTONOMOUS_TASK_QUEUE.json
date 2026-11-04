@@ -8210,11 +8210,15 @@
       "initial_fixture_failure_preserved": true
     },
     "ordered_regression": {
-      "source_commit": "deeec72ab6d3a09dfbacc103d432eeebb6924d30",
-      "baseline_session": 7375,
-      "candidate_session": 65011,
-      "status": "RUNNING",
-      "native_passed": 5
+      "source": "deeec72ab6d3a09dfbacc103d432eeebb6924d30",
+      "status": "COMPLETED_WITH_EXISTING_FAILURES",
+      "baseline_run": 842,
+      "candidate_run": 847,
+      "added_failure_ids": [],
+      "added_error_ids": [],
+      "candidate_failures": 37,
+      "candidate_errors": 18,
+      "inherited_by_current_source": false
     },
     "verification_failure_tests_passed": 3,
     "latest_source_full_regression": "NOT_RUN_FOR_THIS_SHA",

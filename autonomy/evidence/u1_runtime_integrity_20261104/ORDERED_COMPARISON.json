@@ -1,0 +1,22 @@
+{
+  "description_zh": "固定候选比较；不代表全套通过，也不继承到较新源码。",
+  "description_en": "Fixed-source comparison; not an all-pass result and not inherited by newer sources.",
+  "baseline_source": "5a8394d",
+  "candidate_source": "deeec72ab6d3a09dfbacc103d432eeebb6924d30",
+  "baseline_run": 842,
+  "candidate_run": 847,
+  "failures": {
+    "baseline_count": 37,
+    "candidate_count": 37,
+    "added": [],
+    "removed": []
+  },
+  "errors": {
+    "baseline_count": 19,
+    "candidate_count": 18,
+    "added": [],
+    "removed": [
+      "test_phase4b1g_site_conversion.ConversionTests.test_country_mismatch_pending"
+    ]
+  }
+}

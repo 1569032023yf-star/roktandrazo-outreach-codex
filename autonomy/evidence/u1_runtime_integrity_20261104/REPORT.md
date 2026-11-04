@@ -109,3 +109,13 @@ Later terminal observation:03eca14 host/runtime build exited0 with4950 files. Ar
 真实独立解压验证完成：03eca14归档解压到新目录，包内CPython3.13.12以-I -B启动、关键依赖导入、pip check、原生--validate-runtime均返回0；sys.path全部位于包内运行时。报告EXTRACTED_03ECA14_REPORT.json outcome=VERIFIED。此证据仅覆盖旧候选运行时，不覆盖完整业务闭包、应用发布、安装/回滚或新版源码。新源码a3ce4a5开始整合应用、Publisher、宿主、完整Python到安装/回滚两份归档，句柄29556运行中；完整回归7375/65011仍运行。所有最终状态与门禁false。
 
 Actual independent extraction verified:03eca14 archive extracted to a new directory; packaged CPython3.13.12 starts with-I -B, key dependency imports, pip check and native--validate-runtime all return0; all sys.path entries are within packaged runtime. EXTRACTED_03ECA14_REPORT.json outcome=VERIFIED. Evidence covers only that older runtime, not complete business closure, application publication, install/rollback or newer source. New fixed sourcea3ce4a5 starts paired archives containing application, Publisher, host and full Python under live handle29556. Full regressions7375/65011 remain running. All final acceptance states and gates false.
+
+
+中文：固定deeec72完整tests/回归结束：基线842项/37失败/19错误；候选847项/37失败/18错误。逐ID比较无新增失败或错误；减少一项基线错误不构成根因修复证明。5项原生检查通过。全套仍未通过，结果不继承至a3ce4a5；根目录测试另计。成对归档构建29556仍在运行。
+
+English: Fixed deeec72 tests/ regression completed: baseline842/37 failures/19 errors; candidate847/37 failures/18 errors. ID comparison shows no added failures/errors; one absent baseline error is not proof of a root-cause fix. Five native checks pass. The suite remains failing, results do not transfer to a3ce4a5, and root-level tests are separate. Paired archive build29556 remains running.
+
+
+中文：a3ce4a5五个离线宿主/事件/Owner/Backend/Publisher入口静态遍历27个仓库模块，未发现这些入口可达的仓库模块漏包；非仓库根均为标准库名称（含平台条件fcntl/msvcrt）。仅静态证据，未执行正式Provider，不证明全部动态业务依赖闭包。
+
+English: Static traversal from five offline host/event/owner/backend/Publisher entrypoints in a3ce4a5 visits27 repository modules without missing reachable repository modules. External roots are standard-library names, including platform-conditional fcntl/msvcrt. Static evidence only; no formal Provider execution or complete dynamic business closure established.

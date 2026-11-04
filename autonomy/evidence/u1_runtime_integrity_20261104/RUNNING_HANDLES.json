@@ -14,8 +14,18 @@
     "candidate": "deeec72ab6d3a09dfbacc103d432eeebb6924d30",
     "baseline_session": 7375,
     "candidate_session": 65011,
-    "last_observed": "RUNNING",
-    "candidate_native_phase_passed": 5
+    "last_observed": "EXITED_1",
+    "candidate_native_phase_passed": 5,
+    "baseline_counts": {
+      "run": 842,
+      "failures": 37,
+      "errors": 19
+    },
+    "candidate_counts": {
+      "run": 847,
+      "failures": 37,
+      "errors": 18
+    }
   },
   "host_runtime_build": {
     "source_commit": "03eca14940bb69413cff0ea9f336be14a0bb1c10",
