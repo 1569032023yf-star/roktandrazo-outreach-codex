@@ -1,0 +1,35 @@
+C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\bd_review_server.py:42: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\15690\\Documents\\ChatGPT\\����\\roktandrazo-outreach-autonomy\\bd_ops_dashboard.html' mode='r' encoding='utf-8'>
+  DASHBOARD_HTML = open(DASHBOARD_HTML_PATH, 'r', encoding='utf-8').read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+======================================================================
+ERROR: test_static_scan_fails_on_unauthorized_direct_lead_inserts (tests.test_discovery_service.DiscoveryServiceTests.test_static_scan_fails_on_unauthorized_direct_lead_inserts)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 474, in test_static_scan_fails_on_unauthorized_direct_lead_inserts
+    self.assertEqual(unauthorized_lead_inserts(ROOT), [])
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\lead_insert_scan.py", line 28, in unauthorized_lead_inserts
+    raw = path.read_bytes()
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\pathlib\_abc.py", line 625, in read_bytes
+    with self.open(mode='rb') as f:
+         ~~~~~~~~~^^^^^^^^^^^
+  [+] Resume Toy Store (Nashville, TN)
+  [+] Nashville Board Game Depot (Nashville, TN)
+  [+] Nashville Toy Shelf (Nashville, TN)
+  [+] Spy Toy Store (Nashville, TN)
+  [+] Chain Game Shop (Nashville, TN)
+  [+] Chain Game Shop (Nashville, TN)
+  [+] Nashville Board Game Depot (Nashville, TN)
+  [+] Nashville Toy Shelf (Nashville, TN)
+  [+] Nashville Puzzle House (Nashville, TN)
+  [+] Nashville Gift Shelf (Nashville, TN)
+  [+] Nashville Board Game Depot (Nashville, TN)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\pathlib\_local.py", line 537, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\15690\\Documents\\ChatGPT\\����\\roktandrazo-outreach-autonomy\\autonomy\\evidence\\u1_execution_wiring_20261102\\final-isolated-store\\versions\\867679758daca69308ca15ee7420b252c58a941ffdb1c0668f3da85d37561490\\payload\\python\\autonomy\\cancellation_terminal_bundle.py'
+
+----------------------------------------------------------------------
+Ran 22 tests in 17.208s
+
+FAILED (errors=1)

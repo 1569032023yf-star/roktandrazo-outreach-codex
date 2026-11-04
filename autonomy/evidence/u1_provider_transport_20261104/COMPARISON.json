@@ -1,0 +1,15 @@
+{
+  "baseline": {
+    "tests": 20,
+    "seconds": 28.041,
+    "passed": true
+  },
+  "candidate": {
+    "tests": 23,
+    "seconds": 28.211,
+    "passed": true
+  },
+  "scope": "tests.test_discovery_service plus 3 candidate-only UNKNOWN tests; not full regression",
+  "baseline_sha": "44b0ec9cf3b4444f83f76619b7c96e83a6595121",
+  "candidate_sha": "032e2198d124fea2e40ace2f109574e9a92016a8"
+}

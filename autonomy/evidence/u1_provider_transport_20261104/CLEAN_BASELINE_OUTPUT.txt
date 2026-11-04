@@ -1,0 +1,18 @@
+C:\Users\15690\Documents\ChatGPT\����\u1-provider-baseline\bd_review_server.py:42: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\15690\\Documents\\ChatGPT\\����\\u1-provider-baseline\\bd_ops_dashboard.html' mode='r' encoding='utf-8'>
+  DASHBOARD_HTML = open(DASHBOARD_HTML_PATH, 'r', encoding='utf-8').read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+----------------------------------------------------------------------
+Ran 20 tests in 28.041s
+
+OK
+  [+] Resume Toy Store (Nashville, TN)
+  [+] Nashville Board Game Depot (Nashville, TN)
+  [+] Nashville Toy Shelf (Nashville, TN)
+  [+] Spy Toy Store (Nashville, TN)
+  [+] Chain Game Shop (Nashville, TN)
+  [+] Chain Game Shop (Nashville, TN)
+  [+] Nashville Board Game Depot (Nashville, TN)
+  [+] Nashville Toy Shelf (Nashville, TN)
+  [+] Nashville Puzzle House (Nashville, TN)
+  [+] Nashville Gift Shelf (Nashville, TN)
+  [+] Nashville Board Game Depot (Nashville, TN)

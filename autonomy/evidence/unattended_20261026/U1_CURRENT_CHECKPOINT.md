@@ -1,3 +1,21 @@
+
+## 干净源码对照复验 / Clean-source comparison
+中文：固定基线20项通过（28.041秒）；固定候选23项通过（28.211秒），包含新增3项。使用各自Git固定源码的独立目录，未跳过静态扫描、未更改白名单，旧缺文件错误未复现。仅本组无新增失败；不是完整回归或独立审核。
+English: Pinned baseline passed 20 tests in 28.041 seconds; candidate passed 23 in 28.211 seconds, including three new tests. Separate pinned Git trees were used, without skipping the static scanner or changing its allowlist. The old missing-file error did not reproduce. No new failure in this group only; not full regression or independent review.
+
+# U1 三阶段连续开发核对 / U1 continuous-development reconciliation
+
+中文：2026-11-04当前工程源码固定为032e2198d124fea2e40ace2f109574e9a92016a8，已含6c60dba Publisher修复。第一阶段完成一个范围明确的UNKNOWN传输修复，3项定向测试通过；正式Provider、权威费用、SAFE来源及崩溃窗口仍未完成。详见autonomy/evidence/u1_provider_transport_20261104/REPORT.md，所有历史证据保留。
+English: Current engineering source is 032e2198d124fea2e40ace2f109574e9a92016a8, including the Publisher fix. Phase 1 adds a scoped UNKNOWN transport fix with three focused passing tests. Formal Provider, authoritative cost, SAFE provenance and the crash window remain incomplete. See autonomy/evidence/u1_provider_transport_20261104/REPORT.md; all historical evidence is retained.
+
+中文：任务队列中的3fbaa5e包只保留为历史产物；当前已知owner服务工程包基线59acb7a，二者都不是当前完整发布包。当前候选包NOT_BUILT，CPython和完整依赖未集成。独审PENDING；最终全量NOT_RUN。Windows和费用请求均无新授权。
+English: Queue references to the 3fbaa5e package are historical artifacts. The known owner-service engineering archive baseline is 59acb7a; neither is a complete current release. Current package NOT_BUILT, with CPython and full dependencies outstanding. Review PENDING; final full regression NOT_RUN. No new Windows-install or chargeable-request authority.
+
+DEVELOPMENT_COMPLETE=false; PACKAGE_COMPLETE=false; PROVIDER_ACCEPTED=false; WINDOWS_ACCEPTED=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false.
+allow_install=false; allow_dispatch=false; allow_cancel_dispatch=false; smtp_enabled=false.
+
+---
+
 # U1 发布器原owner配置接线 / Publisher original-owner plan wiring
 
 时间 / Time: 2026-11-04T00:14:46.188985+00:00

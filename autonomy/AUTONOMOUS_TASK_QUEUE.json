@@ -7950,5 +7950,50 @@
     "inventory_id": "1784775229336",
     "next_action": "Complete formal Provider execution, measured costs and trusted runtime configuration, then review the complete candidate. After authorization, WorkBuddy verifies isolated Windows first installation, upgrade, process-exit recovery, interrupted rollback and Disabled/Stopped state. Test workers and SAFE fixtures are not business acceptance.",
     "next_action_zh": "完成正式Provider执行、费用实测和受信运行配置，随后对完整候选审核；经授权后由WorkBuddy进行隔离Windows首次安装、升级、进程退出恢复、回滚中断恢复及Disabled/Stopped验收。不得用测试worker或SAFE替身代替业务验收。"
+  },
+  "u1_continuous_development_current": {
+    "source_commit": "032e2198d124fea2e40ace2f109574e9a92016a8",
+    "starting_commit": "44b0ec9cf3b4444f83f76619b7c96e83a6595121",
+    "publisher_fix_included": "6c60dba1f70f998ad933510750aba865597c8c12",
+    "phase": 1,
+    "report": "autonomy/evidence/u1_provider_transport_20261104/REPORT.md",
+    "current_package": "NOT_BUILT",
+    "last_known_owner_engineering_package_source": "59acb7a1c422841b71f82019cd52a5e66daa6d7e",
+    "historical_3f_package_acceptance_inherited": false,
+    "focused_tests": {
+      "count": 3,
+      "failures": 0,
+      "errors": 0
+    },
+    "independent_review": "PENDING",
+    "full_regression": "NOT_RUN_FOR_FINAL_SOURCE",
+    "DEVELOPMENT_COMPLETE": false,
+    "PACKAGE_COMPLETE": false,
+    "PROVIDER_ACCEPTED": false,
+    "WINDOWS_ACCEPTED": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "allow_install": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "smtp_enabled": false,
+    "next_action_zh": "固定源码可比回归及静态扫描诊断；核对正式Provider身份和权威费用来源；接入原owner持久intent，禁止自动重放。",
+    "next_action_en": "Comparable regression and scanner diagnosis; verify formal Provider identity and authoritative cost sources; integrate original-owner durable intent without replay.",
+    "scoped_comparison": {
+      "baseline": {
+        "tests": 20,
+        "seconds": 28.041,
+        "passed": true
+      },
+      "candidate": {
+        "tests": 23,
+        "seconds": 28.211,
+        "passed": true
+      },
+      "scope": "tests.test_discovery_service plus 3 candidate-only UNKNOWN tests; not full regression",
+      "baseline_sha": "44b0ec9cf3b4444f83f76619b7c96e83a6595121",
+      "candidate_sha": "032e2198d124fea2e40ace2f109574e9a92016a8"
+    }
   }
 }

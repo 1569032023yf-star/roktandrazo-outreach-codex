@@ -1,0 +1,8 @@
+test_disconnect_is_not_retried_even_with_retry_budget (tests.test_google_places_unknown.UnknownTransportTests.test_disconnect_is_not_retried_even_with_retry_budget) ... ok
+test_missing_configuration_does_not_submit (tests.test_google_places_unknown.UnknownTransportTests.test_missing_configuration_does_not_submit) ... ok
+test_persisted_unknown_blocks_new_service_instance (tests.test_google_places_unknown.UnknownTransportTests.test_persisted_unknown_blocks_new_service_instance) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.709s
+
+OK

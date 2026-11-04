@@ -1,0 +1,1095 @@
+======================================================================
+ERROR: test_city_does_not_switch_until_current_city_is_complete (tests.test_discovery_service.DiscoveryServiceTests.test_city_does_not_switch_until_current_city_is_complete)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 446, in test_city_does_not_switch_until_current_city_is_complete
+    with DiscoveryDb() as conn:
+         ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_closed_is_rejected_and_no_website_enters_resolution_queue (tests.test_discovery_service.DiscoveryServiceTests.test_closed_is_rejected_and_no_website_enters_resolution_queue)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 223, in test_closed_is_rejected_and_no_website_enters_resolution_queue
+    with DiscoveryDb() as conn:
+         ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_configuration_blocked_query_resumes_after_provider_configured (tests.test_discovery_service.DiscoveryServiceTests.test_configuration_blocked_query_resumes_after_provider_configured)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 257, in test_configuration_blocked_query_resumes_after_provider_configured
+    with DiscoveryDb() as conn:
+         ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_get_sendable_leads_requires_auto_flag_and_blocks_manual_bounce_suppression_sent (tests.test_discovery_service.DiscoveryServiceTests.test_get_sendable_leads_requires_auto_flag_and_blocks_manual_bounce_suppression_sent) (name='auto_missing')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 414, in test_get_sendable_leads_requires_auto_flag_and_blocks_manual_bounce_suppression_sent
+    with self.subTest(name=name), DiscoveryDb() as conn:
+                                  ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_get_sendable_leads_requires_auto_flag_and_blocks_manual_bounce_suppression_sent (tests.test_discovery_service.DiscoveryServiceTests.test_get_sendable_leads_requires_auto_flag_and_blocks_manual_bounce_suppression_sent) (name='unsubscribed')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 414, in test_get_sendable_leads_requires_auto_flag_and_blocks_manual_bounce_suppression_sent
+    with self.subTest(name=name), DiscoveryDb() as conn:
+                                  ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_get_sendable_leads_requires_auto_flag_and_blocks_manual_bounce_suppression_sent (tests.test_discovery_service.DiscoveryServiceTests.test_get_sendable_leads_requires_auto_flag_and_blocks_manual_bounce_suppression_sent) (name='suppressed')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 414, in test_get_sendable_leads_requires_auto_flag_and_blocks_manual_bounce_suppression_sent
+    with self.subTest(name=name), DiscoveryDb() as conn:
+                                  ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_get_sendable_leads_requires_auto_flag_and_blocks_manual_bounce_suppression_sent (tests.test_discovery_service.DiscoveryServiceTests.test_get_sendable_leads_requires_auto_flag_and_blocks_manual_bounce_suppression_sent) (name='manual_queue')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 414, in test_get_sendable_leads_requires_auto_flag_and_blocks_manual_bounce_suppression_sent
+    with self.subTest(name=name), DiscoveryDb() as conn:
+                                  ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_get_sendable_leads_requires_auto_flag_and_blocks_manual_bounce_suppression_sent (tests.test_discovery_service.DiscoveryServiceTests.test_get_sendable_leads_requires_auto_flag_and_blocks_manual_bounce_suppression_sent) (name='hard_bounce')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 414, in test_get_sendable_leads_requires_auto_flag_and_blocks_manual_bounce_suppression_sent
+    with self.subTest(name=name), DiscoveryDb() as conn:
+                                  ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_get_sendable_leads_requires_auto_flag_and_blocks_manual_bounce_suppression_sent (tests.test_discovery_service.DiscoveryServiceTests.test_get_sendable_leads_requires_auto_flag_and_blocks_manual_bounce_suppression_sent) (name='sent_history')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 414, in test_get_sendable_leads_requires_auto_flag_and_blocks_manual_bounce_suppression_sent
+    with self.subTest(name=name), DiscoveryDb() as conn:
+                                  ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_history_sent_suppression_and_hard_bounce_block_creation (tests.test_discovery_service.DiscoveryServiceTests.test_history_sent_suppression_and_hard_bounce_block_creation) (sql="INSERT INTO send_log (email,status) VALUES ('hello@example-retail.test','sent')")
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 176, in test_history_sent_suppression_and_hard_bounce_block_creation
+    with self.subTest(sql=sql), DiscoveryDb() as conn:
+                                ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_history_sent_suppression_and_hard_bounce_block_creation (tests.test_discovery_service.DiscoveryServiceTests.test_history_sent_suppression_and_hard_bounce_block_creation) (sql="INSERT INTO suppression_list (email,reason) VALUES ('hello@example-retail.test','manual')")
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 176, in test_history_sent_suppression_and_hard_bounce_block_creation
+    with self.subTest(sql=sql), DiscoveryDb() as conn:
+                                ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_history_sent_suppression_and_hard_bounce_block_creation (tests.test_discovery_service.DiscoveryServiceTests.test_history_sent_suppression_and_hard_bounce_block_creation) (sql="INSERT INTO bounce_log (email,bounce_type) VALUES ('hello@example-retail.test','hard')")
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 176, in test_history_sent_suppression_and_hard_bounce_block_creation
+    with self.subTest(sql=sql), DiscoveryDb() as conn:
+                                ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_import_bd_db_does_not_create_or_write_database (tests.test_discovery_service.DiscoveryServiceTests.test_import_bd_db_does_not_create_or_write_database)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmp67r9pu0d'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 430, in test_import_bd_db_does_not_create_or_write_database
+    with tempfile.TemporaryDirectory() as temp:
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 946, in __exit__
+    self.cleanup()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 950, in cleanup
+    self._rmtree(self.name, ignore_errors=self._ignore_cleanup_errors)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmp67r9pu0d'
+
+======================================================================
+ERROR: test_mock_provider_stages_nashville_and_saves_cursor_then_resumes (tests.test_discovery_service.DiscoveryServiceTests.test_mock_provider_stages_nashville_and_saves_cursor_then_resumes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 125, in test_mock_provider_stages_nashville_and_saves_cursor_then_resumes
+    with DiscoveryDb() as conn:
+         ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_new_leads_are_created_only_through_bd_db_insert_lead (tests.test_discovery_service.DiscoveryServiceTests.test_new_leads_are_created_only_through_bd_db_insert_lead)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 151, in test_new_leads_are_created_only_through_bd_db_insert_lead
+    with DiscoveryDb() as conn:
+         ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_places_completed_with_web_provider_missing_is_not_exhausted (tests.test_discovery_service.DiscoveryServiceTests.test_places_completed_with_web_provider_missing_is_not_exhausted)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 453, in test_places_completed_with_web_provider_missing_is_not_exhausted
+    with DiscoveryDb() as conn:
+         ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_places_location_mismatch_and_missing_address_do_not_store_as_active_city (tests.test_discovery_service.DiscoveryServiceTests.test_places_location_mismatch_and_missing_address_do_not_store_as_active_city)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 363, in test_places_location_mismatch_and_missing_address_do_not_store_as_active_city
+    with DiscoveryDb() as conn:
+         ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_provider_not_configured_and_timeout_fail_closed (tests.test_discovery_service.DiscoveryServiceTests.test_provider_not_configured_and_timeout_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 242, in test_provider_not_configured_and_timeout_fail_closed
+    with DiscoveryDb() as conn:
+         ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_same_business_new_email_goes_to_identity_review (tests.test_discovery_service.DiscoveryServiceTests.test_same_business_new_email_goes_to_identity_review)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 185, in test_same_business_new_email_goes_to_identity_review
+    with DiscoveryDb() as conn:
+         ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_same_domain_different_locations_are_not_globally_blocked (tests.test_discovery_service.DiscoveryServiceTests.test_same_domain_different_locations_are_not_globally_blocked)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 206, in test_same_domain_different_locations_are_not_globally_blocked
+    with DiscoveryDb() as conn:
+         ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_same_place_across_query_families_updates_hits_without_new_subject (tests.test_discovery_service.DiscoveryServiceTests.test_same_place_across_query_families_updates_hits_without_new_subject)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 142, in test_same_place_across_query_families_updates_hits_without_new_subject
+    with DiscoveryDb() as conn:
+         ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_staged_places_contact_form_and_no_email_enter_review_pools (tests.test_discovery_service.DiscoveryServiceTests.test_staged_places_contact_form_and_no_email_enter_review_pools)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 314, in test_staged_places_contact_form_and_no_email_enter_review_pools
+    with DiscoveryDb() as conn:
+         ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_staged_places_without_email_extracts_official_email_to_a0 (tests.test_discovery_service.DiscoveryServiceTests.test_staged_places_without_email_extracts_official_email_to_a0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 268, in test_staged_places_without_email_extracts_official_email_to_a0
+    with DiscoveryDb() as conn:
+         ~~~~~~~~~~~^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 89, in __enter__
+    conn = sqlite3.connect(self.db_path)
+sqlite3.OperationalError: unable to open database file
+
+======================================================================
+ERROR: test_static_scan_fails_on_unauthorized_direct_lead_inserts (tests.test_discovery_service.DiscoveryServiceTests.test_static_scan_fails_on_unauthorized_direct_lead_inserts)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\test_discovery_service.py", line 474, in test_static_scan_fails_on_unauthorized_direct_lead_inserts
+    self.assertEqual(unauthorized_lead_inserts(ROOT), [])
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\tests\lead_insert_scan.py", line 28, in unauthorized_lead_inserts
+    raw = path.read_bytes()
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\pathlib\_abc.py", line 625, in read_bytes
+    with self.open(mode='rb') as f:
+         ~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\pathlib\_local.py", line 537, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\15690\\Documents\\ChatGPT\\����\\roktandrazo-outreach-autonomy\\autonomy\\evidence\\u1_execution_wiring_20261102\\final-isolated-store\\versions\\867679758daca69308ca15ee7420b252c58a941ffdb1c0668f3da85d37561490\\payload\\python\\autonomy\\cancellation_terminal_bundle.py'
+
+----------------------------------------------------------------------
+Ran 22 tests in 15.884s
+
+FAILED (errors=24)
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmp_gink8up'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmp_gink8up'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmp2z1jsrx6'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmp2z1jsrx6'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpe915654j'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpe915654j'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpok7h021k'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpok7h021k'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpn7njlidj'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpn7njlidj'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmp9duh5vp4'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmp9duh5vp4'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmptj0vdkml'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmptj0vdkml'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmph2q02vw1'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmph2q02vw1'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpwnl397po'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpwnl397po'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmp5dipqao7'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmp5dipqao7'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmp6go6hvqr'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmp6go6hvqr'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpyx6ov1yj'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpyx6ov1yj'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpm4wy_hau'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpm4wy_hau'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpvlm7hxu5'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpvlm7hxu5'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpty9shx_7'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpty9shx_7'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmp2qt3mwnr'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmp2qt3mwnr'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpkfrclfvp'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpkfrclfvp'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpb_hq_5gf'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpb_hq_5gf'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmphgtj1uqv'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmphgtj1uqv'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpguv85t7k'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmpguv85t7k'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmp_ooi56pa'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmp_ooi56pa'
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 631, in _rmtree_unsafe
+    os.rmdir(path)
+    ~~~~~~~~^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmphnpcxryw'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 666, in _exitfunc
+    f()
+    ~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 935, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 930, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 902, in onexc
+    _resetperms(path)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\tempfile.py", line 275, in _dont_follow_symlinks
+    func(path, *args, follow_symlinks=False)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\AppData\\Local\\Packages\\sandbox.{f0f5e397-f158-44cf-a8ac-c354cd2f5887}\\AC\\Temp\\tmphnpcxryw'
