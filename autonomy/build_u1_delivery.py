@@ -14,7 +14,7 @@ from autonomy.disabled_host_package import build_runtime_package
 # Transitive repository-level dependencies of discovery.discovery_service.
 # Keep this narrow: never ship unrelated root entrypoints, credentials or data.
 DISCOVERY_ROOT_SOURCES = (
-    'bd_db.py', 'history_crosscheck.py', 'lead_hygiene_gate.py',
+    'bd_db.py', 'env_loader.py', 'history_crosscheck.py', 'lead_hygiene_gate.py',
     'outreach_control.py', 'retail_city_queue.py', 'broad_outreach_gate.py',
     'email_hygiene.py', 'timezone_resolver.py', 'development_safety.py',
 )

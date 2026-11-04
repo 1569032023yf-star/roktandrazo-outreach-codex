@@ -11,6 +11,22 @@ if os.path.exists(os.path.join(os.path.dirname(__file__), ".development-copy")):
 
 def _load_env():
     """Load .env file from project root"""
+    pinned_path = os.environ.get('ROKT_U1_PROVIDER_CONFIG')
+    pinned_digest = os.environ.get('ROKT_U1_PROVIDER_CONFIG_SHA256')
+    if pinned_path is not None or pinned_digest is not None:
+        if not pinned_path or not pinned_digest:
+            raise ValueError('PINNED_PROVIDER_CONFIG_PAIR_REQUIRED')
+        if os.path.isfile(os.path.join(os.path.dirname(__file__), '.development-copy')):
+            raise ValueError('DEVELOPMENT_EXTERNAL_CREDENTIALS_REJECTED')
+        from autonomy.provider_environment import KEYS, load_pinned_provider_environment
+        environment = load_pinned_provider_environment(pinned_path, pinned_digest)
+        # Parse and validate everything before changing any process configuration.
+        # Approved values replace inherited provider credentials, not vice versa.
+        for key in KEYS:
+            os.environ.pop(key, None)
+        os.environ.pop('DISCOVERY_PROVIDER', None)
+        os.environ.update(environment)
+        return
     env_path = os.path.join(os.path.dirname(__file__), ".env")
     if not os.path.exists(env_path):
         # Fresh isolated worktrees need no secrets; install() has already
