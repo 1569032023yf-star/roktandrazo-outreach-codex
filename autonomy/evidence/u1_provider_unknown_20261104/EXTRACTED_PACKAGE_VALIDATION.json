@@ -1,0 +1,42 @@
+{
+  "source_commit": "37c694ca35bcda6c7e3d8e8eecc06cdbe4bf8e35",
+  "file_count": 84,
+  "manifest_and_source_bytes_verified": true,
+  "imports": {
+    "publisher_channel.install_inputs": {
+      "returncode": 0,
+      "stdout": "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-extracted-37c694c\\payload\\python\\publisher_channel\\install_inputs.py\n",
+      "stderr": ""
+    },
+    "publisher_channel.install_command": {
+      "returncode": 0,
+      "stdout": "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-extracted-37c694c\\payload\\python\\publisher_channel\\install_command.py\n",
+      "stderr": ""
+    },
+    "publisher_channel.install_admission": {
+      "returncode": 0,
+      "stdout": "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-extracted-37c694c\\payload\\python\\publisher_channel\\install_admission.py\n",
+      "stderr": ""
+    },
+    "autonomy.u1_host_runtime": {
+      "returncode": 0,
+      "stdout": "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-extracted-37c694c\\payload\\python\\autonomy\\u1_host_runtime.py\n",
+      "stderr": ""
+    },
+    "autonomy.process_backend": {
+      "returncode": 0,
+      "stdout": "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-extracted-37c694c\\payload\\python\\autonomy\\process_backend.py\n",
+      "stderr": ""
+    },
+    "autonomy.original_inventory_owner": {
+      "returncode": 0,
+      "stdout": "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-extracted-37c694c\\payload\\python\\autonomy\\original_inventory_owner.py\n",
+      "stderr": ""
+    }
+  },
+  "provider_contract": "CONTRACT_MISSING",
+  "package_complete": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "smtp_enabled": false
+}

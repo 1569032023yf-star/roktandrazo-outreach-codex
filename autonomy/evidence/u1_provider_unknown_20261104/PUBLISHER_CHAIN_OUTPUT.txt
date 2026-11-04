@@ -1,0 +1,503 @@
+======================================================================
+ERROR: test_hardlink_and_writer_already_open_refuse_pinning (test_install_inputs.InstallInputTests.test_hardlink_and_writer_already_open_refuse_pinning)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_install_inputs.py", line 62, in test_hardlink_and_writer_already_open_refuse_pinning
+    path=self.root/'file';path.write_bytes(b'known');alias=self.root/'alias';os.link(path,alias)
+                                                                             ~~~~~~~^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\Documents\\ChatGPT\\����\\u1-provider-final\\.test-tmp\\u1-input-pins-llu3m7xp\\file' -> 'C:\\Users\\15690\\Documents\\ChatGPT\\����\\u1-provider-final\\.test-tmp\\u1-input-pins-llu3m7xp\\alias'
+
+======================================================================
+ERROR: test_mutable_reference_rejects_links_and_missing_files_without_creation (test_install_inputs.InstallInputTests.test_mutable_reference_rejects_links_and_missing_files_without_creation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_install_inputs.py", line 29, in test_mutable_reference_rejects_links_and_missing_files_without_creation
+    alias=self.root/'alias.sqlite';os.link(path,alias)
+                                   ~~~~~~~^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\Documents\\ChatGPT\\����\\u1-provider-final\\.test-tmp\\u1-input-pins-q5_j1bbt\\original.sqlite' -> 'C:\\Users\\15690\\Documents\\ChatGPT\\����\\u1-provider-final\\.test-tmp\\u1-input-pins-q5_j1bbt\\alias.sqlite'
+
+======================================================================
+ERROR: test_system_component_policy_cannot_admit_arbitrary_path_and_alias_cannot_write (test_install_inputs.InstallInputTests.test_system_component_policy_cannot_admit_arbitrary_path_and_alias_cannot_write)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_install_inputs.py", line 71, in test_system_component_policy_cannot_admit_arbitrary_path_and_alias_cannot_write
+    path=self.root/'ordinary';path.write_bytes(b'known');alias=self.root/'alias';os.link(path,alias)
+                                                                                 ~~~~~~~^^^^^^^^^^^^
+PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\15690\\Documents\\ChatGPT\\����\\u1-provider-final\\.test-tmp\\u1-input-pins-1kt_pmwq\\ordinary' -> 'C:\\Users\\15690\\Documents\\ChatGPT\\����\\u1-provider-final\\.test-tmp\\u1-input-pins-1kt_pmwq\\alias'
+
+======================================================================
+ERROR: test_authenticated_listener_and_exclusive_lifetime (test_u1_host_runtime.HostRuntimeTests.test_authenticated_listener_and_exclusive_lifetime)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_u1_host_runtime.py", line 61, in test_authenticated_listener_and_exclusive_lifetime
+    client.request('GET','/v1/health',headers=headers);reply=client.getresponse()
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 864, in create_connection
+    raise exceptions[0]
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 849, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+PermissionError: [WinError 10013] ��һ�ַ���Ȩ�޲������ķ�ʽ����һ�������׽��ֵĳ��ԡ�
+
+======================================================================
+ERROR: test_bad_body_does_not_clear_another_inflight_operation (test_publisher_install_admission.AdmissionTests.test_bad_body_does_not_clear_another_inflight_operation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 166, in test_bad_body_does_not_clear_another_inflight_operation
+    self.assertEqual(self.post({},raw='{"action":"install","action":"status"}')[0],400)
+                     ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 67, in post
+    conn.request('POST','/v1/u1-install',body=json.dumps(value) if raw is None else raw,
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 headers={'Authorization':'Bearer '+token,'Content-Type':'application/json'})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 864, in create_connection
+    raise exceptions[0]
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 849, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+PermissionError: [WinError 10013] ��һ�ַ���Ȩ�޲������ķ�ʽ����һ�������׽��ֵĳ��ԡ�
+
+======================================================================
+ERROR: test_failure_preserves_and_explicit_compensation_does_not_replay_forward (test_publisher_install_admission.AdmissionTests.test_failure_preserves_and_explicit_compensation_does_not_replay_forward)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 141, in test_failure_preserves_and_explicit_compensation_does_not_replay_forward
+    self.assertEqual(self.post(self.req)[0],500)
+                     ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 67, in post
+    conn.request('POST','/v1/u1-install',body=json.dumps(value) if raw is None else raw,
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 headers={'Authorization':'Bearer '+token,'Content-Type':'application/json'})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 864, in create_connection
+    raise exceptions[0]
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 849, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+PermissionError: [WinError 10013] ��һ�ַ���Ȩ�޲������ķ�ʽ����һ�������׽��ֵĳ��ԡ�
+
+======================================================================
+ERROR: test_http_root_held_reconciliation_reports_not_started_without_launch (test_publisher_install_admission.AdmissionTests.test_http_root_held_reconciliation_reports_not_started_without_launch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 182, in test_http_root_held_reconciliation_reports_not_started_without_launch
+    code,value=self.post(dict(release_id='fixed',invocation_id='1'*64,action='reconcile',recovery_path=[]))
+               ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 67, in post
+    conn.request('POST','/v1/u1-install',body=json.dumps(value) if raw is None else raw,
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 headers={'Authorization':'Bearer '+token,'Content-Type':'application/json'})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 864, in create_connection
+    raise exceptions[0]
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 849, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+PermissionError: [WinError 10013] ��һ�ַ���Ȩ�޲������ķ�ʽ����һ�������׽��ֵĳ��ԡ�
+
+======================================================================
+ERROR: test_http_unstarted_child_keeps_exclusion_until_explicit_compensation (test_publisher_install_admission.AdmissionTests.test_http_unstarted_child_keeps_exclusion_until_explicit_compensation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 196, in test_http_unstarted_child_keeps_exclusion_until_explicit_compensation
+    code,_=self.post(dict(release_id='fixed',invocation_id='1'*64,action='reconcile',recovery_path=['8'*64]))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 67, in post
+    conn.request('POST','/v1/u1-install',body=json.dumps(value) if raw is None else raw,
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 headers={'Authorization':'Bearer '+token,'Content-Type':'application/json'})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 864, in create_connection
+    raise exceptions[0]
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 849, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+PermissionError: [WinError 10013] ��һ�ַ���Ȩ�޲������ķ�ʽ����һ�������׽��ֵĳ��ԡ�
+
+======================================================================
+ERROR: test_live_held_marker_duplicate_and_atomic_release (test_publisher_install_admission.AdmissionTests.test_live_held_marker_duplicate_and_atomic_release)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 132, in test_live_held_marker_duplicate_and_atomic_release
+    code,value=self.post(self.req);self.assertEqual(code,200,value);self.assertEqual(value['state'],'COMMITTED')
+               ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 67, in post
+    conn.request('POST','/v1/u1-install',body=json.dumps(value) if raw is None else raw,
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 headers={'Authorization':'Bearer '+token,'Content-Type':'application/json'})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 864, in create_connection
+    raise exceptions[0]
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 849, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+PermissionError: [WinError 10013] ��һ�ַ���Ȩ�޲������ķ�ʽ����һ�������׽��ֵĳ��ԡ�
+
+======================================================================
+ERROR: test_missing_official_db_is_not_created (test_publisher_install_admission.AdmissionTests.test_missing_official_db_is_not_created)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 161, in test_missing_official_db_is_not_created
+    self.assertEqual(self.post(self.req)[0],500);self.assertFalse(self.db.exists())
+                     ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 67, in post
+    conn.request('POST','/v1/u1-install',body=json.dumps(value) if raw is None else raw,
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 headers={'Authorization':'Bearer '+token,'Content-Type':'application/json'})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 864, in create_connection
+    raise exceptions[0]
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 849, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+PermissionError: [WinError 10013] ��һ�ַ���Ȩ�޲������ķ�ʽ����һ�������׽��ֵĳ��ԡ�
+
+======================================================================
+ERROR: test_missing_tampered_and_stale_loaded_seals_refuse (test_publisher_install_admission.AdmissionTests.test_missing_tampered_and_stale_loaded_seals_refuse)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 122, in test_missing_tampered_and_stale_loaded_seals_refuse
+    self.assertEqual(self.post(self.req)[0],500)  # Missing receipt preserves; no DB effects.
+                     ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 67, in post
+    conn.request('POST','/v1/u1-install',body=json.dumps(value) if raw is None else raw,
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 headers={'Authorization':'Bearer '+token,'Content-Type':'application/json'})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 864, in create_connection
+    raise exceptions[0]
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 849, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+PermissionError: [WinError 10013] ��һ�ַ���Ȩ�޲������ķ�ʽ����һ�������׽��ֵĳ��ԡ�
+
+======================================================================
+ERROR: test_original_auth_and_closed_gate_do_not_open_db (test_publisher_install_admission.AdmissionTests.test_original_auth_and_closed_gate_do_not_open_db)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 108, in test_original_auth_and_closed_gate_do_not_open_db
+    code,value=self.post(self.req,token='wrong');self.assertEqual(code,401)
+               ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 67, in post
+    conn.request('POST','/v1/u1-install',body=json.dumps(value) if raw is None else raw,
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 headers={'Authorization':'Bearer '+token,'Content-Type':'application/json'})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 864, in create_connection
+    raise exceptions[0]
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 849, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+PermissionError: [WinError 10013] ��һ�ַ���Ȩ�޲������ķ�ʽ����һ�������׽��ֵĳ��ԡ�
+
+======================================================================
+ERROR: test_request_cannot_supply_approvals_paths_or_duplicate_keys (test_publisher_install_admission.AdmissionTests.test_request_cannot_supply_approvals_paths_or_duplicate_keys)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 114, in test_request_cannot_supply_approvals_paths_or_duplicate_keys
+    code,_=self.post(dict(self.req,**{key:True}));self.assertEqual(code,400)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 67, in post
+    conn.request('POST','/v1/u1-install',body=json.dumps(value) if raw is None else raw,
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 headers={'Authorization':'Bearer '+token,'Content-Type':'application/json'})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 864, in create_connection
+    raise exceptions[0]
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 849, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+PermissionError: [WinError 10013] ��һ�ַ���Ȩ�޲������ķ�ʽ����һ�������׽��ֵĳ��ԡ�
+
+======================================================================
+ERROR: test_sole_inventory_and_original_lock_cannot_be_reconfigured_by_admission (test_publisher_install_admission.AdmissionTests.test_sole_inventory_and_original_lock_cannot_be_reconfigured_by_admission)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 171, in test_sole_inventory_and_original_lock_cannot_be_reconfigured_by_admission
+    code,value=self.post(self.req);self.assertEqual(code,400);self.assertIn('SEALED_POLICY_REQUIRED',value['error'])
+               ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 67, in post
+    conn.request('POST','/v1/u1-install',body=json.dumps(value) if raw is None else raw,
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 headers={'Authorization':'Bearer '+token,'Content-Type':'application/json'})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 864, in create_connection
+    raise exceptions[0]
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 849, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+PermissionError: [WinError 10013] ��һ�ַ���Ȩ�޲������ķ�ʽ����һ�������׽��ֵĳ��ԡ�
+
+======================================================================
+ERROR: test_status_is_read_only_even_with_install_gate_closed (test_publisher_install_admission.AdmissionTests.test_status_is_read_only_even_with_install_gate_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 151, in test_status_is_read_only_even_with_install_gate_closed
+    with patch.object(admission,'InstallCommand',adapter):self.assertEqual(self.post(self.req)[0],200)
+                                                                           ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_publisher_install_admission.py", line 67, in post
+    conn.request('POST','/v1/u1-install',body=json.dumps(value) if raw is None else raw,
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 headers={'Authorization':'Bearer '+token,'Content-Type':'application/json'})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1035, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ~~~~~~~~~~~~~~~~~~~~~~~^
+        (self.host,self.port), self.timeout, self.source_address)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 864, in create_connection
+    raise exceptions[0]
+  File "C:\Users\15690\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 849, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+PermissionError: [WinError 10013] ��һ�ַ���Ȩ�޲������ķ�ʽ����һ�������׽��ֵĳ��ԡ�
+
+======================================================================
+FAIL: test_reparse_ancestor_refused (test_install_inputs.InstallInputTests.test_reparse_ancestor_refused)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\u1-provider-final\test_install_inputs.py", line 95, in test_reparse_ancestor_refused
+    self.assertEqual(result.returncode,0,result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : b'Access is denied.\r\n'
+
+----------------------------------------------------------------------
+Ran 72 tests in 102.023s
+
+FAILED (failures=1, errors=15)

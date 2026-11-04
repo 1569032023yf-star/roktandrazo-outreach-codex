@@ -1,3 +1,15 @@
+中文：追加实测：CPython3658文件独立启动通过；37c694c工程包84文件，独立Python下6个包内模块导入成功。运行时尚未接入Bootstrap安装事务，依赖闭包及独审/完整回归仍待完成；PACKAGE_COMPLETE=false。
+
+English: Additional evidence:3658-file CPython starts independently; source37c694c produces84 package files with six imports passing under that runtime. Bootstrap installation binding, dependency closure, independent review and full regression remain pending; PACKAGE_COMPLETE=false.
+
+# 2026-11-04 离线继续推进 / Offline development continues
+
+中文：Provider合同CONTRACT_MISSING；独立离线开发继续。9abe85a回归837项37失败18错误，与基线相同ID，未全绿。665f499新增CPython准备工具4项准入测试通过，新SHA完整回归未执行。组合安装链72项1失败15错误；未安装，全部门禁false。详见 u1_provider_unknown_20261104/REPORT.md。
+
+English: Provider contract CONTRACT_MISSING; independent offline work continues. 9abe85a regression:837 tests,37 failures,18 errors, same baseline IDs, not all green. 665f499 adds CPython preparation with four admission tests passing; full regression not run for that SHA. Combined installer chain:72 tests,1 failure,15 errors. Not installed; all gates false. See u1_provider_unknown_20261104/REPORT.md.
+
+---
+
 
 ## 全量发现的新失败及修复 / Full-suite finding and repair
 中文：前一候选032e219全量tests/836项，38失败/18错误；基线44b0ec9为833项、37失败/18错误。新增失败是UNKNOWN持久拒绝测试。根因为test_city_legacy_retry在导入时将discovery.discovery_service替换为固定历史快照，新增测试误测旧源码。未修改旧快照、未取消该测试；新增测试改用私有模块名加载并核对当前候选文件，不污染兼容套件。预加载该legacy模块后4项通过（1.092秒）；legacy与新测试共27项通过（14.671秒），详见PRELOADED_LEGACY_OUTPUT.txt及POLLUTION_REPRO_OUTPUT.txt。032e219失败证据保留，不将其称为无新增回归。

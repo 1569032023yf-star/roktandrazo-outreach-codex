@@ -1,0 +1,24 @@
+{
+  "source_commit": "665f4992d0ad6cc7f670c3ccd5e817fb4e2ec612",
+  "runtime_manifest_sha256": "844d86032e729e923a7449d56c19ced68c59ef21c334386d164e589a3b0c0134",
+  "file_count": 3658,
+  "python": "python.exe",
+  "probe": {
+    "version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]",
+    "executable": "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-runtime-665f499\\python.exe",
+    "prefix": "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-runtime-665f499",
+    "path": [
+      "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-runtime-665f499\\python313.zip",
+      "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-runtime-665f499\\DLLs",
+      "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-runtime-665f499\\Lib",
+      "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-runtime-665f499",
+      "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-runtime-665f499\\Lib\\site-packages"
+    ],
+    "sqlite": "3.50.4",
+    "ssl": "OpenSSL 3.0.18 30 Sep 2025"
+  },
+  "archive_sha256": "9089c1f0d720f7c913cd4caf600e6761b0a4d5b90ccf34229fe418ff64a5da5f",
+  "third_party_dependencies_complete": false,
+  "runtime_integrated_with_bootstrap": false,
+  "production_ready": false
+}

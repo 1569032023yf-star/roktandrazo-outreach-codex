@@ -5,5 +5,20 @@
   "full_final": 54579,
   "publisher_chain": 31239,
   "baseline_result": "autonomy/evidence/u1_provider_transport_20261104/full-baseline/result.json",
-  "prior_candidate_result": "autonomy/evidence/u1_provider_transport_20261104/full-candidate/result.json"
+  "prior_candidate_result": "autonomy/evidence/u1_provider_transport_20261104/full-candidate/result.json",
+  "terminal": {
+    "54579": {
+      "exit_code": 1,
+      "tests": 837,
+      "failures": 37,
+      "errors": 18
+    },
+    "31239": {
+      "tests": 72,
+      "failures": 1,
+      "errors": 15,
+      "shell_exit_code": 0,
+      "unittest_passed": false
+    }
+  }
 }

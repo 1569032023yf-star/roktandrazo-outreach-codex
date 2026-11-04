@@ -589,7 +589,12 @@
       "regression_runner_candidate": "b69214d",
       "full_regression": {
         "source_commit": "9abe85a2bdb3227078ec87514727625ec5fec4e6",
-        "status": "RUNNING_FOR_CURRENT_SHA"
+        "run": 837,
+        "failures": 37,
+        "errors": 18,
+        "no_new_regression": true,
+        "all_green": false,
+        "report": "autonomy/evidence/u1_provider_unknown_20261104/FINAL_COMPARISON.json"
       },
       "adapter_review": "SCOPED_PASS_E3F3220",
       "bridge_candidate": "68802d5",
@@ -1666,7 +1671,7 @@
           "duration_seconds": 1.33
         },
         "independent_review": "PENDING",
-        "full_regression": "RUNNING_FOR_CURRENT_SHA",
+        "full_regression": "COMPLETE_NO_NEW_FAILURE_OR_ERROR_IDS_NOT_ALL_GREEN",
         "previous_source_regression": "032e219_HAS_NEW_FAILURE_REPAIRED_IN_9abe85a",
         "formal_backend_integrated": false,
         "installable_release": false,
@@ -1683,8 +1688,8 @@
         "allow_dispatch": false,
         "allow_cancel_dispatch": false,
         "smtp_enabled": false,
-        "next_action_zh": "完成固定源码可比回归；确认正式Provider与权威请求/费用合同；接入真实worker和原owner持久intent，保持全部门禁关闭。",
-        "next_action_en": "Complete pinned comparable regression; confirm formal Provider and authoritative request/cost contracts; integrate the real worker and original-owner durable intent with all gates closed.",
+        "next_action_zh": "继续完整CPython、依赖闭包、最新Publisher及Bootstrap离线整合；正式Provider接入等待服务与合同确认，不阻塞独立开发。",
+        "next_action_en": "Continue offline CPython/dependency closure, latest Publisher and Bootstrap integration. Formal Provider contracts remain pending without blocking independent development.",
         "pollution_reproduction": {
           "tests": 27,
           "passed": true
@@ -1692,6 +1697,33 @@
         "active_session_locators": {
           "full_final": 54579,
           "publisher_chain": 31239
+        },
+        "formal_provider_contract": "CONTRACT_MISSING",
+        "full_regression_evidence": "autonomy/evidence/u1_provider_unknown_20261104/FINAL_COMPARISON.json",
+        "publisher_chain": {
+          "tests": 72,
+          "failures": 1,
+          "errors": 15,
+          "passed": false,
+          "output": "autonomy/evidence/u1_provider_unknown_20261104/PUBLISHER_CHAIN_OUTPUT.txt"
+        },
+        "runtime_increment": {
+          "source_commit": "665f4992d0ad6cc7f670c3ccd5e817fb4e2ec612",
+          "admission_tests": 4,
+          "admission_passed": true,
+          "full_regression": "NOT_RUN_FOR_THIS_SHA",
+          "runtime_integration": "STANDALONE_STDLIB_PROBE_PASSED_BOOTSTRAP_TRANSACTION_PENDING",
+          "provider_contract": "CONTRACT_MISSING",
+          "production_ready": false
+        },
+        "publisher_packaging_increment": {
+          "source_commit": "37c694ca35bcda6c7e3d8e8eecc06cdbe4bf8e35",
+          "files": 84,
+          "isolated_imports_passed": 6,
+          "complete_package": false,
+          "full_regression": "NOT_RUN_FOR_THIS_SHA",
+          "independent_review": "PENDING",
+          "build_report": "autonomy/evidence/u1_provider_unknown_20261104/PUBLISHER_BUILD.json"
         }
       },
       "u1_scm_integration_latest": {
@@ -7994,7 +8026,7 @@
       "duration_seconds": 1.33
     },
     "independent_review": "PENDING",
-    "full_regression": "RUNNING_FOR_CURRENT_SHA",
+    "full_regression": "COMPLETE_NO_NEW_FAILURE_OR_ERROR_IDS_NOT_ALL_GREEN",
     "previous_source_regression": "032e219_HAS_NEW_FAILURE_REPAIRED_IN_9abe85a",
     "formal_backend_integrated": false,
     "installable_release": false,
@@ -8011,8 +8043,8 @@
     "allow_dispatch": false,
     "allow_cancel_dispatch": false,
     "smtp_enabled": false,
-    "next_action_zh": "完成固定源码可比回归；确认正式Provider与权威请求/费用合同；接入真实worker和原owner持久intent，保持全部门禁关闭。",
-    "next_action_en": "Complete pinned comparable regression; confirm formal Provider and authoritative request/cost contracts; integrate the real worker and original-owner durable intent with all gates closed.",
+    "next_action_zh": "继续完整CPython、依赖闭包、最新Publisher及Bootstrap离线整合；正式Provider接入等待服务与合同确认，不阻塞独立开发。",
+    "next_action_en": "Continue offline CPython/dependency closure, latest Publisher and Bootstrap integration. Formal Provider contracts remain pending without blocking independent development.",
     "pollution_reproduction": {
       "tests": 27,
       "passed": true
@@ -8020,6 +8052,33 @@
     "active_session_locators": {
       "full_final": 54579,
       "publisher_chain": 31239
+    },
+    "formal_provider_contract": "CONTRACT_MISSING",
+    "full_regression_evidence": "autonomy/evidence/u1_provider_unknown_20261104/FINAL_COMPARISON.json",
+    "publisher_chain": {
+      "tests": 72,
+      "failures": 1,
+      "errors": 15,
+      "passed": false,
+      "output": "autonomy/evidence/u1_provider_unknown_20261104/PUBLISHER_CHAIN_OUTPUT.txt"
+    },
+    "runtime_increment": {
+      "source_commit": "665f4992d0ad6cc7f670c3ccd5e817fb4e2ec612",
+      "admission_tests": 4,
+      "admission_passed": true,
+      "full_regression": "NOT_RUN_FOR_THIS_SHA",
+      "runtime_integration": "STANDALONE_STDLIB_PROBE_PASSED_BOOTSTRAP_TRANSACTION_PENDING",
+      "provider_contract": "CONTRACT_MISSING",
+      "production_ready": false
+    },
+    "publisher_packaging_increment": {
+      "source_commit": "37c694ca35bcda6c7e3d8e8eecc06cdbe4bf8e35",
+      "files": 84,
+      "isolated_imports_passed": 6,
+      "complete_package": false,
+      "full_regression": "NOT_RUN_FOR_THIS_SHA",
+      "independent_review": "PENDING",
+      "build_report": "autonomy/evidence/u1_provider_unknown_20261104/PUBLISHER_BUILD.json"
     }
   }
 }

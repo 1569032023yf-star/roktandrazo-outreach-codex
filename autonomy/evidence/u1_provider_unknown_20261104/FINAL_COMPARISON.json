@@ -1,0 +1,14 @@
+{
+  "baseline_sha": "44b0ec9cf3b4444f83f76619b7c96e83a6595121",
+  "candidate_sha": "9abe85a2bdb3227078ec87514727625ec5fec4e6",
+  "baseline_count": 833,
+  "candidate_count": 837,
+  "new_failures": [],
+  "new_errors": [],
+  "failure_ids_identical": true,
+  "error_ids_identical": true,
+  "all_green": false,
+  "independent_review": "PENDING",
+  "scope": "tests/ only; no Windows acceptance",
+  "no_new_regression": true
+}
