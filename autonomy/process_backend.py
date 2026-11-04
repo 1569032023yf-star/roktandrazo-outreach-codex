@@ -1,7 +1,7 @@
 """Pinned subprocess transport for the existing offline admission protocol.
 现有离线准入的真实子进程传输；不生成准入、回执或调度，不授权生产。
 """
-from contextlib import closing
+from contextlib import closing, nullcontext
 import hashlib
 import json
 import math
@@ -44,12 +44,22 @@ class ProcessBackend:
     protocol_version=BACKEND_PROTOCOL
 
     def __init__(self, journal, *, python, python_sha256, worker, worker_sha256,
-                 backend_id, offline_only=False, original_owner=None):
+                 backend_id, offline_only=False, original_owner=None,
+                 provider_config=None, provider_config_sha256=None):
         if offline_only is not True:raise ValueError('OFFLINE_ONLY')
         if original_owner is not None:
             from autonomy.original_inventory_owner import OriginalOwnerAuthority
             if type(original_owner) is not OriginalOwnerAuthority:
                 raise ValueError('EXACT_ORIGINAL_BACKEND_OWNER_REQUIRED')
+        if (provider_config is None)!=(provider_config_sha256 is None):
+            raise ValueError('PROVIDER_REFERENCE_PAIR_REQUIRED')
+        self.provider_reference=None
+        if provider_config is not None:
+            import re
+            if (type(provider_config) is not str or not Path(provider_config).is_absolute() or
+                type(provider_config_sha256) is not str or not re.fullmatch('[0-9a-f]{64}',provider_config_sha256)):
+                raise ValueError('PROVIDER_REFERENCE_REJECTED')
+            self.provider_reference=dict(path=provider_config,sha256=provider_config_sha256)
         self.original_owner=original_owner
         self.path=ordinary(journal)
         if not self.path.parent.is_dir():raise ValueError('JOURNAL_PARENT_REQUIRED')
@@ -89,6 +99,16 @@ class ProcessBackend:
                     replay_authorized=False,terminal_accepted=False,production_execution=False)
 
     def execute_once(self,operation,*,deadline_monotonic):
+        # Validate before durable intent; retain file/ancestor pins through child
+        # cleanup and result commit. Never export Provider secrets to the host.
+        from autonomy.provider_environment import pinned_provider_environment
+        reference=self.provider_reference
+        context=(nullcontext() if reference is None else
+                 pinned_provider_environment(reference['path'],reference['sha256']))
+        with context:
+            return self._execute_pinned(operation,deadline_monotonic=deadline_monotonic)
+
+    def _execute_pinned(self,operation,*,deadline_monotonic):
         if (type(operation) is not dict or operation.get('scope')!='isolated_offline' or
             operation.get('production_execution') is not False or operation.get('inventory_id')!=INVENTORY or
             operation.get('schema')!=OPERATION_SCHEMA or operation.get('backend_protocol')!=BACKEND_PROTOCOL or
@@ -106,7 +126,10 @@ class ProcessBackend:
         if live is not None:live()
         body=dict(operation);key=body.pop('idempotency_key',None)
         if key!=digest(body):raise ValueError('IDEMPOTENCY_BINDING')
-        binding=digest(dict(operation=operation,python_sha256=self.hashes[0],worker_sha256=self.hashes[1]))
+        execution_binding=dict(operation=operation,python_sha256=self.hashes[0],worker_sha256=self.hashes[1])
+        if self.provider_reference is not None:
+            execution_binding['provider_reference']=self.provider_reference
+        binding=digest(execution_binding)
         wall=operation.get('max_wall_seconds')
         if type(wall) is not int or not 0<wall<=3600:raise ValueError('WALL_BOUND')
         remaining=deadline_monotonic-time.monotonic()
@@ -128,7 +151,11 @@ class ProcessBackend:
         try:
             remaining=deadline_monotonic-time.monotonic()
             if remaining<=0:raise ExecutionUnknown('DEADLINE_EXPIRED')
-            result=run_tree([str(self.python),'-I','-B',str(self.worker)],timeout=remaining,
+            arguments=[str(self.python),'-I','-B',str(self.worker)]
+            if self.provider_reference is not None:
+                arguments+=['--provider-config',self.provider_reference['path'],
+                            '--provider-config-sha256',self.provider_reference['sha256']]
+            result=run_tree(arguments,timeout=remaining,
                             stdin_bytes=raw,stdout_limit_bytes=65536,stderr_limit_bytes=4096,event_limit_bytes=65536,
                             assert_live=live)
             if result.returncode!=0 or not result.cleanup_verified or time.monotonic()>deadline_monotonic:
