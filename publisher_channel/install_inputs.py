@@ -19,6 +19,35 @@ from publisher_channel.install_verifier import parse,sha
 def reject(reason):raise ValueError('STOP_AND_PRESERVE_INPUT_'+reason)
 
 
+def pin_python_runtime(pins, manifest_path, expected, python):
+    """Pin the complete external runtime before installation admission.
+
+    This is a reference contract, not a runtime installation grant.
+    """
+    exe=pins.path(python);root=exe.parent;manifest=pins.path(manifest_path)
+    if exe.name!='python.exe' or manifest!=root/'U1_RUNTIME_CONTENT.json':reject('PYTHON_RUNTIME_PATH')
+    data=parse(pins.add(manifest,expected,limit=2*1024*1024))
+    if (type(data) is not dict or set(data)!={'schema','python','files'} or
+        data['schema']!='rokt.u1-runtime-content.v1' or data['python']!='python.exe' or
+        type(data['files']) is not dict or not 1<=len(data['files'])<=8192 or
+        'python.exe' not in data['files']):reject('PYTHON_RUNTIME_MANIFEST')
+    seen=set();total=0
+    reserved={'CON','PRN','AUX','NUL'}|{a+str(i) for a in ('COM','LPT') for i in range(1,10)}
+    for path,digest in data['files'].items():
+        if (type(path) is not str or not re.fullmatch('[A-Za-z0-9_./-]+',path) or
+            path.casefold()=='u1_runtime_content.json' or
+            any(p in ('','.','..') or p.endswith('.') or p.split('.')[0].upper() in reserved for p in path.split('/')) or
+            path.casefold() in seen):reject('PYTHON_RUNTIME_ENTRY')
+        seen.add(path.casefold());total+=len(pins.add(root/path,digest))
+        if total>1024*1024*1024:reject('PYTHON_RUNTIME_SIZE')
+    actual=set()
+    for path in root.rglob('*'):
+        if path.is_symlink() or path.stat().st_file_attributes&0x400:reject('PYTHON_RUNTIME_REPARSE')
+        if path.is_file():actual.add(path.relative_to(root).as_posix().casefold())
+    if actual!=seen|{'u1_runtime_content.json'}:reject('PYTHON_RUNTIME_UNMANAGED')
+    return data
+
+
 class FileInformation(c.Structure):
     _fields_=[('attributes',w.DWORD),('created',w.FILETIME),('accessed',w.FILETIME),('written',w.FILETIME),
               ('volume',w.DWORD),('size_high',w.DWORD),('size_low',w.DWORD),('links',w.DWORD),

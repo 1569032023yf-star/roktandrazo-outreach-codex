@@ -13,6 +13,17 @@ import tempfile
 from tools.prepare_u1_python_runtime import prepare, sha
 
 
+def write_runtime_content_manifest(output, python):
+    output=Path(output)
+    path=output/'U1_RUNTIME_CONTENT.json'
+    if path.exists():raise ValueError('NEW_CONTENT_MANIFEST_REQUIRED')
+    content=dict(schema='rokt.u1-runtime-content.v1',python=python,
+                 files={p.relative_to(output).as_posix():sha(p.read_bytes())
+                        for p in sorted(output.rglob('*')) if p.is_file()})
+    path.write_text(json.dumps(content,sort_keys=True,separators=(',',':'))+'\n',encoding='utf-8')
+    return path
+
+
 def wheel_requirements(lock, wheelhouse):
     if lock.get('schema') != 'rokt.u1-business-wheel-input.v1':
         raise ValueError('WHEEL_LOCK_SCHEMA')
@@ -76,6 +87,7 @@ def assemble(archive, cpython_lock, wheel_lock, wheelhouse, output):
                     production_ready=False, allow_install=False, allow_dispatch=False,
                     allow_cancel_dispatch=False, smtp_enabled=False)
     (output/'ASSEMBLED_MANIFEST.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8')
+    write_runtime_content_manifest(output,original['python'])
     return manifest
 
 
