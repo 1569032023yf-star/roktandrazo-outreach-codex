@@ -29,13 +29,14 @@ def build(output, source_commit):
         dev=Path(temp)/'bridge'
         build_development(dev,resolved)
         files={'host/'+p.relative_to(dev).as_posix():p.read_bytes() for p in dev.rglob('*') if p.is_file()}
-    names=subprocess.check_output(['git','ls-tree','-r','--name-only',resolved,'autonomy'],cwd=repo,text=True).splitlines()
+    names=subprocess.check_output(['git','ls-tree','-r','--name-only',resolved,'autonomy','publisher_channel'],cwd=repo,text=True).splitlines()
     for name in names:
-        if name.startswith('autonomy/') and name.endswith('.py') and '/evidence/' not in name:
+        if name.startswith(('autonomy/','publisher_channel/')) and name.endswith('.py') and '/evidence/' not in name:
             files['python/'+name]=subprocess.check_output(['git','show',resolved+':'+name],cwd=repo)
     files['DELIVERY.json']=canonical(dict(schema='rokt.u1-delivery.v1',source_commit=resolved,
         inventory_id='1784775229336',python_runtime='External CPython 3.11+ required; not bundled',
         service_start='Disabled',formal_backend_integrated=False,production_ready=False,
+        publisher_source_included=True,python_runtime_integrated=False,
         formal_maintenance_integrated=False,allow_install=False,
         allow_dispatch=False,allow_cancel_dispatch=False,smtp_enabled=False,scheduler_created=False))
     bundle=out/'install';digest=build_bundle(bundle,files,resolved)
