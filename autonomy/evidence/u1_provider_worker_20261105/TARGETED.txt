@@ -1,0 +1,25 @@
+test_bad_digest_rejected_without_leaking_configuration (test_provider_worker.ProviderWorkerTests.test_bad_digest_rejected_without_leaking_configuration) ... ok
+test_isolated_entrypoint_preflight_uses_real_adapter_without_writes (test_provider_worker.ProviderWorkerTests.test_isolated_entrypoint_preflight_uses_real_adapter_without_writes) ... ok
+test_real_backend_worker_refusal_is_durable_unknown_and_never_replayed (test_provider_worker.ProviderWorkerTests.test_real_backend_worker_refusal_is_durable_unknown_and_never_replayed) ... ok
+test_actual_child_receipts_settle_existing_ledgers (test_process_backend.BackendTests.test_actual_child_receipts_settle_existing_ledgers) ... ok
+test_ambiguous_worker_receipts_are_unknown_and_never_replayed (test_process_backend.BackendTests.test_ambiguous_worker_receipts_are_unknown_and_never_replayed) ... ok
+test_bad_provider_digest_precedes_execution_intent (test_process_backend.BackendTests.test_bad_provider_digest_precedes_execution_intent) ... ok
+test_deadline_expired_before_child_is_unknown_without_launch (test_process_backend.BackendTests.test_deadline_expired_before_child_is_unknown_without_launch) ... ok
+test_foreign_inventory_and_no_lease_rejected (test_process_backend.BackendTests.test_foreign_inventory_and_no_lease_rejected) ... ok
+test_inflight_after_reopen_never_enters_child (test_process_backend.BackendTests.test_inflight_after_reopen_never_enters_child) ... ok
+test_lost_or_invalid_receipt_blocks_retry (test_process_backend.BackendTests.test_lost_or_invalid_receipt_blocks_retry) ... ok
+test_partial_provider_reference_rejected (test_process_backend.BackendTests.test_partial_provider_reference_rejected) ... ok
+test_provider_reference_is_pinned_and_passed_without_secret_environment (test_process_backend.BackendTests.test_provider_reference_is_pinned_and_passed_without_secret_environment) ... ok
+test_timeout_kills_child_and_no_replay (test_process_backend.BackendTests.test_timeout_kills_child_and_no_replay) ... ok
+test_worker_replacement_after_constructor_is_rejected_before_intent (test_process_backend.BackendTests.test_worker_replacement_after_constructor_is_rejected_before_intent) ... ok
+test_worker_source_is_pinned_until_child_cleanup_and_result_commit (test_process_backend.BackendTests.test_worker_source_is_pinned_until_child_cleanup_and_result_commit) ... ok
+test_approved_browser_does_not_inherit_json_or_direct_mode (test_provider_adapter_binding.AdapterBindingTests.test_approved_browser_does_not_inherit_json_or_direct_mode) ... ok
+test_direct_result_saved_to_instance_directory (test_provider_adapter_binding.AdapterBindingTests.test_direct_result_saved_to_instance_directory) ... ok
+test_google_approved_absence_never_inherits_credentials_or_location (test_provider_adapter_binding.AdapterBindingTests.test_google_approved_absence_never_inherits_credentials_or_location) ... ok
+test_instance_cache_isolation_and_readonly_construction (test_provider_adapter_binding.AdapterBindingTests.test_instance_cache_isolation_and_readonly_construction) ... ok
+test_invalid_location_fails_before_adapter_use (test_provider_adapter_binding.AdapterBindingTests.test_invalid_location_fails_before_adapter_use) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 11.551s
+
+OK

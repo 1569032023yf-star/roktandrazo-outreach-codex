@@ -1,0 +1,14 @@
+{
+  "source_commit": "9d5ecb6b8062f916ac7869957eb6589665ce9113",
+  "baseline_source_commit": "240f614fd694d48eb19edcfd8f8d3e187722875d",
+  "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+  "candidate_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+  "baseline_run": 848,
+  "candidate_run": 848,
+  "failures": 37,
+  "errors": 17,
+  "new_failures_ids": [],
+  "resolved_failures_ids": [],
+  "new_errors_ids": [],
+  "resolved_errors_ids": []
+}

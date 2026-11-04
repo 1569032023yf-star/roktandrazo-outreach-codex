@@ -1,0 +1,82 @@
+{
+  "updated_at": "2026-11-04T19:24:52.977716+00:00",
+  "source_commit": "9d5ecb6b8062f916ac7869957eb6589665ce9113",
+  "checkpoint": "autonomy/evidence/u1_provider_worker_20261105/REPORT.md",
+  "targeted_tests": {
+    "run": 20,
+    "failures": 0,
+    "errors": 0
+  },
+  "full_regression": {
+    "source_commit": "9d5ecb6b8062f916ac7869957eb6589665ce9113",
+    "baseline_source_commit": "240f614fd694d48eb19edcfd8f8d3e187722875d",
+    "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+    "candidate_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+    "baseline_run": 848,
+    "candidate_run": 848,
+    "failures": 37,
+    "errors": 17,
+    "new_failures_ids": [],
+    "resolved_failures_ids": [],
+    "new_errors_ids": [],
+    "resolved_errors_ids": []
+  },
+  "package": {
+    "artifacts": {
+      "install.zip": "5965f7d3a08dd732a0cfca75a67e47eda949457fe32920d0e5e392cae2881383",
+      "rollback-tools.zip": "62b31347b14cce96e5a6e17b6f3dc5f8b9ba8f1e0af241998c11c078abac7dfc"
+    },
+    "files": 5057,
+    "independent_review": "PENDING",
+    "manifest_sha256": "0814a7bd48fc4e65184b2bc7a62eeb031093cdcf2087d744747c4a119d289f02",
+    "package_complete": false,
+    "production_ready": false,
+    "python_runtime_bundled": true,
+    "source_commit": "9d5ecb6b8062f916ac7869957eb6589665ce9113"
+  },
+  "extracted_verification": "VERIFIED",
+  "packaged_worker_probe": {
+    "source_commit": "9d5ecb6b8062f916ac7869957eb6589665ce9113",
+    "outcome": "PASSED",
+    "returncode": 0,
+    "production_execution": false,
+    "checks": {
+      "real_packaged_cpython": true,
+      "preflight": true,
+      "contract_refusal": true,
+      "persistent_unknown": true,
+      "replay_denied": true,
+      "external_requests": 0,
+      "production_execution": false
+    }
+  },
+  "rollback_component_parity": {
+    "source_commit": "9d5ecb6b8062f916ac7869957eb6589665ce9113",
+    "matched_components": 4960,
+    "mismatches": [],
+    "outcome": "VERIFIED",
+    "rollback_verified": false,
+    "description_zh": "仅组件对应，未安装或回滚。",
+    "description_en": "Component parity only; no installation or rollback."
+  },
+  "rollback_verified": false,
+  "independent_review": "PENDING",
+  "worker_entrypoint": "REAL_ADAPTER_PREFLIGHT_AND_CONTRACT_REFUSAL_ONLY",
+  "formal_backend_integrated": false,
+  "provider_contract": "CONTRACT_MISSING",
+  "statuses": {
+    "DEVELOPMENT_COMPLETE": false,
+    "PACKAGE_COMPLETE": false,
+    "PROVIDER_ACCEPTED": false,
+    "WINDOWS_ACCEPTED": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "BUSINESS_GROWTH": "UNKNOWN"
+  },
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "next_action": "Wire original-owner-bound operation parsing and business request mapping; keep external requests blocked without authoritative cost, terminal and cancellation contracts and never fabricate receipts."
+}

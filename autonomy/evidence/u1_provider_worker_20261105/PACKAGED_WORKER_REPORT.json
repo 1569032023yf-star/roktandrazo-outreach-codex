@@ -1,0 +1,15 @@
+{
+  "source_commit": "9d5ecb6b8062f916ac7869957eb6589665ce9113",
+  "outcome": "PASSED",
+  "returncode": 0,
+  "production_execution": false,
+  "checks": {
+    "real_packaged_cpython": true,
+    "preflight": true,
+    "contract_refusal": true,
+    "persistent_unknown": true,
+    "replay_denied": true,
+    "external_requests": 0,
+    "production_execution": false
+  }
+}
