@@ -48,3 +48,41 @@ class ProviderWorkerTests(unittest.TestCase):
             self.assertEqual(b.status(o['idempotency_key'])['transport_state'],'UNKNOWN')
             with self.assertRaisesRegex(ExecutionUnknown,'UNKNOWN_NO_REPLAY'):b.execute_once(o,deadline_monotonic=time.monotonic()+.9)
             self.assertFalse((root/'unused-cache').exists())
+
+
+class WorkerOperationTests(unittest.TestCase):
+    def encode(self, updates=None):
+        from autonomy.growth_ledger import digest
+        o=fixtures.BackendTests.operation(self);o.pop('idempotency_key')
+        o.update(updates or {});o['idempotency_key']=digest(o)
+        return json.dumps(o).encode()
+
+    def test_existing_backend_operation_is_consumed_and_retained(self):
+        import io
+        from autonomy.provider_worker import read_operation
+        raw=self.encode();self.assertEqual(read_operation(io.BytesIO(raw)),json.loads(raw))
+
+    def test_duplicates_oversize_nonfinite_and_modified_binding_are_rejected(self):
+        import io
+        from autonomy.provider_worker import read_operation
+        for raw in (b'x'*65537,b'{}',b'{"x":1,"x":2}',b'{"x":NaN}',self.encode().replace(b'isolated_offline',b'production_live')):
+            with self.subTest(raw_size=len(raw)),self.assertRaises(ValueError):read_operation(io.BytesIO(raw))
+
+    def test_original_claim_join_checks_actual_token_and_rejects_partial_join(self):
+        import io
+        from autonomy.growth_ledger import digest
+        from autonomy.provider_worker import read_operation
+        c=dict(slot='slot',epoch=1,owner='owner',run_id='run',request_id='request')
+        hashes={k:'a'*64 for k in ('original_event_digest','lock_token_hash','process_identity_hash','runtime_id','slots_id','budget_id')}
+        extra=dict(c,token='token',**hashes,original_claim_digest=digest(dict(c,claim_token_hash=digest('token'))))
+        self.assertEqual(read_operation(io.BytesIO(self.encode(extra)))['run_id'],'run')
+        for patch in (dict(original_event_digest='a'*64),dict(extra,token='different-token')):
+            with self.assertRaises(ValueError):read_operation(io.BytesIO(self.encode(patch)))
+
+    def test_invalid_operation_rejected_before_adapter_construction(self):
+        import io
+        from unittest.mock import patch
+        from autonomy.provider_worker import main
+        with patch('autonomy.provider_worker.sys.stdin',io.TextIOWrapper(io.BytesIO(b'{}'))),patch('autonomy.provider_worker.pinned_provider_adapter') as adapter,patch('autonomy.provider_worker.sys.stderr',io.StringIO()) as errors:
+            self.assertEqual(main(['--provider-config','not-used','--provider-config-sha256','bad']),65)
+            adapter.assert_not_called();self.assertEqual(errors.getvalue().strip(),'PROVIDER_WORKER_INPUT_REJECTED')
