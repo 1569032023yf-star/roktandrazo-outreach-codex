@@ -10,6 +10,27 @@ from autonomy.windows import u1_bootstrap as bootstrap
 
 
 class BootstrapArgumentTests(unittest.TestCase):
+    def test_v2_forwards_approved_token_digest_and_rejects_missing_binding(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            config=Path(tmp)/'runtime.json'
+            data=dict(schema='rokt.u1-python-runtime.v2',inventory_id='1784775229336',
+                      release_root=tmp,state_root=tmp,token_file=str(Path(tmp)/'token'),
+                      token_sha256='b'*64,credential_expires_at=12345,snapshot=tmp,
+                      snapshot_sha256='a'*64,allow_dispatch=False,allow_cancel_dispatch=False,smtp_enabled=False)
+            config.write_text(json.dumps(data),encoding='utf-8')
+            captured=[]
+            with patch.object(sys,'argv',list(sys.argv)),patch.object(sys,'path',list(sys.path)),patch.object(bootstrap,'resolve_release',return_value=Path(tmp)),patch.object(bootstrap.runpy,'run_module',side_effect=lambda *a,**k:captured.append(list(sys.argv))):
+                bootstrap.main(str(config))
+            self.assertEqual(captured[0][-2:],['--token-sha256','b'*64])
+            for digest in (None,'INVALID'):
+                case=dict(data)
+                if digest is None:del case['token_sha256']
+                else:case['token_sha256']=digest
+                config.write_text(json.dumps(case),encoding='utf-8')
+                with patch.object(bootstrap,'resolve_release') as release:
+                    with self.assertRaises(ValueError):bootstrap.main(str(config))
+                    release.assert_not_called()
+
     def test_optional_owner_modes_forward_exact_arguments(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);config=root/'runtime.json';app=root/'app'

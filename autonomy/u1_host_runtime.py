@@ -4,6 +4,8 @@ Composes the version store, lifetime process exclusion and existing 8791 handler
 SCM child supervision and production execution backend remain release blockers.
 """
 import argparse
+import hashlib
+import re
 import sqlite3
 from contextlib import contextmanager
 from http.server import HTTPServer
@@ -76,12 +78,19 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--release-root',required=True);p.add_argument('--state-root',required=True)
     p.add_argument('--token-file',required=True);p.add_argument('--credential-expires-at',type=int,required=True)
+    p.add_argument('--token-sha256')
     p.add_argument('--snapshot',required=True);p.add_argument('--snapshot-sha256',required=True)
     owner=p.add_mutually_exclusive_group()
     owner.add_argument('--event-runtime')
     owner.add_argument('--original-owner-db')
     a=p.parse_args()
-    token=read_file(Path(a.token_file),128).decode('ascii').strip()
+    token_bytes=read_file(Path(a.token_file),128)
+    # Hash the exact bytes read, before decoding or normalization, and before
+    # opening original authority, creating state or binding the listener.
+    if a.token_sha256 is not None:
+        if not re.fullmatch('[0-9a-f]{64}',a.token_sha256):raise ValueError('APPROVED_TOKEN_DIGEST_REQUIRED')
+        if hashlib.sha256(token_bytes).hexdigest()!=a.token_sha256:raise ValueError('APPROVED_TOKEN_CHANGED')
+    token=token_bytes.decode('ascii').strip()
     snapshot=read_file(Path(a.snapshot),MAX_SNAPSHOT_BYTES)
     connect=original_owner_reader(a.original_owner_db) if a.original_owner_db else None
     with open_host(a.release_root,a.state_root,token,a.credential_expires_at,snapshot,a.snapshot_sha256,

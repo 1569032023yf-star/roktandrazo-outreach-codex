@@ -158,7 +158,7 @@ if ($RuntimePlan) {
     if (-not ($RecoverInstall -or $Rollback) -and $plan.credential_expires_at -le [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) { throw 'CREDENTIAL_EXPIRED' }
     $bootstrapEntry=@($m.files | Where-Object {$_.path -ceq 'service/u1_bootstrap.py'})
     if ($bootstrapEntry.Count -ne 1) { throw 'BOOTSTRAP_REQUIRED' }
-    $runtime=[ordered]@{schema='rokt.u1-python-runtime.v1';inventory_id='1784775229336';release_root=$plan.release_root;state_root=$state;token_file=$plan.token_file;credential_expires_at=$plan.credential_expires_at;snapshot=$plan.snapshot;snapshot_sha256=$plan.snapshot_sha256;allow_dispatch=$false;allow_cancel_dispatch=$false;smtp_enabled=$false}
+    $runtime=[ordered]@{schema='rokt.u1-python-runtime.v2';inventory_id='1784775229336';release_root=$plan.release_root;state_root=$state;token_file=$plan.token_file;token_sha256=$plan.token_sha256;credential_expires_at=$plan.credential_expires_at;snapshot=$plan.snapshot;snapshot_sha256=$plan.snapshot_sha256;allow_dispatch=$false;allow_cancel_dispatch=$false;smtp_enabled=$false}
     if ($keys -ccontains 'event_runtime') {$runtime['event_runtime']=$plan.event_runtime}
     if ($keys -ccontains 'original_owner_db') {$runtime['original_owner_db']=$plan.original_owner_db}
     $utf8=New-Object Text.UTF8Encoding($false)

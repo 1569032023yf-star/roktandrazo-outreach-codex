@@ -9,6 +9,25 @@ from autonomy.release_store import ReleaseStore,build_bundle,sha
 from autonomy.u1_host_runtime import open_host,original_owner_reader
 
 class HostRuntimeTests(unittest.TestCase):
+    def test_changed_provisioned_token_rejects_before_listener_or_state(self):
+        import hashlib
+        import subprocess
+        import sys
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);token=root/'token';token.write_bytes(b'b'*40)
+            for expected in (hashlib.sha256(b'a'*40).hexdigest(),'invalid'):
+                result=subprocess.run([sys.executable,'-I','-B','-c',
+                    'import sys;sys.path.insert(0,sys.argv.pop(1));from autonomy.u1_host_runtime import main;main()',
+                    str(Path.cwd()),'--release-root',str(root/'release'),'--state-root',str(root/'state'),
+                    '--token-file',str(token),'--token-sha256',expected,'--credential-expires-at','12345',
+                    '--snapshot',str(root/'absent-snapshot'),'--snapshot-sha256','a'*64],
+                    capture_output=True,timeout=15)
+                self.assertNotEqual(result.returncode,0)
+                self.assertIn(b'APPROVED_TOKEN_',result.stderr)
+                self.assertNotIn(b'b'*40,result.stderr)
+                self.assertFalse((root/'state').exists())
+                self.assertFalse((root/'release').exists())
+
     def test_original_db_bootstrap_is_readonly_and_rejects_replacement(self):
         import sqlite3
         from contextlib import closing

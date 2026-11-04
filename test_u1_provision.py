@@ -20,6 +20,8 @@ class ProvisionTests(unittest.TestCase):
    good=run(sha);self.assertEqual(good.returncode,0,good.stderr)
    runtime,supervisor=map(json.loads,good.stdout.strip().splitlines())
    self.assertFalse(runtime['allow_dispatch']);self.assertFalse(runtime['smtp_enabled'])
+   self.assertEqual(runtime['schema'],'rokt.u1-python-runtime.v2')
+   self.assertEqual(runtime['token_sha256'],plan['token_sha256'])
    encoded=good.stdout.strip().splitlines()[0].encode();self.assertEqual(supervisor['runtime_config_sha256'],hashlib.sha256(encoded).hexdigest())
    original=root/'original.sqlite';original.write_bytes(b'unchanged database reference')
    plan['original_owner_db']=str(original)

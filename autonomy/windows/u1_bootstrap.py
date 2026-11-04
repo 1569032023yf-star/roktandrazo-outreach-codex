@@ -65,13 +65,18 @@ def resolve_release(root):
 def main(config):
     c=json.loads(read(config,8192))
     keys={'schema','inventory_id','release_root','state_root','token_file','credential_expires_at','snapshot','snapshot_sha256','allow_dispatch','allow_cancel_dispatch','smtp_enabled'}
-    if (set(c) not in (keys,keys|{'event_runtime'},keys|{'original_owner_db'}) or c['schema']!='rokt.u1-python-runtime.v1' or c['inventory_id']!='1784775229336' or
+    bound=c.get('schema')=='rokt.u1-python-runtime.v2'
+    if bound:keys|={'token_sha256'}
+    if (set(c) not in (keys,keys|{'event_runtime'},keys|{'original_owner_db'}) or c['schema'] not in ('rokt.u1-python-runtime.v1','rokt.u1-python-runtime.v2') or c['inventory_id']!='1784775229336' or
         any(c[k] is not False for k in ('allow_dispatch','allow_cancel_dispatch','smtp_enabled')) or
         type(c['credential_expires_at']) is not int):raise ValueError('RUNTIME_CONFIG_REJECTED')
+    if bound and (type(c['token_sha256']) is not str or not re.fullmatch('[0-9a-f]{64}',c['token_sha256'])):
+        raise ValueError('APPROVED_TOKEN_DIGEST_REQUIRED')
     folder=resolve_release(c['release_root']);sys.path.insert(0,str(folder))
     sys.argv=['autonomy.u1_host_runtime','--release-root',c['release_root'],'--state-root',c['state_root'],
               '--token-file',c['token_file'],'--credential-expires-at',str(c['credential_expires_at']),
               '--snapshot',c['snapshot'],'--snapshot-sha256',c['snapshot_sha256']]
+    if bound:sys.argv+=['--token-sha256',c['token_sha256']]
     if 'event_runtime' in c:
         if type(c['event_runtime']) is not str or not Path(c['event_runtime']).is_absolute():
             raise ValueError('EVENT_RUNTIME_REQUIRED')
