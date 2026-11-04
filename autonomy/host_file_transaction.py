@@ -107,7 +107,7 @@ class HostFileTransaction:
         if self._rows()[-1] != row:
             raise ValueError('STOP_AND_PRESERVE_JOURNAL_READBACK')
 
-    def prepare(self, files, *, manifest_sha256, previous_receipt=None, previous_receipt_sha256=None, root_created=False, state_root=None):
+    def prepare(self, files, *, manifest_sha256, previous_receipt=None, previous_receipt_sha256=None, root_created=False, state_root=None, blob_backed=False):
         if self._rows():
             raise ValueError('EXISTING_OPERATION_RECONCILE_ONLY')
         if type(root_created) is not bool or (root_created and any(self.root.iterdir())):
@@ -133,18 +133,37 @@ class HostFileTransaction:
             owned['config/installation.json'] = previous_receipt_sha256
         elif previous_receipt_sha256 is not None:
             raise ValueError('PINNED_OWNERSHIP_RECEIPT_REQUIRED')
-        if type(files) is not dict or not files or len(files)+len(owned)>512:
+        if type(blob_backed) is not bool:
+            raise ValueError('EXACT_STORAGE_MODE_REQUIRED')
+        if type(files) is not dict or not files or len(files)+len(owned)>(16384 if blob_backed else 512):
             raise ValueError('EXACT_FILE_MANIFEST_REQUIRED')
         if owned and not re.fullmatch('[0-9a-f]{64}', previous_receipt_sha256 or ''):
             raise ValueError('PINNED_OWNERSHIP_RECEIPT_REQUIRED')
         names = sorted(set(files)|set(owned))
         if any(n.casefold().endswith('.u1-new') for n in names):
             raise ValueError('RESERVED_STAGING_PATH')
-        if sum(len(v) for v in files.values() if type(v) is bytes)>16*1024*1024:
+        if not blob_backed and sum(len(v) for v in files.values() if type(v) is bytes)>16*1024*1024:
             raise ValueError('HOST_PAYLOAD_TOO_LARGE')
+        store = self.journal.with_name(self.journal.name+'.blobs')
+        if blob_backed:
+            # A partially prepared store is never adopted after interruption.
+            ordinary(store)
+            store.mkdir()
+        def encode(raw):
+            if raw is None:return None
+            if not blob_backed:return base64.b64encode(raw).decode()
+            key=digest(raw);target=store/key
+            if target.exists():
+                if read(target)!=raw:raise ValueError('STOP_AND_PRESERVE_BLOB_CHANGED')
+            else:
+                with target.open('xb') as f:
+                    f.write(raw);f.flush();os.fsync(f.fileno())
+                if read(target)!=raw:raise ValueError('STOP_AND_PRESERVE_BLOB_READBACK')
+            return {'sha256':key}
         folded = []
         plan = []
         backup_total = 0
+        payload_total = 0
         for n in names:
             name(n)
             lower = n.casefold()
@@ -153,7 +172,7 @@ class HostFileTransaction:
             folded.append(lower)
             old = read(self.root/n)
             backup_total += 0 if old is None else len(old)
-            if backup_total > 16*1024*1024:
+            if backup_total > (1024*1024*1024 if blob_backed else 16*1024*1024):
                 raise ValueError('HOST_BACKUPS_TOO_LARGE')
             if n in owned:
                 if not re.fullmatch('[0-9a-f]{64}', owned[n]) or fingerprint(old) != owned[n]:
@@ -161,18 +180,38 @@ class HostFileTransaction:
             elif old is not None:
                 raise ValueError('UNOWNED_FILE_COLLISION')
             new = files.get(n)
+            if blob_backed and n in files:
+                if not isinstance(new, Path):raise ValueError('FILE_SOURCE_PATH_REQUIRED')
+                new=read(new)
+                if new is None:raise ValueError('FILE_SOURCE_MISSING')
+            payload_total += 0 if new is None else len(new)
+            if payload_total > 1024*1024*1024:raise ValueError('HOST_PAYLOAD_TOO_LARGE')
             if new is not None and (type(new) is not bytes or len(new)>256*1024*1024):
                 raise ValueError('INVALID_FILE_BYTES')
             plan.append(dict(path=n, before=fingerprint(old), after=fingerprint(new),
-                             backup=None if old is None else base64.b64encode(old).decode(),
-                             content=None if new is None else base64.b64encode(new).decode()))
+                             backup=encode(old), content=encode(new)))
         self._append(phase='PREPARED', root=str(self.root), manifest_sha256=manifest_sha256,
                      root_identity=[self.root.stat().st_dev,self.root.stat().st_ino],root_created=root_created,
                      state_root=None if state is None else str(state),state_identity=None if state is None else [state.stat().st_dev,state.stat().st_ino],
                      directories={str(p.relative_to(self.root)).replace('\\','/'):
                                   ('PRESENT' if p.is_dir() else 'ABSENT')
                                   for n in names for p in (self.root/n).parents if p!=self.root and self.root in p.parents},
-                     previous_receipt_sha256=previous_receipt_sha256, plan=plan)
+                     previous_receipt_sha256=previous_receipt_sha256, plan=plan,
+                     blob_store_identity=None if not blob_backed else [store.stat().st_dev,store.stat().st_ino])
+
+    def _payload(self, value, header):
+        if value is None:return None
+        if header.get('blob_store_identity') is None:
+            return base64.b64decode(value,validate=True)
+        if type(value) is not dict or set(value)!={'sha256'} or not re.fullmatch('[0-9a-f]{64}',value['sha256']):
+            raise ValueError('STOP_AND_PRESERVE_BLOB_REFERENCE')
+        store=ordinary(self.journal.with_name(self.journal.name+'.blobs'))
+        if not store.is_dir() or [store.stat().st_dev,store.stat().st_ino]!=header['blob_store_identity']:
+            raise ValueError('STOP_AND_PRESERVE_BLOB_STORE_CHANGED')
+        raw=read(store/value['sha256'])
+        if raw is None or digest(raw)!=value['sha256']:
+            raise ValueError('STOP_AND_PRESERVE_BLOB_CHANGED')
+        return raw
 
     def _plan(self):
         ordinary(self.root)
@@ -187,7 +226,7 @@ class HostFileTransaction:
         for item in rows[0]['plan']:
             name(item['path'])
             for field, blob in (('before','backup'),('after','content')):
-                raw = None if item[blob] is None else base64.b64decode(item[blob], validate=True)
+                raw = self._payload(item[blob],rows[0])
                 if fingerprint(raw) != item[field]:
                     raise ValueError('STOP_AND_PRESERVE_BACKUP_HASH')
         return rows, rows[0]['plan']
@@ -198,7 +237,7 @@ class HostFileTransaction:
         target = item['before' if backwards else 'after']
         if fingerprint(read(p)) != expected:
             raise ValueError('STOP_AND_PRESERVE_FILE_CHANGED')
-        raw = item['backup' if backwards else 'content']
+        raw = self._payload(item['backup' if backwards else 'content'],self._rows()[0])
         if raw is None:
             p.unlink()
         else:
@@ -211,7 +250,7 @@ class HostFileTransaction:
                 parent.mkdir()
                 self._append(phase='DIRECTORY_CREATED',path=parent.relative_to(self.root).as_posix(),identity=[parent.stat().st_dev,parent.stat().st_ino])
             with stage.open('xb') as f:
-                f.write(base64.b64decode(raw)); f.flush(); os.fsync(f.fileno())
+                f.write(raw); f.flush(); os.fsync(f.fileno())
             if fingerprint(read(p)) != expected:
                 raise ValueError('STOP_AND_PRESERVE_FILE_CHANGED')
             os.replace(stage, p)

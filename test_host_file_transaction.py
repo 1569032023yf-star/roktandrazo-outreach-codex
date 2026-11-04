@@ -12,6 +12,33 @@ from autonomy.host_file_transaction import HostFileTransaction, canonical, diges
 
 
 class FileTransactionTests(unittest.TestCase):
+    def test_blob_backed_large_payload_compensates_without_inline_journal(self):
+        source=Path(self.temp.name)/'large.dll'
+        source.write_bytes(b'x'*(17*1024*1024))
+        t=self.tx();t.prepare({'runtime/large.dll':source},manifest_sha256='a'*64,blob_backed=True)
+        self.assertLess(t.journal.stat().st_size,4096)
+        t.apply()
+        self.assertEqual(digest(read(self.root/'runtime/large.dll')),digest(read(source)))
+        t.rollback();self.assertFalse((self.root/'runtime/large.dll').exists())
+
+    def test_blob_tampering_stops_before_effect(self):
+        source=Path(self.temp.name)/'source';source.write_bytes(b'original')
+        t=self.tx();t.prepare({'runtime/lib.dll':source},manifest_sha256='a'*64,blob_backed=True)
+        store=t.journal.with_name(t.journal.name+'.blobs')
+        next(store.iterdir()).write_bytes(b'tampered')
+        with self.assertRaisesRegex(ValueError,'BLOB_CHANGED'):t.apply()
+        self.assertFalse((self.root/'runtime/lib.dll').exists())
+
+    def test_blob_backed_interrupted_effect_is_compensated_not_replayed(self):
+        source=Path(self.temp.name)/'source';source.write_bytes(b'original')
+        def fault(phase,item):
+            if phase=='APPLY_EFFECT':raise RuntimeError('power loss fixture')
+        t=self.tx(fault=fault);t.prepare({'runtime/lib.dll':source},manifest_sha256='a'*64,blob_backed=True)
+        with self.assertRaises(RuntimeError):t.apply()
+        fresh=self.tx()
+        with self.assertRaisesRegex(ValueError,'NO_FORWARD_REPLAY'):fresh.apply()
+        fresh.rollback();self.assertFalse((self.root/'runtime/lib.dll').exists())
+
     def test_read_rejects_name_swap_before_open(self):
         with tempfile.TemporaryDirectory() as d:
             target=Path(d)/'target'; other=Path(d)/'other'
