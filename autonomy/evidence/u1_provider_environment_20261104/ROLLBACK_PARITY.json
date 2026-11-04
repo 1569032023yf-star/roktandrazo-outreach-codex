@@ -1,0 +1,14 @@
+{
+  "outcome": "VERIFIED",
+  "source_commit": "ec45401ad7b0ca016fe6e1b15f58462e929623ff",
+  "archive_sha256": "b2ad6de36dfc47307188b7eafc43e42849a5c559e77c696128da74dbb52d0bcf",
+  "matched_components": 4964,
+  "rollback_archive_parity_verified": true,
+  "rollback_verified": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "description_zh": "仅回滚包逐文件对应，不代表实际安装或回滚。",
+  "description_en": "Rollback archive parity only; not actual installation or rollback."
+}

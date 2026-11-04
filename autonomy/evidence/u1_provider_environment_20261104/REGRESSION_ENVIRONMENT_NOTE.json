@@ -1,0 +1,9 @@
+{
+  "description_zh": "主树回归的两个额外ERROR来自历史解压证据长路径FileNotFoundError；保留原始结果，使用干净固定候选与干净固定基线复核。",
+  "description_en": "Two additional main-tree errors are FileNotFoundError in historical extracted evidence paths. Original results retained; recheck clean fixed candidate against clean fixed baseline.",
+  "main_tree_candidate": "candidate-suite/result.json",
+  "baseline": "baseline-suite/result.json",
+  "clean_candidate": "clean-candidate-suite/result.json",
+  "reason_for_rerun": "New environment-dependent errors, not mechanical repetition",
+  "guard_bypassed": false
+}

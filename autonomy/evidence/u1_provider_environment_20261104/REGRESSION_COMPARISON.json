@@ -1,0 +1,24 @@
+{
+  "baseline_commit": "dedb987bffbb1462a8a7215833f330cd6d4ddea7",
+  "candidate_commit": "ec45401ad7b0ca016fe6e1b15f58462e929623ff",
+  "scope": "tests/ only; root tests separately recorded",
+  "baseline_run": 848,
+  "candidate_run": 848,
+  "failures": {
+    "baseline_count": 37,
+    "candidate_count": 37,
+    "added": [],
+    "removed": []
+  },
+  "errors": {
+    "baseline_count": 17,
+    "candidate_count": 19,
+    "added": [
+      "test_discovery_service.DiscoveryServiceTests.test_static_scan_fails_on_unauthorized_direct_lead_inserts",
+      "test_timezone_unified.TestTimezoneUnified.test_no_extra_poller_status_writers"
+    ],
+    "removed": []
+  },
+  "failure_error_ids_equal": false,
+  "all_tests_passed": false
+}

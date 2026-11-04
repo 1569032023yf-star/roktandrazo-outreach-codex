@@ -1,0 +1,9 @@
+{
+  "source_commit": "ec45401ad7b0ca016fe6e1b15f58462e929623ff",
+  "returncode": 0,
+  "stdout": "{\"outcome\": \"PASS\", \"application_origins_verified\": 2, \"code_root_env_present\": false, \"fixture_only\": true, \"formal_provider_called\": false}\n",
+  "stderr": "",
+  "fixture_only": true,
+  "host_configuration_propagation_verified": false,
+  "provider_accepted": false
+}
