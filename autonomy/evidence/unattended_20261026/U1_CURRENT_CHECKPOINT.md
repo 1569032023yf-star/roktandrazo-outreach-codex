@@ -1,3 +1,6 @@
+中文：正式Provider跳转边界修复固定5dde9061ee97eeb756ed52f40b30b18afd2ddb8b，8项离线测试通过；真实请求/权威费用/结算尚未验收。独审PENDING，无新包，三板块所有最终状态false，安全开关false。详见autonomy/evidence/u1_provider_redirect_20261104/REPORT.md。
+English: Real Provider redirect fix pinned at 5dde9061ee97eeb756ed52f40b30b18afd2ddb8b;8 offline tests pass. Actual requests, authoritative charges and settlement remain unaccepted; review PENDING, no new archive, all final states and gates false. See autonomy/evidence/u1_provider_redirect_20261104/REPORT.md.
+
 中文：固定源码5b56b3d1a903f10726304599d0d9bfd1c1df698b移除原bd_orchestrator导入时output创建，加入显式绝对--output-dir，仅报告写入时创建。14项离线组合通过；21项扩展中6项被DEVELOPMENT_EXTERNAL_TRANSPORT_DISABLED拒绝，未绕过。未重建包；独审PENDING，所有交付/生产状态和开关仍false。下一步批准配置加载分离及固定宿主参数接线。详见 autonomy/evidence/u1_orchestrator_output_20261104/REPORT.md。
 English: Fixed 5b56b3d1a903f10726304599d0d9bfd1c1df698b removes original-entry output creation on import and adds explicit absolute --output-dir with creation only at report writing.14 offline combination tests pass;6 of21 expanded tests hit the retained development transport guard. No rebuilt archive; review PENDING, delivery/production states and gates remain false. Next separate approved configuration loading and wire pinned host arguments. See autonomy/evidence/u1_orchestrator_output_20261104/REPORT.md.
 
