@@ -1,0 +1,55 @@
+{
+  "source_commit": "03eca14940bb69413cff0ea9f336be14a0bb1c10",
+  "manifest_sha256": "7961bc615fa7c92da4e849cec88832753a80babbf808bcd0b2b1761790f41dbc",
+  "archive_sha256": "6017c9239f31e0c64dffe51dbf906427e62726a95465e70c28807835706f048d",
+  "description_zh": "仅验证解压后的运行时；未验证完整业务依赖闭包、应用发布或真实安装。",
+  "description_en": "Extracted runtime checks only; complete business dependency closure, application release and real installation are unverified.",
+  "checks": [
+    {
+      "command": [
+        "-I",
+        "-B",
+        "-c",
+        "import sys,json,sqlite3,ssl,ctypes,multiprocessing,zoneinfo;import dns.resolver,httpx,playwright.sync_api,tzdata,greenlet;from pathlib import Path;root=Path(sys.executable).resolve().parent;assert all(Path(p).resolve().is_relative_to(root) for p in sys.path);print(json.dumps(dict(python=sys.version,executable=sys.executable,isolated=sys.flags.isolated)))"
+      ],
+      "returncode": 0,
+      "stdout": "{\"python\": \"3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]\", \"executable\": \"C:\\\\Users\\\\15690\\\\Documents\\\\ChatGPT\\\\\\u7ebf\\u4e0b\\\\u1-host-extracted-03eca14\\\\runtime\\\\python\\\\python.exe\", \"isolated\": 1}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "-I",
+        "-B",
+        "-m",
+        "pip",
+        "--isolated",
+        "--disable-pip-version-check",
+        "check"
+      ],
+      "returncode": 0,
+      "stdout": "No broken requirements found.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "--validate-runtime",
+        "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-host-extracted-03eca14\\runtime\\python\\U1_RUNTIME_CONTENT.json",
+        "5ca4bd5242a6432ea41d18e0140ae0b7b0a999565cb8319aa7cb2dca392a897e",
+        "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-host-extracted-03eca14\\runtime\\python\\python.exe"
+      ],
+      "returncode": 0,
+      "stdout": "VALID_PINNED_RUNTIME\n",
+      "stderr": ""
+    }
+  ],
+  "extracted_runtime_verified": true,
+  "full_business_import_closure": false,
+  "application_release_verified": false,
+  "installation_verified": false,
+  "production_ready": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "outcome": "VERIFIED"
+}
