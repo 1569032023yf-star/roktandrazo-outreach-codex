@@ -6,6 +6,7 @@ import unittest
 import zipfile
 
 from tools.prepare_u1_python_runtime import prepare
+from tools.assemble_u1_runtime import wheel_requirements
 
 
 class RuntimeAdmissionTests(unittest.TestCase):
@@ -48,6 +49,24 @@ class RuntimeAdmissionTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'NEW_OUTPUT_REQUIRED'):
                 prepare(archive, hashlib.sha256(archive.read_bytes()).hexdigest(), output)
             self.assertEqual((output/'keep').read_bytes(), b'original')
+
+    def test_wheel_lock_rejects_tampering_and_injection(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            wheel = Path(tmp)/'demo-1.0-py3-none-any.whl'
+            wheel.write_bytes(b'locked bytes')
+            row = dict(name='demo',version='1.0',wheel=wheel.name,
+                       sha256=hashlib.sha256(wheel.read_bytes()).hexdigest())
+            lock = dict(schema='rokt.u1-business-wheel-input.v1',wheels=[row])
+            self.assertIn('demo==1.0 --hash=sha256:',wheel_requirements(lock,tmp))
+            for key, value in (('name','demo\n--index-url evil'),
+                               ('version','1.0\n--trusted-host evil'),
+                               ('wheel','../escape.whl'),('sha256','0'*64)):
+                with self.subTest(key=key):
+                    bad = dict(lock,wheels=[dict(row,**{key:value})])
+                    with self.assertRaisesRegex(ValueError,'WHEEL_LOCK_VALUE|WHEEL_HASH'):
+                        wheel_requirements(bad,tmp)
+            with self.assertRaisesRegex(ValueError,'DUPLICATE_WHEEL_PROJECT'):
+                wheel_requirements(dict(lock,wheels=[row,dict(row,name='DEMO')]),tmp)
 
 
 if __name__ == '__main__':
