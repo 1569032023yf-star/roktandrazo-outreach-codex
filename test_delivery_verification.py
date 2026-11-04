@@ -12,6 +12,23 @@ from tools.verify_u1_delivery import verify, verify_with_report
 
 
 class DeliveryVerificationTests(unittest.TestCase):
+    def test_completed_checks_survive_later_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            args=SimpleNamespace(report=str(Path(tmp)/'report.json'),source_commit='a'*40,
+                                 archive_sha256='b'*64,manifest_sha256='c'*64)
+            def fail_after_check(args,progress):
+                progress(dict(arguments=['fixture-import'],outcome='RUNNING'))
+                progress(dict(arguments=['fixture-import'],outcome='PASSED',returncode=0,stdout='fixture',stderr=''))
+                progress(dict(arguments=['fixture-http'],outcome='RUNNING'))
+                raise ValueError('fixture failure')
+            with patch('tools.verify_u1_delivery.verify',side_effect=fail_after_check):
+                with self.assertRaises(ValueError):verify_with_report(args)
+            state=json.loads(Path(args.report).read_text(encoding='utf-8'))
+            self.assertEqual(state['outcome'],'FAILED')
+            self.assertEqual(state['checks'][0]['outcome'],'PASSED')
+            self.assertEqual(state['active_check']['arguments'],['fixture-http'])
+            self.assertNotIn('offline_entrypoint_imports_verified',state)
+
     def test_failure_timeout_and_existing_report_preserve_false_gates(self):
         with tempfile.TemporaryDirectory() as tmp:
             for n,error in enumerate((ValueError('bad'),subprocess.TimeoutExpired('fixture',1))):

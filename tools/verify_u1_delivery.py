@@ -71,7 +71,8 @@ print(json.dumps(dict(local_http_statuses=statuses,fixture_release=True,
 '''
 
 
-def verify(args):
+def verify(args, progress=None):
+    progress=progress or (lambda value:None)
     root=extract_checked(args.archive,args.archive_sha256,args.output)
     manifest=ReleaseStore(root)._verify(root,args.manifest_sha256)
     if manifest['source_commit']!=args.source_commit: raise ValueError('SOURCE_MISMATCH')
@@ -92,12 +93,19 @@ def verify(args):
         env={k:v for k,v in os.environ.items() if not k.upper().startswith(('PYTHON','PIP_'))}
         commands=[
             [str(runtime/'python.exe'),'-I','-B','-c',IMPORT_PROBE,str(root/'payload/python')],
-            [str(runtime/'python.exe'),'-I','-B','-c',HTTP_PROBE,str(root/'payload/python'),str(root.parent)],
             [str(runtime/'python.exe'),'-I','-B','-m','pip','--isolated','--disable-pip-version-check','check'],
-            [str(host/'service/RoktU1Bridge.exe'),'--validate-runtime',str(runtime/'U1_RUNTIME_CONTENT.json'),content_digest,str(runtime/'python.exe')]]
+            [str(host/'service/RoktU1Bridge.exe'),'--validate-runtime',str(runtime/'U1_RUNTIME_CONTENT.json'),content_digest,str(runtime/'python.exe')],
+            [str(runtime/'python.exe'),'-I','-B','-c',HTTP_PROBE,str(root/'payload/python'),str(root.parent)]]
         for command in commands:
-            result=subprocess.run(command,cwd=root,env=env,capture_output=True,text=True,timeout=120)
-            results.append(dict(arguments=command[1:],returncode=result.returncode,stdout=result.stdout,stderr=result.stderr))
+            progress(dict(arguments=command[1:],outcome='RUNNING'))
+            try:
+                result=subprocess.run(command,cwd=root,env=env,capture_output=True,text=True,timeout=120)
+            except BaseException as exc:
+                progress(dict(arguments=command[1:],outcome='UNKNOWN',error_type=type(exc).__name__,error=str(exc)))
+                raise
+            item=dict(arguments=command[1:],returncode=result.returncode,stdout=result.stdout,stderr=result.stderr,
+                      outcome='PASSED' if result.returncode==0 else 'FAILED')
+            results.append(item);progress(item)
             if result.returncode: raise ValueError('DELIVERY_PROBE_FAILED:'+json.dumps(results))
         pins.revalidate()
     # Recheck after subprocess probes to detect unexpected package writes.
@@ -115,12 +123,17 @@ def verify_with_report(args):
                    description_zh='仅离线入口导入、包内子进程和完整性；不证明正式业务、安装或回滚。',
                    description_en='Offline entrypoint imports, packaged subprocess and integrity only; not formal business, installation or rollback acceptance.',
                    allow_install=False,allow_dispatch=False,allow_cancel_dispatch=False,smtp_enabled=False,
-                   production_ready=False)
+                   production_ready=False,checks=[],active_check=None)
         def persist():
             record.seek(0);json.dump(state,record,indent=2,ensure_ascii=False)
             record.truncate();record.flush();os.fsync(record.fileno())
         persist()
-        try: result=verify(args)
+        def progress(item):
+            if item['outcome']=='RUNNING':state['active_check']=item
+            else:
+                state['checks'].append(item);state['active_check']=None
+            persist()
+        try: result=verify(args,progress=progress)
         except BaseException as exc:
             state.update(outcome='UNKNOWN' if isinstance(exc,(subprocess.TimeoutExpired,KeyboardInterrupt,SystemExit)) else 'FAILED',
                          error_type=type(exc).__name__,error=str(exc));persist();raise
