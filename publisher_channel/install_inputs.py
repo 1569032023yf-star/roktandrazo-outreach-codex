@@ -221,7 +221,8 @@ def pin_package(pins,root,manifest_sha256,source_commit):
         if row in manifest['files'] and (path.split('/')[0] not in ('service','runtime','config') or lower in ('config/installation.json','config/runtime.json','config/supervisor.json') or any(p.endswith('.u1-new') for p in lower.split('/'))):reject('RESERVED_FILE')
         seen.append(lower);total+=row['size']
         if total>1024*1024*1024:reject('TOTAL_SIZE')
-        raw=pins.add(root/path,row['sha256'])
+        limit=2*1024*1024 if large and path=='runtime/python/U1_RUNTIME_CONTENT.json' else 256*1024*1024
+        raw=pins.add(root/path,row['sha256'],limit=limit)
         if len(raw)!=row['size']:reject('ENTRY_SIZE')
         if path=='config/host.json':
             expected=dict(schema='rokt.disabled-host-config.v1',inventory_id='1784775229336',service_name='RoktU1Bridge',

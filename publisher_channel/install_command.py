@@ -56,10 +56,18 @@ class InstallCommand:
             self.plan=parse(self.pins.add(self.plan_path,a['runtime_plan_sha256'],limit=1024*1024))
             keys={'schema','inventory_id','python','python_sha256','release_root','token_file','token_sha256','credential_expires_at','snapshot','snapshot_sha256'}
             p=self.plan
-            complete=type(p) is dict and p.get('schema')=='rokt.u1-provision-plan.v2'
+            installed=type(p) is dict and p.get('schema')=='rokt.u1-provision-plan.v3'
+            complete=type(p) is dict and p.get('schema') in ('rokt.u1-provision-plan.v2','rokt.u1-provision-plan.v3')
             if complete:keys|={'python_runtime_manifest','python_runtime_manifest_sha256'}
-            if (type(p) is not dict or set(p) not in (keys,keys|{'event_runtime'},keys|{'original_owner_db'}) or p.get('schema') not in ('rokt.u1-provision-plan.v1','rokt.u1-provision-plan.v2') or
+            if (type(p) is not dict or set(p) not in (keys,keys|{'event_runtime'},keys|{'original_owner_db'}) or p.get('schema') not in ('rokt.u1-provision-plan.v1','rokt.u1-provision-plan.v2','rokt.u1-provision-plan.v3') or
                 p.get('inventory_id')!='1784775229336' or type(p.get('credential_expires_at')) is not int):reject('RUNTIME_PLAN')
+            if installed:
+                rows={r['path']:r['sha256'] for r in self.manifest['files']}
+                if (self.manifest['schema']!='rokt.disabled-host-package.v2' or
+                    p['python']!=str(self.package/'runtime/python/python.exe') or
+                    p['python_runtime_manifest']!=str(self.package/'runtime/python/U1_RUNTIME_CONTENT.json') or
+                    p['python_sha256']!=rows.get('runtime/python/python.exe') or
+                    p['python_runtime_manifest_sha256']!=rows.get('runtime/python/U1_RUNTIME_CONTENT.json')):reject('PACKAGED_RUNTIME_BINDING')
             for key,digest in (('python','python_sha256'),('token_file','token_sha256'),('snapshot','snapshot_sha256')):
                 self.pins.add(p[key],p[digest])
             if complete:pin_python_runtime(self.pins,p['python_runtime_manifest'],p['python_runtime_manifest_sha256'],p['python'])

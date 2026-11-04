@@ -16,6 +16,32 @@ from publisher_channel.install_verifier import digest
 
 
 class InstallCommandTests(unittest.TestCase):
+    def test_v3_packaged_runtime_admission_keeps_install_gate_closed(self):
+        from autonomy.disabled_host_package import build_runtime_package,canonical
+        runtime=self.root/'runtime-input';runtime.mkdir()
+        (runtime/'python.exe').write_bytes(b'fixture-not-executable')
+        content=canonical(dict(schema='rokt.u1-runtime-content.v1',python='python.exe',
+                               files={'python.exe':digest((runtime/'python.exe').read_bytes())}))
+        (runtime/'U1_RUNTIME_CONTENT.json').write_bytes(content)
+        # Move only this test's known directory; preserve the original fixture.
+        base=self.root/'base-host'
+        self.assertTrue(self.package.resolve().is_relative_to(self.root.resolve()))
+        self.package.rename(base)
+        result=build_runtime_package(self.package,base,self.approval['manifest_sha256'],runtime,digest(content))
+        path=self.release/'u1-runtime-plan.json';plan=json.loads(path.read_bytes())
+        plan.update(schema='rokt.u1-provision-plan.v3',python=str(self.package/'runtime/python/python.exe'),
+                    python_sha256=digest((runtime/'python.exe').read_bytes()),
+                    python_runtime_manifest=str(self.package/'runtime/python/U1_RUNTIME_CONTENT.json'),
+                    python_runtime_manifest_sha256=digest(content))
+        raw=canonical(plan);path.write_bytes(raw)
+        approval=dict(self.approval,manifest_sha256=result['manifest_sha256'],runtime_plan_sha256=digest(raw))
+        with command.InstallCommand('isolated',approval) as adapter:
+            self.assertIn('runtime/python/python.exe',adapter.expected_files)
+            with self.assertRaisesRegex(ValueError,'INSTALL_GATE_CLOSED'):adapter(None)
+        plan['python']=str(runtime/'python.exe');raw=canonical(plan);path.write_bytes(raw)
+        with self.assertRaisesRegex(ValueError,'PACKAGED_RUNTIME_BINDING'):
+            with command.InstallCommand('isolated',dict(approval,runtime_plan_sha256=digest(raw))):pass
+
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory(prefix='u1-command-');self.addCleanup(self.temp.cleanup)
         self.root=Path(self.temp.name);self.releases=self.root/'releases';self.release=self.releases/'isolated'

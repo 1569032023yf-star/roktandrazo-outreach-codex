@@ -111,12 +111,22 @@ if ($RuntimePlan) {
     Pin-Reference $RuntimePlan $ApprovedRuntimePlanSha256
     $plan=Get-Content -LiteralPath $RuntimePlan -Raw | ConvertFrom-Json
     $keys=@('schema','inventory_id','python','python_sha256','release_root','token_file','token_sha256','credential_expires_at','snapshot','snapshot_sha256')
-    $completeRuntime=$plan.schema -ceq 'rokt.u1-provision-plan.v2'
+    $installedRuntime=$plan.schema -ceq 'rokt.u1-provision-plan.v3'
+    $completeRuntime=$plan.schema -cin @('rokt.u1-provision-plan.v2','rokt.u1-provision-plan.v3')
     if ($completeRuntime) {
         $keys+=@('python_runtime_manifest','python_runtime_manifest_sha256')
         $runtimeManifest=$plan.python_runtime_manifest
         if ($runtimeManifest -isnot [string] -or $runtimeManifest -cne (Join-Path ([IO.Path]::GetDirectoryName($plan.python)) 'U1_RUNTIME_CONTENT.json') -or $plan.python_runtime_manifest_sha256 -cnotmatch '^[0-9a-f]{64}$') {throw 'PYTHON_RUNTIME_MANIFEST_REQUIRED'}
         Pin-Reference $runtimeManifest $plan.python_runtime_manifest_sha256
+    }
+    if ($installedRuntime) {
+        $packagePython=Join-Path $package 'runtime\python\python.exe'
+        $packageRuntimeManifest=Join-Path $package 'runtime\python\U1_RUNTIME_CONTENT.json'
+        $pythonEntry=@($m.files | Where-Object {$_.path -ceq 'runtime/python/python.exe'})
+        $manifestEntry=@($m.files | Where-Object {$_.path -ceq 'runtime/python/U1_RUNTIME_CONTENT.json'})
+        if ($m.schema -cne 'rokt.disabled-host-package.v2' -or $plan.python -cne $packagePython -or
+            $plan.python_runtime_manifest -cne $packageRuntimeManifest -or $pythonEntry.Count -ne 1 -or $manifestEntry.Count -ne 1 -or
+            $plan.python_sha256 -cne $pythonEntry[0].sha256 -or $plan.python_runtime_manifest_sha256 -cne $manifestEntry[0].sha256) {throw 'PACKAGED_RUNTIME_BINDING_REQUIRED'}
     }
     if (($plan.PSObject.Properties.Name -ccontains 'event_runtime') -and ($plan.PSObject.Properties.Name -ccontains 'original_owner_db')) {throw 'EXACTLY_ONE_OWNER_AUTHORITY_REQUIRED'}
     if ($plan.PSObject.Properties.Name -ccontains 'original_owner_db') {
@@ -131,7 +141,7 @@ if ($RuntimePlan) {
         if ($plan.event_runtime -isnot [string] -or -not [IO.Path]::IsPathRooted($plan.event_runtime) -or [IO.Path]::GetFullPath($plan.event_runtime) -cne $plan.event_runtime -or -not (Test-Path -LiteralPath $plan.event_runtime -PathType Container)) {throw 'EVENT_RUNTIME_REQUIRED'}
         Assert-NoReparseAncestors $plan.event_runtime
     }
-    if (@($plan.PSObject.Properties.Name).Count -ne $keys.Count -or @($plan.PSObject.Properties.Name | Where-Object {$_ -cnotin $keys}).Count -ne 0 -or $plan.schema -cnotin @('rokt.u1-provision-plan.v1','rokt.u1-provision-plan.v2') -or $plan.inventory_id -cne '1784775229336') { throw 'RUNTIME_PLAN_SCHEMA' }
+    if (@($plan.PSObject.Properties.Name).Count -ne $keys.Count -or @($plan.PSObject.Properties.Name | Where-Object {$_ -cnotin $keys}).Count -ne 0 -or $plan.schema -cnotin @('rokt.u1-provision-plan.v1','rokt.u1-provision-plan.v2','rokt.u1-provision-plan.v3') -or $plan.inventory_id -cne '1784775229336') { throw 'RUNTIME_PLAN_SCHEMA' }
     foreach ($key in @('python','token_file','snapshot','release_root')) {
         $value=$plan.$key
         if ($value -isnot [string] -or -not [IO.Path]::IsPathRooted($value) -or $value -match '["\r\n]' -or [IO.Path]::GetFullPath($value) -cne $value) { throw 'RUNTIME_PLAN_PATH' }
@@ -160,6 +170,10 @@ if ($RuntimePlan) {
         $supervisor['schema']='rokt.u1-supervisor.v2'
         $supervisor['python_runtime_manifest']=$plan.python_runtime_manifest
         $supervisor['python_runtime_manifest_sha256']=$plan.python_runtime_manifest_sha256
+        if ($installedRuntime) {
+            $supervisor['python']=Join-Path $code 'runtime\python\python.exe'
+            $supervisor['python_runtime_manifest']=Join-Path $code 'runtime\python\U1_RUNTIME_CONTENT.json'
+        }
     }
     $generated['config/runtime.json']=$runtimeBytes
     $generated['config/supervisor.json']=$utf8.GetBytes(($supervisor | ConvertTo-Json -Compress))
