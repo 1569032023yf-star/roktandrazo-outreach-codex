@@ -105,10 +105,18 @@ class ProcessBackend:
         reference=self.provider_reference
         context=(nullcontext() if reference is None else
                  pinned_provider_environment(reference['path'],reference['sha256']))
-        with context:
-            return self._execute_pinned(operation,deadline_monotonic=deadline_monotonic)
+        from publisher_channel.install_inputs import InstallInputPins
+        # Hash verification alone leaves a replacement window before CreateProcess.
+        # Retain executable/source and ancestor handles through child cleanup and
+        # durable receipt recording. Invalid inputs never create execution intent.
+        with InstallInputPins() as executable_pins:
+            for path, expected in zip((self.python,self.worker),self.hashes):
+                executable_pins.add(path,expected)
+            with context:
+                return self._execute_pinned(operation,deadline_monotonic=deadline_monotonic,
+                                            executable_pins=executable_pins)
 
-    def _execute_pinned(self,operation,*,deadline_monotonic):
+    def _execute_pinned(self,operation,*,deadline_monotonic,executable_pins):
         if (type(operation) is not dict or operation.get('scope')!='isolated_offline' or
             operation.get('production_execution') is not False or operation.get('inventory_id')!=INVENTORY or
             operation.get('schema')!=OPERATION_SCHEMA or operation.get('backend_protocol')!=BACKEND_PROTOCOL or
@@ -161,6 +169,7 @@ class ProcessBackend:
             if result.returncode!=0 or not result.cleanup_verified or time.monotonic()>deadline_monotonic:
                 raise ExecutionUnknown('CHILD_OUTCOME_UNKNOWN')
             receipts=_receipts(result.stdout)
+            executable_pins.revalidate()
             with self._db() as c:
                 c.execute('BEGIN IMMEDIATE')
                 c.execute("UPDATE executions SET state='OUTPUT_RECORDED',result=? WHERE key=? AND binding=? AND state='IN_FLIGHT'",

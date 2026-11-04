@@ -111,4 +111,27 @@ class BackendTests(unittest.TestCase):
   with self.assertRaisesRegex(ValueError,'PROVIDER_REFERENCE_PAIR_REQUIRED'):
    self.backend(provider_config=str(self.f.root/'provider.json'))
 
+
+ def test_worker_source_is_pinned_until_child_cleanup_and_result_commit(self):
+  from types import SimpleNamespace
+  from unittest.mock import patch
+  b=self.backend();o=self.operation()
+  def child(arguments,**kwargs):
+   with self.assertRaises(OSError):self.worker.write_bytes(b'replaced')
+   with self.assertRaises(OSError):self.worker.rename(self.worker.with_suffix('.moved'))
+   with self.assertRaises(OSError):self.worker.parent.rename(self.worker.parent.with_name(self.worker.parent.name+'-moved'))
+   return SimpleNamespace(returncode=0,cleanup_verified=True,stdout=b'{"slot_receipt":{},"budget_receipt":{}}')
+  with patch('autonomy.process_backend.run_tree',side_effect=child):
+   b.execute_once(o,deadline_monotonic=time.monotonic()+.8)
+  self.assertEqual(b.status(o['idempotency_key'])['transport_state'],'OUTPUT_RECORDED')
+  self.worker.write_bytes(b'released')
+
+ def test_worker_replacement_after_constructor_is_rejected_before_intent(self):
+  from unittest.mock import patch
+  b=self.backend();o=self.operation();self.worker.write_bytes(b'replaced')
+  with patch('autonomy.process_backend.run_tree') as child:
+   with self.assertRaises(ValueError):b.execute_once(o,deadline_monotonic=time.monotonic()+.8)
+   child.assert_not_called()
+  self.assertEqual(b.status(o['idempotency_key'])['transport_state'],'NOT_RECORDED')
+
 if __name__=='__main__':unittest.main()
