@@ -1,0 +1,16 @@
+{
+  "schema": "rokt.u1-cpython-source.v1",
+  "version": "3.13.12",
+  "architecture": "AMD64",
+  "url": "https://www.python.org/ftp/python/3.13.12/python-3.13.12-amd64.zip",
+  "sha256": "9089c1f0d720f7c913cd4caf600e6761b0a4d5b90ccf34229fe418ff64a5da5f",
+  "hash_source": "https://www.python.org/ftp/python/3.13.12/windows-3.13.12.json",
+  "hash_source_record_id": "pythoncore-3.13-64",
+  "distribution": "full ZIP, not the embeddable ZIP",
+  "production_approved": false,
+  "third_party_dependencies_complete": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false
+}
