@@ -20,6 +20,7 @@
   "host_runtime_build": {
     "source_commit": "03eca14940bb69413cff0ea9f336be14a0bb1c10",
     "session": 39800,
-    "last_observed": "RUNNING"
+    "last_observed": "EXITED_0",
+    "files": 4950
   }
 }

@@ -97,3 +97,8 @@ Fixed source3c7395e adds independent extracted verification: approved archive di
 固定代码75024e3：解压验证在任何操作前以新文件独占预留报告；失败记录FAILED，超时/中断记录UNKNOWN，全部门禁false，已有报告禁止覆盖。3项边界及失败状态测试通过（0.155秒）。另固定deeec72回归执行器先运行原生准入，再发现业务测试，不卸载保护、每个测试只计一次；候选5项原生准入已通过，剩余回归运行中。基线5a8394d受跟踪文件无差异，两端使用同一执行器；句柄7375/65011。03eca14组包句柄39800仍运行。完整回归与真实解压验收均未完成。
 
 Fixed code75024e3 reserves a new report before extraction, records FAILED or timeout/interruption UNKNOWN, retains false gates, and refuses existing reports. Three boundary/failure-state tests pass in0.155s. Separately, fixed deeec72 regression runner executes offline native admission before business discovery without uninstalling guards or dropping test counts. Five candidate native checks pass; remaining regression is running. Baseline5a8394d has no tracked differences and both sides use the same runner under handles7375/65011. Older03eca14 build handle39800 remains running. Neither full regression nor actual extracted acceptance is complete.
+
+
+后续收取结果：03eca14宿主运行时组包退出0，4950文件。压缩包SHA256 6017c9239f31e0c64dffe51dbf906427e62726a95465e70c28807835706f048d；清单SHA256 7961bc615fa7c92da4e849cec88832753a80babbf808bcd0b2b1761790f41dbc。真实解压验证刚启动，未判定完成。以上更正紧前构建RUNNING快照，保留历史。
+
+Later terminal observation:03eca14 host/runtime build exited0 with4950 files. Archive SHA256 6017c9239f31e0c64dffe51dbf906427e62726a95465e70c28807835706f048d; manifest SHA256 7961bc615fa7c92da4e849cec88832753a80babbf808bcd0b2b1761790f41dbc. Actual extracted verification has started and is not yet complete. This supersedes the immediately preceding RUNNING snapshot while preserving history.

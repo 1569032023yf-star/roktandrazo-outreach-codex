@@ -8182,11 +8182,13 @@
     "host_runtime_v2": {
       "focused_passed": 2,
       "real_build_session": 39800,
-      "last_observed": "RUNNING",
+      "last_observed": "EXITED_0",
       "full_regression": "NOT_RUN_FOR_THIS_SHA",
       "installed_runtime_plan_bound": true,
       "complete_application_release": false,
-      "build_source_commit": "03eca14940bb69413cff0ea9f336be14a0bb1c10"
+      "build_source_commit": "03eca14940bb69413cff0ea9f336be14a0bb1c10",
+      "real_files": 4950,
+      "archive_sha256": "6017c9239f31e0c64dffe51dbf906427e62726a95465e70c28807835706f048d"
     },
     "packaged_runtime_plan": {
       "schema": "rokt.u1-provision-plan.v3",
