@@ -76,3 +76,10 @@ Fixed source03eca14 adds pinned host-v2 assembly from host/runtime manifests, co
 固定源码c7124cc：显式v3运行计划用包内Python执行安装辅助程序，生成Supervisor v2固定到Code Root/runtime/python/python.exe及其内容清单。Publisher将计划中的源路径与宿主v2清单摘要交叉绑定，批准六字段不变、安装门禁保持关闭。3项配置生成/旧计划兼容通过；首次Publisher验证因内容清单2MiB与通用256MiB固定上限冲突失败，修复为专用2MiB后2项通过，初次失败原始输出保留。真实宿主构建仍是旧固定03eca14，句柄39800运行中，不能继承为c7124cc验收。补充CIM进程观测被本机权限拒绝，未提升权限；句柄轮询仍确认运行。
 
 Fixed source c7124cc: explicit v3 plan uses packaged Python for installation helper execution and generates Supervisor v2 bound to Code Root/runtime/python/python.exe and its content manifest. Publisher cross-binds plan source paths/digests to host-v2 entries. Six approval fields remain unchanged and installation stays gated off. Three config/legacy compatibility tests pass. Initial Publisher check failed due2MiB versus generic256MiB pin limits; a dedicated2MiB manifest limit fixes this and two tests pass. Initial raw failure retained. Real host build remains pinned to older03eca14 under live handle39800; results cannot be inherited by c7124cc. Additional CIM process observation was denied; no elevation attempted. Handle polling still confirms running.
+
+
+## 组包可观测性与固定句柄复制 / Assembly observability and pinned-handle copy
+
+固定源码1b14f6e：运行时组包使用已有固定句柄读取源文件，仍复核摘要并最终重验证全部身份；阶段日志progress.jsonl在关键阶段与每128文件记录并fsync，区分输入固定、布局核验、复制、最终重核与压缩。定向2项通过（1.746秒），仅证明小型测试输入行为，不证明完整CPython组包性能或完成。旧固定03eca14构建句柄39800仍确认运行，无阶段日志，不重启、不判定失败或完成。
+
+Fixed source1b14f6e reads runtime sources through existing pinned handles, retains digest checks and final identity revalidation. Durable progress.jsonl records major stages and every128 files with fsync, distinguishing pinning, layout validation, copying, final validation and archive creation. Two focused tests pass in1.746s; these small fixtures do not prove full CPython assembly completion or performance. Older03eca14 build handle39800 remains confirmed running without stage logs; it is neither restarted nor declared failed/complete.
