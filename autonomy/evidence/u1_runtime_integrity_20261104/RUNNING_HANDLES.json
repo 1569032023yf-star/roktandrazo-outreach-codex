@@ -22,5 +22,11 @@
     "session": 39800,
     "last_observed": "EXITED_0",
     "files": 4950
+  },
+  "extracted_verification": {
+    "session": 29769,
+    "source_commit": "03eca14940bb69413cff0ea9f336be14a0bb1c10",
+    "verifier_source": "75024e3286db35de7f731434495fdb6e728b89a6",
+    "last_observed": "RUNNING"
   }
 }
