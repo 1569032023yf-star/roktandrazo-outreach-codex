@@ -1,0 +1,196 @@
+{
+  "autonomy/runtime/queue.json": {
+    "candidate_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+    "review_status": "OFFLINE_SCOPED_REVIEW_PASSED",
+    "checkpoint": "autonomy/evidence/u1_publisher_owner_reference_20261104/REPORT.md",
+    "u1_actual_delivery_latest": {
+      "updated_at": "2026-11-03T00:01:50.143893+00:00",
+      "checkpoint": "autonomy/evidence/u1_inventory_fence_20261103/REPORT.md",
+      "source_commit": "3f92a49aa9a93e19ec37189b23cda9edb5cea436",
+      "build": {
+        "artifacts": {
+          "install.zip": "0683278d7070afb515a4299d48cebce96ea126228dab0507e0458316da6893d8",
+          "rollback-tools.zip": "ceee090a392ad1b5c43fb6e3fe3fb58a200e2fa17cf3f94be8e13bd97a7fb82a"
+        },
+        "files": 66,
+        "independent_review": "PENDING",
+        "manifest_sha256": "3f573728d4710c65aaf54d8912e5e056b7563b41bbf3c767cc2a76ec8b4e5ba4",
+        "production_ready": false,
+        "source_commit": "3f92a49aa9a93e19ec37189b23cda9edb5cea436"
+      },
+      "targeted_tests": {
+        "command": [
+          "python",
+          "-B",
+          "-m",
+          "unittest",
+          "test_inventory_maintenance",
+          "tests.test_phase2a_safety_mutex",
+          "tests.test_inventory_stage_trace"
+        ],
+        "passed": true,
+        "returncode": 0,
+        "seconds": 1.907,
+        "tests_run": 24,
+        "runner_seconds": 1.596
+      },
+      "full_regression": {
+        "baseline_commit": "3bbb77d7f2cce774b3addfdbf851342ad09393c5",
+        "candidate_commit": "3f92a49aa9a93e19ec37189b23cda9edb5cea436",
+        "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-tvsi108a",
+        "complete": true,
+        "baseline_run": 833,
+        "candidate_run": 833,
+        "baseline_failures": 37,
+        "candidate_failures": 37,
+        "baseline_errors": 17,
+        "candidate_errors": 17,
+        "failure_ids_identical": true,
+        "error_ids_identical": true,
+        "all_green": false,
+        "no_new_regression": true
+      },
+      "companion": {
+        "source_commit": "3f92a49aa9a93e19ec37189b23cda9edb5cea436",
+        "baseline": "3bbb77d7f2cce774b3addfdbf851342ad09393c5",
+        "patch_sha256": "c3bfc27e3560a4fb878226549f3ec6118512ae9481f5b6c277a2bf5c4de8eb53",
+        "production_applied": false,
+        "legacy_executor_gate_integrated": false,
+        "installer_gate_integrated": false
+      },
+      "packaged_tests": {
+        "run": 5,
+        "passed": true,
+        "actual_module": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-autonomy\\autonomy\\evidence\\u1_inventory_fence_20261103\\package\\install\\payload\\python\\autonomy\\inventory_maintenance.py"
+      },
+      "independent_review": "PENDING_FOR_CURRENT_PIN",
+      "original_inventory_admission_source_integrated": true,
+      "formal_maintenance_integrated": false,
+      "formal_backend_integrated": false,
+      "allow_install": false,
+      "allow_dispatch": false,
+      "allow_cancel_dispatch": false,
+      "next_action": "Wire the same maintenance marker into original publisher executor lock admission, then controlled installer ownership/final verification/explicit release; retain installation hard rejection until all consumers are integrated and reviewed.",
+      "next_action_zh": "把同一维护标记门禁接入原发布器executor的锁获取调用链，并完成安装器受控持有/最终核验/显式释放接线；全部接线审核完成前保留安装hard gate。",
+      "states": {
+        "DEVELOPMENT_COMPLETE": false,
+        "RELEASE_READY": false,
+        "PRODUCTION_DEPLOYED": false,
+        "PRODUCTION_ACCEPTED": false,
+        "BUSINESS_GROWTH": "UNKNOWN"
+      }
+    },
+    "full_regression": {
+      "baseline_commit": "68788653c848659c63f85021075fedee4aca5b13",
+      "candidate_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+      "complete": true,
+      "baseline_run": 833,
+      "candidate_run": 833,
+      "baseline_failures": 37,
+      "candidate_failures": 37,
+      "baseline_errors": 17,
+      "candidate_errors": 17,
+      "failure_ids_identical": true,
+      "error_ids_identical": true,
+      "all_green": false,
+      "no_new_regression": true
+    }
+  },
+  "autonomy/AUTONOMOUS_TASK_QUEUE.json": {
+    "candidate_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+    "review_status": "OFFLINE_SCOPED_REVIEW_PASSED",
+    "checkpoint": "autonomy/evidence/u1_original_stage_20261103/REPORT.md",
+    "u1_actual_delivery_latest": {
+      "updated_at": "2026-11-03T00:01:50.143893+00:00",
+      "checkpoint": "autonomy/evidence/u1_inventory_fence_20261103/REPORT.md",
+      "source_commit": "3f92a49aa9a93e19ec37189b23cda9edb5cea436",
+      "build": {
+        "artifacts": {
+          "install.zip": "0683278d7070afb515a4299d48cebce96ea126228dab0507e0458316da6893d8",
+          "rollback-tools.zip": "ceee090a392ad1b5c43fb6e3fe3fb58a200e2fa17cf3f94be8e13bd97a7fb82a"
+        },
+        "files": 66,
+        "independent_review": "PENDING",
+        "manifest_sha256": "3f573728d4710c65aaf54d8912e5e056b7563b41bbf3c767cc2a76ec8b4e5ba4",
+        "production_ready": false,
+        "source_commit": "3f92a49aa9a93e19ec37189b23cda9edb5cea436"
+      },
+      "targeted_tests": {
+        "command": [
+          "python",
+          "-B",
+          "-m",
+          "unittest",
+          "test_inventory_maintenance",
+          "tests.test_phase2a_safety_mutex",
+          "tests.test_inventory_stage_trace"
+        ],
+        "passed": true,
+        "returncode": 0,
+        "seconds": 1.907,
+        "tests_run": 24,
+        "runner_seconds": 1.596
+      },
+      "full_regression": {
+        "baseline_commit": "3bbb77d7f2cce774b3addfdbf851342ad09393c5",
+        "candidate_commit": "3f92a49aa9a93e19ec37189b23cda9edb5cea436",
+        "isolated_root": "C:\\Users\\15690\\AppData\\Local\\Temp\\u1-compare-tvsi108a",
+        "complete": true,
+        "baseline_run": 833,
+        "candidate_run": 833,
+        "baseline_failures": 37,
+        "candidate_failures": 37,
+        "baseline_errors": 17,
+        "candidate_errors": 17,
+        "failure_ids_identical": true,
+        "error_ids_identical": true,
+        "all_green": false,
+        "no_new_regression": true
+      },
+      "companion": {
+        "source_commit": "3f92a49aa9a93e19ec37189b23cda9edb5cea436",
+        "baseline": "3bbb77d7f2cce774b3addfdbf851342ad09393c5",
+        "patch_sha256": "c3bfc27e3560a4fb878226549f3ec6118512ae9481f5b6c277a2bf5c4de8eb53",
+        "production_applied": false,
+        "legacy_executor_gate_integrated": false,
+        "installer_gate_integrated": false
+      },
+      "packaged_tests": {
+        "run": 5,
+        "passed": true,
+        "actual_module": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\roktandrazo-outreach-autonomy\\autonomy\\evidence\\u1_inventory_fence_20261103\\package\\install\\payload\\python\\autonomy\\inventory_maintenance.py"
+      },
+      "independent_review": "PENDING_FOR_CURRENT_PIN",
+      "original_inventory_admission_source_integrated": true,
+      "formal_maintenance_integrated": false,
+      "formal_backend_integrated": false,
+      "allow_install": false,
+      "allow_dispatch": false,
+      "allow_cancel_dispatch": false,
+      "next_action": "Wire the same maintenance marker into original publisher executor lock admission, then controlled installer ownership/final verification/explicit release; retain installation hard rejection until all consumers are integrated and reviewed.",
+      "next_action_zh": "把同一维护标记门禁接入原发布器executor的锁获取调用链，并完成安装器受控持有/最终核验/显式释放接线；全部接线审核完成前保留安装hard gate。",
+      "states": {
+        "DEVELOPMENT_COMPLETE": false,
+        "RELEASE_READY": false,
+        "PRODUCTION_DEPLOYED": false,
+        "PRODUCTION_ACCEPTED": false,
+        "BUSINESS_GROWTH": "UNKNOWN"
+      }
+    },
+    "full_regression": {
+      "baseline_commit": "68788653c848659c63f85021075fedee4aca5b13",
+      "candidate_commit": "3fbaa5ec42cb0655ecd1c811ccd8d02b1fc837bb",
+      "complete": true,
+      "baseline_run": 833,
+      "candidate_run": 833,
+      "baseline_failures": 37,
+      "candidate_failures": 37,
+      "baseline_errors": 17,
+      "candidate_errors": 17,
+      "failure_ids_identical": true,
+      "error_ids_identical": true,
+      "all_green": false,
+      "no_new_regression": true
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "source_commit": "9abe85a2bdb3227078ec87514727625ec5fec4e6",
+  "description_zh": "仅定位记录，不能单凭文件推断进程仍运行。",
+  "description_en": "Locator only; file presence is not evidence of liveness.",
+  "full_final": 54579,
+  "publisher_chain": 31239,
+  "baseline_result": "autonomy/evidence/u1_provider_transport_20261104/full-baseline/result.json",
+  "prior_candidate_result": "autonomy/evidence/u1_provider_transport_20261104/full-candidate/result.json"
+}

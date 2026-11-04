@@ -1,0 +1,19 @@
+{
+  "baseline_sha": "44b0ec9cf3b4444f83f76619b7c96e83a6595121",
+  "candidate_sha": "032e2198d124fea2e40ace2f109574e9a92016a8",
+  "baseline_count": 833,
+  "candidate_count": 836,
+  "baseline_failures": 37,
+  "candidate_failures": 38,
+  "baseline_errors": 18,
+  "candidate_errors": 18,
+  "new_failures": [
+    "test_google_places_unknown.UnknownTransportTests.test_persisted_unknown_blocks_new_service_instance"
+  ],
+  "new_errors": [],
+  "failure_ids_identical": false,
+  "error_ids_identical": true,
+  "all_green": false,
+  "scope": "tests/ only; not independent review and not inherited by 79262d7",
+  "no_new_regression": false
+}

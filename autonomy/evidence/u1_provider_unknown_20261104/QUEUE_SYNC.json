@@ -1,0 +1,9 @@
+{
+  "source_commit": "9abe85a2bdb3227078ec87514727625ec5fec4e6",
+  "canonical_and_projection_current_fields_equal": true,
+  "canonical": "autonomy/runtime/queue.json",
+  "projection": "autonomy/AUTONOMOUS_TASK_QUEUE.json",
+  "task_status_preserved": "in_progress",
+  "lease_fields_unchanged": true,
+  "production_gates_changed": false
+}

@@ -1,0 +1,9 @@
+test_bad_response_after_submission_is_unknown (tests.test_google_places_unknown.UnknownTransportTests.test_bad_response_after_submission_is_unknown) ... ok
+test_disconnect_is_not_retried_even_with_retry_budget (tests.test_google_places_unknown.UnknownTransportTests.test_disconnect_is_not_retried_even_with_retry_budget) ... ok
+test_missing_configuration_does_not_submit (tests.test_google_places_unknown.UnknownTransportTests.test_missing_configuration_does_not_submit) ... ok
+test_persisted_unknown_blocks_new_service_instance (tests.test_google_places_unknown.UnknownTransportTests.test_persisted_unknown_blocks_new_service_instance) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 1.092s
+
+OK
