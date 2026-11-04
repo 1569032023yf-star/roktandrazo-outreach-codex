@@ -1,0 +1,6 @@
+test_fixed_git_documents_in_both_archives (test_delivery_documents.DeliveryDocumentsTests.test_fixed_git_documents_in_both_archives) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 8.874s
+
+OK

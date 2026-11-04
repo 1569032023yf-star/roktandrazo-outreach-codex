@@ -134,3 +134,8 @@ English: Fixed2c52595: two Bootstrap tests pass in0.089s for exact owner-mode fo
 
 English: Fixed verifier d897067 persists each check start/completion/output and preserves evidence after later failures; five related tests pass in0.371s. Actual preflight compares all67 staged a3ce4a5 application Python files byte-for-byte against Git, then uses the older03eca14 extracted CPython for isolated imports of six entrypoints. All28 loaded repository module origins remain within staged application files; an isolated packaged child returns ISOLATED_CHILD_OK; overall exit0. APP_IMPORT_PREFLIGHT.json explicitly scopes this to an old-runtime/fixed-application preflight, not final archive acceptance. Build29556 remains running; all acceptance states and gates false.
 
+
+中文：固定eae57b2后续构建器将双语离线生命周期说明及CPython/业务wheel锁文件从固定Git纳入安装清单和回滚归档。定向文档入包测试1项通过（8.874秒），宿主编译为测试替身，不是实际运行时整包证据。说明明确维护授权、六字段、非对称ACL、回滚工具非备份、UNKNOWN保护及所有关闭门禁。正在运行的a3ce4a5旧固定构建29556不含此新增内容；句柄仍确认运行，不能热改或冒用新版。下一步先收取旧构建并独立核验，再决定新固定候选整合。
+
+English: Fixed eae57b2 future builder includes the bilingual offline lifecycle guide and CPython/business wheel locks from pinned Git in install manifest and rollback archive. One document-inclusion test passes in8.874s with a host compiler fixture, not actual full-runtime package evidence. Guide states maintenance authority, six-field bindings, asymmetric ACLs, tooling-not-backup limits, UNKNOWN preservation and closed gates. Live older a3ce4a5 build29556 does not contain these additions and remains confirmed running; no hot changes or newer-source claims. Next collect and independently verify that build before integrating a new fixed candidate.
+

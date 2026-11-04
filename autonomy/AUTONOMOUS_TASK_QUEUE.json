@@ -8251,6 +8251,13 @@
       "loaded_module_origins_checked": 28,
       "returncode": 0,
       "final_archive_verified": false
+    },
+    "delivery_document_integration": {
+      "source": "eae57b2deb28cd78b5983755bd82b39e0439a868",
+      "targeted_test_run": 1,
+      "passed": true,
+      "host_compiler_fixture": true,
+      "actual_runtime_archive_verified": false
     }
   },
   "u1_provider_regression_9abe85a": {
