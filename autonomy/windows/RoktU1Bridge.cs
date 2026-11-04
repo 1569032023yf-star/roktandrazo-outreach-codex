@@ -169,7 +169,7 @@ public sealed class ServiceChild : IDisposable {
         var seen=new HashSet<string>(StringComparer.OrdinalIgnoreCase);long total=0;
         foreach(var row in files) {
             string relative=row.Key;
-            if(!System.Text.RegularExpressions.Regex.IsMatch(relative,"^[A-Za-z0-9_./-]+$") || relative.StartsWith("/") ||
+            if(!System.Text.RegularExpressions.Regex.IsMatch(relative,"^[A-Za-z0-9_./+-]+$") || relative.StartsWith("/") ||
                !seen.Add(relative) || relative.Equals("U1_RUNTIME_CONTENT.json",StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException("RUNTIME_MANIFEST_ENTRY");
             foreach(string part in relative.Split('/'))

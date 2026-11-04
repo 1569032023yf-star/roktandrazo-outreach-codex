@@ -32,7 +32,8 @@ class RuntimeContentTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name)/'python';self.root.mkdir()
         for name,data in {'python.exe':b'fixture exe','python313.dll':b'fixture dll',
-                          'Lib/core.py':b'VALUE=1','Lib/__init__.py':b''}.items():
+                          'Lib/core.py':b'VALUE=1','Lib/__init__.py':b'',
+                          'Lib/GMT+0':b'legitimate timezone data'}.items():
             p=self.root/name;p.parent.mkdir(exist_ok=True);p.write_bytes(data)
         self.manifest=self.root/'U1_RUNTIME_CONTENT.json'
         self.data=dict(schema='rokt.u1-runtime-content.v1',python='python.exe',

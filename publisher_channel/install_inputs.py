@@ -34,7 +34,7 @@ def pin_python_runtime(pins, manifest_path, expected, python):
     seen=set();total=0
     reserved={'CON','PRN','AUX','NUL'}|{a+str(i) for a in ('COM','LPT') for i in range(1,10)}
     for path,digest in data['files'].items():
-        if (type(path) is not str or not re.fullmatch('[A-Za-z0-9_./-]+',path) or
+        if (type(path) is not str or not re.fullmatch('[A-Za-z0-9_./+-]+',path) or
             path.casefold()=='u1_runtime_content.json' or
             any(p in ('','.','..') or p.endswith('.') or p.split('.')[0].upper() in reserved for p in path.split('/')) or
             path.casefold() in seen):reject('PYTHON_RUNTIME_ENTRY')
