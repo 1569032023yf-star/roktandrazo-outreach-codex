@@ -124,3 +124,8 @@ English: Static traversal from five offline host/event/owner/backend/Publisher e
 
 English: Fixed verifier b51b08e adds read-only extracted delivery checks: outer manifest/source/closed gates, pinned host and Python content, packaged -I -B imports of six offline entrypoints with origin checks, packaged child process, pip check and native integrity; package rechecked afterward. Failure/timeout persist FAILED/UNKNOWN, existing reports are immutable. Five safety-boundary tests pass in0.407s using test inputs, not actual delivery acceptance. Paired a3ce4a5 archive build29556 is confirmed live; install directory has appeared without terminal result. Next run the verifier against that fixed completed archive. Formal contract remains CONTRACT_MISSING; all acceptance states/gates false.
 
+
+中文：固定2c52595：Bootstrap三种Owner模式参数逐项转发与关闭门禁/互斥Owner拒绝测试2项通过（0.089秒）；run_module仅入口捕获替身，不是真实服务验收。整包验证器增加仅回环HTTP临时fixture探测：开发解释器实际运行客户端遭WinError10013，退出1；线程退出清理完成，保留原始失败HTTP_PROBE_DEVELOPMENT_OUTPUT.txt，不放宽权限或跳过检查。此失败不证明业务缺陷，原因仍未定位；7877/8791未验证。归档构建29556仍确认运行，不能继承源码测试或宣称完成。
+
+English: Fixed2c52595: two Bootstrap tests pass in0.089s for exact owner-mode forwarding and closed-gate/mutual-owner rejection. run_module is an entrypoint capture fixture, not service acceptance. Delivery verifier adds temporary loopback HTTP fixtures. Actual development-interpreter probe fails with client WinError10013 and exit1; server thread cleanup completed. Raw HTTP_PROBE_DEVELOPMENT_OUTPUT.txt retained without relaxing permissions or skipping checks. This does not establish a business defect; cause remains unlocalized, and ports7877/8791 are unverified. Archive build29556 is confirmed live; source-test results cannot establish package completion.
+

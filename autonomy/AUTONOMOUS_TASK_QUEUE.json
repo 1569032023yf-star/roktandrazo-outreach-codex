@@ -8227,12 +8227,22 @@
       "session": 29556,
       "last_observed": "RUNNING"
     },
-    "delivery_verifier_source": "b51b08ee58a420fba81a9b26511520e7b3694086",
+    "delivery_verifier_source": "2c52595f702e48e4d073f7c64be58fae97f250a0",
     "delivery_verifier_targeted": {
       "run": 5,
       "failures": 0,
       "errors": 0,
       "actual_delivery_verified": false
+    },
+    "bootstrap_argument_test": {
+      "run": 2,
+      "passed": true,
+      "real_service_acceptance": false
+    },
+    "development_loopback_probe": {
+      "status": "FAILED",
+      "winerror": 10013,
+      "formal_provider": false
     }
   },
   "u1_provider_regression_9abe85a": {
