@@ -1,0 +1,9 @@
+{
+  "source_commit": "32f02469233f4571d7aab5ecb79204570485ba26",
+  "fixture_only": true,
+  "provider_requests": 0,
+  "initial_probe": "INTERRUPTED_AFTER_NO_RESULT_NOT_PASSED",
+  "exception_type": "TimeoutExpired",
+  "error": "Command '['C:\\\\Users\\\\15690\\\\Documents\\\\ChatGPT\\\\\u7ebf\u4e0b\\\\u1-runtime-32f0246\\\\python.exe', '-I', '-B', '-c', 'from playwright.sync_api import sync_playwright\\nimport json\\nwith sync_playwright() as p:\\n b=p.chromium.launch(headless=True,chromium_sandbox=True,timeout=10000)\\n c=b.new_context(offline=True)\\n c.route(\"**/*\",lambda r:r.abort())\\n page=c.new_page();page.set_content(\"<title>U1 local fixture</title>\")\\n print(json.dumps(dict(title=page.title(),browser_version=b.version,offline=True,provider_requests=0)),flush=True)\\n b.close()\\n']' timed out after 25 seconds",
+  "passed": false
+}

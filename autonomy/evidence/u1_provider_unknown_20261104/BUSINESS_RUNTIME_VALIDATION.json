@@ -1,0 +1,27 @@
+{
+  "source_commit": "32f02469233f4571d7aab5ecb79204570485ba26",
+  "python_files": 4942,
+  "python_bytes": 237213734,
+  "wheel_count": 12,
+  "validation": [
+    {
+      "returncode": 0,
+      "stdout": "Looking in links: c:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\.runtime-inputs\\wheels\nProcessing c:\\users\\15690\\documents\\chatgpt\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\.runtime-inputs\\wheels\\anyio-4.16.0-py3-none-any.whl (from -r C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\..\\u1-runtime-32f0246\\BUSINESS_REQUIREMENTS.txt (line 1))\nProcessing c:\\users\\15690\\documents\\chatgpt\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\.runtime-inputs\\wheels\\certifi-2026.10.23-py3-none-any.whl (from -r C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\..\\u1-runtime-32f0246\\BUSINESS_REQUIREMENTS.txt (line 2))\nProcessing c:\\users\\15690\\documents\\chatgpt\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\.runtime-inputs\\wheels\\dnspython-2.8.0-py3-none-any.whl (from -r C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\..\\u1-runtime-32f0246\\BUSINESS_REQUIREMENTS.txt (line 3))\nProcessing c:\\users\\15690\\documents\\chatgpt\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\.runtime-inputs\\wheels\\greenlet-3.5.6-cp313-cp313-win_amd64.whl (from -r C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\..\\u1-runtime-32f0246\\BUSINESS_REQUIREMENTS.txt (line 4))\nProcessing c:\\users\\15690\\documents\\chatgpt\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\.runtime-inputs\\wheels\\h11-0.16.0-py3-none-any.whl (from -r C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\..\\u1-runtime-32f0246\\BUSINESS_REQUIREMENTS.txt (line 5))\nProcessing c:\\users\\15690\\documents\\chatgpt\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\.runtime-inputs\\wheels\\httpcore-1.0.9-py3-none-any.whl (from -r C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\..\\u1-runtime-32f0246\\BUSINESS_REQUIREMENTS.txt (line 6))\nProcessing c:\\users\\15690\\documents\\chatgpt\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\.runtime-inputs\\wheels\\httpx-0.28.1-py3-none-any.whl (from -r C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\..\\u1-runtime-32f0246\\BUSINESS_REQUIREMENTS.txt (line 7))\nProcessing c:\\users\\15690\\documents\\chatgpt\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\.runtime-inputs\\wheels\\idna-3.20-py3-none-any.whl (from -r C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\..\\u1-runtime-32f0246\\BUSINESS_REQUIREMENTS.txt (line 8))\nProcessing c:\\users\\15690\\documents\\chatgpt\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\.runtime-inputs\\wheels\\playwright-1.62.0-py3-none-win_amd64.whl (from -r C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\..\\u1-runtime-32f0246\\BUSINESS_REQUIREMENTS.txt (line 9))\nProcessing c:\\users\\15690\\documents\\chatgpt\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\.runtime-inputs\\wheels\\pyee-13.0.1-py3-none-any.whl (from -r C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\..\\u1-runtime-32f0246\\BUSINESS_REQUIREMENTS.txt (line 10))\nProcessing c:\\users\\15690\\documents\\chatgpt\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\.runtime-inputs\\wheels\\typing_extensions-4.16.0-py3-none-any.whl (from -r C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\..\\u1-runtime-32f0246\\BUSINESS_REQUIREMENTS.txt (line 11))\nProcessing c:\\users\\15690\\documents\\chatgpt\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\.runtime-inputs\\wheels\\tzdata-2026.3-py2.py3-none-any.whl (from -r C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\..\\u1-runtime-32f0246\\BUSINESS_REQUIREMENTS.txt (line 12))\nInstalling collected packages: tzdata, typing_extensions, pyee, playwright, idna, httpx, httpcore, h11, greenlet, dnspython, certifi, anyio\n\nSuccessfully installed anyio-4.16.0 certifi-2026.10.23 dnspython-2.8.0 greenlet-3.5.6 h11-0.16.0 httpcore-1.0.9 httpx-0.28.1 idna-3.20 playwright-1.62.0 pyee-13.0.1 typing_extensions-4.16.0 tzdata-2026.3\n",
+      "stderr": "  WARNING: The script playwright.exe is installed in 'C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-runtime-32f0246\\Scripts' which is not on PATH.\n  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.\n  WARNING: The script idna.exe is installed in 'C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-runtime-32f0246\\Scripts' which is not on PATH.\n  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.\n  WARNING: The script httpx.exe is installed in 'C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-runtime-32f0246\\Scripts' which is not on PATH.\n  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.\n"
+    },
+    {
+      "returncode": 0,
+      "stdout": "No broken requirements found.\n",
+      "stderr": ""
+    },
+    {
+      "returncode": 0,
+      "stdout": "PINNED_DEPENDENCIES_IMPORT_OK\n",
+      "stderr": ""
+    }
+  ],
+  "browser_files": 610,
+  "browser_bytes": 735085650,
+  "bootstrap_integrated": false,
+  "production_ready": false
+}

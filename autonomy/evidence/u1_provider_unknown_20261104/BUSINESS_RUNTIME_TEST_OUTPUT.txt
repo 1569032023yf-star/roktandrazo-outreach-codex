@@ -1,0 +1,10 @@
+test_case_collision_never_extracts (tests.test_u1_python_runtime.RuntimeAdmissionTests.test_case_collision_never_extracts) ... ok
+test_existing_output_is_preserved (tests.test_u1_python_runtime.RuntimeAdmissionTests.test_existing_output_is_preserved) ... ok
+test_wheel_lock_rejects_tampering_and_injection (tests.test_u1_python_runtime.RuntimeAdmissionTests.test_wheel_lock_rejects_tampering_and_injection) ... ok
+test_windows_path_attacks_never_extract (tests.test_u1_python_runtime.RuntimeAdmissionTests.test_windows_path_attacks_never_extract) ... ok
+test_wrong_archive_hash_never_extracts (tests.test_u1_python_runtime.RuntimeAdmissionTests.test_wrong_archive_hash_never_extracts) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.105s
+
+OK

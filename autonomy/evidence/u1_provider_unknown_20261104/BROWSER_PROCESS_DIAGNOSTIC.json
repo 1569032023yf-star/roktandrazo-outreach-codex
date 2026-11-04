@@ -1,0 +1,14 @@
+{
+  "python": {
+    "returncode": 0,
+    "stdout": "ISOLATED_PYTHON_CHILD_OK\r\n",
+    "stderr": "",
+    "cleanup_verified": true
+  },
+  "node": {
+    "returncode": 0,
+    "stdout": "v24.18.1\r\n",
+    "stderr": "",
+    "cleanup_verified": true
+  }
+}

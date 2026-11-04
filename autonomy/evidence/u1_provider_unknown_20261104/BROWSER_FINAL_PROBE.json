@@ -1,0 +1,17 @@
+{
+  "fixture_only": true,
+  "provider_requests": 0,
+  "passed": false,
+  "python_sha256": "a2a4eff8d0b0c845284c607d50a3b5b966ac5a3121736a2e38e165bd6644d9fe",
+  "exception_type": "TimeoutExpired",
+  "cleanup_verified": true,
+  "cleanup_errors": [],
+  "stages": [
+    {
+      "stage": "CHILD_STARTED"
+    },
+    {
+      "stage": "PLAYWRIGHT_IMPORTED"
+    }
+  ]
+}
