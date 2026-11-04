@@ -26,7 +26,12 @@ class RuntimeHostExtractionTests(unittest.TestCase):
             for number,names in enumerate((['../outside'],['A','a'],['a','a/b'],['runtime\\outside'])):
                 archive=root/f'{number}.zip'
                 with zipfile.ZipFile(archive,'x') as z:
-                    for name in names:z.writestr(name,b'fixture')
+                    for name in names:
+                        info=zipfile.ZipInfo(name)
+                        # Preserve raw backslashes rather than letting the
+                        # Windows writer normalize this attack fixture first.
+                        info.filename=name;info.orig_filename=name
+                        z.writestr(info,b'fixture')
                 digest=hashlib.sha256(archive.read_bytes()).hexdigest();output=root/f'out{number}'
                 with self.assertRaises(ValueError):extract_checked(archive,digest,output)
                 self.assertFalse(output.exists())
