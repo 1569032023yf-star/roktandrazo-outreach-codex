@@ -20,7 +20,7 @@ class UnknownTransportTests(unittest.TestCase):
             with self.subTest(failure=type(failure).__name__):
                 provider = GooglePlacesProvider(api_key="fixture", max_retries=5,
                                                 min_interval_seconds=0)
-                with patch("urllib.request.urlopen", side_effect=failure) as request:
+                with patch("discovery.providers.google_places._open_request", side_effect=failure) as request:
                     page = provider.search_places("fixture", "fixture", "TN")
                 self.assertEqual(request.call_count, 1)
                 self.assertEqual(page.status, "provider_outcome_unknown")
@@ -32,7 +32,7 @@ class UnknownTransportTests(unittest.TestCase):
     def test_bad_response_after_submission_is_unknown(self):
         for response in (b"not-json", b'{"places":null}', b'{"places":[null]}', b"\xff"):
             with self.subTest(response=response):
-                with patch("urllib.request.urlopen", return_value=io.BytesIO(response)) as request:
+                with patch("discovery.providers.google_places._open_request", return_value=io.BytesIO(response)) as request:
                     page = GooglePlacesProvider(api_key="fixture", min_interval_seconds=0).search_places("fixture", "fixture", "TN")
                 self.assertEqual(request.call_count, 1)
                 self.assertEqual(page.status, "provider_outcome_unknown")
@@ -54,7 +54,7 @@ class UnknownTransportTests(unittest.TestCase):
         with DiscoveryDb() as conn:
             city = activate_next_city(conn)
             provider = GooglePlacesProvider(api_key="fixture", min_interval_seconds=0)
-            with patch("urllib.request.urlopen", side_effect=urllib.error.URLError("lost")) as request:
+            with patch("discovery.providers.google_places._open_request", side_effect=urllib.error.URLError("lost")) as request:
                 first = DiscoveryService(conn, provider=provider).run_places_batch(city)
                 conn.commit()
                 resumed = activate_next_city(conn)
@@ -65,7 +65,7 @@ class UnknownTransportTests(unittest.TestCase):
             self.assertEqual(conn.execute("SELECT COUNT(*) FROM lead_discovery_results").fetchone()[0], 0)
 
     def test_missing_configuration_does_not_submit(self):
-        with patch.dict("os.environ", {}, clear=True), patch("urllib.request.urlopen") as request:
+        with patch.dict("os.environ", {}, clear=True), patch("discovery.providers.google_places._open_request") as request:
             page = GooglePlacesProvider().search_places("fixture", "fixture", "TN")
         request.assert_not_called()
         self.assertEqual(page.status, "provider_not_configured")

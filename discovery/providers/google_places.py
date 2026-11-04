@@ -35,6 +35,17 @@ FIELD_MASK = ",".join(
 )
 
 
+class _RejectRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        # A redirect is neither a new authorized request nor a known outcome.
+        raise urllib.error.HTTPError(req.full_url, code, 'provider_redirect_rejected', headers, fp)
+
+
+def _open_request(request, *, timeout):
+    # Retain the existing proxy/TLS handlers; only reject automatic redirects.
+    return urllib.request.build_opener(_RejectRedirect()).open(request, timeout=timeout)
+
+
 class GooglePlacesProvider(SearchProvider):
     provider_name = "google_places"
 
@@ -122,7 +133,7 @@ class GooglePlacesProvider(SearchProvider):
         self._last_request_at = time.monotonic()
         req = urllib.request.Request(GOOGLE_PLACES_URL, data=payload, headers=headers, method="POST")
         try:
-            with urllib.request.urlopen(req, timeout=self.timeout_seconds) as response:
+            with _open_request(req, timeout=self.timeout_seconds) as response:
                 data = json.loads(response.read().decode("utf-8"))
             results = [self._normalize_place(p, query, city, state, data.get("nextPageToken", "")) for p in data.get("places", [])]
             return ProviderPage(
