@@ -107,7 +107,7 @@ class HostFileTransaction:
         if self._rows()[-1] != row:
             raise ValueError('STOP_AND_PRESERVE_JOURNAL_READBACK')
 
-    def prepare(self, files, *, manifest_sha256, previous_receipt=None, previous_receipt_sha256=None, root_created=False, state_root=None, blob_backed=False):
+    def prepare(self, files, *, manifest_sha256, previous_receipt=None, previous_receipt_sha256=None, root_created=False, state_root=None, blob_backed=False, source_hashes=None):
         if self._rows():
             raise ValueError('EXISTING_OPERATION_RECONCILE_ONLY')
         if type(root_created) is not bool or (root_created and any(self.root.iterdir())):
@@ -135,6 +135,10 @@ class HostFileTransaction:
             raise ValueError('PINNED_OWNERSHIP_RECEIPT_REQUIRED')
         if type(blob_backed) is not bool:
             raise ValueError('EXACT_STORAGE_MODE_REQUIRED')
+        if source_hashes is not None and (not blob_backed or type(source_hashes) is not dict or
+                set(source_hashes)!={k for k,v in files.items() if isinstance(v,Path)} or
+                any(type(v) is not str or not re.fullmatch('[0-9a-f]{64}',v) for v in source_hashes.values())):
+            raise ValueError('EXACT_SOURCE_HASHES_REQUIRED')
         if type(files) is not dict or not files or len(files)+len(owned)>(16384 if blob_backed else 512):
             raise ValueError('EXACT_FILE_MANIFEST_REQUIRED')
         if owned and not re.fullmatch('[0-9a-f]{64}', previous_receipt_sha256 or ''):
@@ -180,10 +184,11 @@ class HostFileTransaction:
             elif old is not None:
                 raise ValueError('UNOWNED_FILE_COLLISION')
             new = files.get(n)
-            if blob_backed and n in files:
-                if not isinstance(new, Path):raise ValueError('FILE_SOURCE_PATH_REQUIRED')
+            if blob_backed and isinstance(new,Path):
                 new=read(new)
                 if new is None:raise ValueError('FILE_SOURCE_MISSING')
+                if source_hashes is not None and digest(new)!=source_hashes[n]:
+                    raise ValueError('FILE_SOURCE_HASH_MISMATCH')
             payload_total += 0 if new is None else len(new)
             if payload_total > 1024*1024*1024:raise ValueError('HOST_PAYLOAD_TOO_LARGE')
             if new is not None and (type(new) is not bytes or len(new)>256*1024*1024):
@@ -376,6 +381,29 @@ class HostFileTransaction:
         self._append(phase='ROOT_REMOVED')
 
 
+def prepare_request(transaction, request, *, state_root=None):
+    """Decode the pinned installer request; does not apply files or grant install."""
+    keys={'files','previous_receipt','manifest_sha256','previous_receipt_sha256','root_created'}
+    if set(request) not in (keys,keys|{'file_sources'}):
+        raise ValueError('EXACT_REQUEST_REQUIRED')
+    files = {name(k):base64.b64decode(v,validate=True) for k,v in request['files'].items()}
+    hashes=None
+    if 'file_sources' in request:
+        hashes={}
+        if type(request['file_sources']) is not dict:raise ValueError('EXACT_SOURCE_MAP_REQUIRED')
+        for relative,row in request['file_sources'].items():
+            name(relative)
+            if (relative in files or type(row) is not dict or set(row)!={'path','sha256'} or
+                    type(row['path']) is not str or not Path(row['path']).is_absolute()):
+                raise ValueError('EXACT_SOURCE_MAP_REQUIRED')
+            files[relative]=Path(row['path']);hashes[relative]=row['sha256']
+    previous = None if request['previous_receipt'] is None else base64.b64decode(request['previous_receipt'],validate=True)
+    transaction.prepare(files, manifest_sha256=request['manifest_sha256'],previous_receipt=previous,
+                        previous_receipt_sha256=request['previous_receipt_sha256'],root_created=request['root_created'],
+                        blob_backed=hashes is not None,source_hashes=hashes,
+                        state_root=state_root if request['root_created'] else None)
+
+
 def main():
     """Pinned installer helper: roots are constants, not caller-controlled paths."""
     import argparse
@@ -409,13 +437,7 @@ def main():
         Path(r'C:\ProgramData\RoktU1InstallAudit')/('files-'+a.operation+'.jsonl'))
     if a.action == 'prepare-apply':
         request = json.loads(sys.stdin.buffer.read(32*1024*1024+1))
-        if set(request) != {'files','previous_receipt','manifest_sha256','previous_receipt_sha256','root_created'}:
-            raise ValueError('EXACT_REQUEST_REQUIRED')
-        files = {name(k):base64.b64decode(v,validate=True) for k,v in request['files'].items()}
-        previous = None if request['previous_receipt'] is None else base64.b64decode(request['previous_receipt'],validate=True)
-        transaction.prepare(files, manifest_sha256=request['manifest_sha256'],previous_receipt=previous,
-                            previous_receipt_sha256=request['previous_receipt_sha256'],root_created=request['root_created'],
-                            state_root=r'C:\ProgramData\RoktU1Bridge' if request['root_created'] else None)
+        prepare_request(transaction,request,state_root=r'C:\ProgramData\RoktU1Bridge')
         print(json.dumps(transaction.apply()))
     elif a.action == 'check-rollback':
         transaction.check_rollback()

@@ -169,10 +169,12 @@ function Invoke-HostInstallTransaction {
             $observed=Invoke-HostFiles 'observe-roots' $null
             Write-HostPhase 'STATE_CREATE_VERIFIED' @{identity=$observed.state}
         }
-        $fileBytes=@{}; $fileHashes=@{}
+        $fileBytes=@{}; $fileHashes=@{}; $fileSources=@{}
         foreach ($f in $m.files) {
-            $bytes=[IO.File]::ReadAllBytes((Join-Path $package $f.path))
-            $fileBytes[$f.path]=[Convert]::ToBase64String($bytes); $fileHashes[$f.path]=$f.sha256
+            # Package preparation retains read-only pins. The helper checks
+            # each approved digest again before creating durable blob backups.
+            $fileSources[$f.path]=@{path=(Join-Path $package $f.path);sha256=$f.sha256}
+            $fileHashes[$f.path]=$f.sha256
         }
         foreach ($relative in $generated.Keys) {
             $bytes=$generated[$relative]
@@ -182,7 +184,7 @@ function Invoke-HostInstallTransaction {
         }
         $receipt=@{schema='rokt.disabled-host-install-receipt.v2';source_commit=$m.source_commit;installer_version=$m.installer_version;manifest_sha256=$ApprovedManifestSha256;operation_id=$operation;service_name=$name;account=$account;image=$image;wrapper_sha256=$fileHashes['service/RoktU1Bridge.exe'];files=$fileHashes;state_preserved=$true}
         $fileBytes['config/installation.json']=[Convert]::ToBase64String([Text.UTF8Encoding]::new($false).GetBytes(($receipt | ConvertTo-Json -Depth 8 -Compress)))
-        $request=@{files=$fileBytes;manifest_sha256=$ApprovedManifestSha256;root_created=(-not $Upgrade);previous_receipt=$(if ($previous) {[Convert]::ToBase64String($previous)} else {$null});previous_receipt_sha256=$(if ($Upgrade) {$ApprovedPreviousReceiptSha256} else {$null})}
+        $request=@{files=$fileBytes;file_sources=$fileSources;manifest_sha256=$ApprovedManifestSha256;root_created=(-not $Upgrade);previous_receipt=$(if ($previous) {[Convert]::ToBase64String($previous)} else {$null});previous_receipt_sha256=$(if ($Upgrade) {$ApprovedPreviousReceiptSha256} else {$null})}
         Write-HostPhase 'FILES_INTENT'
         $null=Invoke-HostFiles 'prepare-apply' $request
         Write-HostPhase 'FILES_VERIFIED'

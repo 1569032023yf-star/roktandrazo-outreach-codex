@@ -8,10 +8,31 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import patch
-from autonomy.host_file_transaction import HostFileTransaction, canonical, digest, read
+from autonomy.host_file_transaction import HostFileTransaction, canonical, digest, read, prepare_request
 
 
 class FileTransactionTests(unittest.TestCase):
+    def test_installer_source_request_checks_hash_and_generated_bytes(self):
+        source=Path(self.temp.name)/'source';source.write_bytes(b'MZ package fixture')
+        request=dict(files={'config/runtime.json':base64.b64encode(b'generated').decode()},
+                     file_sources={'service/bridge.exe':dict(path=str(source),sha256=digest(read(source)))},
+                     previous_receipt=None,previous_receipt_sha256=None,manifest_sha256='a'*64,root_created=False)
+        t=self.tx();prepare_request(t,request);t.apply()
+        self.assertEqual(read(self.root/'service/bridge.exe'),read(source))
+        self.assertEqual(read(self.root/'config/runtime.json'),b'generated')
+        t.rollback();self.assertFalse((self.root/'service/bridge.exe').exists())
+        source.write_bytes(b'tampered after approval')
+        with self.assertRaisesRegex(ValueError,'FILE_SOURCE_HASH_MISMATCH'):
+            prepare_request(self.tx('tamper'),request)
+        self.assertFalse((self.root/'service/bridge.exe').exists())
+
+    def test_source_map_cannot_replace_generated_file(self):
+        request=dict(files={'config/runtime.json':base64.b64encode(b'generated').decode()},
+                     file_sources={'config/runtime.json':dict(path=str(self.root/'source'),sha256='a'*64)},
+                     previous_receipt=None,previous_receipt_sha256=None,manifest_sha256='a'*64,root_created=False)
+        with self.assertRaisesRegex(ValueError,'EXACT_SOURCE_MAP_REQUIRED'):prepare_request(self.tx(),request)
+        self.assertFalse(self.tx().journal.exists())
+
     def test_blob_backed_large_payload_compensates_without_inline_journal(self):
         source=Path(self.temp.name)/'large.dll'
         source.write_bytes(b'x'*(17*1024*1024))
