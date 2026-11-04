@@ -8047,7 +8047,7 @@
     "next_action_zh": "完成正式Provider执行、费用实测和受信运行配置，随后对完整候选审核；经授权后由WorkBuddy进行隔离Windows首次安装、升级、进程退出恢复、回滚中断恢复及Disabled/Stopped验收。不得用测试worker或SAFE替身代替业务验收。"
   },
   "u1_continuous_development_current": {
-    "source_commit": "03eca14940bb69413cff0ea9f336be14a0bb1c10",
+    "source_commit": "c7124cc6ee1ed08b485cdb38e7203ac13688181f",
     "phase": "1_CONTRACT_MISSING_AND_2_OFFLINE_INTEGRATION",
     "report": "autonomy/evidence/u1_runtime_integrity_20261104/REPORT.md",
     "current_package": "NOT_BUILT",
@@ -8076,8 +8076,8 @@
     "allow_dispatch": false,
     "allow_cancel_dispatch": false,
     "smtp_enabled": false,
-    "next_action_zh": "收取真实宿主运行时组包结果，验证解压目录，再绑定安装后的Python位置并整合应用与回滚包。",
-    "next_action_en": "Collect real host runtime assembly, verify extracted tree, bind installed Python paths and integrate application/rollback archives.",
+    "next_action_zh": "收取03eca14真实运行时构建结果；对最新固定代码重新组包，核验解压目录并验证完整运行时文件事务。",
+    "next_action_en": "Collect03eca14 runtime build; rebuild from latest fixed source, validate extraction and complete-runtime file transaction.",
     "pollution_reproduction": {
       "tests": 27,
       "passed": true
@@ -8184,8 +8184,17 @@
       "real_build_session": 39800,
       "last_observed": "RUNNING",
       "full_regression": "NOT_RUN_FOR_THIS_SHA",
-      "installed_runtime_plan_bound": false,
-      "complete_application_release": false
+      "installed_runtime_plan_bound": true,
+      "complete_application_release": false,
+      "build_source_commit": "03eca14940bb69413cff0ea9f336be14a0bb1c10"
+    },
+    "packaged_runtime_plan": {
+      "schema": "rokt.u1-provision-plan.v3",
+      "generated_installed_paths_tested": true,
+      "configuration_tests_passed": 3,
+      "publisher_tests_passed_after_fix": 2,
+      "initial_pin_limit_failure_preserved": true,
+      "full_regression": "NOT_RUN_FOR_THIS_SHA"
     }
   },
   "u1_provider_regression_9abe85a": {

@@ -69,3 +69,10 @@ Fixed source b008663: explicit rokt.release-manifest.v2 supports8192 files,1GiB 
 固定源码03eca14：宿主v2组包工具已纳入，固定宿主清单及完整运行时摘要，逐文件复制；Publisher接受显式v2和零字节依赖，允许合法加号路径，仍检查文件摘要与所有权保留路径。b008663发布/Bootstrap及原发布回滚10项通过（182.509秒）；本轮宿主v2组包/Publisher及实际PowerShell请求2项通过（8.779秒）。真实CPython宿主组包运行中，句柄39800。该宿主包尚未含完整应用发布包，运行计划安装路径绑定仍待完成；不标记PACKAGE_COMPLETE。
 
 Fixed source03eca14 adds pinned host-v2 assembly from host/runtime manifests, copying one file at a time. Publisher supports explicit v2, empty dependency files and legitimate plus paths while retaining digest and reserved ownership checks. b008663 release/Bootstrap and original publication rollback:10 tests passed in182.509s. Current host-v2/Publisher and actual PowerShell request:2 tests passed in8.779s. Real CPython host assembly is running under handle39800. This host candidate is not the complete application release; installed runtime-plan path binding remains pending. PACKAGE_COMPLETE remains false.
+
+
+## 安装位置绑定 / Installed runtime binding
+
+固定源码c7124cc：显式v3运行计划用包内Python执行安装辅助程序，生成Supervisor v2固定到Code Root/runtime/python/python.exe及其内容清单。Publisher将计划中的源路径与宿主v2清单摘要交叉绑定，批准六字段不变、安装门禁保持关闭。3项配置生成/旧计划兼容通过；首次Publisher验证因内容清单2MiB与通用256MiB固定上限冲突失败，修复为专用2MiB后2项通过，初次失败原始输出保留。真实宿主构建仍是旧固定03eca14，句柄39800运行中，不能继承为c7124cc验收。补充CIM进程观测被本机权限拒绝，未提升权限；句柄轮询仍确认运行。
+
+Fixed source c7124cc: explicit v3 plan uses packaged Python for installation helper execution and generates Supervisor v2 bound to Code Root/runtime/python/python.exe and its content manifest. Publisher cross-binds plan source paths/digests to host-v2 entries. Six approval fields remain unchanged and installation stays gated off. Three config/legacy compatibility tests pass. Initial Publisher check failed due2MiB versus generic256MiB pin limits; a dedicated2MiB manifest limit fixes this and two tests pass. Initial raw failure retained. Real host build remains pinned to older03eca14 under live handle39800; results cannot be inherited by c7124cc. Additional CIM process observation was denied; no elevation attempted. Handle polling still confirms running.

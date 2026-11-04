@@ -1,0 +1,8 @@
+test_v3_config_binds_installed_runtime_and_rejects_external_python (test_packaged_runtime_plan.PackagedRuntimePlanTests.test_v3_config_binds_installed_runtime_and_rejects_external_python) ... ok
+test_actual_receipt_writer_and_rollback_pins (test_u1_provision.OwnershipReceiptTests.test_actual_receipt_writer_and_rollback_pins) ... ok
+test_generated_configs_and_tamper (test_u1_provision.ProvisionTests.test_generated_configs_and_tamper) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 6.909s
+
+OK

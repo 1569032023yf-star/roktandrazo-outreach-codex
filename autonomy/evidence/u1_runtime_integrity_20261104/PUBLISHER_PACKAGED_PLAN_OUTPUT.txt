@@ -1,0 +1,30 @@
+test_v3_packaged_runtime_admission_keeps_install_gate_closed (test_install_command.InstallCommandTests.test_v3_packaged_runtime_admission_keeps_install_gate_closed) ... ERROR
+
+======================================================================
+ERROR: test_v3_packaged_runtime_admission_keeps_install_gate_closed (test_install_command.InstallCommandTests.test_v3_packaged_runtime_admission_keeps_install_gate_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\test_install_command.py", line 38, in test_v3_packaged_runtime_admission_keeps_install_gate_closed
+    with command.InstallCommand('isolated',approval) as adapter:
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\publisher_channel\install_command.py", line 73, in __enter__
+    if complete:pin_python_runtime(self.pins,p['python_runtime_manifest'],p['python_runtime_manifest_sha256'],p['python'])
+                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\publisher_channel\install_inputs.py", line 29, in pin_python_runtime
+    data=parse(pins.add(manifest,expected,limit=2*1024*1024))
+               ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\publisher_channel\install_inputs.py", line 122, in add
+    return self._add(path,expected,limit=limit,system_component=False)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\publisher_channel\install_inputs.py", line 163, in _add
+    if digest!=expected or old_limit!=limit or old_system!=system_component:reject('CONFLICTING_PIN')
+                                                                            ~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\15690\Documents\ChatGPT\����\roktandrazo-outreach-autonomy\publisher_channel\install_inputs.py", line 19, in reject
+    def reject(reason):raise ValueError('STOP_AND_PRESERVE_INPUT_'+reason)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: STOP_AND_PRESERVE_INPUT_CONFLICTING_PIN
+
+----------------------------------------------------------------------
+Ran 1 test in 3.386s
+
+FAILED (errors=1)
