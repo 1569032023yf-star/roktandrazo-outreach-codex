@@ -1,0 +1,11 @@
+{
+  "source_commit": "d209c53d6d3211cdca732d137fb2ebcfbec50f61",
+  "scope_zh": "旧固定包使用同一增强业务导入探测；不运行采集",
+  "scope_en": "Same enhanced business import probe on previous fixed archive; no collection",
+  "returncode": 1,
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\r\n  File \"<string>\", line 18, in <module>\r\n    for name in names: importlib.import_module(name)\r\n                       ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\r\n  File \"C:\\Users\\15690\\Documents\\ChatGPT\\\\xcf\\xdf\\xcf\\xc2\\u1-provider-extracted-d209c53\\payload\\host\\runtime\\python\\Lib\\importlib\\__init__.py\", line 88, in import_module\r\n    return _bootstrap._gcd_import(name[level:], package, level)\r\n           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\r\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\r\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\r\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\r\n  File \"<frozen importlib._bootstrap_external>\", line 1023, in exec_module\r\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\r\n  File \"C:\\Users\\15690\\Documents\\ChatGPT\\\\xcf\\xdf\\xcf\\xc2\\u1-provider-extracted-d209c53\\payload\\python\\discovery\\discovery_service.py\", line 21, in <module>\r\n    import bd_db\r\nModuleNotFoundError: No module named 'bd_db'\r\n",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "smtp_enabled": false
+}

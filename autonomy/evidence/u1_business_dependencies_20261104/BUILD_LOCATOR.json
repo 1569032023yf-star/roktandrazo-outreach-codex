@@ -1,0 +1,23 @@
+{
+  "updated_at": "2026-11-04T09:46:37.209954+00:00",
+  "source_commit": "3f02af1b95b45cad7ecbf942b2c252022f046e1a",
+  "build_session": 56784,
+  "build_path": "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-delivery-business-3f02af1",
+  "outcome": "BUILD_AND_SCOPED_VERIFICATION_EXIT_0",
+  "independent_review": "PENDING",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "artifacts": {
+    "install.zip": "2cbbf4312a9d7fed687acfcef8457120da02496f5d643a54c801198c3dc740a8",
+    "rollback-tools.zip": "efdb0c52b0b16163c64db30a91c8685d81a1cb7b6911a2d1f4a3f0099661a4ae"
+  },
+  "manifest_sha256": "7d4d116a813a836c7aba9fac92d32a05b84c5297e921a8092f1e206d69edba85",
+  "files": 5054,
+  "extracted_session": 83342,
+  "rollback_parity_session": 24070,
+  "extracted_outcome": "VERIFIED",
+  "rollback_parity_outcome": "VERIFIED",
+  "rollback_verified": false
+}

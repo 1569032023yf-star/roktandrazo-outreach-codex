@@ -1,0 +1,14 @@
+{
+  "outcome": "VERIFIED",
+  "source_commit": "3f02af1b95b45cad7ecbf942b2c252022f046e1a",
+  "archive_sha256": "efdb0c52b0b16163c64db30a91c8685d81a1cb7b6911a2d1f4a3f0099661a4ae",
+  "rollback_verified": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "matched_components": 4964,
+  "description_zh": "仅验证回滚归档与固定安装清单对应；没有执行安装或回滚。",
+  "description_en": "Rollback archive parity against fixed install manifest only; no installation or rollback performed.",
+  "rollback_archive_parity_verified": true
+}
