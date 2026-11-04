@@ -1,5 +1,7 @@
 """Offline transport tests; no provider calls or cost acceptance."""
 import unittest
+import http.client
+import io
 import urllib.error
 from unittest.mock import patch
 from discovery.providers.google_places import GooglePlacesProvider
@@ -8,6 +10,9 @@ from discovery.providers.google_places import GooglePlacesProvider
 class UnknownTransportTests(unittest.TestCase):
     def test_disconnect_is_not_retried_even_with_retry_budget(self):
         for failure in (urllib.error.URLError("secret-marker"),
+                        TimeoutError("secret-marker"),
+                        ConnectionResetError("secret-marker"),
+                        http.client.RemoteDisconnected("secret-marker"),
                         urllib.error.HTTPError("https://example.invalid", 503, "secret-marker", {}, None)):
             with self.subTest(failure=type(failure).__name__):
                 provider = GooglePlacesProvider(api_key="fixture", max_retries=5,
@@ -19,6 +24,15 @@ class UnknownTransportTests(unittest.TestCase):
                 self.assertFalse(page.ok)
                 self.assertEqual(page.request_count, 1)
                 self.assertNotIn("secret-marker", page.error)
+                self.assertEqual(page.results, [])
+
+    def test_bad_response_after_submission_is_unknown(self):
+        for response in (b"not-json", b'{"places":null}', b'{"places":[null]}', b"\xff"):
+            with self.subTest(response=response):
+                with patch("urllib.request.urlopen", return_value=io.BytesIO(response)) as request:
+                    page = GooglePlacesProvider(api_key="fixture", min_interval_seconds=0).search_places("fixture", "fixture", "TN")
+                self.assertEqual(request.call_count, 1)
+                self.assertEqual(page.status, "provider_outcome_unknown")
                 self.assertEqual(page.results, [])
 
     def test_persisted_unknown_blocks_new_service_instance(self):

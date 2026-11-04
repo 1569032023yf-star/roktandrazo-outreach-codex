@@ -114,57 +114,44 @@ class GooglePlacesProvider(SearchProvider):
             "X-Goog-FieldMask": FIELD_MASK,
         }
 
-        for attempt in range(self.max_retries + 1):
-            wait = self.min_interval_seconds - (time.monotonic() - self._last_request_at)
-            if wait > 0:
-                time.sleep(wait)
-            self._last_request_at = time.monotonic()
-            req = urllib.request.Request(GOOGLE_PLACES_URL, data=payload, headers=headers, method="POST")
-            try:
-                with urllib.request.urlopen(req, timeout=self.timeout_seconds) as response:
-                    data = json.loads(response.read().decode("utf-8"))
-                results = [self._normalize_place(p, query, city, state, data.get("nextPageToken", "")) for p in data.get("places", [])]
-                return ProviderPage(
-                    provider=self.provider_name,
-                    query=query,
-                    city=city,
-                    state=state,
-                    page_cursor=page_cursor,
-                    results=results,
-                    next_page_cursor=data.get("nextPageToken", "") or "",
-                    status="ok",
-                    request_count=1,
-                    cost_units=1,
-                )
-            except urllib.error.URLError:
-                # The request may already have reached the provider. Transport
-                # failure does not authorize another potentially billable POST.
-                # Preserve an unknown result; do not expose credential-bearing
-                # exception text or claim that request counts are billing proof.
-                return ProviderPage(
-                    provider=self.provider_name,
-                    query=query,
-                    city=city,
-                    state=state,
-                    page_cursor=page_cursor,
-                    status="provider_outcome_unknown",
-                    error="provider_transport_unknown_no_replay",
-                    request_count=attempt + 1,
-                    cost_units=attempt + 1,
-                )
-            except Exception as exc:
-                return ProviderPage(
-                    provider=self.provider_name,
-                    query=query,
-                    city=city,
-                    state=state,
-                    page_cursor=page_cursor,
-                    status="provider_error",
-                    error=str(exc),
-                    request_count=attempt + 1,
-                    cost_units=attempt + 1,
-                )
-        return ProviderPage(provider=self.provider_name, query=query, city=city, state=state, page_cursor=page_cursor, status="provider_error")
+        # max_retries remains accepted for configuration compatibility only.
+        # No exception after a POST attempt authorizes another billable request.
+        wait = self.min_interval_seconds - (time.monotonic() - self._last_request_at)
+        if wait > 0:
+            time.sleep(wait)
+        self._last_request_at = time.monotonic()
+        req = urllib.request.Request(GOOGLE_PLACES_URL, data=payload, headers=headers, method="POST")
+        try:
+            with urllib.request.urlopen(req, timeout=self.timeout_seconds) as response:
+                data = json.loads(response.read().decode("utf-8"))
+            results = [self._normalize_place(p, query, city, state, data.get("nextPageToken", "")) for p in data.get("places", [])]
+            return ProviderPage(
+                provider=self.provider_name,
+                query=query,
+                city=city,
+                state=state,
+                page_cursor=page_cursor,
+                results=results,
+                next_page_cursor=data.get("nextPageToken", "") or "",
+                status="ok",
+                request_count=1,
+                cost_units=1,
+            )
+        except Exception:
+            # Includes direct socket/HTTP disconnects and incomplete/invalid
+            # responses. An error is not evidence of no remote execution.
+            # Do not expose credential-bearing provider exception text.
+            return ProviderPage(
+                provider=self.provider_name,
+                query=query,
+                city=city,
+                state=state,
+                page_cursor=page_cursor,
+                status="provider_outcome_unknown",
+                error="provider_transport_unknown_no_replay",
+                request_count=1,
+                cost_units=1,
+            )
 
     def _normalize_place(self, place: dict[str, Any], query: str, city: str, state: str, next_page_cursor: str) -> PlaceSearchResult:
         display = place.get("displayName") or {}
