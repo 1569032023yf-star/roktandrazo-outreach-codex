@@ -1,0 +1,16 @@
+{
+  "source_commit": "40b7986d5ddfa5ffd869bb0f58d15abda74b730e",
+  "baseline_source_commit": "fe51fbd05ed17eee727a25e2cd3a7b3430643249",
+  "run": 848,
+  "failures": 37,
+  "errors": 17,
+  "skipped": 0,
+  "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+  "candidate_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+  "new_failures": [],
+  "resolved_failures": [],
+  "new_errors": [],
+  "resolved_errors": [],
+  "description_zh": "固定候选与固定基线的全量回归结果比较；失败未归零。",
+  "description_en": "Full-regression comparison of the pinned candidate and baseline; failures remain."
+}

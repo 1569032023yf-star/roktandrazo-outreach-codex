@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-11-05T17:05:23.171989+00:00",
+  "description_zh": "U1 分阶段归档离线验证里程碑；不代表安装、回滚或生产验收。",
+  "description_en": "U1 phased archive offline-verification milestone; not installation, rollback, or production acceptance.",
+  "source_commit": "40b7986d5ddfa5ffd869bb0f58d15abda74b730e",
+  "checkpoint": "autonomy/evidence/u1_pinned_archive_20261105/REPORT.md",
+  "milestone_status": "OFFLINE_PACKAGE_VERIFIED",
+  "targeted_tests": {
+    "run": 24,
+    "failures": 0,
+    "errors": 0,
+    "output": "autonomy/evidence/u1_pinned_archive_20261105/TARGETED.txt"
+  },
+  "package": {
+    "artifacts": {
+      "install.zip": "a9662fdb82e9c156430355938ff657cf70a4a662bb916d84874179a9bbe946c4",
+      "rollback-tools.zip": "9d361a646af201ae42866ab3d8a76ab6b272ac3880b01e5492277a92f803816f"
+    },
+    "files": 5057,
+    "independent_review": "PENDING",
+    "manifest_sha256": "422fa9a8abd4ca77b45a837b9ebd0456a46c0a9f634ef88f22af0a02b0ae1de9",
+    "package_complete": false,
+    "production_ready": false,
+    "python_runtime_bundled": true,
+    "source_commit": "40b7986d5ddfa5ffd869bb0f58d15abda74b730e"
+  },
+  "package_sha256": "a9662fdb82e9c156430355938ff657cf70a4a662bb916d84874179a9bbe946c4",
+  "manifest_sha256": "422fa9a8abd4ca77b45a837b9ebd0456a46c0a9f634ef88f22af0a02b0ae1de9",
+  "manifest_files": 5057,
+  "regression": {
+    "source_commit": "40b7986d5ddfa5ffd869bb0f58d15abda74b730e",
+    "baseline_source_commit": "fe51fbd05ed17eee727a25e2cd3a7b3430643249",
+    "run": 848,
+    "failures": 37,
+    "errors": 17,
+    "skipped": 0,
+    "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+    "candidate_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+    "new_failures": [],
+    "resolved_failures": [],
+    "new_errors": [],
+    "resolved_errors": [],
+    "description_zh": "固定候选与固定基线的全量回归结果比较；失败未归零。",
+    "description_en": "Full-regression comparison of the pinned candidate and baseline; failures remain."
+  },
+  "extracted_verification": {
+    "outcome": "VERIFIED",
+    "report": "autonomy/evidence/u1_pinned_archive_20261105/rerun_20261106/EXTRACTED_REPORT_SHORTPATH.json",
+    "extraction_root": "C:\\UV\\R1",
+    "manifest_files": 5057,
+    "checks": 4,
+    "full_business_import_closure": false,
+    "bootstrap_arguments_verified": false,
+    "installation_verified": false,
+    "rollback_verified": false,
+    "provider_accepted": false
+  },
+  "independent_review": "PENDING",
+  "provider_contract": "CONTRACT_MISSING",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "production_ready": false,
+  "statuses": {
+    "DEVELOPMENT_COMPLETE": false,
+    "PACKAGE_COMPLETE": false,
+    "PROVIDER_ACCEPTED": false,
+    "WINDOWS_ACCEPTED": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "BUSINESS_GROWTH": "UNKNOWN"
+  },
+  "next_action_zh": "对固定源码与包 SHA 进行独立审查；补齐正式 Provider 费用/终态回执合同、业务导入闭包和启动参数验收；再在获准隔离环境完成 Windows 生命周期验收。",
+  "next_action_en": "Obtain independent review bound to exact source and package SHAs; complete formal Provider cost/terminal receipt contracts, business import closure, and bootstrap argument acceptance; then perform Windows lifecycle acceptance in an authorized isolated environment.",
+  "host_input": {
+    "allow_install": false,
+    "manifest_sha256": "89d196d93ca99994237afbd41f286d6a673ac3b39266b38dae63f50ae22c2264",
+    "package_complete": false,
+    "phase": "HOST_READY",
+    "prepared_host": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-host-phase-40b7986\\runtime-host",
+    "runtime_manifest_sha256": "5ca4bd5242a6432ea41d18e0140ae0b7b0a999565cb8319aa7cb2dca392a897e",
+    "source_commit": "40b7986d5ddfa5ffd869bb0f58d15abda74b730e"
+  },
+  "prepare_termination": {
+    "outcome": "TERMINAL",
+    "returncode": 0,
+    "source_commit": "40b7986d5ddfa5ffd869bb0f58d15abda74b730e",
+    "elapsed_seconds": 66.15921130002243,
+    "command": [
+      "C:\\Users\\15690\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "-X",
+      "utf8",
+      "-B",
+      "-m",
+      "autonomy.build_u1_delivery",
+      "--source-commit",
+      "40b7986d5ddfa5ffd869bb0f58d15abda74b730e",
+      "--python-runtime",
+      "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-runtime-32f0246",
+      "--runtime-manifest-sha256",
+      "5ca4bd5242a6432ea41d18e0140ae0b7b0a999565cb8319aa7cb2dca392a897e",
+      "--output",
+      "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-host-phase-40b7986",
+      "--prepare-only"
+    ]
+  },
+  "archive_termination": {
+    "outcome": "TERMINAL",
+    "returncode": 0,
+    "source_commit": "40b7986d5ddfa5ffd869bb0f58d15abda74b730e",
+    "elapsed_seconds": 162.92645089997677,
+    "command": [
+      "C:\\Users\\15690\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "-X",
+      "utf8",
+      "-B",
+      "-m",
+      "autonomy.build_u1_delivery",
+      "--source-commit",
+      "40b7986d5ddfa5ffd869bb0f58d15abda74b730e",
+      "--python-runtime",
+      "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-runtime-32f0246",
+      "--runtime-manifest-sha256",
+      "5ca4bd5242a6432ea41d18e0140ae0b7b0a999565cb8319aa7cb2dca392a897e",
+      "--output",
+      "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-delivery-phased-40b7986",
+      "--prepared-host",
+      "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-host-phase-40b7986\\runtime-host",
+      "--prepared-host-manifest-sha256",
+      "89d196d93ca99994237afbd41f286d6a673ac3b39266b38dae63f50ae22c2264"
+    ]
+  },
+  "verify_termination": {
+    "outcome": "TERMINAL",
+    "returncode": 0
+  }
+}

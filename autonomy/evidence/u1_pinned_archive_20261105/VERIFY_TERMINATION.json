@@ -1,0 +1,9 @@
+{
+  "outcome": "TERMINAL",
+  "returncode": 0,
+  "source_commit": "40b7986d5ddfa5ffd869bb0f58d15abda74b730e",
+  "archive_sha256": "a9662fdb82e9c156430355938ff657cf70a4a662bb916d84874179a9bbe946c4",
+  "report": "rerun_20261106/EXTRACTED_REPORT_SHORTPATH.json",
+  "description_zh": "固定包离线解压、探针与最终完整性复核均完成。",
+  "description_en": "Pinned-package offline extraction, probes, and final integrity recheck completed."
+}

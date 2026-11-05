@@ -1,0 +1,17 @@
+{
+  "source_commit": "40b7986d5ddfa5ffd869bb0f58d15abda74b730e",
+  "archive_sha256": "a9662fdb82e9c156430355938ff657cf70a4a662bb916d84874179a9bbe946c4",
+  "manifest_sha256": "422fa9a8abd4ca77b45a837b9ebd0456a46c0a9f634ef88f22af0a02b0ae1de9",
+  "outcome": "FAILED",
+  "description_zh": "仅离线入口导入、包内子进程和完整性；不证明正式业务、安装或回滚。",
+  "description_en": "Offline entrypoint imports, packaged subprocess and integrity only; not formal business, installation or rollback acceptance.",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "production_ready": false,
+  "checks": [],
+  "active_check": null,
+  "error_type": "FileNotFoundError",
+  "error": "[WinError 206] 文件名或扩展名太长。: 'C:\\\\Users\\\\15690\\\\Documents\\\\ChatGPT\\\\线下\\\\roktandrazo-outreach-autonomy\\\\autonomy\\\\evidence\\\\u1_pinned_archive_20261105\\\\rerun_20261106\\\\extracted\\\\payload\\\\host\\\\runtime\\\\python\\\\Lib\\\\site-packages\\\\playwright\\\\driver\\\\package\\\\lib\\\\tools\\\\skills\\\\playwright-cli\\\\references'"
+}
