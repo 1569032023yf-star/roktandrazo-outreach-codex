@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import re
+import stat
 import uuid
 
 SCHEMA = 'rokt.release-store.v1'
@@ -32,10 +33,14 @@ def sha(data):
 def ordinary(path):
     path = Path(path).absolute()
     for item in (path, *path.parents):
-        if item.exists() or item.is_symlink():
+        try:
             st = item.lstat()
-            if item.is_symlink() or getattr(st, 'st_file_attributes', 0) & 0x400:
-                raise ValueError('REPARSE_PATH')
+        except FileNotFoundError:
+            continue
+        # One non-following query preserves dangling-link/reparse rejection.
+        # Other inspection errors must propagate rather than imply absence.
+        if stat.S_ISLNK(st.st_mode) or getattr(st, 'st_file_attributes', 0) & 0x400:
+            raise ValueError('REPARSE_PATH')
     return path
 
 

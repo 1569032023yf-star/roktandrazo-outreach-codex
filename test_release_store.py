@@ -21,6 +21,22 @@ class ReleaseStoreTests(unittest.TestCase):
         self.assertFalse((deep/'versions').exists())
         self.assertFalse((deep/'active.json').exists())
 
+    def test_ordinary_rejects_dangling_link_and_inaccessible_inspection(self):
+        from autonomy.release_store import ordinary
+        link=self.root/'dangling'
+        import os,subprocess
+        if os.name=='nt':
+            target=self.root/'missing';target.mkdir()
+            subprocess.run(['cmd.exe','/c','mklink','/J',str(link),str(target)],check=True,capture_output=True)
+            target.rmdir()
+        else:
+            link.symlink_to(self.root/'missing',target_is_directory=True)
+        with self.assertRaisesRegex(ValueError,'REPARSE_PATH'):
+            ordinary(link/'child')
+        with patch.object(Path,'lstat',side_effect=PermissionError('inspection denied')):
+            with self.assertRaises(PermissionError):ordinary(self.root/'new')
+        self.assertEqual(ordinary(self.root/'new'/'child'),self.root/'new'/'child')
+
     def test_first_install_upgrade_and_complete_pointer_rollback(self):
         v1=self.package('one',{'app/old.py':b'old'});a=self.store.activate(v1,expected_current=None)
         v2=self.package('two',{'app/new.py':b'new','app/other.py':b'other'})
