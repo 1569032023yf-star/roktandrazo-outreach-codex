@@ -1,0 +1,17 @@
+{
+  "package_source_commit": "21568c8267d7d20b3127eab8d3f5c866202868fd",
+  "verifier_source_commit": "1bf8d59aa1d9ce8ecb78da6590626bcf4380962f",
+  "outcome": "UNKNOWN",
+  "checks": [],
+  "allow_install": false,
+  "allow_dispatch": false,
+  "smtp_enabled": false,
+  "package_complete": false,
+  "independent_review": "PENDING",
+  "runtime_probes_repeated": false,
+  "active_phase": "FINAL_OUTER_REVALIDATION",
+  "elapsed_seconds": 571.287,
+  "archive_sha256": "32cb4b3676d2c5b38e63fec0b0bd4516cc13f86d76c6021463df3d137e062720",
+  "parent_driver_timeout": true,
+  "final_integrity_verified": false
+}

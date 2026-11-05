@@ -1,0 +1,13 @@
+{
+  "returncode": 1,
+  "source_commit": "1bf8d59aa1d9ce8ecb78da6590626bcf4380962f",
+  "outcome": "TERMINAL",
+  "command": [
+    "C:\\Users\\15690\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\tools\\run_comparable_suite.py",
+    "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\roktandrazo-outreach-autonomy\\autonomy\\evidence\\u1_install_namespace_20261105\\validation\\candidate-suite"
+  ]
+}

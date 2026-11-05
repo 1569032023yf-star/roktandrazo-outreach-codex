@@ -1,0 +1,114 @@
+{
+  "updated_at": "2026-11-05T02:02:51.743881+00:00",
+  "source_commit": "11bf1f9da4c74d1653f3f491a8312b536992eff6",
+  "checkpoint": "autonomy/evidence/u1_install_namespace_20261105/validation/REPORT.md",
+  "targeted_tests": {
+    "command": "python -X utf8 -B -m unittest test_release_store test_install_inputs test_delivery_verification -v",
+    "run": 20,
+    "failures": 0,
+    "errors": 0
+  },
+  "full_regression": {
+    "source_commit": "11bf1f9da4c74d1653f3f491a8312b536992eff6",
+    "baseline_source_commit": "21568c8267d7d20b3127eab8d3f5c866202868fd",
+    "run": 848,
+    "failures": 37,
+    "errors": 17,
+    "new_failures": [],
+    "new_errors": [],
+    "resolved_failures": [],
+    "resolved_errors": [],
+    "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+    "candidate_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190"
+  },
+  "package": "UNKNOWN_INCOMPLETE_BUILD",
+  "build_termination": {
+    "outcome": "UNKNOWN_TIMEOUT",
+    "timeout_seconds": 900,
+    "command": [
+      "C:\\Users\\15690\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "-X",
+      "utf8",
+      "-B",
+      "-m",
+      "autonomy.build_u1_delivery",
+      "--output",
+      "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-delivery-publisher-11bf1f9",
+      "--source-commit",
+      "11bf1f9da4c74d1653f3f491a8312b536992eff6",
+      "--python-runtime",
+      "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-runtime-32f0246",
+      "--runtime-manifest-sha256",
+      "5ca4bd5242a6432ea41d18e0140ae0b7b0a999565cb8319aa7cb2dca392a897e"
+    ],
+    "elapsed_seconds": 900.089
+  },
+  "partial_package": {
+    "observed_at": "2026-11-05T10:02:30.202738+08:00",
+    "package_path": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-delivery-publisher-11bf1f9",
+    "source_commit": "11bf1f9da4c74d1653f3f491a8312b536992eff6",
+    "free_bytes": 2059358208,
+    "build_json_exists": false,
+    "install_zip_exists": false,
+    "rollback_zip_exists": false,
+    "outcome": "UNKNOWN_INCOMPLETE_BUILD",
+    "preserve_partial": true,
+    "subtrees": {
+      "runtime-host": {
+        "files": 4960,
+        "bytes": 239197439
+      },
+      "source-files": {
+        "files": 97,
+        "bytes": 1110004
+      },
+      "install": {
+        "files": 3360,
+        "bytes": 160076026
+      }
+    }
+  },
+  "extracted_verification": "NOT_RUN",
+  "verification_termination": null,
+  "old_integrity": {
+    "package_source_commit": "21568c8267d7d20b3127eab8d3f5c866202868fd",
+    "verifier_source_commit": "1bf8d59aa1d9ce8ecb78da6590626bcf4380962f",
+    "outcome": "UNKNOWN",
+    "checks": [],
+    "allow_install": false,
+    "allow_dispatch": false,
+    "smtp_enabled": false,
+    "package_complete": false,
+    "independent_review": "PENDING",
+    "runtime_probes_repeated": false,
+    "active_phase": "FINAL_OUTER_REVALIDATION",
+    "elapsed_seconds": 571.287,
+    "archive_sha256": "32cb4b3676d2c5b38e63fec0b0bd4516cc13f86d76c6021463df3d137e062720",
+    "parent_driver_timeout": true,
+    "final_integrity_verified": false
+  },
+  "independent_review": "PENDING",
+  "provider_contract": "CONTRACT_MISSING",
+  "rollback_verified": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "statuses": {
+    "DEVELOPMENT_COMPLETE": false,
+    "PACKAGE_COMPLETE": false,
+    "PROVIDER_ACCEPTED": false,
+    "WINDOWS_ACCEPTED": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "BUSINESS_GROWTH": "UNKNOWN"
+  },
+  "cycle": {
+    "start": "2026-11-05T09:35:30+08:00",
+    "cutoff": "2026-11-05T10:20:30+08:00",
+    "platform_hard_timeout": false,
+    "max_heavy_workstreams": 2
+  },
+  "next_action": "Instrument and fix bounded resumable install-payload staging: the 900-second build stopped with3360 of5057 files and no archives. Preserve the partial directory; do not blindly rerun. Then resume fixed-package verification and original-owner business integration. Independent review remains PENDING."
+}

@@ -576,8 +576,8 @@
       "attempts": 0,
       "status": "in_progress",
       "executor": "current_authorized_chat",
-      "checkpoint": "autonomy/evidence/u1_install_namespace_20261105/REPORT.md",
-      "next_action": "Run comparable regression for 1bf8d59; inspect existing 21568c8 package final integrity without rebuilding; preserve all old evidence and do not inherit old acceptance.",
+      "checkpoint": "autonomy/evidence/u1_install_namespace_20261105/validation/REPORT.md",
+      "next_action": "Instrument and fix bounded resumable install-payload staging: the 900-second build stopped with3360 of5057 files and no archives. Preserve the partial directory; do not blindly rerun. Then resume fixed-package verification and original-owner business integration. Independent review remains PENDING.",
       "phase": "U1",
       "baseline_commit": "91aa60c6cf52b0c0a9c9e0ff2ddfb5ee39a7f7fc",
       "review_status": "PENDING",
@@ -1811,7 +1811,7 @@
         "production_deployed": false,
         "next_action": "Integrate bounded execution backend with existing signed SingleSlotAdapter admission and original Inventory lease; close installer upgrade/rollback, dependency ACL and TOCTOU blockers before independent review. No service install/start."
       },
-      "updated_at": "2026-11-05T01:32:39.427007+00:00",
+      "updated_at": "2026-11-05T02:02:51.743881+00:00",
       "u1_execution_wiring_latest": {
         "updated_at": "2026-11-02T08:40:48.546343+00:00",
         "source_commit": "cc9b7a7b672eb2098fa02d7e57c266b4ec57d76e",
@@ -4306,7 +4306,7 @@
         "smtp_enabled": false,
         "next_action": "Address reproducible staging space and finish21568c8 final file integrity verification, then continue business invocation and authoritative receipt/cost wiring; do not repeat passed checks or bypass gates."
       },
-      "candidate_source_commit": "1bf8d59aa1d9ce8ecb78da6590626bcf4380962f",
+      "candidate_source_commit": "11bf1f9da4c74d1653f3f491a8312b536992eff6",
       "u1_install_namespace_latest": {
         "updated_at": "2026-11-05T01:32:39.427007+00:00",
         "source_commit": "1bf8d59aa1d9ce8ecb78da6590626bcf4380962f",
@@ -4335,6 +4335,120 @@
           "BUSINESS_GROWTH": "UNKNOWN"
         },
         "next_action": "Run comparable regression for 1bf8d59; inspect existing 21568c8 package final integrity without rebuilding; preserve all old evidence and do not inherit old acceptance."
+      },
+      "u1_publisher_metadata_latest": {
+        "updated_at": "2026-11-05T02:02:51.743881+00:00",
+        "source_commit": "11bf1f9da4c74d1653f3f491a8312b536992eff6",
+        "checkpoint": "autonomy/evidence/u1_install_namespace_20261105/validation/REPORT.md",
+        "targeted_tests": {
+          "command": "python -X utf8 -B -m unittest test_release_store test_install_inputs test_delivery_verification -v",
+          "run": 20,
+          "failures": 0,
+          "errors": 0
+        },
+        "full_regression": {
+          "source_commit": "11bf1f9da4c74d1653f3f491a8312b536992eff6",
+          "baseline_source_commit": "21568c8267d7d20b3127eab8d3f5c866202868fd",
+          "run": 848,
+          "failures": 37,
+          "errors": 17,
+          "new_failures": [],
+          "new_errors": [],
+          "resolved_failures": [],
+          "resolved_errors": [],
+          "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+          "candidate_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190"
+        },
+        "package": "UNKNOWN_INCOMPLETE_BUILD",
+        "build_termination": {
+          "outcome": "UNKNOWN_TIMEOUT",
+          "timeout_seconds": 900,
+          "command": [
+            "C:\\Users\\15690\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+            "-X",
+            "utf8",
+            "-B",
+            "-m",
+            "autonomy.build_u1_delivery",
+            "--output",
+            "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-delivery-publisher-11bf1f9",
+            "--source-commit",
+            "11bf1f9da4c74d1653f3f491a8312b536992eff6",
+            "--python-runtime",
+            "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-runtime-32f0246",
+            "--runtime-manifest-sha256",
+            "5ca4bd5242a6432ea41d18e0140ae0b7b0a999565cb8319aa7cb2dca392a897e"
+          ],
+          "elapsed_seconds": 900.089
+        },
+        "partial_package": {
+          "observed_at": "2026-11-05T10:02:30.202738+08:00",
+          "package_path": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-delivery-publisher-11bf1f9",
+          "source_commit": "11bf1f9da4c74d1653f3f491a8312b536992eff6",
+          "free_bytes": 2059358208,
+          "build_json_exists": false,
+          "install_zip_exists": false,
+          "rollback_zip_exists": false,
+          "outcome": "UNKNOWN_INCOMPLETE_BUILD",
+          "preserve_partial": true,
+          "subtrees": {
+            "runtime-host": {
+              "files": 4960,
+              "bytes": 239197439
+            },
+            "source-files": {
+              "files": 97,
+              "bytes": 1110004
+            },
+            "install": {
+              "files": 3360,
+              "bytes": 160076026
+            }
+          }
+        },
+        "extracted_verification": "NOT_RUN",
+        "verification_termination": null,
+        "old_integrity": {
+          "package_source_commit": "21568c8267d7d20b3127eab8d3f5c866202868fd",
+          "verifier_source_commit": "1bf8d59aa1d9ce8ecb78da6590626bcf4380962f",
+          "outcome": "UNKNOWN",
+          "checks": [],
+          "allow_install": false,
+          "allow_dispatch": false,
+          "smtp_enabled": false,
+          "package_complete": false,
+          "independent_review": "PENDING",
+          "runtime_probes_repeated": false,
+          "active_phase": "FINAL_OUTER_REVALIDATION",
+          "elapsed_seconds": 571.287,
+          "archive_sha256": "32cb4b3676d2c5b38e63fec0b0bd4516cc13f86d76c6021463df3d137e062720",
+          "parent_driver_timeout": true,
+          "final_integrity_verified": false
+        },
+        "independent_review": "PENDING",
+        "provider_contract": "CONTRACT_MISSING",
+        "rollback_verified": false,
+        "allow_install": false,
+        "allow_dispatch": false,
+        "allow_cancel_dispatch": false,
+        "smtp_enabled": false,
+        "statuses": {
+          "DEVELOPMENT_COMPLETE": false,
+          "PACKAGE_COMPLETE": false,
+          "PROVIDER_ACCEPTED": false,
+          "WINDOWS_ACCEPTED": false,
+          "RELEASE_READY": false,
+          "PRODUCTION_DEPLOYED": false,
+          "PRODUCTION_ACCEPTED": false,
+          "BUSINESS_GROWTH": "UNKNOWN"
+        },
+        "cycle": {
+          "start": "2026-11-05T09:35:30+08:00",
+          "cutoff": "2026-11-05T10:20:30+08:00",
+          "platform_hard_timeout": false,
+          "max_heavy_workstreams": 2
+        },
+        "next_action": "Instrument and fix bounded resumable install-payload staging: the 900-second build stopped with3360 of5057 files and no archives. Preserve the partial directory; do not blindly rerun. Then resume fixed-package verification and original-owner business integration. Independent review remains PENDING."
       }
     },
     {
@@ -6170,7 +6284,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-05T01:32:39.427007+00:00",
+  "updated_at": "2026-11-05T02:02:51.743881+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -6468,7 +6582,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "autonomy/evidence/u1_install_namespace_20261105/REPORT.md",
+  "checkpoint": "autonomy/evidence/u1_install_namespace_20261105/validation/REPORT.md",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
@@ -8628,18 +8742,97 @@
     "next_action_zh": "完成正式Provider执行、费用实测和受信运行配置，随后对完整候选审核；经授权后由WorkBuddy进行隔离Windows首次安装、升级、进程退出恢复、回滚中断恢复及Disabled/Stopped验收。不得用测试worker或SAFE替身代替业务验收。"
   },
   "u1_continuous_development_current": {
-    "updated_at": "2026-11-05T01:32:39.427007+00:00",
-    "source_commit": "1bf8d59aa1d9ce8ecb78da6590626bcf4380962f",
-    "checkpoint": "autonomy/evidence/u1_install_namespace_20261105/REPORT.md",
+    "updated_at": "2026-11-05T02:02:51.743881+00:00",
+    "source_commit": "11bf1f9da4c74d1653f3f491a8312b536992eff6",
+    "checkpoint": "autonomy/evidence/u1_install_namespace_20261105/validation/REPORT.md",
     "targeted_tests": {
-      "command": "python -X utf8 -B -m unittest test_install_inputs test_disabled_host_package test_delivery_verification -v",
+      "command": "python -X utf8 -B -m unittest test_release_store test_install_inputs test_delivery_verification -v",
       "run": 20,
       "failures": 0,
       "errors": 0
     },
-    "full_regression": "PENDING_FOR_NEW_SOURCE",
-    "package": "PENDING_FOR_NEW_SOURCE",
+    "full_regression": {
+      "source_commit": "11bf1f9da4c74d1653f3f491a8312b536992eff6",
+      "baseline_source_commit": "21568c8267d7d20b3127eab8d3f5c866202868fd",
+      "run": 848,
+      "failures": 37,
+      "errors": 17,
+      "new_failures": [],
+      "new_errors": [],
+      "resolved_failures": [],
+      "resolved_errors": [],
+      "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+      "candidate_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190"
+    },
+    "package": "UNKNOWN_INCOMPLETE_BUILD",
+    "build_termination": {
+      "outcome": "UNKNOWN_TIMEOUT",
+      "timeout_seconds": 900,
+      "command": [
+        "C:\\Users\\15690\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "-m",
+        "autonomy.build_u1_delivery",
+        "--output",
+        "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-delivery-publisher-11bf1f9",
+        "--source-commit",
+        "11bf1f9da4c74d1653f3f491a8312b536992eff6",
+        "--python-runtime",
+        "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-runtime-32f0246",
+        "--runtime-manifest-sha256",
+        "5ca4bd5242a6432ea41d18e0140ae0b7b0a999565cb8319aa7cb2dca392a897e"
+      ],
+      "elapsed_seconds": 900.089
+    },
+    "partial_package": {
+      "observed_at": "2026-11-05T10:02:30.202738+08:00",
+      "package_path": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-delivery-publisher-11bf1f9",
+      "source_commit": "11bf1f9da4c74d1653f3f491a8312b536992eff6",
+      "free_bytes": 2059358208,
+      "build_json_exists": false,
+      "install_zip_exists": false,
+      "rollback_zip_exists": false,
+      "outcome": "UNKNOWN_INCOMPLETE_BUILD",
+      "preserve_partial": true,
+      "subtrees": {
+        "runtime-host": {
+          "files": 4960,
+          "bytes": 239197439
+        },
+        "source-files": {
+          "files": 97,
+          "bytes": 1110004
+        },
+        "install": {
+          "files": 3360,
+          "bytes": 160076026
+        }
+      }
+    },
+    "extracted_verification": "NOT_RUN",
+    "verification_termination": null,
+    "old_integrity": {
+      "package_source_commit": "21568c8267d7d20b3127eab8d3f5c866202868fd",
+      "verifier_source_commit": "1bf8d59aa1d9ce8ecb78da6590626bcf4380962f",
+      "outcome": "UNKNOWN",
+      "checks": [],
+      "allow_install": false,
+      "allow_dispatch": false,
+      "smtp_enabled": false,
+      "package_complete": false,
+      "independent_review": "PENDING",
+      "runtime_probes_repeated": false,
+      "active_phase": "FINAL_OUTER_REVALIDATION",
+      "elapsed_seconds": 571.287,
+      "archive_sha256": "32cb4b3676d2c5b38e63fec0b0bd4516cc13f86d76c6021463df3d137e062720",
+      "parent_driver_timeout": true,
+      "final_integrity_verified": false
+    },
     "independent_review": "PENDING",
+    "provider_contract": "CONTRACT_MISSING",
+    "rollback_verified": false,
     "allow_install": false,
     "allow_dispatch": false,
     "allow_cancel_dispatch": false,
@@ -8654,7 +8847,13 @@
       "PRODUCTION_ACCEPTED": false,
       "BUSINESS_GROWTH": "UNKNOWN"
     },
-    "next_action": "Run comparable regression for 1bf8d59; inspect existing 21568c8 package final integrity without rebuilding; preserve all old evidence and do not inherit old acceptance."
+    "cycle": {
+      "start": "2026-11-05T09:35:30+08:00",
+      "cutoff": "2026-11-05T10:20:30+08:00",
+      "platform_hard_timeout": false,
+      "max_heavy_workstreams": 2
+    },
+    "next_action": "Instrument and fix bounded resumable install-payload staging: the 900-second build stopped with3360 of5057 files and no archives. Preserve the partial directory; do not blindly rerun. Then resume fixed-package verification and original-owner business integration. Independent review remains PENDING."
   },
   "u1_provider_regression_9abe85a": {
     "source_commit": "9abe85a2bdb3227078ec87514727625ec5fec4e6",
@@ -9281,12 +9480,12 @@
     "next_action": "Consume the approved-adapter context in the original owner-controlled business Worker entrypoint; reject formal settlement without authoritative cost/terminal contracts and never replay UNKNOWN."
   },
   "u1_cycle_boundary": {
-    "actual_started_at": "2026-11-05T08:49:20+08:00",
-    "stop_before": "2026-11-05T09:34:20+08:00",
-    "state": "CHECKPOINTED",
-    "work_stopped_at": "2026-11-05T01:26:56.171104+00:00",
-    "platform_hard_timeout_available": false,
-    "max_heavy_workstreams": 2
+    "start": "2026-11-05T09:35:30+08:00",
+    "cutoff": "2026-11-05T10:20:30+08:00",
+    "platform_hard_timeout": false,
+    "max_heavy_workstreams": 2,
+    "closed_at": "2026-11-05T02:02:51.743881+00:00",
+    "checkpoint": "autonomy/evidence/u1_install_namespace_20261105/validation/REPORT.md"
   },
   "u1_executable_pins_latest": {
     "updated_at": "2026-11-04T16:28:35.547978+00:00",
@@ -9627,5 +9826,119 @@
       "BUSINESS_GROWTH": "UNKNOWN"
     },
     "next_action": "Run comparable regression for 1bf8d59; inspect existing 21568c8 package final integrity without rebuilding; preserve all old evidence and do not inherit old acceptance."
+  },
+  "u1_publisher_metadata_latest": {
+    "updated_at": "2026-11-05T02:02:51.743881+00:00",
+    "source_commit": "11bf1f9da4c74d1653f3f491a8312b536992eff6",
+    "checkpoint": "autonomy/evidence/u1_install_namespace_20261105/validation/REPORT.md",
+    "targeted_tests": {
+      "command": "python -X utf8 -B -m unittest test_release_store test_install_inputs test_delivery_verification -v",
+      "run": 20,
+      "failures": 0,
+      "errors": 0
+    },
+    "full_regression": {
+      "source_commit": "11bf1f9da4c74d1653f3f491a8312b536992eff6",
+      "baseline_source_commit": "21568c8267d7d20b3127eab8d3f5c866202868fd",
+      "run": 848,
+      "failures": 37,
+      "errors": 17,
+      "new_failures": [],
+      "new_errors": [],
+      "resolved_failures": [],
+      "resolved_errors": [],
+      "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+      "candidate_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190"
+    },
+    "package": "UNKNOWN_INCOMPLETE_BUILD",
+    "build_termination": {
+      "outcome": "UNKNOWN_TIMEOUT",
+      "timeout_seconds": 900,
+      "command": [
+        "C:\\Users\\15690\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "-m",
+        "autonomy.build_u1_delivery",
+        "--output",
+        "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-delivery-publisher-11bf1f9",
+        "--source-commit",
+        "11bf1f9da4c74d1653f3f491a8312b536992eff6",
+        "--python-runtime",
+        "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-runtime-32f0246",
+        "--runtime-manifest-sha256",
+        "5ca4bd5242a6432ea41d18e0140ae0b7b0a999565cb8319aa7cb2dca392a897e"
+      ],
+      "elapsed_seconds": 900.089
+    },
+    "partial_package": {
+      "observed_at": "2026-11-05T10:02:30.202738+08:00",
+      "package_path": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-delivery-publisher-11bf1f9",
+      "source_commit": "11bf1f9da4c74d1653f3f491a8312b536992eff6",
+      "free_bytes": 2059358208,
+      "build_json_exists": false,
+      "install_zip_exists": false,
+      "rollback_zip_exists": false,
+      "outcome": "UNKNOWN_INCOMPLETE_BUILD",
+      "preserve_partial": true,
+      "subtrees": {
+        "runtime-host": {
+          "files": 4960,
+          "bytes": 239197439
+        },
+        "source-files": {
+          "files": 97,
+          "bytes": 1110004
+        },
+        "install": {
+          "files": 3360,
+          "bytes": 160076026
+        }
+      }
+    },
+    "extracted_verification": "NOT_RUN",
+    "verification_termination": null,
+    "old_integrity": {
+      "package_source_commit": "21568c8267d7d20b3127eab8d3f5c866202868fd",
+      "verifier_source_commit": "1bf8d59aa1d9ce8ecb78da6590626bcf4380962f",
+      "outcome": "UNKNOWN",
+      "checks": [],
+      "allow_install": false,
+      "allow_dispatch": false,
+      "smtp_enabled": false,
+      "package_complete": false,
+      "independent_review": "PENDING",
+      "runtime_probes_repeated": false,
+      "active_phase": "FINAL_OUTER_REVALIDATION",
+      "elapsed_seconds": 571.287,
+      "archive_sha256": "32cb4b3676d2c5b38e63fec0b0bd4516cc13f86d76c6021463df3d137e062720",
+      "parent_driver_timeout": true,
+      "final_integrity_verified": false
+    },
+    "independent_review": "PENDING",
+    "provider_contract": "CONTRACT_MISSING",
+    "rollback_verified": false,
+    "allow_install": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "smtp_enabled": false,
+    "statuses": {
+      "DEVELOPMENT_COMPLETE": false,
+      "PACKAGE_COMPLETE": false,
+      "PROVIDER_ACCEPTED": false,
+      "WINDOWS_ACCEPTED": false,
+      "RELEASE_READY": false,
+      "PRODUCTION_DEPLOYED": false,
+      "PRODUCTION_ACCEPTED": false,
+      "BUSINESS_GROWTH": "UNKNOWN"
+    },
+    "cycle": {
+      "start": "2026-11-05T09:35:30+08:00",
+      "cutoff": "2026-11-05T10:20:30+08:00",
+      "platform_hard_timeout": false,
+      "max_heavy_workstreams": 2
+    },
+    "next_action": "Instrument and fix bounded resumable install-payload staging: the 900-second build stopped with3360 of5057 files and no archives. Preserve the partial directory; do not blindly rerun. Then resume fixed-package verification and original-owner business integration. Independent review remains PENDING."
   }
 }

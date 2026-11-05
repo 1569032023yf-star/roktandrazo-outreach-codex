@@ -1,0 +1,25 @@
+{
+  "observed_at": "2026-11-05T10:02:30.202738+08:00",
+  "package_path": "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-delivery-publisher-11bf1f9",
+  "source_commit": "11bf1f9da4c74d1653f3f491a8312b536992eff6",
+  "free_bytes": 2059358208,
+  "build_json_exists": false,
+  "install_zip_exists": false,
+  "rollback_zip_exists": false,
+  "outcome": "UNKNOWN_INCOMPLETE_BUILD",
+  "preserve_partial": true,
+  "subtrees": {
+    "runtime-host": {
+      "files": 4960,
+      "bytes": 239197439
+    },
+    "source-files": {
+      "files": 97,
+      "bytes": 1110004
+    },
+    "install": {
+      "files": 3360,
+      "bytes": 160076026
+    }
+  }
+}

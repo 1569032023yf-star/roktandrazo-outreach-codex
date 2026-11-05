@@ -1,3 +1,6 @@
+中文：固定11bf1f9发布器路径元数据优化完成；20定向通过，848全量保留37FAIL/17ERROR且ID与基线一致。新包及核验结果见autonomy/evidence/u1_install_namespace_20261105/validation/REPORT.md；独审PENDING，所有最终状态与门禁false。
+English: Fixed11bf1f9 reduces publisher path metadata probes;20 targeted pass,848 retains37 failures/17 errors with unchanged IDs. Package/verification evidence: autonomy/evidence/u1_install_namespace_20261105/validation/REPORT.md; review PENDING, all final states/gates false.
+
 中文：固定1bf8d59aa1d9ce8ecb78da6590626bcf4380962f修复正式安装输入的平方级路径冲突扫描；20项定向通过，新源码全量/新包/独审PENDING。全部最终状态及门禁false。详见autonomy/evidence/u1_install_namespace_20261105/REPORT.md。
 English: Fixed1bf8d59aa1d9ce8ecb78da6590626bcf4380962f removes quadratic namespace scans in formal installer validation;20 targeted pass. New-source full regression/package/review PENDING; all final states/gates false. Seeautonomy/evidence/u1_install_namespace_20261105/REPORT.md.
 

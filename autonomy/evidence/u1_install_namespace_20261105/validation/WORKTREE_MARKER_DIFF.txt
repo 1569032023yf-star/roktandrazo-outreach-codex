@@ -1,0 +1,7 @@
+diff --git a/.development-copy b/.development-copy
+index fb8b8ef..e69de29 100644
+--- a/.development-copy
++++ b/.development-copy
+@@ -1,2 +0,0 @@
+-Rokt&Razo development-only workspace.
+-生产系统禁止指向此目录；本目录禁止访问生产状态与真实外部传输。
