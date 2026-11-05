@@ -67,7 +67,7 @@ def build(output, source_commit, *, python_runtime=None, runtime_manifest_sha256
             host_sources={'host/'+row['path']:host/row['path'] for row in rows}
             host_sources['host/manifest.json']=host/'manifest.json'
             progress('PREPARED_HOST_PIN_VERIFIED',len(host_sources))
-            expected={str(host/row['path']):(row['sha256'],256*1024*1024) for row in rows}
+            expected={str(host/row['path']):(row['sha256'],2*1024*1024 if row['path']=='runtime/python/U1_RUNTIME_CONTENT.json' else 256*1024*1024) for row in rows}
             expected[str(host/'manifest.json')]=(prepared_host_manifest_sha256,2*1024*1024)
             def read_source(path):
                 contract=expected.get(str(path))

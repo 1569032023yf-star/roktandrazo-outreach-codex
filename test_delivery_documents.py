@@ -64,6 +64,7 @@ class DeliveryDocumentsTests(unittest.TestCase):
                 out=root/'delivery'
                 result=build(out,source,python_runtime=runtime,runtime_manifest_sha256=digest,prepared_host=host,prepared_host_manifest_sha256='a'*64)
                 pins.revalidate.assert_called_once()
+                pins.add.assert_any_call(content,digest,limit=2*1024*1024)
                 with zipfile.ZipFile(out/'install.zip') as z:
                     self.assertEqual(z.read('payload/host/runtime/python/U1_RUNTIME_CONTENT.json'),b'fixture runtime')
                 self.assertTrue((out/'BUILD.json').exists())
