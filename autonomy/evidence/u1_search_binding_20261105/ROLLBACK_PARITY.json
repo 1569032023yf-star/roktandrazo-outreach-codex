@@ -1,0 +1,7 @@
+{
+  "outcome": "PASSED",
+  "host_files": 4960,
+  "rollback_files": 4960,
+  "mismatches": [],
+  "actual_rollback": false
+}

@@ -1,0 +1,87 @@
+{
+  "updated_at": "2026-11-05T01:26:56.171104+00:00",
+  "source_commit": "21568c8267d7d20b3127eab8d3f5c866202868fd",
+  "checkpoint": "autonomy/evidence/u1_search_binding_20261105/REPORT.md",
+  "targeted_tests": {
+    "run": 46,
+    "failures": 0,
+    "errors": 0
+  },
+  "full_regression": {
+    "source_commit": "21568c8267d7d20b3127eab8d3f5c866202868fd",
+    "baseline_source_commit": "6de5cf3d421e0073be905a57e0dd3cd2cc1024a6",
+    "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+    "candidate_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+    "candidate_run": 848,
+    "failures": 37,
+    "errors": 17,
+    "new_failures_ids": [],
+    "resolved_failures_ids": [],
+    "new_errors_ids": [],
+    "resolved_errors_ids": []
+  },
+  "package": {
+    "artifacts": {
+      "install.zip": "32cb4b3676d2c5b38e63fec0b0bd4516cc13f86d76c6021463df3d137e062720",
+      "rollback-tools.zip": "3f0e113a5f520a2a7aff0ef4d03c9b100f7cc4e27df5adc21538166a14777801"
+    },
+    "files": 5057,
+    "independent_review": "PENDING",
+    "manifest_sha256": "8d54c268a77095a7ad8d4e3c82ac5a7887b4f2aa992c3ba5024ad79d3cbeba18",
+    "package_complete": false,
+    "production_ready": false,
+    "python_runtime_bundled": true,
+    "source_commit": "21568c8267d7d20b3127eab8d3f5c866202868fd"
+  },
+  "extracted_verification": "UNKNOWN",
+  "packaged_worker_probe": {
+    "source_commit": "21568c8267d7d20b3127eab8d3f5c866202868fd",
+    "outcome": "PASSED",
+    "returncode": 0,
+    "production_execution": false,
+    "checks": {
+      "real_packaged_cpython": true,
+      "preflight": true,
+      "operation_digest_checked": true,
+      "bound_search_request_consumed": true,
+      "malformed_input_rejected": true,
+      "contract_refusal": true,
+      "persistent_unknown": true,
+      "replay_denied": true,
+      "external_requests": 0,
+      "production_execution": false
+    }
+  },
+  "rollback_component_parity": {
+    "outcome": "PASSED",
+    "host_files": 4960,
+    "rollback_files": 4960,
+    "mismatches": [],
+    "actual_rollback": false
+  },
+  "rollback_verified": false,
+  "independent_review": "PENDING",
+  "original_owner_combination": {
+    "run": 33,
+    "errors": 7,
+    "comparison": "ORIGINAL_OWNER_COMPARISON.json"
+  },
+  "disk_space_warning": true,
+  "formal_backend_integrated": false,
+  "provider_contract": "CONTRACT_MISSING",
+  "statuses": {
+    "DEVELOPMENT_COMPLETE": false,
+    "PACKAGE_COMPLETE": false,
+    "PROVIDER_ACCEPTED": false,
+    "WINDOWS_ACCEPTED": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "BUSINESS_GROWTH": "UNKNOWN"
+  },
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "next_action": "Address reproducible staging space and finish21568c8 final file integrity verification, then continue business invocation and authoritative receipt/cost wiring; do not repeat passed checks or bypass gates."
+}

@@ -1,3 +1,6 @@
+中文：固定21568c8267d7d20b3127eab8d3f5c866202868fd接通信任签名中的Provider查询参数与后端幂等摘要，46项定向通过；全量848项37FAIL/17ERROR，见ID对比。新禁用包解压UNKNOWN，包内操作探针PASSED。独审/正式业务闭环PENDING，全部最终状态及门禁false，BUSINESS_GROWTH=UNKNOWN。见autonomy/evidence/u1_search_binding_20261105/REPORT.md。
+English: Fixed21568c8267d7d20b3127eab8d3f5c866202868fd wires signed Provider search arguments into the backend idempotency digest;46 targeted pass, full848 with37 failures/17 errors per ID comparison. Disabled archive extractionUNKNOWN, packaged operation probePASSED. Review/business closure PENDING, final states/gates false, BUSINESS_GROWTH UNKNOWN. Seeautonomy/evidence/u1_search_binding_20261105/REPORT.md.
+
 中文：固定6de5cf3d421e0073be905a57e0dd3cd2cc1024a6接入有界Worker操作解析和原claim摘要绑定，24项定向通过；全量848项37FAIL/17ERROR，见ID对比。新禁用包解压VERIFIED，包内操作探针PASSED。独审/正式业务闭环PENDING，全部最终状态及门禁false，BUSINESS_GROWTH=UNKNOWN。见autonomy/evidence/u1_worker_operation_20261105/REPORT.md。
 English: Fixed6de5cf3d421e0073be905a57e0dd3cd2cc1024a6 wires bounded Worker operation parsing and original-claim digest binding;24 targeted pass, full848 with37 failures/17 errors per ID comparison. Disabled archive extractionVERIFIED, packaged operation probePASSED. Review/business closure PENDING, final states/gates false, BUSINESS_GROWTH UNKNOWN. Seeautonomy/evidence/u1_worker_operation_20261105/REPORT.md.
 

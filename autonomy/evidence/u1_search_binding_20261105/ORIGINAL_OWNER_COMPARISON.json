@@ -1,0 +1,27 @@
+{
+  "run": 33,
+  "errors": 7,
+  "baseline_source": "6de5cf3d421e0073be905a57e0dd3cd2cc1024a6",
+  "candidate_source": "21568c8267d7d20b3127eab8d3f5c866202868fd",
+  "baseline_error_ids": [
+    "test_actual_service_event_existing_owner_child_and_settlement (test_inventory_event_bridge.EventBridgeTests.test_actual_service_event_existing_owner_child_and_settlement)",
+    "test_ambiguous_request_cannot_create_or_reserve_event (test_inventory_event_bridge.EventBridgeTests.test_ambiguous_request_cannot_create_or_reserve_event)",
+    "test_expiry_during_reserve_withholds_event_and_preserves_reservation (test_inventory_event_bridge.EventBridgeTests.test_expiry_during_reserve_withholds_event_and_preserves_reservation)",
+    "test_lost_report_does_not_repeat_completed_child (test_inventory_event_bridge.EventBridgeTests.test_lost_report_does_not_repeat_completed_child)",
+    "test_no_lease_foreign_owner_bad_auth_and_bad_admission (test_inventory_event_bridge.EventBridgeTests.test_no_lease_foreign_owner_bad_auth_and_bad_admission)",
+    "test_reserved_after_process_loss_reopen_cannot_dispatch (test_inventory_event_bridge.EventBridgeTests.test_reserved_after_process_loss_reopen_cannot_dispatch)",
+    "test_actual_stage_host_child_settlement_and_atomic_job_release (test_original_process_backend.OriginalProcessBackendTests.test_actual_stage_host_child_settlement_and_atomic_job_release)"
+  ],
+  "candidate_error_ids": [
+    "test_actual_service_event_existing_owner_child_and_settlement (test_inventory_event_bridge.EventBridgeTests.test_actual_service_event_existing_owner_child_and_settlement)",
+    "test_ambiguous_request_cannot_create_or_reserve_event (test_inventory_event_bridge.EventBridgeTests.test_ambiguous_request_cannot_create_or_reserve_event)",
+    "test_expiry_during_reserve_withholds_event_and_preserves_reservation (test_inventory_event_bridge.EventBridgeTests.test_expiry_during_reserve_withholds_event_and_preserves_reservation)",
+    "test_lost_report_does_not_repeat_completed_child (test_inventory_event_bridge.EventBridgeTests.test_lost_report_does_not_repeat_completed_child)",
+    "test_no_lease_foreign_owner_bad_auth_and_bad_admission (test_inventory_event_bridge.EventBridgeTests.test_no_lease_foreign_owner_bad_auth_and_bad_admission)",
+    "test_reserved_after_process_loss_reopen_cannot_dispatch (test_inventory_event_bridge.EventBridgeTests.test_reserved_after_process_loss_reopen_cannot_dispatch)",
+    "test_actual_stage_host_child_settlement_and_atomic_job_release (test_original_process_backend.OriginalProcessBackendTests.test_actual_stage_host_child_settlement_and_atomic_job_release)"
+  ],
+  "new_error_ids": [],
+  "errors_are_accepted": false,
+  "network_policy_changed": false
+}
