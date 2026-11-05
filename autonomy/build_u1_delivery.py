@@ -2,12 +2,13 @@
 import argparse
 import hashlib
 import json
+import time
 from pathlib import Path
 import subprocess
 import tempfile
 import zipfile
 from autonomy.build_dev_disabled_host import build_development
-from autonomy.release_store import build_bundle, build_archive_from_paths, canonical
+from autonomy.release_store import build_bundle, build_archive_from_paths, canonical, durable_new
 from autonomy.disabled_host_package import build_runtime_package
 
 
@@ -20,9 +21,17 @@ DISCOVERY_ROOT_SOURCES = (
 )
 
 
-def build(output, source_commit, *, python_runtime=None, runtime_manifest_sha256=None):
+def build(output, source_commit, *, python_runtime=None, runtime_manifest_sha256=None,
+          prepare_only=False, prepared_host=None, prepared_host_manifest_sha256=None,
+          progress=lambda stage,count: None):
     if (python_runtime is None)!=(runtime_manifest_sha256 is None):
         raise ValueError('EXACT_RUNTIME_INPUTS_REQUIRED')
+    if (prepared_host is None)!=(prepared_host_manifest_sha256 is None):
+        raise ValueError('EXACT_PREPARED_HOST_REQUIRED')
+    if (prepare_only or prepared_host is not None) and python_runtime is None:
+        raise ValueError('PREPARED_HOST_REQUIRES_RUNTIME_BINDING')
+    if prepare_only and prepared_host is not None:
+        raise ValueError('CONFLICTING_BUILD_PHASES')
     repo=Path(__file__).resolve().parent.parent
     resolved=subprocess.check_output(['git','rev-parse',source_commit+'^{commit}'],cwd=repo,text=True).strip()
     # Compiler consumes working source: require equality with this pinned commit.
@@ -40,16 +49,46 @@ def build(output, source_commit, *, python_runtime=None, runtime_manifest_sha256
             raise ValueError('BUILD_INPUT_NOT_PINNED')
     out=Path(output);out.mkdir()
     host_sources={}
+    if prepared_host is not None:
+        from publisher_channel.install_inputs import InstallInputPins,pin_package
+        from autonomy.release_store import ordinary
+        host=ordinary(prepared_host)
+        if out.absolute().is_relative_to(host.absolute()):
+            raise ValueError('OUTPUT_INSIDE_PREPARED_HOST')
+        progress('PREPARED_HOST_PIN_START',0)
+        with InstallInputPins() as pins:
+            manifest=pin_package(pins,host,prepared_host_manifest_sha256,resolved)
+            if manifest.get('schema')!='rokt.disabled-host-package.v2':
+                raise ValueError('PREPARED_RUNTIME_HOST_REQUIRED')
+            rows=manifest['files']+manifest['scripts']
+            runtime_row=next((row for row in rows if row['path']=='runtime/python/U1_RUNTIME_CONTENT.json'),None)
+            if runtime_row is None or runtime_row['sha256']!=runtime_manifest_sha256:
+                raise ValueError('PREPARED_RUNTIME_BINDING_MISMATCH')
+            host_sources={'host/'+row['path']:host/row['path'] for row in rows}
+            host_sources['host/manifest.json']=host/'manifest.json'
+            progress('PREPARED_HOST_PIN_VERIFIED',len(host_sources))
+            result=_finish(out,resolved,host_sources,{},python_runtime,runtime_manifest_sha256,repo,progress,finalize=pins.revalidate)
+            return result
     with tempfile.TemporaryDirectory(prefix='u1-delivery-') as temp:
         dev=Path(temp)/'bridge'
         base=build_development(dev,resolved)
         if python_runtime is not None:
             host=out/'runtime-host'
-            build_runtime_package(host,dev,base['manifest_sha256'],python_runtime,runtime_manifest_sha256)
+            progress('HOST_PREPARATION_START',0)
+            prepared=build_runtime_package(host,dev,base['manifest_sha256'],python_runtime,runtime_manifest_sha256,progress=progress)
+            if prepare_only:
+                result=dict(source_commit=resolved,prepared_host=str(host.absolute()),manifest_sha256=prepared['manifest_sha256'],runtime_manifest_sha256=runtime_manifest_sha256,phase='HOST_READY',package_complete=False,allow_install=False)
+                durable_new(out/'HOST_INPUT.json',canonical(result))
+                return result
             host_sources={'host/'+p.relative_to(host).as_posix():p for p in host.rglob('*') if p.is_file()}
             files={}
         else:
             files={'host/'+p.relative_to(dev).as_posix():p.read_bytes() for p in dev.rglob('*') if p.is_file()}
+    return _finish(out,resolved,host_sources,files,python_runtime,runtime_manifest_sha256,repo,progress)
+
+
+def _finish(out,resolved,host_sources,files,python_runtime,runtime_manifest_sha256,repo,progress,finalize=lambda:None):
+    bundle=out/'install'
     names=subprocess.check_output(['git','ls-tree','-r','--name-only',resolved,'autonomy','publisher_channel','discovery'],cwd=repo,text=True).splitlines()
     for name in names:
         if name.startswith(('autonomy/','publisher_channel/','discovery/')) and name.endswith('.py') and '/evidence/' not in name:
@@ -76,10 +115,13 @@ def build(output, source_commit, *, python_runtime=None, runtime_manifest_sha256
         for name,raw in files.items():
             path=sources/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(raw)
             all_sources[name]=path
+        progress('INSTALL_ARCHIVE_START',len(all_sources))
         digest=build_archive_from_paths(out/'install.zip',all_sources,resolved)
+        progress('INSTALL_ARCHIVE_COMPLETE',len(all_sources))
         file_count=len(all_sources)
     else:
         digest=build_bundle(bundle,files,resolved);file_count=len(files)
+    progress('ROLLBACK_TOOLS_START',len(host_sources))
     tools=out/'rollback-tools';tools.mkdir()
     for name in ('release_store.py',):
         (tools/name).write_bytes(subprocess.check_output(['git','show',resolved+':autonomy/'+name],cwd=repo))
@@ -104,9 +146,18 @@ def build(output, source_commit, *, python_runtime=None, runtime_manifest_sha256
         artifacts={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in out.glob('*.zip')},
         python_runtime_bundled=bool(host_sources),package_complete=False,
         independent_review='PENDING',production_ready=False)
+    finalize()
     (out/'BUILD.json').write_bytes(canonical(result));return result
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',required=True);p.add_argument('--source-commit',required=True)
     p.add_argument('--python-runtime');p.add_argument('--runtime-manifest-sha256')
-    a=p.parse_args();print(json.dumps(build(a.output,a.source_commit,python_runtime=a.python_runtime,runtime_manifest_sha256=a.runtime_manifest_sha256),sort_keys=True))
+    p.add_argument('--prepare-only',action='store_true')
+    p.add_argument('--prepared-host');p.add_argument('--prepared-host-manifest-sha256')
+    a=p.parse_args()
+    started=time.monotonic()
+    def progress(stage,count):
+        import sys
+        print(json.dumps(dict(stage=stage,count=count,elapsed_seconds=round(time.monotonic()-started,3))),file=sys.stderr,flush=True)
+    print(json.dumps(build(a.output,a.source_commit,python_runtime=a.python_runtime,runtime_manifest_sha256=a.runtime_manifest_sha256,
+        prepare_only=a.prepare_only,prepared_host=a.prepared_host,prepared_host_manifest_sha256=a.prepared_host_manifest_sha256,progress=progress),sort_keys=True))
