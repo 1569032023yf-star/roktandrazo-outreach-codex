@@ -8,9 +8,9 @@ English: The offline installation archive for source commit `40b7986d5ddfa5ffd86
 
 ## 运行环境 / Runtime Environment
 
-中文：C、D 两份开发虚拟环境均使用 Python 3.13.0；`requirements-dev.txt` 中所需依赖可导入，`pip check` 均报告无依赖冲突。U1 当前权威工作目录仍在 C 盘，分支 `codex/autonomous-bd-supervisor` 的本地 HEAD 与远端 HEAD 均为 `40b7986d5ddfa5ffd869bb0f58d15abda74b730e`。Codex 自主工程总控定时任务已恢复为 `ACTIVE`。迁移尚未切换：C 盘仍是权威源，旧 C 路径尚无 Junction；D 盘副本不得据此视为包含本轮新证据。
+中文：C、D 两份开发虚拟环境均使用 Python 3.13.0；`requirements-dev.txt` 中所需依赖可导入，`pip check` 均报告无依赖冲突。U1 当前权威工作目录仍在 C 盘；离线交付包绑定源码提交 `40b7986d5ddfa5ffd869bb0f58d15abda74b730e`，本次报告提交后分支 `codex/autonomous-bd-supervisor` 的本地与远端 HEAD 均为 `f43a4bd2b350cc8c453934077c193737c4ac84ef`。Codex 自主工程总控定时任务已恢复为 `ACTIVE`。迁移尚未切换：C 盘仍是权威源，旧 C 路径尚无 Junction；D 盘副本不得据此视为包含本轮新证据。
 
-English: Both C: and D: development virtual environments use Python 3.13.0. Required `requirements-dev.txt` dependencies import successfully, and `pip check` reports no broken requirements in either environment. The authoritative U1 working directory remains on C:. Local and remote HEADs for `codex/autonomous-bd-supervisor` are both `40b7986d5ddfa5ffd869bb0f58d15abda74b730e`. The Codex autonomous engineering scheduled task is restored to `ACTIVE`. Migration cutover has not occurred: C: remains authoritative and the old C: path has no Junction; the D: copy must not be assumed to contain this turn's new evidence.
+English: Both C: and D: development virtual environments use Python 3.13.0. Required `requirements-dev.txt` dependencies import successfully, and `pip check` reports no broken requirements in either environment. The authoritative U1 working directory remains on C:. The offline delivery package is bound to source commit `40b7986d5ddfa5ffd869bb0f58d15abda74b730e`; after this report commit, local and remote HEADs for `codex/autonomous-bd-supervisor` are both `f43a4bd2b350cc8c453934077c193737c4ac84ef`. The Codex autonomous engineering scheduled task is restored to `ACTIVE`. Migration cutover has not occurred: C: remains authoritative and the old C: path has no Junction; the D: copy must not be assumed to contain this turn's new evidence.
 
 ## 固定包证据 / Fixed-Package Evidence
 
