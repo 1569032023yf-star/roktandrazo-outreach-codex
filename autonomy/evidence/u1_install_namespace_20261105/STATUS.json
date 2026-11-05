@@ -1,0 +1,29 @@
+{
+  "updated_at": "2026-11-05T01:32:39.427007+00:00",
+  "source_commit": "1bf8d59aa1d9ce8ecb78da6590626bcf4380962f",
+  "checkpoint": "autonomy/evidence/u1_install_namespace_20261105/REPORT.md",
+  "targeted_tests": {
+    "command": "python -X utf8 -B -m unittest test_install_inputs test_disabled_host_package test_delivery_verification -v",
+    "run": 20,
+    "failures": 0,
+    "errors": 0
+  },
+  "full_regression": "PENDING_FOR_NEW_SOURCE",
+  "package": "PENDING_FOR_NEW_SOURCE",
+  "independent_review": "PENDING",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "statuses": {
+    "DEVELOPMENT_COMPLETE": false,
+    "PACKAGE_COMPLETE": false,
+    "PROVIDER_ACCEPTED": false,
+    "WINDOWS_ACCEPTED": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "BUSINESS_GROWTH": "UNKNOWN"
+  },
+  "next_action": "Run comparable regression for 1bf8d59; inspect existing 21568c8 package final integrity without rebuilding; preserve all old evidence and do not inherit old acceptance."
+}
