@@ -67,7 +67,17 @@ def build(output, source_commit, *, python_runtime=None, runtime_manifest_sha256
             host_sources={'host/'+row['path']:host/row['path'] for row in rows}
             host_sources['host/manifest.json']=host/'manifest.json'
             progress('PREPARED_HOST_PIN_VERIFIED',len(host_sources))
-            result=_finish(out,resolved,host_sources,{},python_runtime,runtime_manifest_sha256,repo,progress,finalize=pins.revalidate)
+            expected={str(host/row['path']):(row['sha256'],256*1024*1024) for row in rows}
+            expected[str(host/'manifest.json')]=(prepared_host_manifest_sha256,2*1024*1024)
+            def read_source(path):
+                contract=expected.get(str(path))
+                if contract is None:
+                    from autonomy.release_store import read_file
+                    return read_file(path)
+                # Re-read the existing deny-write/delete handle and its approved
+                # digest, rather than re-walking thousands of locked ancestors.
+                return pins.add(path,contract[0],limit=contract[1])
+            result=_finish(out,resolved,host_sources,{},python_runtime,runtime_manifest_sha256,repo,progress,finalize=pins.revalidate,source_reader=read_source)
             return result
     with tempfile.TemporaryDirectory(prefix='u1-delivery-') as temp:
         dev=Path(temp)/'bridge'
@@ -87,7 +97,7 @@ def build(output, source_commit, *, python_runtime=None, runtime_manifest_sha256
     return _finish(out,resolved,host_sources,files,python_runtime,runtime_manifest_sha256,repo,progress)
 
 
-def _finish(out,resolved,host_sources,files,python_runtime,runtime_manifest_sha256,repo,progress,finalize=lambda:None):
+def _finish(out,resolved,host_sources,files,python_runtime,runtime_manifest_sha256,repo,progress,finalize=lambda:None,source_reader=None):
     bundle=out/'install'
     names=subprocess.check_output(['git','ls-tree','-r','--name-only',resolved,'autonomy','publisher_channel','discovery'],cwd=repo,text=True).splitlines()
     for name in names:
@@ -116,7 +126,7 @@ def _finish(out,resolved,host_sources,files,python_runtime,runtime_manifest_sha2
             path=sources/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(raw)
             all_sources[name]=path
         progress('INSTALL_ARCHIVE_START',len(all_sources))
-        digest=build_archive_from_paths(out/'install.zip',all_sources,resolved)
+        digest=build_archive_from_paths(out/'install.zip',all_sources,resolved,source_reader=source_reader)
         progress('INSTALL_ARCHIVE_COMPLETE',len(all_sources))
         file_count=len(all_sources)
     else:

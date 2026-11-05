@@ -59,6 +59,7 @@ class DeliveryDocumentsTests(unittest.TestCase):
             (host/'manifest.json').write_text(json.dumps(manifest))
             from unittest.mock import MagicMock
             pins=MagicMock();pins.__enter__.return_value=pins
+            pins.add.side_effect=lambda path,digest,limit: Path(path).read_bytes()
             with patch('publisher_channel.install_inputs.InstallInputPins',return_value=pins),patch('publisher_channel.install_inputs.pin_package',return_value=manifest):
                 out=root/'delivery'
                 result=build(out,source,python_runtime=runtime,runtime_manifest_sha256=digest,prepared_host=host,prepared_host_manifest_sha256='a'*64)
