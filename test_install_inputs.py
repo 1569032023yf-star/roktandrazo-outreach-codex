@@ -52,6 +52,26 @@ class InstallInputTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'PINS_NOT_ACTIVE'):pins.revalidate()
         with self.assertRaisesRegex(ValueError,'SINGLE_USE'):pins.__enter__()
 
+    def test_package_namespace_rejects_case_alias_and_both_prefix_orders(self):
+        # Exercise real pinned package manifests, not only a helper implementation.
+        for paths in (('runtime/one','runtime/ONE'),
+                      ('runtime/one','runtime/one/child'),
+                      ('runtime/one/child','runtime/one')):
+            manifest=json.loads(json.dumps(self.result['manifest']))
+            for path in paths:
+                manifest['files'].append(dict(path=path,size=1,sha256=self.sha(b'x')))
+            raw=canonical(manifest);(self.package/'manifest.json').write_bytes(raw)
+            # The first new file must exist so the second namespace entry is reached.
+            first=self.package/paths[0];first.parent.mkdir(parents=True,exist_ok=True)
+            first.write_bytes(b'x')
+            try:
+                with InstallInputPins() as pins:
+                    with self.assertRaisesRegex(ValueError,'ENTRY_CONTRACT'):
+                        pin_package(pins,self.package,self.sha(raw),'a'*40)
+            finally:
+                first.unlink()
+                if paths[0].endswith('/child'):first.parent.rmdir()
+
     def test_independent_manifest_and_source_approval_required(self):
         with InstallInputPins() as pins:
             with self.assertRaisesRegex(ValueError,'DIGEST_MISMATCH'):pin_package(pins,self.package,'f'*64,'a'*40)

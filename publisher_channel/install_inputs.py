@@ -213,15 +213,18 @@ def pin_package(pins,root,manifest_sha256,source_commit):
         type(manifest.get('scripts')) is not list or not 0<len(manifest['files'])<=(8192 if large else 256)):reject('MANIFEST_CONTRACT')
     if any(type(row) is not dict for row in manifest['scripts']+manifest['files']):reject('ENTRY_CONTRACT')
     if {row.get('path') for row in manifest['scripts']}!=SCRIPTS:reject('EXACT_SCRIPT_SET')
-    entries=manifest['files']+manifest['scripts'];seen=[];total=0
+    entries=[(row,False) for row in manifest['files']]+[(row,True) for row in manifest['scripts']]
+    seen=set();parents=set();total=0
     if not {'service/RoktU1Bridge.exe','runtime/dependencies.json','config/host.json'}<={r.get('path') for r in manifest['files']}:reject('REQUIRED_FILES')
     if large and not {'runtime/python/python.exe','runtime/python/U1_RUNTIME_CONTENT.json'}<={r.get('path') for r in manifest['files']}:reject('RUNTIME_FILES_REQUIRED')
-    for row in entries:
-        path=row['path'] if row in manifest['scripts'] else name(row['path']);lower=path.casefold()
-        if (any(lower==s or lower.startswith(s+'/') or s.startswith(lower+'/') for s in seen) or
+    for row,is_script in entries:
+        path=row['path'] if is_script else name(row['path']);lower=path.casefold()
+        ancestors={'/'.join(lower.split('/')[:i]) for i in range(1,len(lower.split('/')))}
+        # Exact case-insensitive namespace checks without scanning every earlier file.
+        if (lower in seen or lower in parents or not ancestors.isdisjoint(seen) or
             type(row.get('size')) is not int or not (0 if large else 1)<=row['size']<=256*1024*1024 or not sha(row.get('sha256'))):reject('ENTRY_CONTRACT')
-        if row in manifest['files'] and (path.split('/')[0] not in ('service','runtime','config') or lower in ('config/installation.json','config/runtime.json','config/supervisor.json') or any(p.endswith('.u1-new') for p in lower.split('/'))):reject('RESERVED_FILE')
-        seen.append(lower);total+=row['size']
+        if not is_script and (path.split('/')[0] not in ('service','runtime','config') or lower in ('config/installation.json','config/runtime.json','config/supervisor.json') or any(p.endswith('.u1-new') for p in lower.split('/'))):reject('RESERVED_FILE')
+        seen.add(lower);parents.update(ancestors);total+=row['size']
         if total>1024*1024*1024:reject('TOTAL_SIZE')
         limit=2*1024*1024 if large and path=='runtime/python/U1_RUNTIME_CONTENT.json' else 256*1024*1024
         raw=pins.add(root/path,row['sha256'],limit=limit)
