@@ -1,0 +1,26 @@
+{
+  "outcome": "UNKNOWN_TIMEOUT",
+  "timeout_seconds": 900,
+  "source_commit": "373899370dcc55037c5f7f89654657a41389c56c",
+  "elapsed_seconds": 900.0780086999875,
+  "command": [
+    "C:\\Users\\15690\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "autonomy.build_u1_delivery",
+    "--source-commit",
+    "373899370dcc55037c5f7f89654657a41389c56c",
+    "--python-runtime",
+    "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-runtime-32f0246",
+    "--runtime-manifest-sha256",
+    "5ca4bd5242a6432ea41d18e0140ae0b7b0a999565cb8319aa7cb2dca392a897e",
+    "--output",
+    "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-delivery-phased-3738993",
+    "--prepared-host",
+    "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-host-phase-3738993\\runtime-host",
+    "--prepared-host-manifest-sha256",
+    "03d6ed0388552e0c9d989d593d30b198fc56b8d963f9bd5cf60edd885adeca75"
+  ]
+}

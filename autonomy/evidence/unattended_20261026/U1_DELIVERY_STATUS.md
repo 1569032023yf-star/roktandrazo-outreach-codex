@@ -1,3 +1,6 @@
+中文：固定373899370dcc55037c5f7f89654657a41389c56c分阶段宿主/归档构建；24项定向通过。真实终态见autonomy/evidence/u1_build_phases_20261105/REPORT.md。独审PENDING，最终状态与门禁false。
+English: Fixed 373899370dcc55037c5f7f89654657a41389c56c phased host/archive build;24 targeted pass. Actual outcomes: autonomy/evidence/u1_build_phases_20261105/REPORT.md; independent review PENDING, final statuses/gates false.
+
 中文：固定fe51fbd05ed17eee727a25e2cd3a7b3430643249直接归档构建修复；22定向通过，其余终态见autonomy/evidence/u1_direct_archive_20261105/REPORT.md。独审PENDING，所有最终状态/门禁false。
 English: Fixed fe51fbd05ed17eee727a25e2cd3a7b3430643249 direct-archive build fix;22 targeted pass. Outcomes: autonomy/evidence/u1_direct_archive_20261105/REPORT.md; review PENDING, final statuses/gates false.
 

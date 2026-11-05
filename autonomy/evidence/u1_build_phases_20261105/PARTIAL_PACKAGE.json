@@ -1,0 +1,10 @@
+{
+  "observed_at": "2026-11-05T03:01:21.037558+00:00",
+  "build_marker_exists": false,
+  "rollback_archive_exists": true,
+  "partial_install_bytes": 75648355,
+  "outcome": "UNKNOWN_INCOMPLETE_BUILD",
+  "consumable": false,
+  "description_zh": "900秒归档超时，保留原产物，未运行解压核验。",
+  "description_en": "Archive timed out at900 seconds; original partial outputs preserved; extraction verification was not run."
+}
