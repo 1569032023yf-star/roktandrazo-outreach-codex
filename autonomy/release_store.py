@@ -126,6 +126,36 @@ def build_bundle_from_paths(destination, files, source_commit):
     return sha(manifest)
 
 
+def build_archive_from_paths(destination, files, source_commit):
+    """Write the same v2 payload directly to an exclusive archive, without staging.
+
+    Failed archives are preserved and are never evidence of a completed build.
+    Every source is read again against its precomputed manifest digest.
+    """
+    import zipfile
+    if type(files) is not dict or not 1 <= len(files) <= 8192:
+        raise ValueError('EXACT_FILE_SOURCES_REQUIRED')
+    hashes = {}; total = 0
+    for name, path in files.items():
+        safe_path(name); raw = read_file(path); total += len(raw)
+        if total > MAX_LARGE_TOTAL: raise ValueError('PACKAGE_TOO_LARGE')
+        hashes[name] = sha(raw)
+    manifest = canonical(dict(schema=LARGE_SCHEMA, inventory_id=INVENTORY,
+        source_commit=source_commit, files=hashes))
+    if len(manifest) > MAX_MANIFEST: raise ValueError('MANIFEST_TOO_LARGE')
+    checked_manifest(manifest)
+    destination = ordinary(destination)
+    with destination.open('xb') as output:
+        with zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_DEFLATED) as archive:
+            for name, path in files.items():
+                raw = read_file(path)
+                if sha(raw) != hashes[name]: raise ValueError('SOURCE_CHANGED')
+                archive.writestr('payload/' + name, raw)
+            archive.writestr('manifest.json', manifest)
+        output.flush(); os.fsync(output.fileno())
+    return sha(manifest)
+
+
 class ReleaseStore:
     def __init__(self, root):
         self.root = ordinary(root)

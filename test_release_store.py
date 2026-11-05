@@ -37,6 +37,28 @@ class ReleaseStoreTests(unittest.TestCase):
             with self.assertRaises(PermissionError):ordinary(self.root/'new')
         self.assertEqual(ordinary(self.root/'new'/'child'),self.root/'new'/'child')
 
+    def test_direct_archive_matches_manifest_and_preserves_failed_output(self):
+        import zipfile,json
+        from autonomy.release_store import build_archive_from_paths,sha,read_file
+        source=self.root/'input';source.write_bytes(b'actual payload')
+        output=self.root/'install.zip'
+        digest=build_archive_from_paths(output,{'app/a.py':source},'a'*40)
+        with zipfile.ZipFile(output) as z:
+            raw=z.read('manifest.json');self.assertEqual(sha(raw),digest)
+            self.assertEqual(z.read('payload/app/a.py'),b'actual payload')
+            self.assertEqual(json.loads(raw)['files']['app/a.py'],sha(b'actual payload'))
+        with self.assertRaises(FileExistsError):
+            build_archive_from_paths(output,{'app/a.py':source},'a'*40)
+        failed=self.root/'changed.zip';calls=0
+        def changing(path):
+            nonlocal calls
+            calls+=1
+            return b'first' if calls==1 else b'changed'
+        with patch('autonomy.release_store.read_file',side_effect=changing):
+            with self.assertRaisesRegex(ValueError,'SOURCE_CHANGED'):
+                build_archive_from_paths(failed,{'app/a.py':source},'a'*40)
+        self.assertTrue(failed.exists())
+
     def test_first_install_upgrade_and_complete_pointer_rollback(self):
         v1=self.package('one',{'app/old.py':b'old'});a=self.store.activate(v1,expected_current=None)
         v2=self.package('two',{'app/new.py':b'new','app/other.py':b'other'})

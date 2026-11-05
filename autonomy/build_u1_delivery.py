@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 import zipfile
 from autonomy.build_dev_disabled_host import build_development
-from autonomy.release_store import build_bundle, build_bundle_from_paths, canonical
+from autonomy.release_store import build_bundle, build_archive_from_paths, canonical
 from autonomy.disabled_host_package import build_runtime_package
 
 
@@ -76,7 +76,7 @@ def build(output, source_commit, *, python_runtime=None, runtime_manifest_sha256
         for name,raw in files.items():
             path=sources/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(raw)
             all_sources[name]=path
-        digest=build_bundle_from_paths(bundle,all_sources,resolved)
+        digest=build_archive_from_paths(out/'install.zip',all_sources,resolved)
         file_count=len(all_sources)
     else:
         digest=build_bundle(bundle,files,resolved);file_count=len(files)
@@ -86,15 +86,17 @@ def build(output, source_commit, *, python_runtime=None, runtime_manifest_sha256
     for name,raw in files.items():
         if name.startswith('host/'):
             target=tools/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(raw)
-    for name,path in host_sources.items():
-        target=tools/name;target.parent.mkdir(parents=True,exist_ok=True)
-        # Copy from the verified install payload, whose manifest binds these bytes.
-        target.write_bytes((bundle/'payload'/name).read_bytes())
+    if host_sources:
+        # Rollback tools consume the exact archive bytes, not mutable sources.
+        with zipfile.ZipFile(out/'install.zip') as install_archive:
+            for name in host_sources:
+                target=tools/name;target.parent.mkdir(parents=True,exist_ok=True)
+                target.write_bytes(install_archive.read('payload/'+name))
     (tools/'README.md').write_text('回滚工具 / Rollback tools\n\n文件发布指针：release_store.py --root STORE rollback TRANSACTION --expected-current VERSION。\nFile publication pointer: use that command with retained versions/backups.\n\n禁用宿主完整文件/注册回滚：从host/调用 Install-DisabledHost.ps1 -Rollback -PackageRoot HOST -ApprovedManifestSha256 HASH -ApprovedSourceCommit SOURCE_SHA -RuntimePlan PLAN -ApprovedRuntimePlanSha256 PLAN_HASH -Execute。未决操作使用-RecoverInstall；两者仅补偿已知状态，禁止自动重放。\nDisabled-host file/registration compensation: use the above exact manifest and runtime plan. Use -RecoverInstall for interrupted operations; neither action replays forward effects.\n\n旧Rollback-DisabledHost.ps1只撤销注册，不是完整文件回滚。保留管理员审计目录全部日志；升级保留原有状态；首次安装回滚只清理身份匹配的事务新建空根。新部署还需要正式维护租约与身份门禁。此包不是数据库或现场状态备份。\nThe legacy Rollback-DisabledHost.ps1 is registration-only. Retain all administrator audit journals; upgrades preserve existing state, while fresh rollback removes only recorded empty roots with matching identities. Formal maintenance/identity gates remain required before installation. This archive is not a database/site-state backup.\n',encoding='utf-8')
     for name in documentation:
         target=tools/('OFFLINE-DELIVERY.md' if name=='README.md' else name)
         target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(files[name])
-    for folder in (bundle,tools):
+    for folder in ((tools,) if host_sources else (bundle,tools)):
         with zipfile.ZipFile(out/(folder.name+'.zip'),'x',compression=zipfile.ZIP_DEFLATED) as z:
             for p in sorted(folder.rglob('*')):
                 if p.is_file():z.write(p,p.relative_to(folder).as_posix())
