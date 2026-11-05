@@ -61,6 +61,9 @@ def read_operation(stream):
         claim['claim_token_hash'] = digest(value['token'])
         if digest(claim) != value['original_claim_digest']:
             raise ValueError('WORKER_ORIGINAL_CLAIM_BINDING')
+    if 'provider_request' in value:
+        from discovery.providers.contracts import bound_search_request
+        bound_search_request(value['provider_request'])
     return value
 
 
@@ -73,6 +76,9 @@ def main(argv=None):
     try:
         operation = None if args.preflight else read_operation(sys.stdin.buffer)
         with pinned_provider_adapter(args.provider_config, args.provider_config_sha256) as adapter:
+            if operation is not None and 'provider_request' in operation:
+                if operation['provider_request']['provider'] != adapter.provider_name:
+                    raise ValueError('PROVIDER_REQUEST_CONFIG_MISMATCH')
             contract = asdict(adapter.contract)
             # Construct the actual configured adapter, without performing a query.
             # The capability view is not a backend receipt or business result.

@@ -36,3 +36,23 @@ def provider_contract(name: str, mode: str = "") -> ProviderContract:
     if name == "serpapi_maps":
         return ProviderContract(name, "disabled", "disabled", status="DISABLED")
     return ProviderContract(name, "unspecified", "unspecified")
+
+
+def bound_search_request(value):
+    """Validate existing search_places arguments without dispatch or defaults.
+    校验真实适配器已有参数；不授予请求权限、不补默认业务值。
+    """
+    keys = {'provider', 'query', 'city', 'state', 'page_cursor', 'page_size'}
+    if type(value) is not dict or set(value) != keys:
+        raise ValueError('PROVIDER_SEARCH_REQUEST_SCHEMA')
+    if value['provider'] not in ('google_places', 'browser_maps'):
+        raise ValueError('PROVIDER_SEARCH_REQUEST_DISABLED')
+    for key, limit in (('query', 2048), ('city', 256), ('state', 128), ('page_cursor', 8192)):
+        item = value[key]
+        if (type(item) is not str or len(item.encode('utf-8')) > limit or
+                any(ord(c) < 32 or ord(c) == 127 for c in item) or
+                (key != 'page_cursor' and not item.strip())):
+            raise ValueError('PROVIDER_SEARCH_ARGUMENT_REJECTED')
+    if type(value['page_size']) is not int or not 1 <= value['page_size'] <= 20:
+        raise ValueError('PROVIDER_SEARCH_PAGE_SIZE')
+    return dict(value)

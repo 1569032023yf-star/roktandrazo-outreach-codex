@@ -209,6 +209,10 @@ class SingleSlotAdapter:
         p,common=self._admission(admission)
         budget=self._verify(budget_request,'budget_request')
         self._bound(budget,{'run_id':common['run_id'],'request_id':common['request_id']})
+        provider_request = None
+        if 'provider_request' in p:
+            from discovery.providers.contracts import bound_search_request
+            provider_request = bound_search_request(p['provider_request'])
         amount=budget.get('amount')
         if type(amount) is not dict:raise AdapterError('INVALID_RESERVATION')
         wall=amount.get('wall_seconds')
@@ -236,6 +240,8 @@ class SingleSlotAdapter:
             operation=dict(common,inventory_id=INVENTORY,token=token,scope='isolated_offline',
                 schema=OPERATION_SCHEMA,backend_protocol=BACKEND_PROTOCOL,max_wall_seconds=wall,production_execution=False,
                 **self.ids,**self._lock(),**self._operation_binding())
+            if provider_request is not None:
+                operation['provider_request'] = provider_request
             operation['idempotency_key']=digest(operation)
             # v1 backend must enforce deadline outside this Python callback and
             # durably deduplicate this exact identity. This is a contract, not

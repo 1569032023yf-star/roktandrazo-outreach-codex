@@ -86,3 +86,61 @@ class WorkerOperationTests(unittest.TestCase):
         with patch('autonomy.provider_worker.sys.stdin',io.TextIOWrapper(io.BytesIO(b'{}'))),patch('autonomy.provider_worker.pinned_provider_adapter') as adapter,patch('autonomy.provider_worker.sys.stderr',io.StringIO()) as errors:
             self.assertEqual(main(['--provider-config','not-used','--provider-config-sha256','bad']),65)
             adapter.assert_not_called();self.assertEqual(errors.getvalue().strip(),'PROVIDER_WORKER_INPUT_REJECTED')
+
+
+class BoundSearchRequestTests(unittest.TestCase):
+    def request(self, **changes):
+        value=dict(provider='google_places',query='coffee shops',city='Example City',
+                   state='TN',page_cursor='',page_size=20)
+        value.update(changes)
+        return value
+
+    def test_reject_disabled_provider_ambiguous_parameters_and_implicit_defaults(self):
+        from discovery.providers.contracts import bound_search_request
+        good=self.request();self.assertEqual(bound_search_request(good),good)
+        bad=[self.request(provider='serpapi_maps'),self.request(page_size=True),
+             self.request(page_size=21),self.request(city=' '),self.request(query='x\n'),
+             self.request(page_cursor='x'*8193),dict(good,api_key='forbidden')]
+        missing=dict(good);missing.pop('page_size');bad.append(missing)
+        for value in bad:
+            with self.subTest(keys=list(value)),self.assertRaises(ValueError):bound_search_request(value)
+
+    def test_signed_admission_carries_request_into_backend_digest(self):
+        import test_single_slot_adapter as slot
+        from autonomy.lock_recovery import exclusive_lock
+        from autonomy.growth_ledger import digest
+        c=slot.SingleSlotTests();c.setUp()
+        try:
+            with exclusive_lock(c.runtime):
+                self.assertEqual(c.run_one(c.admission(provider_request=self.request()))['outcome'],'COMPLETED')
+                operation=dict(c.backend.operation);key=operation.pop('idempotency_key')
+                self.assertEqual(operation['provider_request'],self.request())
+                self.assertEqual(key,digest(operation))
+                operation['provider_request']['city']='another city'
+                self.assertNotEqual(key,digest(operation))
+        finally:c.doCleanups()
+
+    def test_invalid_signed_request_rejected_before_budget_or_claim(self):
+        import test_single_slot_adapter as slot
+        from autonomy.lock_recovery import exclusive_lock
+        c=slot.SingleSlotTests();c.setUp()
+        try:
+            with exclusive_lock(c.runtime),self.assertRaises(ValueError):
+                c.run_one(c.admission(provider_request=self.request(provider='serpapi_maps')))
+            self.assertEqual(c.backend.calls,0);self.assertEqual(c.slots.snapshot(),[])
+            with c.budget.tx() as connection:
+                self.assertEqual(connection.execute('SELECT COUNT(*) FROM reservations').fetchone()[0],0)
+        finally:c.doCleanups()
+
+    def test_worker_rejects_configured_provider_mismatch_without_request(self):
+        import io
+        from contextlib import contextmanager
+        from unittest.mock import patch
+        from autonomy.provider_worker import main
+        raw=WorkerOperationTests().encode(dict(provider_request=self.request()))
+        class Adapter:provider_name='browser_maps'
+        @contextmanager
+        def configured(*args):yield Adapter()
+        with patch('autonomy.provider_worker.sys.stdin',io.TextIOWrapper(io.BytesIO(raw))),patch('autonomy.provider_worker.pinned_provider_adapter',configured),patch('autonomy.provider_worker.sys.stderr',io.StringIO()) as errors:
+            self.assertEqual(main(['--provider-config','unused','--provider-config-sha256','unused']),65)
+            self.assertEqual(errors.getvalue().strip(),'PROVIDER_WORKER_INPUT_REJECTED')
