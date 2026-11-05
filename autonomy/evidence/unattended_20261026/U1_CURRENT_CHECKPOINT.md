@@ -1,3 +1,6 @@
+中文：固定fe51fbd05ed17eee727a25e2cd3a7b3430643249直接归档构建修复；22定向通过，其余终态见autonomy/evidence/u1_direct_archive_20261105/REPORT.md。独审PENDING，所有最终状态/门禁false。
+English: Fixed fe51fbd05ed17eee727a25e2cd3a7b3430643249 direct-archive build fix;22 targeted pass. Outcomes: autonomy/evidence/u1_direct_archive_20261105/REPORT.md; review PENDING, final statuses/gates false.
+
 中文：固定11bf1f9发布器路径元数据优化完成；20定向通过，848全量保留37FAIL/17ERROR且ID与基线一致。新包及核验结果见autonomy/evidence/u1_install_namespace_20261105/validation/REPORT.md；独审PENDING，所有最终状态与门禁false。
 English: Fixed11bf1f9 reduces publisher path metadata probes;20 targeted pass,848 retains37 failures/17 errors with unchanged IDs. Package/verification evidence: autonomy/evidence/u1_install_namespace_20261105/validation/REPORT.md; review PENDING, all final states/gates false.
 

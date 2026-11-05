@@ -1,0 +1,15 @@
+{
+  "outcome": "UNKNOWN_INCOMPLETE_BUILD",
+  "observed_at": "2026-11-05T10:17:16.891761+08:00",
+  "source_commit": "fe51fbd05ed17eee727a25e2cd3a7b3430643249",
+  "path": "C:\\Users\\15690\\Documents\\ChatGPT\\\u7ebf\u4e0b\\u1-delivery-direct-fe51fbd",
+  "free_bytes": 2603212800,
+  "build_json_exists": false,
+  "artifacts": {
+    "install.zip": {
+      "bytes": 12684858,
+      "complete": false
+    }
+  },
+  "preserve_partial": true
+}

@@ -1,0 +1,80 @@
+{
+  "updated_at": "2026-11-05T02:17:16.988251+00:00",
+  "source_commit": "fe51fbd05ed17eee727a25e2cd3a7b3430643249",
+  "checkpoint": "autonomy/evidence/u1_direct_archive_20261105/REPORT.md",
+  "targeted_tests": {
+    "run": 22,
+    "failures": 0,
+    "errors": 0,
+    "output": "TARGETED.txt"
+  },
+  "package": "UNKNOWN_INCOMPLETE_BUILD",
+  "partial_package": {
+    "outcome": "UNKNOWN_INCOMPLETE_BUILD",
+    "observed_at": "2026-11-05T10:17:16.891761+08:00",
+    "source_commit": "fe51fbd05ed17eee727a25e2cd3a7b3430643249",
+    "path": "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-delivery-direct-fe51fbd",
+    "free_bytes": 2603212800,
+    "build_json_exists": false,
+    "artifacts": {
+      "install.zip": {
+        "bytes": 12684858,
+        "complete": false
+      }
+    },
+    "preserve_partial": true
+  },
+  "build_termination": {
+    "outcome": "UNKNOWN_TIMEOUT",
+    "timeout_seconds": 600,
+    "source_commit": "fe51fbd05ed17eee727a25e2cd3a7b3430643249",
+    "elapsed_seconds": 600.0737754000002,
+    "command": [
+      "C:\\Users\\15690\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "-X",
+      "utf8",
+      "-B",
+      "-m",
+      "autonomy.build_u1_delivery",
+      "--output",
+      "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-delivery-direct-fe51fbd",
+      "--source-commit",
+      "fe51fbd05ed17eee727a25e2cd3a7b3430643249",
+      "--python-runtime",
+      "C:\\Users\\15690\\Documents\\ChatGPT\\线下\\u1-runtime-32f0246",
+      "--runtime-manifest-sha256",
+      "5ca4bd5242a6432ea41d18e0140ae0b7b0a999565cb8319aa7cb2dca392a897e"
+    ]
+  },
+  "regression": {
+    "source_commit": "fe51fbd05ed17eee727a25e2cd3a7b3430643249",
+    "baseline_source_commit": "11bf1f9da4c74d1653f3f491a8312b536992eff6",
+    "run": 848,
+    "failures": 37,
+    "errors": 17,
+    "baseline_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+    "candidate_result_sha256": "4b317842b6b693677511ce888e4da0a9196aec8d9841435555cdf8bfe8484190",
+    "new_failures": [],
+    "resolved_failures": [],
+    "new_errors": [],
+    "resolved_errors": []
+  },
+  "extracted_verification": "PENDING",
+  "independent_review": "PENDING",
+  "provider_contract": "CONTRACT_MISSING",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "statuses": {
+    "DEVELOPMENT_COMPLETE": false,
+    "PACKAGE_COMPLETE": false,
+    "PROVIDER_ACCEPTED": false,
+    "WINDOWS_ACCEPTED": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "BUSINESS_GROWTH": "UNKNOWN"
+  },
+  "next_action": "Implement source-bound resumable build phases and phase timing:600-second build reached partial ZIP but not manifest completion; preserve partial ZIP and do not consume it as an install package. Then finish fixed-package verification and independent review."
+}
