@@ -1,0 +1,16 @@
+{
+  "task_id": "rokt-razo-20261106T180720Z",
+  "started_at": "2026-11-07T02:07:31.9411717+08:00",
+  "recorded_at": "2026-11-06T18:09:42.415139+00:00",
+  "workdir": "D:\\CODEX\\roktandrazo-workspace\\u1-provider-integrated-20261107",
+  "source_sha": "204d299ebfb137310ba8b348f9e0dd9f1721a0b6",
+  "base_sha": "be4aa2ee67a545cf2b510d8cb1b97eefc293335d",
+  "tests": "42 PASS in 20.554s",
+  "review": "PENDING",
+  "canonical_updated": false,
+  "next_action": "Independent cumulative-source review and shared-entrypoint validation; fixed package/import closure",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "SMTP": false
+}

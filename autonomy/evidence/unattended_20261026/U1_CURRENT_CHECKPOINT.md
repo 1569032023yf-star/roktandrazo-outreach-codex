@@ -1,3 +1,6 @@
+2026-11-07 已集成 Provider 桥接与后端准入候选 / Integrated Provider bridge and backend candidate: 204d299ebfb137310ba8b348f9e0dd9f1721a0b6; 42 PASS; review PENDING. Main/canonical unchanged; gates false.
+Report: autonomy/evidence/u1_provider_integrated_20261107/REPORT.md
+
 2026-11-06 Provider backend admission: source 077967705772ef9fc994e6e30a49f7e647da99ba; 31 PASS; review PENDING. 隔离分支已修复 Provider 请求在持久意图前的校验；主线/canonical 未修改，生产门禁保持关闭。
 Report: autonomy/evidence/u1_provider_backend_admission_20261106/REPORT.md
 
