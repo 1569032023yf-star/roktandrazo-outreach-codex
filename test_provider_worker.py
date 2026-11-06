@@ -144,3 +144,26 @@ class BoundSearchRequestTests(unittest.TestCase):
         with patch('autonomy.provider_worker.sys.stdin',io.TextIOWrapper(io.BytesIO(raw))),patch('autonomy.provider_worker.pinned_provider_adapter',configured),patch('autonomy.provider_worker.sys.stderr',io.StringIO()) as errors:
             self.assertEqual(main(['--provider-config','unused','--provider-config-sha256','unused']),65)
             self.assertEqual(errors.getvalue().strip(),'PROVIDER_WORKER_INPUT_REJECTED')
+
+
+class WorkerAdmissionBoundaryTests(unittest.TestCase):
+    def test_every_partial_original_binding_is_rejected(self):
+        import io
+        from autonomy.provider_worker import read_operation
+        for field in ('original_event_digest', 'original_claim_digest',
+                      'lock_token_hash', 'process_identity_hash',
+                      'runtime_id', 'slots_id', 'budget_id'):
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                read_operation(io.BytesIO(WorkerOperationTests().encode({field: 'a'*64})))
+
+    def test_missing_search_rejected_before_provider_configuration(self):
+        import io
+        from unittest.mock import patch
+        from autonomy.provider_worker import main
+        raw = WorkerOperationTests().encode()
+        with patch('autonomy.provider_worker.sys.stdin', io.TextIOWrapper(io.BytesIO(raw))), \
+             patch('autonomy.provider_worker.pinned_provider_adapter') as adapter, \
+             patch('autonomy.provider_worker.sys.stderr', io.StringIO()) as errors:
+            self.assertEqual(main(['--provider-config','unused','--provider-config-sha256','unused']), 65)
+            adapter.assert_not_called()
+            self.assertEqual(errors.getvalue().strip(), 'PROVIDER_WORKER_INPUT_REJECTED')

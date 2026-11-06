@@ -49,8 +49,10 @@ def read_operation(stream):
     if type(key) is not str or not re.fullmatch('[0-9a-f]{64}',key) or key != digest(body):
         raise ValueError('WORKER_OPERATION_BINDING')
     original = ('original_event_digest','original_claim_digest')
-    if any(k in value for k in original):
-        hashes = original + ('lock_token_hash','process_identity_hash','runtime_id','slots_id','budget_id')
+    hashes = original + ('lock_token_hash','process_identity_hash','runtime_id','slots_id','budget_id')
+    # Any fragment of the original-owner binding requires the complete join.
+    # 任何原Owner绑定片段都必须携带完整关联，不能降级为无Owner操作。
+    if any(k in value for k in hashes):
         if any(type(value.get(k)) is not str or not re.fullmatch('[0-9a-f]{64}',value[k]) for k in hashes):
             raise ValueError('WORKER_ORIGINAL_JOIN_REQUIRED')
         if (type(value.get('epoch')) is not int or value['epoch'] < 1 or
@@ -75,6 +77,10 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         operation = None if args.preflight else read_operation(sys.stdin.buffer)
+        # Provider execution cannot silently fall back to unspecified search.
+        # 正式Worker必须有明确查询；预检不需要业务操作。
+        if operation is not None and 'provider_request' not in operation:
+            raise ValueError('PROVIDER_SEARCH_REQUEST_REQUIRED')
         with pinned_provider_adapter(args.provider_config, args.provider_config_sha256) as adapter:
             if operation is not None and 'provider_request' in operation:
                 if operation['provider_request']['provider'] != adapter.provider_name:
