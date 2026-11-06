@@ -1,3 +1,6 @@
+中文：固定13d0b150701a0b8975875ae89db970a64a23edde修复Worker不完整Owner摘要关联及缺失业务查询的准入边界，30项组合通过；独审PENDING、新包未构建，不继承旧包验收。所有门禁false。详见autonomy/evidence/u1_worker_admission_20261106/REPORT.md。
+English: Fixed 13d0b150701a0b8975875ae89db970a64a23edde rejects partial owner joins and missing Provider search before adapter construction;30 combined tests pass. Review PENDING, no new package or inherited acceptance; all gates false. See autonomy/evidence/u1_worker_admission_20261106/REPORT.md.
+
 中文：固定373899370dcc55037c5f7f89654657a41389c56c分阶段宿主/归档构建；24项定向通过。真实终态见autonomy/evidence/u1_build_phases_20261105/REPORT.md。独审PENDING，最终状态与门禁false。
 English: Fixed 373899370dcc55037c5f7f89654657a41389c56c phased host/archive build;24 targeted pass. Actual outcomes: autonomy/evidence/u1_build_phases_20261105/REPORT.md; independent review PENDING, final statuses/gates false.
 
