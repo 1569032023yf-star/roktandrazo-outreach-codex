@@ -1,0 +1,74 @@
+test_abnormal_exit_releases_kernel_lock_but_preserves_record (test_dev_cycle.DevelopmentCycleTests.test_abnormal_exit_releases_kernel_lock_but_preserves_record) ... ok
+
+test_cli_git_short_lock_runs_actual_git (test_dev_cycle.DevelopmentCycleTests.test_cli_git_short_lock_runs_actual_git) ... ok
+
+test_failed_body_preserves_failed_record_and_releases_slot (test_dev_cycle.DevelopmentCycleTests.test_failed_body_preserves_failed_record_and_releases_slot) ... ok
+
+test_git_lock_excludes_other_process (test_dev_cycle.DevelopmentCycleTests.test_git_lock_excludes_other_process) ... ok
+
+test_hardlinked_lock_and_metadata_are_rejected_without_victim_write (test_dev_cycle.DevelopmentCycleTests.test_hardlinked_lock_and_metadata_are_rejected_without_victim_write) ... ok
+
+test_junction_root_rejected_without_creating_lock (test_dev_cycle.DevelopmentCycleTests.test_junction_root_rejected_without_creating_lock) ... ok
+
+test_lock_file_and_ancestors_cannot_be_replaced_while_pinned (test_dev_cycle.DevelopmentCycleTests.test_lock_file_and_ancestors_cannot_be_replaced_while_pinned) ... ok
+
+test_runner_enforces_timeout (test_dev_cycle.DevelopmentCycleTests.test_runner_enforces_timeout) ... ok
+
+test_supervisor_crash_kills_child_and_grandchild_before_reuse (test_dev_cycle.DevelopmentCycleTests.test_supervisor_crash_kills_child_and_grandchild_before_reuse) ... ok
+
+test_two_process_slots_exclude_third_and_duplicate_worktree (test_dev_cycle.DevelopmentCycleTests.test_two_process_slots_exclude_third_and_duplicate_worktree) ... ok
+
+test_unknown_tree_cleanup_blocks_automatic_slot_reuse (test_dev_cycle.DevelopmentCycleTests.test_unknown_tree_cleanup_blocks_automatic_slot_reuse) ... ok
+
+test_hardlink_and_writer_already_open_refuse_pinning (test_install_inputs.InstallInputTests.test_hardlink_and_writer_already_open_refuse_pinning) ... ok
+
+test_independent_manifest_and_source_approval_required (test_install_inputs.InstallInputTests.test_independent_manifest_and_source_approval_required) ... ok
+
+test_mutable_reference_rejects_links_and_missing_files_without_creation (test_install_inputs.InstallInputTests.test_mutable_reference_rejects_links_and_missing_files_without_creation) ... ok
+
+test_package_namespace_rejects_case_alias_and_both_prefix_orders (test_install_inputs.InstallInputTests.test_package_namespace_rejects_case_alias_and_both_prefix_orders) ... ok
+
+test_package_pins_deny_file_write_delete_and_ancestor_rename_until_closed (test_install_inputs.InstallInputTests.test_package_pins_deny_file_write_delete_and_ancestor_rename_until_closed) ... ok
+
+test_reparse_ancestor_refused (test_install_inputs.InstallInputTests.test_reparse_ancestor_refused) ... ok
+
+test_system_component_policy_cannot_admit_arbitrary_path_and_alias_cannot_write (test_install_inputs.InstallInputTests.test_system_component_policy_cannot_admit_arbitrary_path_and_alias_cannot_write) ... ok
+
+test_unknown_script_and_unsafe_config_rejected_even_with_updated_manifest_hash (test_install_inputs.InstallInputTests.test_unknown_script_and_unsafe_config_rejected_even_with_updated_manifest_hash) ... ok
+
+test_authority_denied_before_launch_has_no_child_effect (autonomy.test_process_job.ProcessTests.test_authority_denied_before_launch_has_no_child_effect) ... ok
+
+test_capture_memory_is_bounded (autonomy.test_process_job.ProcessTests.test_capture_memory_is_bounded) ... ok
+
+test_limits_each_stream_and_both (autonomy.test_process_job.ProcessTests.test_limits_each_stream_and_both) ... ok
+
+test_lost_authority_kills_running_descendants_on_calling_thread (autonomy.test_process_job.ProcessTests.test_lost_authority_kills_running_descendants_on_calling_thread) ... ok
+
+test_only_declared_standard_handles_are_inherited (autonomy.test_process_job.ProcessTests.test_only_declared_standard_handles_are_inherited) ... ok
+
+test_parent_and_child_pid_gone_after_timeout (autonomy.test_process_job.ProcessTests.test_parent_and_child_pid_gone_after_timeout) ... ok
+
+test_post_cleanup_check_prevents_false_success (autonomy.test_process_job.ProcessTests.test_post_cleanup_check_prevents_false_success) ... ok
+
+test_primary_failure_retained (autonomy.test_process_job.ProcessTests.test_primary_failure_retained) ... ok
+
+test_reader_close_failure_is_captured_and_primary_timeout_retained (autonomy.test_process_job.ProcessTests.test_reader_close_failure_is_captured_and_primary_timeout_retained) ... ok
+
+test_single_event_limit (autonomy.test_process_job.ProcessTests.test_single_event_limit) ... ok
+
+test_success_and_nonzero (autonomy.test_process_job.ProcessTests.test_success_and_nonzero) ... ok
+
+test_timeout_and_success_remove_descendant (autonomy.test_process_job.ProcessTests.test_timeout_and_success_remove_descendant) ... ok
+
+test_windows_assignment_and_query_failures (autonomy.test_process_job.ProcessTests.test_windows_assignment_and_query_failures) ... ok
+
+
+
+----------------------------------------------------------------------
+
+Ran 32 tests in 8.278s
+
+
+
+OK
+

@@ -1,3 +1,6 @@
+中文：独立分支协调修复固定 688beeb67b089a8bd0545c9b9fbd5818f8b36870，32 项组合通过；独审 PENDING，未合并主线，canonical 未修改。锁/祖先身份、失败记录和清理不确定保留已修复；跨聊天共同接入与创建到 Job 绑定窗口仍待验收。详见 autonomy/evidence/u1_coordination_hardening_20261106/REPORT.md。全部门禁 false。
+English: Isolated coordination fix 688beeb67b089a8bd0545c9b9fbd5818f8b36870 passed 32 combined checks; independent review PENDING, not merged and canonical unchanged. Identity pinning and failure/uncertain-cleanup recording are fixed; shared chat adoption and creation-to-Job crash acceptance remain open. All gates false. See report above.
+
 中文：2026-11-06 开发协调候选固定源码 f2640e425bbc9c244ce59f98cfca593920e83526；本机多进程四项通过。候选在独立分支 codex/u1-dev-coordination-20261106，未合并主线、独审 PENDING；跨环境共享、锁文件身份和总控接入尚未验证。详见 autonomy/evidence/u1_dev_coordination_20261106/REPORT.md。生产门禁不变。
 English: The development-coordination candidate is pinned at f2640e425bbc9c244ce59f98cfca593920e83526; four local multiprocess checks passed. It is on branch codex/u1-dev-coordination-20261106, not merged to main; independent review is PENDING. Cross-environment sharing, lock-file identity and controller integration remain unverified. See autonomy/evidence/u1_dev_coordination_20261106/REPORT.md. Production gates remain unchanged.
 

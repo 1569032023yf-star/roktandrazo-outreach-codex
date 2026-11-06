@@ -4,6 +4,16 @@
   "description_en": "Independent development queue; never starts production discovery.",
   "tasks": [
     {
+      "id": "U1-coordination-hardening-20261106",
+      "status": "review_pending",
+      "updated_at": "2026-11-06T09:15:50.342662+00:00",
+      "checkpoint": "autonomy/evidence/u1_coordination_hardening_20261106/REPORT.md",
+      "source_sha": "688beeb67b089a8bd0545c9b9fbd5818f8b36870",
+      "tests": "32 PASS",
+      "next_action": "Independent review and creation-to-Job crash/shared-entrypoint validation before main integration",
+      "canonical_updated": false
+    },
+    {
       "id": "A-city-natural-observation-20261021T232411",
       "workstream": "A",
       "role": "reviewer",
@@ -6499,7 +6509,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-06T01:40:11.078599+00:00",
+  "updated_at": "2026-11-06T09:15:50.342662+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -6797,7 +6807,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "autonomy/evidence/u1_worker_admission_20261106/REPORT.md",
+  "checkpoint": "autonomy/evidence/u1_coordination_hardening_20261106/REPORT.md",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
@@ -10429,5 +10439,6 @@
     "allow_cancel_dispatch": false,
     "SMTP": false,
     "next_action": "Complete original-owner Provider operation admission and business startup argument integration; obtain independent review of the new source before rebuilding the fixed package. Authoritative billing and terminal receipts remain CONTRACT_MISSING."
-  }
+  },
+  "projection_scope": "isolated_branch_only_canonical_unchanged"
 }

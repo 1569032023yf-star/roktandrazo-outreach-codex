@@ -1,3 +1,6 @@
+中文：独立分支协调修复固定 688beeb67b089a8bd0545c9b9fbd5818f8b36870，32 项组合通过；独审 PENDING，未合并主线，canonical 未修改。锁/祖先身份、失败记录和清理不确定保留已修复；跨聊天共同接入与创建到 Job 绑定窗口仍待验收。详见 autonomy/evidence/u1_coordination_hardening_20261106/REPORT.md。全部门禁 false。
+English: Isolated coordination fix 688beeb67b089a8bd0545c9b9fbd5818f8b36870 passed 32 combined checks; independent review PENDING, not merged and canonical unchanged. Identity pinning and failure/uncertain-cleanup recording are fixed; shared chat adoption and creation-to-Job crash acceptance remain open. All gates false. See report above.
+
 中文：固定13d0b150701a0b8975875ae89db970a64a23edde修复Worker不完整Owner摘要关联及缺失业务查询的准入边界，30项组合通过；独审PENDING、新包未构建，不继承旧包验收。所有门禁false。详见autonomy/evidence/u1_worker_admission_20261106/REPORT.md。
 English: Fixed 13d0b150701a0b8975875ae89db970a64a23edde rejects partial owner joins and missing Provider search before adapter construction;30 combined tests pass. Review PENDING, no new package or inherited acceptance; all gates false. See autonomy/evidence/u1_worker_admission_20261106/REPORT.md.
 
