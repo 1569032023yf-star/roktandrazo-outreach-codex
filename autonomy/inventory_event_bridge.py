@@ -193,7 +193,12 @@ class ExistingOwnerBridge:
         owner=self.adapter._lock()
         # Validate authority BEFORE reserving the transport event. This does not
         # create a claim or budget reservation; execute still repeats all gates.
-        self.adapter._admission(event['admission'])
+        admission, _ = self.adapter._admission(event['admission'])
+        # Reject malformed search arguments before consuming the owner's
+        # durable, non-replayable event intent. This grants no dispatch rights.
+        if 'provider_request' in admission:
+            from discovery.providers.contracts import bound_search_request
+            bound_search_request(admission['provider_request'])
         self.adapter.prepare_event(event)
         identity=self.request('/v1/inventory-events',dict(event=event,owner=owner))['event_id']
         route='/v1/inventory-events/'+identity
