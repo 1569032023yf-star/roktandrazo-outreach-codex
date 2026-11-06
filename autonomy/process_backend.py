@@ -125,7 +125,14 @@ class ProcessBackend:
         with InstallInputPins() as executable_pins:
             for path, expected in zip((self.python,self.worker),self.hashes):
                 executable_pins.add(path,expected)
-            with context:
+            with context as environment:
+                if reference is not None:
+                    from discovery.providers.contracts import bound_search_request
+                    if type(operation) is not dict or 'provider_request' not in operation:
+                        raise ValueError('PROVIDER_SEARCH_REQUEST_REQUIRED')
+                    request=bound_search_request(operation['provider_request'])
+                    if request['provider']!=environment['WORKBUDDY_DISCOVERY_PROVIDER']:
+                        raise ValueError('PROVIDER_REQUEST_CONFIG_MISMATCH')
                 return self._execute_pinned(operation,deadline_monotonic=deadline_monotonic,
                                             executable_pins=executable_pins)
 

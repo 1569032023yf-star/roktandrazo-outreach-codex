@@ -81,6 +81,7 @@ class BackendTests(unittest.TestCase):
   config.write_text(json.dumps(dict(schema='rokt.provider-environment.v1',environment=dict(WORKBUDDY_DISCOVERY_PROVIDER='google_places'))))
   expected=hashlib.sha256(config.read_bytes()).hexdigest();before=dict(os.environ)
   b=self.backend(provider_config=str(config),provider_config_sha256=expected);o=self.operation()
+  o.pop('idempotency_key');o['provider_request']=dict(provider='google_places',query='coffee',city='Example City',state='TN',page_cursor='',page_size=1);o['idempotency_key']=digest(o)
   def child(arguments,**kwargs):
    self.assertEqual(arguments[-4:],['--provider-config',str(config),'--provider-config-sha256',expected])
    self.assertEqual(dict(os.environ),before)
@@ -91,6 +92,23 @@ class BackendTests(unittest.TestCase):
   config.write_text('released')
   with self.assertRaises(ValueError):b.execute_once(o,deadline_monotonic=time.monotonic()+.8)
   self.assertEqual(b.status(o['idempotency_key'])['transport_state'],'OUTPUT_RECORDED')
+ def test_invalid_provider_request_precedes_intent_and_child(self):
+  from unittest.mock import patch
+  config=self.f.root/'provider.json'
+  config.write_text(json.dumps(dict(schema='rokt.provider-environment.v1',environment=dict(WORKBUDDY_DISCOVERY_PROVIDER='google_places'))))
+  b=self.backend(provider_config=str(config),provider_config_sha256=hashlib.sha256(config.read_bytes()).hexdigest())
+  good=dict(provider='google_places',query='coffee',city='Example City',state='TN',page_cursor='',page_size=1)
+  for request in (None,{},dict(good,provider='serpapi'),dict(good,provider='browser_maps'),dict(good,page_size=True)):
+   with self.subTest(request=request):
+    o=self.operation();o.pop('idempotency_key')
+    if request is not None:o['provider_request']=request
+    o['idempotency_key']=digest(o)
+    with patch('autonomy.process_backend.run_tree') as child:
+     with self.assertRaises(ValueError):b.execute_once(o,deadline_monotonic=time.monotonic()+.8)
+     child.assert_not_called()
+    self.assertEqual(b.status(o['idempotency_key'])['transport_state'],'NOT_RECORDED')
+  self.assertFalse(self.marker.exists())
+
  def test_bad_provider_digest_precedes_execution_intent(self):
   from unittest.mock import patch
   config=self.f.root/'provider.json';config.write_text('{}')

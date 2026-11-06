@@ -44,6 +44,8 @@ class ProviderWorkerTests(unittest.TestCase):
                 worker_sha256=hashlib.sha256(worker.read_bytes()).hexdigest(),backend_id='synthetic-backend',
                 provider_config=str(p),provider_config_sha256=h)
             o=fixtures.BackendTests.operation(self)
+            from autonomy.growth_ledger import digest
+            o.pop('idempotency_key');o['provider_request']=dict(provider='browser_maps',query='coffee',city='Example City',state='TN',page_cursor='',page_size=1);o['idempotency_key']=digest(o)
             with self.assertRaises(ExecutionUnknown):b.execute_once(o,deadline_monotonic=time.monotonic()+.9)
             self.assertEqual(b.status(o['idempotency_key'])['transport_state'],'UNKNOWN')
             with self.assertRaisesRegex(ExecutionUnknown,'UNKNOWN_NO_REPLAY'):b.execute_once(o,deadline_monotonic=time.monotonic()+.9)
