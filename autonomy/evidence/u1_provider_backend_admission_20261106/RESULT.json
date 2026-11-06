@@ -1,0 +1,15 @@
+{
+  "task_id": "rokt-razo-20261106T150347Z",
+  "started_at": "2026-11-06T23:04:02.4549+08:00",
+  "recorded_at": "2026-11-06T15:08:57.537166+00:00",
+  "source_sha": "077967705772ef9fc994e6e30a49f7e647da99ba",
+  "base_sha": "90ca1f9e57c32dbb77dda8ec1a0113f646b56bb1",
+  "tests": "31 PASS in 10.082s",
+  "review": "PENDING",
+  "canonical_updated": false,
+  "next_action": "Independent fixed-source review; shared-entrypoint validation before safe integration",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "SMTP": false
+}

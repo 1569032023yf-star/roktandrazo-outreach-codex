@@ -1,3 +1,6 @@
+2026-11-06 Provider backend admission: source 077967705772ef9fc994e6e30a49f7e647da99ba; 31 PASS; review PENDING. 隔离分支已修复 Provider 请求在持久意图前的校验；主线/canonical 未修改，生产门禁保持关闭。
+Report: autonomy/evidence/u1_provider_backend_admission_20261106/REPORT.md
+
 中文：独立分支创建时 Job 绑定修复固定 ed1f89fe95c7e5d4d955a632df895beac4c5e79c，36 项组合通过，独审 PENDING。未合并主线/修改 canonical；详见 autonomy/evidence/u1_job_creation_binding_20261106/REPORT.md。全部生产门禁 false。
 English: Isolated creation-time Job binding fix ed1f89fe95c7e5d4d955a632df895beac4c5e79c passed 36 combined tests; independent review PENDING. Not merged; canonical unchanged. See report above. All production gates false.
 
