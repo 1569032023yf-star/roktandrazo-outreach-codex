@@ -1,3 +1,6 @@
+中文：独立分支创建时 Job 绑定修复固定 ed1f89fe95c7e5d4d955a632df895beac4c5e79c，36 项组合通过，独审 PENDING。未合并主线/修改 canonical；详见 autonomy/evidence/u1_job_creation_binding_20261106/REPORT.md。全部生产门禁 false。
+English: Isolated creation-time Job binding fix ed1f89fe95c7e5d4d955a632df895beac4c5e79c passed 36 combined tests; independent review PENDING. Not merged; canonical unchanged. See report above. All production gates false.
+
 中文：独立分支协调修复固定 688beeb67b089a8bd0545c9b9fbd5818f8b36870，32 项组合通过；独审 PENDING，未合并主线，canonical 未修改。锁/祖先身份、失败记录和清理不确定保留已修复；跨聊天共同接入与创建到 Job 绑定窗口仍待验收。详见 autonomy/evidence/u1_coordination_hardening_20261106/REPORT.md。全部门禁 false。
 English: Isolated coordination fix 688beeb67b089a8bd0545c9b9fbd5818f8b36870 passed 32 combined checks; independent review PENDING, not merged and canonical unchanged. Identity pinning and failure/uncertain-cleanup recording are fixed; shared chat adoption and creation-to-Job crash acceptance remain open. All gates false. See report above.
 
