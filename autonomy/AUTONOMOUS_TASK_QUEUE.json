@@ -4,6 +4,19 @@
   "description_en": "Independent development queue; never starts production discovery.",
   "tasks": [
     {
+      "id": "rokt-razo-20261106T210653Z",
+      "status": "runtime_integration_pending",
+      "source_sha": "2cca3f3891de2dc2e79765f96c92702a67e58009",
+      "updated_at": "2026-11-06T21:09:08.177653+00:00",
+      "checkpoint": "autonomy/evidence/u1_provider_package_20261107/REPORT.md",
+      "canonical_updated": false,
+      "artifacts": {
+        "install.zip": "e524bab4c3be56dd4bb6a58220b75001ca7251e5f954e4312a7665d3e64329ad",
+        "rollback-tools.zip": "86b6588a9cde0d83ee0fe349c8a5a38b3ae8a08fca5e379696f6838b964dbd9d"
+      },
+      "next_action": "Integrate separately pinned CPython/business dependencies into this cumulative candidate, then independent review"
+    },
+    {
       "id": "rokt-razo-20261106T180720Z",
       "status": "review_pending",
       "source_sha": "204d299ebfb137310ba8b348f9e0dd9f1721a0b6",
@@ -6539,7 +6552,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-06T18:09:42.415139+00:00",
+  "updated_at": "2026-11-06T21:09:08.177653+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -6837,7 +6850,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "autonomy/evidence/u1_provider_integrated_20261107/REPORT.md",
+  "checkpoint": "autonomy/evidence/u1_provider_package_20261107/REPORT.md",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",

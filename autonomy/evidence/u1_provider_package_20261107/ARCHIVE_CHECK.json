@@ -1,0 +1,13 @@
+{
+  "source_commit": "2cca3f3891de2dc2e79765f96c92702a67e58009",
+  "manifest_files_verified": 114,
+  "manifest_sha256": "062f045983f1d46f7a05c6ede5dfee0bcc6ac5009da5711860b5d99e9d94189d",
+  "x64_pe_verified": true,
+  "integrated_sources_verified": true,
+  "rollback_tools_present": true,
+  "python_runtime_bundled": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "SMTP": false,
+  "review": "PENDING"
+}

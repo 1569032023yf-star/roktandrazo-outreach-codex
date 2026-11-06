@@ -1,0 +1,18 @@
+{
+  "task_id": "rokt-razo-20261106T210653Z",
+  "started_at": "2026-11-07T05:07:07.9156939+08:00",
+  "recorded_at": "2026-11-06T21:09:08.177653+00:00",
+  "workdir": "D:\\CODEX\\roktandrazo-workspace\\u1-provider-package-20261107",
+  "source_sha": "2cca3f3891de2dc2e79765f96c92702a67e58009",
+  "artifacts": {
+    "install.zip": "e524bab4c3be56dd4bb6a58220b75001ca7251e5f954e4312a7665d3e64329ad",
+    "rollback-tools.zip": "86b6588a9cde0d83ee0fe349c8a5a38b3ae8a08fca5e379696f6838b964dbd9d"
+  },
+  "review": "PENDING",
+  "canonical_updated": false,
+  "next_action": "Integrate separately pinned CPython/business dependencies into this cumulative candidate, then independent review",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "SMTP": false
+}

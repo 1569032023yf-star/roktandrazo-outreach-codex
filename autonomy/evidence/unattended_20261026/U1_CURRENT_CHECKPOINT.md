@@ -1,3 +1,6 @@
+2026-11-07 固定 Provider x64 禁用归档已构建并核验114文件 / Built and checked fixed Provider x64 disabled archives. Source 2cca3f3891de2dc2e79765f96c92702a67e58009; CPython NOT_BUNDLED; review PENDING; main/canonical unchanged.
+Report: autonomy/evidence/u1_provider_package_20261107/REPORT.md
+
 2026-11-07 已集成 Provider 桥接与后端准入候选 / Integrated Provider bridge and backend candidate: 204d299ebfb137310ba8b348f9e0dd9f1721a0b6; 42 PASS; review PENDING. Main/canonical unchanged; gates false.
 Report: autonomy/evidence/u1_provider_integrated_20261107/REPORT.md
 
