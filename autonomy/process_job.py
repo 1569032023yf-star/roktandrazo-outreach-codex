@@ -291,8 +291,8 @@ def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, ass
     k.SetInformationJobObject.restype = w.BOOL
     k.QueryInformationJobObject.argtypes = [w.HANDLE, c.c_int, c.c_void_p, w.DWORD, c.c_void_p]
     k.QueryInformationJobObject.restype = w.BOOL
-    k.AssignProcessToJobObject.argtypes = [w.HANDLE, w.HANDLE]
-    k.AssignProcessToJobObject.restype = w.BOOL
+    k.IsProcessInJob.argtypes = [w.HANDLE, w.HANDLE, c.POINTER(w.BOOL)]
+    k.IsProcessInJob.restype = w.BOOL
     k.TerminateJobObject.argtypes = [w.HANDLE, w.UINT]
     k.TerminateJobObject.restype = w.BOOL
     k.CreateProcessW.argtypes = [w.LPCWSTR, w.LPWSTR, c.c_void_p, c.c_void_p, w.BOOL,
@@ -364,15 +364,22 @@ def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, ass
             os.set_handle_inheritable(handle, True)
         extended = STARTUPINFOEX()
         size = c.c_size_t()
-        k.InitializeProcThreadAttributeList(None, 1, 0, c.byref(size))
+        k.InitializeProcThreadAttributeList(None, 2, 0, c.byref(size))
         if not size.value or size.value > 65536:
             raise ProcessCleanupError('PROCESS_HANDLE_LIST_SIZE')
         attributes = c.create_string_buffer(size.value)
-        checked(k.InitializeProcThreadAttributeList(attributes, 1, 0, c.byref(size)))
+        checked(k.InitializeProcThreadAttributeList(attributes, 2, 0, c.byref(size)))
         attributes_initialized = True
         allowed_handles = (w.HANDLE*len(handles))(*handles)
         checked(k.UpdateProcThreadAttribute(attributes, 0, 0x20002, allowed_handles,
                                            c.sizeof(allowed_handles), None, None))
+        # Bind the child during CreateProcess, rather than leaving an unowned
+        # suspended process between CreateProcess and AssignProcessToJobObject.
+        # Windows 10+/Server 2016+; unsupported attributes fail before launch.
+        # https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute
+        creation_jobs = (w.HANDLE * 1)(job)
+        checked(k.UpdateProcThreadAttribute(attributes, 0, 0x2000D, creation_jobs,
+                                           c.sizeof(creation_jobs), None, None))
         extended.lpAttributeList = c.cast(attributes, c.c_void_p)
         startup = extended.StartupInfo
         startup.cb = c.sizeof(extended)
@@ -381,10 +388,14 @@ def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, ass
         command = c.create_unicode_buffer(subprocess.list2cmdline(args))
         checked(k.CreateProcessW(args[0] if lifecycle is not None else None, command, None, None, True, 0x4 | 0x08000000 | 0x80000,
             None, str(cwd) if cwd else None, c.byref(extended), c.byref(info)))
+        assigned = True  # Creation succeeded with the required Job attribute.
+        in_job = w.BOOL()
+        checked(k.IsProcessInJob(info.hProcess, job, c.byref(in_job)))
+        if not in_job.value:
+            assigned = False  # Also terminate the suspended process directly.
+            raise ProcessCleanupError('PROCESS_CREATION_JOB_MEMBERSHIP_UNVERIFIED')
         for stream in writes:
             stream.close()
-        checked(k.AssignProcessToJobObject(job, info.hProcess))
-        assigned = True
         capture.start(streams)
         if lifecycle is not None:
             times=[w.FILETIME() for _ in range(4)]
@@ -416,7 +427,7 @@ def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, ass
     finally:
         if attributes_initialized:
             k.DeleteProcThreadAttributeList(attributes)
-        # Every failure, including suspended assignment failure, uses verified cleanup.
+        # Every failure, including creation/membership failure, uses verified cleanup.
         if info.hProcess:
             try:
                 if assigned:

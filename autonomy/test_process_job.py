@@ -109,7 +109,7 @@ class ProcessTests(unittest.TestCase):
     def test_windows_assignment_and_query_failures(self):
         import ctypes
         real_dll = ctypes.WinDLL
-        for name in ('AssignProcessToJobObject', 'QueryInformationJobObject', 'WaitForSingleObject', 'UpdateProcThreadAttribute'):
+        for name in ('IsProcessInJob', 'QueryInformationJobObject', 'WaitForSingleObject', 'UpdateProcThreadAttribute'):
             class Wrapper:
                 def __init__(self, fn):
                     self.fn = fn
@@ -129,6 +129,89 @@ class ProcessTests(unittest.TestCase):
                     self.assertFalse(caught.exception.cleanup_verified)
                 else:
                     self.assertTrue(caught.exception.cleanup_verified)
+
+    @unittest.skipUnless(os.name == 'nt', 'Windows creation-time Job containment')
+    def test_creation_job_attribute_failure_prevents_launch(self):
+        import ctypes
+        dll = ctypes.WinDLL('kernel32', use_last_error=True)
+        real_update = dll.UpdateProcThreadAttribute
+        class RejectJob:
+            def __call__(self, *args):
+                if args[2] == 0x2000D:
+                    return 0
+                return real_update(*args)
+        dll.UpdateProcThreadAttribute = RejectJob()
+        with tempfile.TemporaryDirectory() as folder:
+            marker = Path(folder) / 'must-not-execute'
+            with patch.object(ctypes, 'WinDLL', return_value=dll):
+                with self.assertRaises(OSError) as caught:
+                    self.run_code('from pathlib import Path;Path('+repr(str(marker))+').touch()')
+            self.assertTrue(caught.exception.cleanup_verified)
+            self.assertFalse(marker.exists())
+
+    @unittest.skipUnless(os.name == 'nt', 'Windows creation-time Job containment')
+    def test_supervisor_death_immediately_after_creation_kills_suspended_child(self):
+        import json
+        from autonomy.lock_recovery import process_identity
+        with tempfile.TemporaryDirectory() as folder:
+            marker = Path(folder) / 'created.json'
+            effect = Path(folder) / 'must-not-execute'
+            script = Path(folder) / 'supervisor.py'
+            script.write_text(
+                'import ctypes,sys,time,json\n'
+                'from pathlib import Path\n'
+                'from unittest.mock import patch\n'
+                'from autonomy.process_job import run_tree\n'
+                'dll=ctypes.WinDLL("kernel32",use_last_error=True)\n'
+                'original=dll.CreateProcessW\n'
+                'class PauseAfterCreate:\n'
+                ' def __call__(self,*args):\n'
+                '  result=original(*args)\n'
+                '  if result:\n'
+                '   Path(sys.argv[1]).write_text(json.dumps(args[-1]._obj.dwProcessId))\n'
+                '   time.sleep(30)\n'
+                '  return result\n'
+                'dll.CreateProcessW=PauseAfterCreate()\n'
+                'with patch.object(ctypes,"WinDLL",return_value=dll):\n'
+                ' run_tree([sys.executable,"-c","from pathlib import Path;Path("+repr(sys.argv[2])+").touch()"],timeout=10)\n',
+                encoding='utf-8')
+            # Absolute script needs the repository explicitly on its import path.
+            env = dict(os.environ, PYTHONPATH=str(Path.cwd()))
+            supervisor = subprocess.Popen([sys.executable, '-B', str(script), str(marker), str(effect)],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
+            child_handle = None
+            try:
+                deadline = time.monotonic() + 10
+                while not marker.exists() and supervisor.poll() is None and time.monotonic() < deadline:
+                    time.sleep(.02)
+                self.assertTrue(marker.exists(), 'creation hook did not run')
+                pid = json.loads(marker.read_text())
+                self.assertIsNotNone(process_identity(pid))
+                import ctypes
+                from ctypes import wintypes
+                kernel = ctypes.WinDLL('kernel32', use_last_error=True)
+                kernel.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+                kernel.OpenProcess.restype = wintypes.HANDLE
+                kernel.TerminateProcess.argtypes = [wintypes.HANDLE, wintypes.UINT]
+                kernel.CloseHandle.argtypes = [wintypes.HANDLE]
+                child_handle = kernel.OpenProcess(1, False, pid)
+                self.assertTrue(child_handle)
+                self.assertFalse(effect.exists())
+                supervisor.kill(); supervisor.wait(timeout=10)
+                deadline = time.monotonic() + 10
+                while process_identity(pid) is not None and time.monotonic() < deadline:
+                    time.sleep(.02)
+                self.assertIsNone(process_identity(pid), 'suspended child survived supervisor death')
+                self.assertFalse(effect.exists())
+            finally:
+                if supervisor.poll() is None:
+                    supervisor.kill()
+                supervisor.communicate(timeout=10)
+                if child_handle:
+                    # Clean up the exact test child on assertion failure too;
+                    # retaining a handle avoids terminating a reused PID.
+                    kernel.TerminateProcess(child_handle, 125)
+                    kernel.CloseHandle(child_handle)
 
     @unittest.skipUnless(os.name == 'nt', 'Windows handle inheritance')
     def test_only_declared_standard_handles_are_inherited(self):
