@@ -1,0 +1,6 @@
+{
+  "returncode": 0,
+  "stdout": "{\"packaged_service_bootstrap_integrity\": true, \"elapsed_seconds\": 3.3720268000033684, \"fixture_store\": true, \"service_started\": false, \"production_installation\": false}\n",
+  "stderr": "",
+  "package_source": "2ca270b5f717150e6a687b207e7059f2dc9c46cb"
+}

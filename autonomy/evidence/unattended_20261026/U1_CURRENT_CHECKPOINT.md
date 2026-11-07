@@ -1,3 +1,6 @@
+中文：固定afbf24f263e42304d3d73f90e564e3eb48692154修复真实独立宿主启动的大分配及平方级路径扫描；27项通过，新5058文件实际CPython包五探针及最终完整性VERIFIED，引导解析3.374秒。独审PENDING，主树/canonical未改，全部生产门禁false。见autonomy/evidence/u1_bootstrap_read_20261107/REPORT.md。
+English: Fixed afbf24f263e42304d3d73f90e564e3eb48692154 bounds real standalone bootstrap reads/path checks;27 pass and fresh5058-file runtime archive with five probes/final integrity VERIFIED; bootstrap3.374s. Review PENDING; main/canonical unchanged; production gates false. See autonomy/evidence/u1_bootstrap_read_20261107/REPORT.md.
+
 中文：固定f5073c523c4d79abca82210d53b8ddae7510f330修复256MiB重复读取分配；27项通过。新真实5058文件CPython包提取完整核验VERIFIED/0，44.776278秒，回滚4960组件对应。独审PENDING，未安装，所有门禁及最终状态false。见autonomy/evidence/u1_bounded_read_20261107/REPORT.md。
 English: Fixed f5073c523c4d79abca82210d53b8ddae7510f330 bounds artifact reads;27 pass. Fresh5058-file runtime archive extracted verification VERIFIED/0 in44.776278s,4960 rollback components match. Review PENDING; no installation; final states/gates false. See autonomy/evidence/u1_bounded_read_20261107/REPORT.md.
 

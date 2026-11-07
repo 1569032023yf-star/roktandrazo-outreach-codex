@@ -4,6 +4,20 @@
   "description_en": "Independent development queue; never starts production discovery.",
   "tasks": [
     {
+      "id": "rokt-razo-20261107T090934Z",
+      "status": "offline_bootstrap_verified_review_pending",
+      "source_sha": "afbf24f263e42304d3d73f90e564e3eb48692154",
+      "updated_at": "2026-11-07T09:26:09.305779+00:00",
+      "checkpoint": "autonomy/evidence/u1_bootstrap_read_20261107/REPORT.md",
+      "canonical_updated": false,
+      "tests": "27 PASS in12.904s; packaged bootstrap and extracted verification VERIFIED",
+      "artifacts": {
+        "install.zip": "c242fab051e85f0c03645a673b87c1b68f74f22fa1fb60bef527318187c12157",
+        "rollback-tools.zip": "520afab37ce563a618808307874e24b1429230ca7d65490c92c27c8c91adc86b"
+      },
+      "next_action": "Finish remaining business startup argument/import closure; independent review of cumulative fixed source and archives; prove shared-entry adoption before main integration"
+    },
+    {
       "id": "rokt-razo-20261107T061201Z",
       "status": "offline_artifact_verified_review_pending",
       "source_sha": "f5073c523c4d79abca82210d53b8ddae7510f330",
@@ -6589,7 +6603,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-07T06:29:12.635745+00:00",
+  "updated_at": "2026-11-07T09:26:09.305779+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -6887,7 +6901,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "autonomy/evidence/u1_bounded_read_20261107/REPORT.md",
+  "checkpoint": "autonomy/evidence/u1_bootstrap_read_20261107/REPORT.md",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
@@ -10520,5 +10534,56 @@
     "SMTP": false,
     "next_action": "Complete original-owner Provider operation admission and business startup argument integration; obtain independent review of the new source before rebuilding the fixed package. Authoritative billing and terminal receipts remain CONTRACT_MISSING."
   },
-  "projection_scope": "isolated_branch_only_canonical_unchanged"
+  "projection_scope": "isolated_branch_only_canonical_unchanged",
+  "u1_bootstrap_latest": {
+    "task_id": "rokt-razo-20261107T090934Z",
+    "started_at": "2026-11-07T17:09:51.3042366+08:00",
+    "ended_at": "2026-11-07T09:26:09.305779+00:00",
+    "workdir": "D:\\CODEX\\roktandrazo-workspace\\u1-bootstrap-read-20261107",
+    "branch": "codex/u1-bootstrap-read-20261107",
+    "start_sha": "f9d3a27551f7d559b2d239b5a86acc1fd6d393a2",
+    "source_commit": "afbf24f263e42304d3d73f90e564e3eb48692154",
+    "files": [
+      "autonomy/windows/u1_bootstrap.py",
+      "tools/verify_u1_delivery.py",
+      "test_bootstrap_arguments.py"
+    ],
+    "tests": {
+      "command": "python -B -m unittest test_bootstrap_arguments test_delivery_verification test_large_runtime_release test_release_store",
+      "count": 27,
+      "result": "PASS",
+      "seconds": 12.904
+    },
+    "package": {
+      "artifacts": {
+        "install.zip": "c242fab051e85f0c03645a673b87c1b68f74f22fa1fb60bef527318187c12157",
+        "rollback-tools.zip": "520afab37ce563a618808307874e24b1429230ca7d65490c92c27c8c91adc86b"
+      },
+      "files": 5058,
+      "independent_review": "PENDING",
+      "manifest_sha256": "9251efd8bed766f828f9b427d1b6830a71c13f9453efba366d925a2e8e5fcd66",
+      "package_complete": false,
+      "production_ready": false,
+      "python_runtime_bundled": true,
+      "source_commit": "afbf24f263e42304d3d73f90e564e3eb48692154"
+    },
+    "extracted_verification": "VERIFIED",
+    "packaged_bootstrap_seconds": 3.373601100000087,
+    "independent_review": "PENDING",
+    "canonical_updated": false,
+    "main_updated": false,
+    "statuses": {
+      "DEVELOPMENT_COMPLETE": false,
+      "RELEASE_READY": false,
+      "PRODUCTION_DEPLOYED": false,
+      "PRODUCTION_ACCEPTED": false,
+      "BUSINESS_GROWTH": "UNKNOWN"
+    },
+    "allow_install": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "SMTP": false,
+    "provider_contract": "CONTRACT_MISSING",
+    "next_action": "Finish remaining business startup argument/import closure; independent review of cumulative fixed source and archives; prove shared-entry adoption before main integration"
+  }
 }

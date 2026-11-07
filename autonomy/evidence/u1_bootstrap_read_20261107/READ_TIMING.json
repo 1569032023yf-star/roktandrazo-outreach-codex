@@ -1,0 +1,9 @@
+{
+  "bytes": 6731,
+  "reads": 64,
+  "limit": 268435456,
+  "baseline_sha": "f9d3a27551f7d559b2d239b5a86acc1fd6d393a2",
+  "candidate_sha": "2ca270b5f717150e6a687b207e7059f2dc9c46cb",
+  "baseline_seconds": 4.186744500009809,
+  "candidate_seconds": 0.016972699959296733
+}
