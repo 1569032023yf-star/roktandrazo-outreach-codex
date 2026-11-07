@@ -89,7 +89,7 @@ socket.socket.connect=deny;socket.create_connection=deny
 sqlite3.connect=deny;smtplib.SMTP=deny;smtplib.SMTP_SSL=deny
 # Execute the actual packaged service bootstrap definitions, without starting it.
 bootstrap=runpy.run_path(str(root/'payload/host/service/u1_bootstrap.py'))
-with tempfile.TemporaryDirectory(prefix='u1-bootstrap-probe-',dir=sys.argv[3]) as tmp:
+with tempfile.TemporaryDirectory(prefix='b',dir=sys.argv[3]) as tmp:
  store=ReleaseStore(Path(tmp));store.stage(root,sys.argv[2])
  store.activate(sys.argv[2],expected_current=None)
  started=time.monotonic();folder=bootstrap['resolve_release'](Path(tmp))
@@ -128,7 +128,7 @@ def verify(args, progress=None):
             [str(runtime/'python.exe'),'-I','-B','-m','pip','--isolated','--disable-pip-version-check','check'],
             [str(host/'service/RoktU1Bridge.exe'),'--validate-runtime',str(runtime/'U1_RUNTIME_CONTENT.json'),content_digest,str(runtime/'python.exe')],
             [str(runtime/'python.exe'),'-I','-B','-c',HTTP_PROBE,str(root/'payload/python'),str(root.parent)],
-            [str(runtime/'python.exe'),'-I','-B','-c',BOOTSTRAP_PROBE,str(root),args.manifest_sha256,str(root.parent)]]
+            [str(runtime/'python.exe'),'-I','-B','-c',BOOTSTRAP_PROBE,str(root),args.manifest_sha256,str(root.parent.parent)]]
         for command in commands:
             progress(dict(arguments=command[1:],outcome='RUNNING'))
             try:
