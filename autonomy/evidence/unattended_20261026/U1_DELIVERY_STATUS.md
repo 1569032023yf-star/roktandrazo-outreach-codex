@@ -1,3 +1,7 @@
+中文：固定d43209c01e8ec21da578b62c0b6c9de2b0850399接通包内只读启动preflight，拒绝过期凭据/改变快照/重复配置键/相对路径；24项通过，新5058文件CPython包五探针VERIFIED。独审PENDING，main/canonical未改，生产门禁false。
+English: Fixed d43209c01e8ec21da578b62c0b6c9de2b0850399 wires packaged read-only startup preflight and rejects expired credentials, changed snapshots, duplicate keys and relative paths;24 pass and fresh5058-file CPython package five probes VERIFIED. Review PENDING;main/canonical unchanged;gates false.
+Report: autonomy/evidence/u1_startup_preflight_20261107/REPORT.md
+
 中文：固定4fc6db7c22e16885d68b81e7309d51286e7609b7修复原生宿主创建至Job分配的崩溃窗口；20项组合与2项包内真实EXE生命周期核验通过，新5058文件CPython包五探针VERIFIED。独审PENDING，main/canonical未改，门禁false。见autonomy/evidence/u1_native_job_20261107/REPORT.md。
 English:Fixed 4fc6db7c22e16885d68b81e7309d51286e7609b7 binds native child Job during creation;20 combined and2 packaged-EXE checks pass;fresh5058-file CPython archive five probes VERIFIED. Review PENDING;main/canonical unchanged;gates false. See report above.
 

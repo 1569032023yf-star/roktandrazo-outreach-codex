@@ -1,0 +1,63 @@
+{
+  "task_id": "rokt-razo-20261107T151008Z",
+  "started_at": "2026-11-07T23:10:22.3981372+08:00",
+  "checkpoint_at": "2026-11-07T15:22:32.374942+00:00",
+  "workdir": "D:\\CODEX\\roktandrazo-workspace\\u1-startup-preflight-20261107",
+  "branch": "codex/u1-startup-preflight-20261107",
+  "start_sha": "5b4e7b441a476e5b24e7fcd9ebeb83c7a2ba23cf",
+  "source_commit": "d43209c01e8ec21da578b62c0b6c9de2b0850399",
+  "files": [
+    "autonomy/u1_host_runtime.py",
+    "autonomy/windows/u1_bootstrap.py",
+    "tools/verify_u1_delivery.py",
+    "test_u1_host_runtime.py",
+    "test_bootstrap_arguments.py"
+  ],
+  "tests": {
+    "command": "python -B -m unittest test_u1_host_runtime test_bootstrap_arguments test_disabled_host_package",
+    "count": 24,
+    "result": "PASS",
+    "seconds": 12.679
+  },
+  "package": {
+    "artifacts": {
+      "install.zip": "306c4247ac0e3cc680261b2f46aea919b7623c3207525f4031c9d583f884d2c2",
+      "rollback-tools.zip": "3c52463bf17d56de228c44b1364a14d86c5d78e0cf2e6ff3fc01ccd113e6bbd7"
+    },
+    "files": 5058,
+    "independent_review": "PENDING",
+    "manifest_sha256": "ee9544cd5a93bcdf5144b800b1c4b8d31dc647f2b096600fd44d693bde82e169",
+    "package_complete": false,
+    "production_ready": false,
+    "python_runtime_bundled": true,
+    "source_commit": "d43209c01e8ec21da578b62c0b6c9de2b0850399"
+  },
+  "archive_check": {
+    "files": 5058,
+    "rollback_host_files_equal": 4960,
+    "source_commit": "d43209c01e8ec21da578b62c0b6c9de2b0850399"
+  },
+  "extracted_verification": "VERIFIED",
+  "independent_review": "PENDING",
+  "canonical_readable": true,
+  "canonical_sha256": "6c917ad0019123cd7243477efee83d56346ed132e64d9ce119af4937320df40e",
+  "canonical_updated": false,
+  "main_updated": false,
+  "statuses": {
+    "DEVELOPMENT_COMPLETE": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "BUSINESS_GROWTH": "UNKNOWN"
+  },
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "SMTP": false,
+  "provider_contract": "CONTRACT_MISSING",
+  "operational_errors": [
+    "Initial prepare invocation omitted required branch: rejected before child start; corrected exact arguments.",
+    "Archive comparison initially omitted host/ prefix in rollback member lookup: corrected verifier and all digests matched; no package change."
+  ],
+  "next_action": "Extend startup validation to authoritative snapshot schema and exact Worker business import/argument closure, without dispatch; independent review of cumulative fixed candidate; confirm shared coordination before main integration"
+}
