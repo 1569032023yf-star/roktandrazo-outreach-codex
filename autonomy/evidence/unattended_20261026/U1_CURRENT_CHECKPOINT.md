@@ -1,3 +1,7 @@
+中文：固定9e2446fefc52e083430debec278886223b22716b将真实独立SQLite/schema完整性检查接入宿主启动和只读预检；33项通过，新5058文件CPython包五探针VERIFIED。独审PENDING，main/canonical未改，全部生产门禁false。
+English: Fixed 9e2446fefc52e083430debec278886223b22716b wires real standalone SQLite/schema integrity checks into host startup/preflight;33 pass and fresh5058-file CPython archive five probes VERIFIED. Review PENDING;main/canonical unchanged;gates false.
+Report: autonomy/evidence/u1_snapshot_admission_20261108/REPORT.md
+
 中文：固定d43209c01e8ec21da578b62c0b6c9de2b0850399接通包内只读启动preflight，拒绝过期凭据/改变快照/重复配置键/相对路径；24项通过，新5058文件CPython包五探针VERIFIED。独审PENDING，main/canonical未改，生产门禁false。
 English: Fixed d43209c01e8ec21da578b62c0b6c9de2b0850399 wires packaged read-only startup preflight and rejects expired credentials, changed snapshots, duplicate keys and relative paths;24 pass and fresh5058-file CPython package five probes VERIFIED. Review PENDING;main/canonical unchanged;gates false.
 Report: autonomy/evidence/u1_startup_preflight_20261107/REPORT.md

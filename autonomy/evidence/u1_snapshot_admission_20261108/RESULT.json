@@ -1,0 +1,59 @@
+{
+  "task_id": "rokt-razo-20261107T181111Z",
+  "started_at": "2026-11-08T02:11:22.3813531+08:00",
+  "checkpoint_at": "2026-11-07T18:19:47.028240+00:00",
+  "workdir": "D:\\CODEX\\roktandrazo-workspace\\u1-snapshot-admission-20261108",
+  "branch": "codex/u1-snapshot-admission-20261108",
+  "start_sha": "ddbe903c174f8a641d127a659e1099e0f2b7eb5f",
+  "source_commit": "9e2446fefc52e083430debec278886223b22716b",
+  "files": [
+    "autonomy/recovery_status.py",
+    "autonomy/u1_host_runtime.py",
+    "tools/verify_u1_delivery.py",
+    "test_recovery_status.py",
+    "test_u1_host_runtime.py"
+  ],
+  "tests": {
+    "command": "python -B -m unittest test_recovery_status test_u1_host_runtime test_bootstrap_arguments test_disabled_host_package",
+    "count": 33,
+    "result": "PASS",
+    "seconds": 14.023
+  },
+  "package": {
+    "artifacts": {
+      "install.zip": "9943fd48c05d07ec6516a8f414301288a1590806e3c3bb90d0c3c77ee939ca2c",
+      "rollback-tools.zip": "6280524aefce303aec014093b3e53ee26a56f642747bca8d67ff9d9e078a12ac"
+    },
+    "files": 5058,
+    "independent_review": "PENDING",
+    "manifest_sha256": "a27884d9feeb58991dbf35f663744af014d7c244b18924ebee85e21335faa7c6",
+    "package_complete": false,
+    "production_ready": false,
+    "python_runtime_bundled": true,
+    "source_commit": "9e2446fefc52e083430debec278886223b22716b"
+  },
+  "archive_check": {
+    "files": 5058,
+    "rollback_host_files_equal": 4960,
+    "source_commit": "9e2446fefc52e083430debec278886223b22716b"
+  },
+  "extracted_verification": "VERIFIED",
+  "independent_review": "PENDING",
+  "canonical_readable": true,
+  "canonical_sha256": "6c917ad0019123cd7243477efee83d56346ed132e64d9ce119af4937320df40e",
+  "canonical_updated": false,
+  "main_updated": false,
+  "statuses": {
+    "DEVELOPMENT_COMPLETE": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "BUSINESS_GROWTH": "UNKNOWN"
+  },
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "SMTP": false,
+  "provider_contract": "CONTRACT_MISSING",
+  "next_action": "Integrate packaged Provider Worker preflight with pinned host configuration and verify exact isolated-Python startup/import path without requests; independent fixed-candidate review and shared chat-entry coordination before main integration"
+}

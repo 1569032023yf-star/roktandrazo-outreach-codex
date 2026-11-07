@@ -4,18 +4,18 @@
   "description_en": "Independent development queue; never starts production discovery.",
   "tasks": [
     {
-      "id": "rokt-razo-20261107T151008Z",
-      "status": "offline_startup_preflight_verified_review_pending",
-      "source_sha": "d43209c01e8ec21da578b62c0b6c9de2b0850399",
-      "updated_at": "2026-11-07T15:22:32.374942+00:00",
-      "checkpoint": "autonomy/evidence/u1_startup_preflight_20261107/REPORT.md",
+      "id": "rokt-razo-20261107T181111Z",
+      "status": "offline_snapshot_admission_verified_review_pending",
+      "source_sha": "9e2446fefc52e083430debec278886223b22716b",
+      "updated_at": "2026-11-07T18:19:47.028240+00:00",
+      "checkpoint": "autonomy/evidence/u1_snapshot_admission_20261108/REPORT.md",
       "canonical_updated": false,
-      "tests": "24 PASS;5 packaged probes VERIFIED",
+      "tests": "33 PASS;5 packaged probes VERIFIED",
       "artifacts": {
-        "install.zip": "306c4247ac0e3cc680261b2f46aea919b7623c3207525f4031c9d583f884d2c2",
-        "rollback-tools.zip": "3c52463bf17d56de228c44b1364a14d86c5d78e0cf2e6ff3fc01ccd113e6bbd7"
+        "install.zip": "9943fd48c05d07ec6516a8f414301288a1590806e3c3bb90d0c3c77ee939ca2c",
+        "rollback-tools.zip": "6280524aefce303aec014093b3e53ee26a56f642747bca8d67ff9d9e078a12ac"
       },
-      "next_action": "Extend startup validation to authoritative snapshot schema and exact Worker business import/argument closure, without dispatch; independent review of cumulative fixed candidate; confirm shared coordination before main integration"
+      "next_action": "Integrate packaged Provider Worker preflight with pinned host configuration and verify exact isolated-Python startup/import path without requests; independent fixed-candidate review and shared chat-entry coordination before main integration"
     },
     {
       "id": "rokt-razo-20261107T090934Z",
@@ -6617,7 +6617,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-07T15:22:32.374942+00:00",
+  "updated_at": "2026-11-07T18:19:47.028240+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -6915,7 +6915,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "autonomy/evidence/u1_startup_preflight_20261107/REPORT.md",
+  "checkpoint": "autonomy/evidence/u1_snapshot_admission_20261108/REPORT.md",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
@@ -10627,5 +10627,19 @@
       "rollback-tools.zip": "3c52463bf17d56de228c44b1364a14d86c5d78e0cf2e6ff3fc01ccd113e6bbd7"
     },
     "next_action": "Extend startup validation to authoritative snapshot schema and exact Worker business import/argument closure, without dispatch; independent review of cumulative fixed candidate; confirm shared coordination before main integration"
+  },
+  "u1_snapshot_admission_latest": {
+    "id": "rokt-razo-20261107T181111Z",
+    "status": "offline_snapshot_admission_verified_review_pending",
+    "source_sha": "9e2446fefc52e083430debec278886223b22716b",
+    "updated_at": "2026-11-07T18:19:47.028240+00:00",
+    "checkpoint": "autonomy/evidence/u1_snapshot_admission_20261108/REPORT.md",
+    "canonical_updated": false,
+    "tests": "33 PASS;5 packaged probes VERIFIED",
+    "artifacts": {
+      "install.zip": "9943fd48c05d07ec6516a8f414301288a1590806e3c3bb90d0c3c77ee939ca2c",
+      "rollback-tools.zip": "6280524aefce303aec014093b3e53ee26a56f642747bca8d67ff9d9e078a12ac"
+    },
+    "next_action": "Integrate packaged Provider Worker preflight with pinned host configuration and verify exact isolated-Python startup/import path without requests; independent fixed-candidate review and shared chat-entry coordination before main integration"
   }
 }
