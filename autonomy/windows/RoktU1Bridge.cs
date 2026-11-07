@@ -81,8 +81,8 @@ public sealed class RoktU1Bridge : ServiceBase {
     }
 }
 
-// Suspended-create -> Job assignment -> resume. Parent death closes the job and
-// kills descendants. Never launch a child outside this sequence as a fallback.
+// Creation-time Job binding -> membership verification -> resume. Parent death
+// closes the non-inherited Job handle, including during suspended creation.
 public sealed class ServiceChild : IDisposable {
     [StructLayout(LayoutKind.Sequential)] struct FileFacts {
         public uint attributes;public System.Runtime.InteropServices.ComTypes.FILETIME created,accessed,written;
@@ -96,6 +96,7 @@ public sealed class ServiceChild : IDisposable {
         public int x,y,xsize,ysize,xchars,ychars,fill,flags; public short show,reserved2;
         public IntPtr reservedPtr,input,output,error;
     }
+    [StructLayout(LayoutKind.Sequential)] struct StartupEx { public Startup startup; public IntPtr attributes; }
     [StructLayout(LayoutKind.Sequential)] struct ProcessInfo { public IntPtr process,thread; public int pid,tid; }
     [StructLayout(LayoutKind.Sequential)] struct Basic {
         public long processTime,jobTime; public uint flags; public UIntPtr min,max;
@@ -105,8 +106,11 @@ public sealed class ServiceChild : IDisposable {
     [StructLayout(LayoutKind.Sequential)] struct Extended { public Basic basic;public Io io;public UIntPtr processMemory,jobMemory,peakProcess,peakJob; }
     [DllImport("kernel32",SetLastError=true)] static extern IntPtr CreateJobObject(IntPtr sa,string name);
     [DllImport("kernel32",SetLastError=true)] static extern bool SetInformationJobObject(IntPtr job,int kind,ref Extended limits,int length);
-    [DllImport("kernel32",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool CreateProcess(string app,StringBuilder cmd,IntPtr pa,IntPtr ta,bool inherit,uint flags,IntPtr env,string cwd,ref Startup startup,out ProcessInfo info);
-    [DllImport("kernel32",SetLastError=true)] static extern bool AssignProcessToJobObject(IntPtr job,IntPtr process);
+    [DllImport("kernel32",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool CreateProcess(string app,StringBuilder cmd,IntPtr pa,IntPtr ta,bool inherit,uint flags,IntPtr env,string cwd,ref StartupEx startup,out ProcessInfo info);
+    [DllImport("kernel32",SetLastError=true)] static extern bool InitializeProcThreadAttributeList(IntPtr list,int count,uint flags,ref IntPtr size);
+    [DllImport("kernel32",SetLastError=true)] static extern bool UpdateProcThreadAttribute(IntPtr list,uint flags,IntPtr attribute,IntPtr value,IntPtr size,IntPtr previous,IntPtr returned);
+    [DllImport("kernel32")] static extern void DeleteProcThreadAttributeList(IntPtr list);
+    [DllImport("kernel32",SetLastError=true)] static extern bool IsProcessInJob(IntPtr process,IntPtr job,out bool member);
     [DllImport("kernel32",SetLastError=true)] static extern uint ResumeThread(IntPtr thread);
     [DllImport("kernel32")] static extern bool TerminateProcess(IntPtr process,uint code);
     [DllImport("kernel32")] static extern bool TerminateJobObject(IntPtr job,uint code);
@@ -200,21 +204,37 @@ public sealed class ServiceChild : IDisposable {
         bool complete=c!=null && c.ContainsKey("schema") && c["schema"]=="rokt.u1-supervisor.v2";
         if(c==null || c.Count!=(complete?10:8) || (!complete && c["schema"]!="rokt.u1-supervisor.v1") || c["inventory_id"]!="1784775229336") throw new InvalidOperationException("CHILD_CONFIG_REJECTED");
         var child=new ServiceChild();ProcessInfo pi=new ProcessInfo();
+        IntPtr attributes=IntPtr.Zero,jobValue=IntPtr.Zero;bool initialized=false;
         try {
             if(complete) child.PinRuntime(c["python_runtime_manifest"],c["python_runtime_manifest_sha256"],c["python"]);
             child.Pin(c["python"],c["python_sha256"]);child.Pin(c["bootstrap"],c["bootstrap_sha256"]);child.Pin(c["runtime_config"],c["runtime_config_sha256"]);
             child.job=CreateJobObject(IntPtr.Zero,null);if(child.job==IntPtr.Zero) throw new InvalidOperationException("JOB_CREATE_FAILED");
             Extended limits=new Extended();limits.basic.flags=0x2000;
             if(!SetInformationJobObject(child.job,9,ref limits,Marshal.SizeOf(limits))) throw new InvalidOperationException("JOB_LIMIT_FAILED");
-            Startup si=new Startup();si.cb=Marshal.SizeOf(si);
+            IntPtr size=IntPtr.Zero;
+            InitializeProcThreadAttributeList(IntPtr.Zero,1,0,ref size);
+            if(size.ToInt64()<=0 || size.ToInt64()>1048576) throw new InvalidOperationException("JOB_ATTRIBUTE_SIZE_FAILED");
+            attributes=Marshal.AllocHGlobal(size);
+            if(!InitializeProcThreadAttributeList(attributes,1,0,ref size)) throw new InvalidOperationException("JOB_ATTRIBUTE_INIT_FAILED");
+            initialized=true;jobValue=Marshal.AllocHGlobal(IntPtr.Size);Marshal.WriteIntPtr(jobValue,child.job);
+            // PROC_THREAD_ATTRIBUTE_JOB_LIST: assignment is part of CreateProcess.
+            // Unsupported systems fail closed; there is no post-create fallback.
+            if(!UpdateProcThreadAttribute(attributes,0,new IntPtr(0x2000D),jobValue,new IntPtr(IntPtr.Size),IntPtr.Zero,IntPtr.Zero)) throw new InvalidOperationException("JOB_ATTRIBUTE_BIND_FAILED");
+            StartupEx si=new StartupEx();si.startup.cb=Marshal.SizeOf(si);si.attributes=attributes;
             string command=Quoted(c["python"])+" -I -B "+Quoted(c["bootstrap"])+" "+Quoted(c["runtime_config"]);
-            if(!CreateProcess(c["python"],new StringBuilder(command),IntPtr.Zero,IntPtr.Zero,false,0x08000004,IntPtr.Zero,Path.GetDirectoryName(c["bootstrap"]),ref si,out pi)) throw new InvalidOperationException("CHILD_CREATE_FAILED");
+            if(!CreateProcess(c["python"],new StringBuilder(command),IntPtr.Zero,IntPtr.Zero,false,0x08080004,IntPtr.Zero,Path.GetDirectoryName(c["bootstrap"]),ref si,out pi)) throw new InvalidOperationException("CHILD_CREATE_FAILED");
             child.process=pi.process;
-            if(!AssignProcessToJobObject(child.job,pi.process)) throw new InvalidOperationException("JOB_ASSIGN_FAILED");
+            bool member;
+            if(!IsProcessInJob(pi.process,child.job,out member) || !member) throw new InvalidOperationException("JOB_MEMBERSHIP_UNVERIFIED");
             if(ResumeThread(pi.thread)==0xFFFFFFFF) throw new InvalidOperationException("CHILD_RESUME_FAILED");
             return child;
         } catch { if(pi.process!=IntPtr.Zero) TerminateProcess(pi.process,125);child.Dispose();throw; }
-        finally { if(pi.thread!=IntPtr.Zero) CloseHandle(pi.thread); }
+        finally {
+            if(pi.thread!=IntPtr.Zero) CloseHandle(pi.thread);
+            if(initialized) DeleteProcThreadAttributeList(attributes);
+            if(attributes!=IntPtr.Zero) Marshal.FreeHGlobal(attributes);
+            if(jobValue!=IntPtr.Zero) Marshal.FreeHGlobal(jobValue);
+        }
     }
     public void Dispose() {
         bool verified=true;
