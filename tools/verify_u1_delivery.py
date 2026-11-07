@@ -80,7 +80,9 @@ print(json.dumps(dict(local_http_statuses=statuses,fixture_release=True,
 
 def verify(args, progress=None):
     progress=progress or (lambda value:None)
+    progress(dict(stage='extract_archive',outcome='RUNNING'))
     root=extract_checked(args.archive,args.archive_sha256,args.output)
+    progress(dict(stage='initial_integrity',outcome='RUNNING'))
     manifest=ReleaseStore(root)._verify(root,args.manifest_sha256)
     if manifest['source_commit']!=args.source_commit: raise ValueError('SOURCE_MISMATCH')
     delivery=json.loads((root/'payload/DELIVERY.json').read_text(encoding='utf-8'))
@@ -92,6 +94,7 @@ def verify(args, progress=None):
     host=root/'payload/host'; runtime=host/'runtime/python'; results=[]
     host_digest=manifest['files']['host/manifest.json']
     with InstallInputPins() as pins:
+        progress(dict(stage='pin_host_and_runtime',outcome='RUNNING'))
         host_manifest=pin_package(pins,host,host_digest,args.source_commit)
         rows={row['path']:row['sha256'] for row in host_manifest['files']}
         content_digest=rows['runtime/python/U1_RUNTIME_CONTENT.json']
@@ -114,8 +117,10 @@ def verify(args, progress=None):
                       outcome='PASSED' if result.returncode==0 else 'FAILED')
             results.append(item);progress(item)
             if result.returncode: raise ValueError('DELIVERY_PROBE_FAILED:'+json.dumps(results))
+        progress(dict(stage='revalidate_input_pins',outcome='RUNNING'))
         pins.revalidate()
     # Recheck after subprocess probes to detect unexpected package writes.
+    progress(dict(stage='final_integrity',outcome='RUNNING'))
     ReleaseStore(root)._verify(root,args.manifest_sha256)
     return dict(checks=results,manifest_files=len(manifest['files']),offline_entrypoint_imports_verified=True,
                 discovery_business_imports_verified=True,
@@ -145,7 +150,7 @@ def verify_with_report(args):
         except BaseException as exc:
             state.update(outcome='UNKNOWN' if isinstance(exc,(subprocess.TimeoutExpired,KeyboardInterrupt,SystemExit)) else 'FAILED',
                          error_type=type(exc).__name__,error=str(exc));persist();raise
-        state.update(result,outcome='VERIFIED');persist()
+        state.update(result,outcome='VERIFIED',active_check=None);persist()
         return state
 
 

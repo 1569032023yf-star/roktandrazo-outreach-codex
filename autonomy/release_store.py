@@ -65,9 +65,16 @@ def checked_manifest(raw):
         safe_path(name)
         if not re.fullmatch('[0-9a-f]{64}', digest): raise ValueError('INVALID_HASH')
         lower = name.casefold()
-        if any(lower == x or lower.startswith(x+'/') or x.startswith(lower+'/') for x in seen):
+        if lower in seen:
             raise ValueError('PATH_COLLISION')
         seen.add(lower)
+    # Check complete component prefixes after collecting all names. This keeps
+    # file/directory collisions independent of insertion order without comparing
+    # every pair in an 8192-file runtime manifest.
+    for name in seen:
+        parts = name.split('/')
+        if any('/'.join(parts[:i]) in seen for i in range(1, len(parts))):
+            raise ValueError('PATH_COLLISION')
     if raw != canonical(m): raise ValueError('NONCANONICAL_MANIFEST')
     return m
 

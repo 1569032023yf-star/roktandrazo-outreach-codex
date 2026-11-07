@@ -12,6 +12,17 @@ from tools.verify_u1_delivery import verify, verify_with_report
 
 
 class DeliveryVerificationTests(unittest.TestCase):
+    def test_extraction_interruption_records_stage_before_work(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            args=SimpleNamespace(report=str(Path(tmp)/'report.json'),source_commit='a'*40,
+                archive='fixture',archive_sha256='b'*64,manifest_sha256='c'*64,output='unused')
+            with patch('tools.verify_u1_delivery.extract_checked',side_effect=KeyboardInterrupt):
+                with self.assertRaises(KeyboardInterrupt): verify_with_report(args)
+            state=json.loads(Path(args.report).read_text(encoding='utf-8'))
+            self.assertEqual(state['outcome'],'UNKNOWN')
+            self.assertEqual(state['active_check']['stage'],'extract_archive')
+            self.assertEqual(state['checks'],[])
+
     def test_completed_checks_survive_later_failure(self):
         with tempfile.TemporaryDirectory() as tmp:
             args=SimpleNamespace(report=str(Path(tmp)/'report.json'),source_commit='a'*40,
