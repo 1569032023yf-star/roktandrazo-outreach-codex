@@ -92,3 +92,53 @@ class BootstrapArgumentTests(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
+
+class BootstrapIntegrityTests(unittest.TestCase):
+    def test_bounded_opened_handle_read_rejects_change_and_limit(self):
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'file';path.write_bytes(b'abc')
+            self.assertEqual(bootstrap.read(path,3),b'abc')
+            with self.assertRaisesRegex(ValueError,'READ_LIMIT'):bootstrap.read(path,2)
+            for size in (2,4):
+                with patch.object(bootstrap.os,'fstat',return_value=SimpleNamespace(st_nlink=1,st_size=size)):
+                    with self.assertRaisesRegex(ValueError,'FILE_SIZE_CHANGED'):bootstrap.read(path,10)
+            with patch.object(bootstrap.os,'fstat',return_value=SimpleNamespace(st_nlink=2,st_size=3)):
+                with self.assertRaisesRegex(ValueError,'HARDLINK_FILE'):bootstrap.read(path,10)
+
+    def test_real_release_resolution_and_unmanaged_file_rejection(self):
+        from autonomy.release_store import build_bundle,ReleaseStore
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);store=root/'store';store.mkdir()
+            files={name:b'# offline fixture' for name in
+                   ('python/autonomy/u1_host_runtime.py','python/autonomy/host_readonly_http.py',
+                    'python/autonomy/release_store.py')}
+            files.update({f'python/data/{i}.txt':b'small' for i in range(300)})
+            version=build_bundle(root/'bundle',files,'a'*40)
+            release=ReleaseStore(store);release.stage(root/'bundle',version)
+            release.activate(version,expected_current=None)
+            folder=store/'versions'/version/'payload/python'
+            self.assertEqual(bootstrap.resolve_release(store),folder)
+            (folder/'unmanaged.py').write_bytes(b'# unapproved')
+            with self.assertRaisesRegex(ValueError,'UNMANAGED_FILES'):bootstrap.resolve_release(store)
+
+    def test_case_and_prefix_collisions_are_order_independent(self):
+        import hashlib
+        from autonomy.release_store import canonical
+        for names in (('python/a','python/A'),('python/a','python/a/b'),('python/a/b','python/a')):
+            with self.subTest(names=names),tempfile.TemporaryDirectory() as tmp:
+                root=Path(tmp);empty=hashlib.sha256(b'').hexdigest()
+                manifest=dict(schema='rokt.release-manifest.v2',inventory_id='1784775229336',
+                              source_commit='a'*40,files={name:empty for name in names})
+                raw=canonical(manifest);version=hashlib.sha256(raw).hexdigest()
+                folder=root/'versions'/version;folder.mkdir(parents=True)
+                (folder/'manifest.json').write_bytes(raw)
+                (root/'active.json').write_bytes(canonical(dict(schema='rokt.release-store.v1',
+                    inventory_id='1784775229336',version=version)))
+                real_read=bootstrap.read
+                def read(path,limit):
+                    if 'payload' in Path(path).parts:return b''
+                    return real_read(path,limit)
+                with patch.object(bootstrap,'read',side_effect=read):
+                    with self.assertRaisesRegex(ValueError,'PATH_COLLISION'):bootstrap.resolve_release(root)

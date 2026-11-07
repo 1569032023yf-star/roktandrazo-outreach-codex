@@ -4,6 +4,7 @@ No scheduler, writer backend or collection. Trusted ACL remains a release gate.
 """
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import runpy
@@ -16,8 +17,12 @@ def read(path,limit):
     for x in (p,*p.parents):
         if x.is_symlink() or x.stat().st_file_attributes & 0x400:raise ValueError('REPARSE_PATH')
     if p.stat().st_nlink!=1:raise ValueError('HARDLINK_FILE')
-    with p.open('rb') as f:raw=f.read(limit+1)
-    if len(raw)>limit:raise ValueError('READ_LIMIT')
+    with p.open('rb') as f:
+        info=os.fstat(f.fileno())
+        if info.st_nlink!=1:raise ValueError('HARDLINK_FILE')
+        if info.st_size>limit:raise ValueError('READ_LIMIT')
+        raw=f.read(info.st_size+1)
+        if len(raw)!=info.st_size:raise ValueError('FILE_SIZE_CHANGED')
     return raw
 
 
@@ -42,13 +47,16 @@ def resolve_release(root):
         type(m['files']) is not dict or not 1<=len(m['files'])<=(8192 if large else 512)):raise ValueError('MANIFEST_SCHEMA')
     if raw!=json.dumps(m,sort_keys=True,separators=(',', ':'),allow_nan=False).encode():raise ValueError('NONCANONICAL_MANIFEST')
     seen=set();total=0
+    names={name.casefold() for name in m['files'] if type(name) is str}
     reserved={'CON','PRN','AUX','NUL'}|{f'{p}{i}' for p in ('COM','LPT') for i in range(1,10)}
     for name,digest in m['files'].items():
         if (type(name) is not str or not re.fullmatch('[A-Za-z0-9_./+-]+',name) or
             any(x in ('','.','..') or x.endswith('.') or x.split('.')[0].upper() in reserved for x in name.split('/')) or
             not re.fullmatch('[0-9a-f]{64}',digest)):raise ValueError('ARTIFACT_PATH')
         lower=name.casefold()
-        if any(lower==x or lower.startswith(x+'/') or x.startswith(lower+'/') for x in seen):raise ValueError('PATH_COLLISION')
+        parts=lower.split('/')
+        if lower in seen or any('/'.join(parts[:i]) in names for i in range(1,len(parts))):
+            raise ValueError('PATH_COLLISION')
         seen.add(lower);data=read(folder/'payload'/name,(256 if large else 128)*1024*1024);total+=len(data)
         if total>(1024 if large else 128)*1024*1024 or hashlib.sha256(data).hexdigest()!=digest:raise ValueError('ARTIFACT_HASH')
     required={'python/autonomy/u1_host_runtime.py','python/autonomy/host_readonly_http.py','python/autonomy/release_store.py'}

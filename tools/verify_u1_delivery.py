@@ -78,6 +78,28 @@ print(json.dumps(dict(local_http_statuses=statuses,fixture_release=True,
 '''
 
 
+BOOTSTRAP_PROBE = r'''
+import sys,json,tempfile,runpy,socket,sqlite3,smtplib,time
+from pathlib import Path
+root=Path(sys.argv[1]);sys.path.insert(0,str(root/'payload/python'))
+from autonomy.release_store import ReleaseStore
+
+def deny(*args,**kwargs):raise RuntimeError('SIDE_EFFECT_FORBIDDEN_OFFLINE_BOOTSTRAP')
+socket.socket.connect=deny;socket.create_connection=deny
+sqlite3.connect=deny;smtplib.SMTP=deny;smtplib.SMTP_SSL=deny
+# Execute the actual packaged service bootstrap definitions, without starting it.
+bootstrap=runpy.run_path(str(root/'payload/host/service/u1_bootstrap.py'))
+with tempfile.TemporaryDirectory(prefix='u1-bootstrap-probe-',dir=sys.argv[3]) as tmp:
+ store=ReleaseStore(Path(tmp));store.stage(root,sys.argv[2])
+ store.activate(sys.argv[2],expected_current=None)
+ started=time.monotonic();folder=bootstrap['resolve_release'](Path(tmp))
+ assert folder==Path(tmp)/'versions'/sys.argv[2]/'payload/python'
+ print(json.dumps(dict(packaged_service_bootstrap_integrity=True,
+   elapsed_seconds=time.monotonic()-started,fixture_store=True,service_started=False,
+   production_installation=False)))
+'''
+
+
 def verify(args, progress=None):
     progress=progress or (lambda value:None)
     progress(dict(stage='extract_archive',outcome='RUNNING'))
@@ -105,7 +127,8 @@ def verify(args, progress=None):
             [str(runtime/'python.exe'),'-I','-B','-c',IMPORT_PROBE,str(root/'payload/python')],
             [str(runtime/'python.exe'),'-I','-B','-m','pip','--isolated','--disable-pip-version-check','check'],
             [str(host/'service/RoktU1Bridge.exe'),'--validate-runtime',str(runtime/'U1_RUNTIME_CONTENT.json'),content_digest,str(runtime/'python.exe')],
-            [str(runtime/'python.exe'),'-I','-B','-c',HTTP_PROBE,str(root/'payload/python'),str(root.parent)]]
+            [str(runtime/'python.exe'),'-I','-B','-c',HTTP_PROBE,str(root/'payload/python'),str(root.parent)],
+            [str(runtime/'python.exe'),'-I','-B','-c',BOOTSTRAP_PROBE,str(root),args.manifest_sha256,str(root.parent)]]
         for command in commands:
             progress(dict(arguments=command[1:],outcome='RUNNING'))
             try:
@@ -124,6 +147,7 @@ def verify(args, progress=None):
     ReleaseStore(root)._verify(root,args.manifest_sha256)
     return dict(checks=results,manifest_files=len(manifest['files']),offline_entrypoint_imports_verified=True,
                 discovery_business_imports_verified=True,
+                packaged_service_bootstrap_integrity_verified=True,
                 loopback_http_with_fixtures_verified=True,production_ports_verified=False,
                 full_business_import_closure=False,bootstrap_arguments_verified=False,
                 installation_verified=False,rollback_verified=False,provider_accepted=False)
