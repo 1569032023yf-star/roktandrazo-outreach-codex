@@ -4,6 +4,16 @@
   "description_en": "Independent development queue; never starts production discovery.",
   "tasks": [
     {
+      "id": "rokt-razo-20261107T030728Z",
+      "status": "review_pending",
+      "source_sha": "6acaee48e045fa735862142637f0182ecf5b128e",
+      "updated_at": "2026-11-07T03:13:24.445671+00:00",
+      "checkpoint": "autonomy/evidence/u1_manifest_collision_20261107/REPORT.md",
+      "canonical_updated": false,
+      "tests": "21 PASS + 6 PASS (25 distinct)",
+      "next_action": "Stage-aware offline verification and profiling; independent review and new package remain pending"
+    },
+    {
       "id": "rokt-razo-20261107T000255Z",
       "status": "final_verification_timeout",
       "source_sha": "621955624b5b87b630ee1938d75a08d5fce0a49a",
@@ -6565,7 +6575,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-07T00:17:58.116338+00:00",
+  "updated_at": "2026-11-07T03:13:24.445671+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -6863,7 +6873,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "autonomy/evidence/u1_provider_runtime_20261107/REPORT.md",
+  "checkpoint": "autonomy/evidence/u1_manifest_collision_20261107/REPORT.md",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",

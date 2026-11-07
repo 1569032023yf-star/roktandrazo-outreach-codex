@@ -1,3 +1,6 @@
+中文：固定6acaee48e045fa735862142637f0182ecf5b128e修复清单平方级碰撞扫描并持久化验收活动阶段；25项不同测试通过。旧包不含此源码，超时根因仍UNKNOWN，独审/新包PENDING，门禁false。见autonomy/evidence/u1_manifest_collision_20261107/REPORT.md。
+English: Fixed 6acaee48e045fa735862142637f0182ecf5b128e bounds manifest collision checks and persists verification stages;25 distinct tests pass. Old package excludes this source; timeout cause UNKNOWN, review/new package PENDING, gates false. See autonomy/evidence/u1_manifest_collision_20261107/REPORT.md.
+
 2026-11-07 CPython成对包已实际构建；5058归档摘要通过，4探针通过，但最终提取复核600秒超时，整体UNKNOWN / Runtime archives built, final extraction recheck UNKNOWN_TIMEOUT. Source 621955624b5b87b630ee1938d75a08d5fce0a49a; review PENDING; gates false; canonical unchanged.
 Report: autonomy/evidence/u1_provider_runtime_20261107/REPORT.md
 

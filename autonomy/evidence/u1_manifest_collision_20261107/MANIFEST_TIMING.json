@@ -1,0 +1,10 @@
+{
+  "baseline": {
+    "seconds": 1.64029039995512,
+    "files": 5058
+  },
+  "candidate": {
+    "seconds": 0.04077930003404617,
+    "files": 5058
+  }
+}

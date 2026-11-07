@@ -1,0 +1,10 @@
+{
+  "id": "rokt-razo-20261107T030728Z",
+  "status": "review_pending",
+  "source_sha": "6acaee48e045fa735862142637f0182ecf5b128e",
+  "updated_at": "2026-11-07T03:13:24.445671+00:00",
+  "checkpoint": "autonomy/evidence/u1_manifest_collision_20261107/REPORT.md",
+  "canonical_updated": false,
+  "tests": "21 PASS + 6 PASS (25 distinct)",
+  "next_action": "Stage-aware offline verification and profiling; independent review and new package remain pending"
+}
