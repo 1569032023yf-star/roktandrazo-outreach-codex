@@ -5,6 +5,8 @@ SCM child supervision and production execution backend remain release blockers.
 """
 import argparse
 import hashlib
+import json
+import time
 import re
 import sqlite3
 from contextlib import contextmanager, ExitStack
@@ -74,7 +76,26 @@ def open_host(release_root, state_root, token, credential_expires_at,
             yield server
 
 
-def main():
+def validate_startup_bytes(token_bytes, token_digest, snapshot, snapshot_digest, expires):
+    """Reject stale credentials or changed snapshot before state/authority/listen."""
+    if token_digest is not None:
+        if type(token_digest) is not str or not re.fullmatch('[0-9a-f]{64}',token_digest):
+            raise ValueError('APPROVED_TOKEN_DIGEST_REQUIRED')
+        if hashlib.sha256(token_bytes).hexdigest()!=token_digest:
+            raise ValueError('APPROVED_TOKEN_CHANGED')
+    token=token_bytes.decode('ascii').strip()
+    if re.fullmatch('[A-Za-z0-9_-]{32,128}',token) is None:
+        raise ValueError('PROVISIONED_TOKEN_REQUIRED')
+    if type(expires) is not int or expires<=time.time():
+        raise ValueError('CREDENTIAL_EXPIRED')
+    if type(snapshot_digest) is not str or re.fullmatch('[0-9a-f]{64}',snapshot_digest) is None:
+        raise ValueError('APPROVED_SNAPSHOT_DIGEST_REQUIRED')
+    if hashlib.sha256(snapshot).hexdigest()!=snapshot_digest:
+        raise ValueError('APPROVED_SNAPSHOT_CHANGED')
+    return token
+
+
+def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--release-root',required=True);p.add_argument('--state-root',required=True)
     p.add_argument('--token-file',required=True);p.add_argument('--credential-expires-at',type=int,required=True)
@@ -84,7 +105,8 @@ def main():
     owner=p.add_mutually_exclusive_group()
     owner.add_argument('--event-runtime')
     owner.add_argument('--original-owner-db')
-    a=p.parse_args()
+    p.add_argument('--preflight',action='store_true',help='Validate pinned startup inputs without state writes or listening')
+    a=p.parse_args(argv)
     if (a.provider_config is None)!=(a.provider_config_sha256 is None):
         raise ValueError('PROVIDER_CONFIG_PAIR_REQUIRED')
     token_bytes=read_file(Path(a.token_file),128)
@@ -102,7 +124,25 @@ def main():
             # or treat this reference as authority to start a Worker.
             lifetime.enter_context(pinned_provider_environment(a.provider_config,a.provider_config_sha256))
         snapshot=read_file(Path(a.snapshot),MAX_SNAPSHOT_BYTES)
+        token=validate_startup_bytes(token_bytes,a.token_sha256,snapshot,a.snapshot_sha256,a.credential_expires_at)
         connect=original_owner_reader(a.original_owner_db) if a.original_owner_db else None
+        if a.preflight:
+            # resolve_release performs read-only pointer/manifest/namespace checks;
+            # ReleaseStore.status/recovery_status acquire a writable lock instead.
+            from autonomy.windows.u1_bootstrap import resolve_release
+            resolve_release(a.release_root)
+            if not ordinary(Path(a.state_root)).is_dir():
+                raise ValueError('EXISTING_STATE_DIRECTORY_REQUIRED')
+            if a.event_runtime is not None and not ordinary(Path(a.event_runtime)).is_dir():
+                raise ValueError('EXISTING_EVENT_RUNTIME_REQUIRED')
+            print(json.dumps(dict(schema='rokt.u1-startup-preflight.v1',inventory_id='1784775229336',
+                startup_inputs_verified=True,release_integrity_verified=True,
+                provider_config_pinned=a.provider_config is not None,
+                owner_mode='original_owner_db' if connect else 'event_runtime' if a.event_runtime else 'none',
+                owner_authority_verified=False,live_lock_verified=False,snapshot_schema_verified=False,
+                provider_contract='CONTRACT_MISSING',allow_install=False,allow_dispatch=False,
+                allow_cancel_dispatch=False,smtp_enabled=False,listener_started=False,production_ready=False)))
+            return
         with open_host(a.release_root,a.state_root,token,a.credential_expires_at,snapshot,a.snapshot_sha256,
                        event_runtime=a.event_runtime,original_owner_connect=connect) as server:
             try: server.serve_forever(poll_interval=0.5)

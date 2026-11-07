@@ -31,6 +31,27 @@ class BootstrapArgumentTests(unittest.TestCase):
                     with self.assertRaises(ValueError):bootstrap.main(str(config))
                     release.assert_not_called()
 
+    def test_preflight_and_invalid_configuration_stop_before_release(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            config=Path(tmp)/'runtime.json'
+            data=dict(schema='rokt.u1-python-runtime.v2',inventory_id='1784775229336',
+                      release_root=tmp,state_root=tmp,token_file=tmp,token_sha256='b'*64,
+                      credential_expires_at=12345,snapshot=tmp,snapshot_sha256='a'*64,
+                      allow_dispatch=False,allow_cancel_dispatch=False,smtp_enabled=False)
+            config.write_text(json.dumps(data))
+            captured=[]
+            with patch.object(sys,'argv',list(sys.argv)),patch.object(sys,'path',list(sys.path)),patch.object(bootstrap,'resolve_release',return_value=Path(tmp)),patch.object(bootstrap.runpy,'run_module',side_effect=lambda *a,**k:captured.append(list(sys.argv))):
+                bootstrap.main(str(config),preflight=True)
+            self.assertEqual(captured[0][-1],'--preflight')
+            cases=[json.dumps(data)[:-1]+',"allow_dispatch":true}']
+            cases += [json.dumps(dict(data,**{key:'relative'})) for key in ('release_root','state_root','token_file','snapshot')]
+            cases += [json.dumps(dict(data,snapshot_sha256='bad')),'[]']
+            for raw in cases:
+                config.write_text(raw)
+                with patch.object(bootstrap,'resolve_release') as release:
+                    with self.assertRaises(ValueError):bootstrap.main(str(config),preflight=True)
+                    release.assert_not_called()
+
     def test_optional_owner_modes_forward_exact_arguments(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);config=root/'runtime.json';app=root/'app'

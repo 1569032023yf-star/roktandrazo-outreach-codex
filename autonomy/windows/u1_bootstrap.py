@@ -70,8 +70,15 @@ def resolve_release(root):
     return folder/'payload/python'
 
 
-def main(config):
-    c=json.loads(read(config,8192))
+def main(config, *, preflight=False):
+    def unique(pairs):
+        value={}
+        for key,item in pairs:
+            if key in value:raise ValueError('RUNTIME_CONFIG_DUPLICATE_KEY')
+            value[key]=item
+        return value
+    c=json.loads(read(config,8192),object_pairs_hook=unique)
+    if type(c) is not dict:raise ValueError('RUNTIME_CONFIG_REJECTED')
     keys={'schema','inventory_id','release_root','state_root','token_file','credential_expires_at','snapshot','snapshot_sha256','allow_dispatch','allow_cancel_dispatch','smtp_enabled'}
     bound=c.get('schema')=='rokt.u1-python-runtime.v2'
     if bound:keys|={'token_sha256'}
@@ -87,6 +94,11 @@ def main(config):
         type(c['credential_expires_at']) is not int):raise ValueError('RUNTIME_CONFIG_REJECTED')
     if bound and (type(c['token_sha256']) is not str or not re.fullmatch('[0-9a-f]{64}',c['token_sha256'])):
         raise ValueError('APPROVED_TOKEN_DIGEST_REQUIRED')
+    for name in ('release_root','state_root','token_file','snapshot','event_runtime','original_owner_db'):
+        if name in c and (type(c[name]) is not str or not Path(c[name]).is_absolute()):
+            raise ValueError('ABSOLUTE_RUNTIME_PATH_REQUIRED')
+    if type(c['snapshot_sha256']) is not str or not re.fullmatch('[0-9a-f]{64}',c['snapshot_sha256']):
+        raise ValueError('APPROVED_SNAPSHOT_DIGEST_REQUIRED')
     folder=resolve_release(c['release_root']);sys.path.insert(0,str(folder))
     sys.argv=['autonomy.u1_host_runtime','--release-root',c['release_root'],'--state-root',c['state_root'],
               '--token-file',c['token_file'],'--credential-expires-at',str(c['credential_expires_at']),
@@ -102,9 +114,11 @@ def main(config):
         if type(c['original_owner_db']) is not str or not Path(c['original_owner_db']).is_absolute():
             raise ValueError('ORIGINAL_OWNER_DB_REQUIRED')
         sys.argv+=['--original-owner-db',c['original_owner_db']]
+    if preflight:sys.argv+=['--preflight']
     runpy.run_module('autonomy.u1_host_runtime',run_name='__main__')
 
 
 if __name__=='__main__':
-    if len(sys.argv)!=2:raise SystemExit('EXACT_RUNTIME_CONFIG_REQUIRED')
-    main(sys.argv[1])
+    if len(sys.argv) not in (2,3) or (len(sys.argv)==3 and sys.argv[2]!='--preflight'):
+        raise SystemExit('EXACT_RUNTIME_CONFIG_REQUIRED')
+    main(sys.argv[1],preflight=len(sys.argv)==3)

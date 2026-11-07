@@ -20,7 +20,7 @@ class ProviderHostLifetimeTests(unittest.TestCase):
                 'WORKBUDDY_DISCOVERY_PROVIDER':'google_places','GOOGLE_MAPS_API_KEY':'fixture-only'}}))
             digest=hashlib.sha256(config.read_bytes()).hexdigest()
             args=['host','--release-root',directory,'--state-root',directory,'--token-file',str(root/'token'),
-                  '--credential-expires-at','12345','--snapshot',str(root/'snapshot'),'--snapshot-sha256','a'*64,
+                  '--credential-expires-at',str(int(time.time())+120),'--snapshot',str(root/'snapshot'),'--snapshot-sha256',hashlib.sha256(b'{}').hexdigest(),
                   '--provider-config',str(config),'--provider-config-sha256',digest]
             before=dict(os.environ)
             class Server:
@@ -30,7 +30,7 @@ class ProviderHostLifetimeTests(unittest.TestCase):
             self_test=self
             @contextmanager
             def opened(*args,**kwargs):yield Server()
-            with patch.object(sys,'argv',args),patch.object(host,'read_file',side_effect=[b'fixture-token',b'{}']),patch.object(host,'open_host',opened):
+            with patch.object(sys,'argv',args),patch.object(host,'read_file',side_effect=[b'a'*40,b'{}']),patch.object(host,'open_host',opened):
                 host.main()
             config.write_bytes(b'released')
             # Invalid digest must fail before snapshot, original owner or listener.
@@ -59,6 +59,44 @@ class HostRuntimeTests(unittest.TestCase):
                 self.assertNotIn(b'b'*40,result.stderr)
                 self.assertFalse((root/'state').exists())
                 self.assertFalse((root/'release').exists())
+
+    def test_invalid_startup_inputs_reject_before_listener_or_owner(self):
+        from unittest.mock import patch
+        from autonomy import u1_host_runtime as host
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);token=root/'token';token.write_bytes(b'a'*40)
+            snapshot=root/'snapshot';snapshot.write_bytes(b'changed')
+            base=['--release-root',str(root/'absent-release'),'--state-root',str(root/'absent-state'),
+                  '--token-file',str(token),'--snapshot',str(snapshot),'--snapshot-sha256',sha(b'approved'),
+                  '--original-owner-db',str(root/'absent-owner')]
+            for expiry,reason in ((int(time.time())+60,'APPROVED_SNAPSHOT_CHANGED'),(1,'CREDENTIAL_EXPIRED')):
+                with patch.object(host,'open_host') as opened,patch.object(host,'original_owner_reader') as owner:
+                    with self.assertRaisesRegex(ValueError,reason):host.main(base+['--credential-expires-at',str(expiry)])
+                    opened.assert_not_called();owner.assert_not_called()
+            self.assertFalse((root/'absent-state').exists())
+
+    def test_real_preflight_has_no_state_or_listener_side_effects(self):
+        import io,json
+        from contextlib import redirect_stdout
+        from unittest.mock import patch
+        from autonomy import u1_host_runtime as host
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);release=root/'release';release.mkdir();state=root/'state';state.mkdir()
+            files={name:b'# fixture' for name in ('python/autonomy/u1_host_runtime.py',
+                'python/autonomy/host_readonly_http.py','python/autonomy/release_store.py')}
+            version=build_bundle(root/'bundle',files,'a'*40)
+            store=ReleaseStore(release);store.stage(root/'bundle',version);store.activate(version,expected_current=None)
+            token=root/'token';token.write_bytes(b'a'*40);snapshot=root/'snapshot';snapshot.write_bytes(b'fixture')
+            before={str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}
+            output=io.StringIO()
+            with patch.object(host,'open_host') as opened,redirect_stdout(output):
+                host.main(['--release-root',str(release),'--state-root',str(state),'--token-file',str(token),
+                  '--credential-expires-at',str(int(time.time())+60),'--snapshot',str(snapshot),
+                  '--snapshot-sha256',sha(b'fixture'),'--preflight'])
+                opened.assert_not_called()
+            result=json.loads(output.getvalue());self.assertTrue(result['startup_inputs_verified'])
+            self.assertFalse(result['production_ready']);self.assertFalse(result['live_lock_verified'])
+            self.assertEqual(before,{str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()})
 
     def test_original_db_bootstrap_is_readonly_and_rejects_replacement(self):
         import sqlite3
