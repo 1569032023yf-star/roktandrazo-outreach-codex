@@ -4,6 +4,19 @@
   "description_en": "Independent development queue; never starts production discovery.",
   "tasks": [
     {
+      "id": "rokt-razo-20261107T000255Z",
+      "status": "final_verification_timeout",
+      "source_sha": "621955624b5b87b630ee1938d75a08d5fce0a49a",
+      "updated_at": "2026-11-07T00:17:58.116338+00:00",
+      "checkpoint": "autonomy/evidence/u1_provider_runtime_20261107/REPORT.md",
+      "canonical_updated": false,
+      "artifacts": {
+        "install.zip": "eb56f2fbff7cff4f3e7d0cfd9671d6a04029fad7712c8ff5d72f7ce8e5a47c05",
+        "rollback-tools.zip": "fe890a30effd5864fa97384ead8948476e79a234fd0c3ed08f42eb37b0ed6a77"
+      },
+      "next_action": "Fix/profile final extracted-file recheck bottleneck without weakening integrity; resume fresh offline verification, then independent review"
+    },
+    {
       "id": "rokt-razo-20261106T210653Z",
       "status": "runtime_integration_pending",
       "source_sha": "2cca3f3891de2dc2e79765f96c92702a67e58009",
@@ -6552,7 +6565,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-06T21:09:08.177653+00:00",
+  "updated_at": "2026-11-07T00:17:58.116338+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -6850,7 +6863,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "autonomy/evidence/u1_provider_package_20261107/REPORT.md",
+  "checkpoint": "autonomy/evidence/u1_provider_runtime_20261107/REPORT.md",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",

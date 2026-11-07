@@ -1,0 +1,22 @@
+{
+  "task_id": "rokt-razo-20261107T000255Z",
+  "started_at": "2026-11-07T08:03:12.6844755+08:00",
+  "recorded_at": "2026-11-07T00:17:58.116338+00:00",
+  "workdir": "D:\\CODEX\\roktandrazo-workspace\\u1-provider-runtime-20261107",
+  "source_sha": "621955624b5b87b630ee1938d75a08d5fce0a49a",
+  "artifacts": {
+    "install.zip": "eb56f2fbff7cff4f3e7d0cfd9671d6a04029fad7712c8ff5d72f7ce8e5a47c05",
+    "rollback-tools.zip": "fe890a30effd5864fa97384ead8948476e79a234fd0c3ed08f42eb37b0ed6a77"
+  },
+  "archive_files_verified": 5058,
+  "python_runtime_bundled": true,
+  "verification_outcome": "UNKNOWN_TIMEOUT_FINAL_RECHECK",
+  "completed_probes": 4,
+  "review": "PENDING",
+  "canonical_updated": false,
+  "next_action": "Fix/profile final extracted-file recheck bottleneck without weakening integrity; resume fresh offline verification, then independent review",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "SMTP": false
+}

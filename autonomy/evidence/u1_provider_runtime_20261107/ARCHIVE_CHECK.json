@@ -1,0 +1,9 @@
+{
+  "source_commit": "621955624b5b87b630ee1938d75a08d5fce0a49a",
+  "manifest_sha256": "8aef8bcab0c458a76572344db39df92a786bc7b9cabf39cff056863e28de73e5",
+  "file_count": 5058,
+  "archive_hashes_verified": true,
+  "python_runtime_bundled": true,
+  "installation_verified": false,
+  "review": "PENDING"
+}
