@@ -1,0 +1,12 @@
+{
+  "baseline": {
+    "seconds": 4.227246699971147,
+    "reads": 64,
+    "bytes_per_read": 19324
+  },
+  "candidate": {
+    "seconds": 0.010622900037560612,
+    "reads": 64,
+    "bytes_per_read": 19324
+  }
+}

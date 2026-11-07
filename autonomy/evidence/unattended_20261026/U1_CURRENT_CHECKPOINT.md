@@ -1,3 +1,6 @@
+中文：固定f5073c523c4d79abca82210d53b8ddae7510f330修复256MiB重复读取分配；27项通过。新真实5058文件CPython包提取完整核验VERIFIED/0，44.776278秒，回滚4960组件对应。独审PENDING，未安装，所有门禁及最终状态false。见autonomy/evidence/u1_bounded_read_20261107/REPORT.md。
+English: Fixed f5073c523c4d79abca82210d53b8ddae7510f330 bounds artifact reads;27 pass. Fresh5058-file runtime archive extracted verification VERIFIED/0 in44.776278s,4960 rollback components match. Review PENDING; no installation; final states/gates false. See autonomy/evidence/u1_bounded_read_20261107/REPORT.md.
+
 中文：固定6acaee48e045fa735862142637f0182ecf5b128e修复清单平方级碰撞扫描并持久化验收活动阶段；25项不同测试通过。旧包不含此源码，超时根因仍UNKNOWN，独审/新包PENDING，门禁false。见autonomy/evidence/u1_manifest_collision_20261107/REPORT.md。
 English: Fixed 6acaee48e045fa735862142637f0182ecf5b128e bounds manifest collision checks and persists verification stages;25 distinct tests pass. Old package excludes this source; timeout cause UNKNOWN, review/new package PENDING, gates false. See autonomy/evidence/u1_manifest_collision_20261107/REPORT.md.
 

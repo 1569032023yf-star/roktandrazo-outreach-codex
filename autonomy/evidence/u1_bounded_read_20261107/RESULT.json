@@ -1,0 +1,14 @@
+{
+  "id": "rokt-razo-20261107T061201Z",
+  "status": "offline_artifact_verified_review_pending",
+  "source_sha": "f5073c523c4d79abca82210d53b8ddae7510f330",
+  "updated_at": "2026-11-07T06:29:12.635745+00:00",
+  "checkpoint": "autonomy/evidence/u1_bounded_read_20261107/REPORT.md",
+  "canonical_updated": false,
+  "tests": "27 PASS; fresh extracted verification VERIFIED/0 in44.776278s",
+  "artifacts": {
+    "install.zip": "d2ec9f91a223b3aba25b8f412c1efe1c4d5ccdc9c590bd56674b67b8ac89c8ab",
+    "rollback-tools.zip": "24ef1313eab3861bc3c85804b3fa7138e72176c35380deb64037b5bf43654821"
+  },
+  "next_action": "Independent fixed-source/artifact review; remaining business startup/import closure"
+}

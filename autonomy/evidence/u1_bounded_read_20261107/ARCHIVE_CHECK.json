@@ -1,0 +1,7 @@
+{
+  "source_commit": "f5073c523c4d79abca82210d53b8ddae7510f330",
+  "archive_file_digests": 5058,
+  "rollback_host_parity": 4960,
+  "gate_check": "PASSED",
+  "installation_verified": false
+}
