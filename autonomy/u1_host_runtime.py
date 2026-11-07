@@ -117,12 +117,13 @@ def main(argv=None):
         if hashlib.sha256(token_bytes).hexdigest()!=a.token_sha256:raise ValueError('APPROVED_TOKEN_CHANGED')
     token=token_bytes.decode('ascii').strip()
     with ExitStack() as lifetime:
+        provider_adapter=None
         if a.provider_config is not None:
-            from autonomy.provider_environment import pinned_provider_environment
+            from autonomy.provider_environment import pinned_provider_adapter
             # Validate and hold the approved external file for this host lifetime.
             # Never expose keys through HTTP, inherit them into the service env,
             # or treat this reference as authority to start a Worker.
-            lifetime.enter_context(pinned_provider_environment(a.provider_config,a.provider_config_sha256))
+            provider_adapter=lifetime.enter_context(pinned_provider_adapter(a.provider_config,a.provider_config_sha256))
         snapshot=read_file(Path(a.snapshot),MAX_SNAPSHOT_BYTES)
         token=validate_startup_bytes(token_bytes,a.token_sha256,snapshot,a.snapshot_sha256,a.credential_expires_at)
         from autonomy.recovery_status import inspect_recovery_snapshot
@@ -142,6 +143,9 @@ def main(argv=None):
             print(json.dumps(dict(schema='rokt.u1-startup-preflight.v1',inventory_id='1784775229336',
                 startup_inputs_verified=True,release_integrity_verified=True,
                 provider_config_pinned=a.provider_config is not None,
+                provider_adapter_verified=provider_adapter is not None,
+                provider_name=provider_adapter.provider_name if provider_adapter else None,
+                provider_configured=provider_adapter.configured if provider_adapter else False,
                 owner_mode='original_owner_db' if connect else 'event_runtime' if a.event_runtime else 'none',
                 owner_authority_verified=False,live_lock_verified=False,snapshot_schema_verified=True,
                 provider_contract='CONTRACT_MISSING',allow_install=False,allow_dispatch=False,

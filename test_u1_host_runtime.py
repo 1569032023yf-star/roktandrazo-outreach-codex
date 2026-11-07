@@ -109,16 +109,42 @@ class HostRuntimeTests(unittest.TestCase):
             token=root/'token';token.write_bytes(b'a'*40);snapshot=root/'snapshot'
             from test_recovery_status import RecoveryStatusTests
             raw=RecoveryStatusTests().image();snapshot.write_bytes(raw)
+            config=root/'provider.json'
+            config.write_text(json.dumps(dict(schema='rokt.provider-environment.v1',environment={
+                'WORKBUDDY_DISCOVERY_PROVIDER':'google_places'})),encoding='utf-8')
             before={str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}
             output=io.StringIO()
             with patch.object(host,'open_host') as opened,redirect_stdout(output):
                 host.main(['--release-root',str(release),'--state-root',str(state),'--token-file',str(token),
                   '--credential-expires-at',str(int(time.time())+60),'--snapshot',str(snapshot),
-                  '--snapshot-sha256',sha(raw),'--preflight'])
+                  '--snapshot-sha256',sha(raw),'--provider-config',str(config),
+                  '--provider-config-sha256',sha(config.read_bytes()),'--preflight'])
                 opened.assert_not_called()
             result=json.loads(output.getvalue());self.assertTrue(result['startup_inputs_verified']);self.assertTrue(result['snapshot_schema_verified'])
             self.assertFalse(result['production_ready']);self.assertFalse(result['live_lock_verified'])
+            self.assertTrue(result['provider_adapter_verified']);self.assertEqual(result['provider_name'],'google_places')
+            self.assertFalse(result['provider_configured'])
             self.assertEqual(before,{str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()})
+
+    def test_provider_adapter_rejected_before_owner_or_state(self):
+        import json
+        from unittest.mock import patch
+        from autonomy import u1_host_runtime as host
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);token=root/'token';token.write_bytes(b'a'*40)
+            config=root/'provider.json'
+            config.write_text(json.dumps(dict(schema='rokt.provider-environment.v1',environment={
+                'WORKBUDDY_DISCOVERY_PROVIDER':'google_places',
+                'GOOGLE_PLACES_LOCATION_BIAS_JSON':'[]'})),encoding='utf-8')
+            with patch.object(host,'open_host') as opened,patch.object(host,'original_owner_reader') as owner:
+                for mode in ([],['--preflight']):
+                    with self.assertRaisesRegex(ValueError,'PROVIDER_LOCATION_OBJECT_REQUIRED'):
+                        host.main(['--release-root',str(root/'missing'),'--state-root',str(root/'state'),
+                            '--token-file',str(token),'--credential-expires-at',str(int(time.time())+60),
+                            '--snapshot',str(root/'missing-snapshot'),'--snapshot-sha256','a'*64,
+                            '--provider-config',str(config),'--provider-config-sha256',sha(config.read_bytes())]+mode)
+                opened.assert_not_called();owner.assert_not_called()
+            self.assertFalse((root/'state').exists())
 
     def test_original_db_bootstrap_is_readonly_and_rejects_replacement(self):
         import sqlite3
