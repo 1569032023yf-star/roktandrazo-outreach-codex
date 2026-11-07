@@ -10,7 +10,7 @@ from autonomy.cancellation_recovery import SCHEMA, HANDOFF_SCHEMA, PROTOCOL
 from autonomy.growth_snapshot import MAX_SNAPSHOT_BYTES, MAX_VM_STEPS, MAX_SECONDS
 
 
-def inspect_recovery_status(snapshot, expected_sha256, cancel_identity):
+def _inspect_snapshot(snapshot, expected_sha256, cancel_identity=None):
     """Inspect caller-approved standalone bytes, not a live database.
 
     Hash equality establishes byte identity only, never source authorization.
@@ -24,7 +24,7 @@ def inspect_recovery_status(snapshot, expected_sha256, cancel_identity):
                   replay_allowed=False, production_accepted=False)
     def hex64(value):
         return type(value) is str and re.fullmatch('[0-9a-f]{64}', value) is not None
-    if not hex64(cancel_identity) or not hex64(expected_sha256):
+    if (cancel_identity is not None and not hex64(cancel_identity)) or not hex64(expected_sha256):
         return dict(result, reason='INVALID_EXPECTED_CONTEXT')
     if type(snapshot) is not bytes or not 100 <= len(snapshot) <= MAX_SNAPSHOT_BYTES:
         return dict(result, reason='INVALID_SNAPSHOT_SIZE_OR_TYPE')
@@ -59,6 +59,12 @@ def inspect_recovery_status(snapshot, expected_sha256, cancel_identity):
                 return dict(result, reason='INCOMPATIBLE_SCHEMA')
             if db.execute('PRAGMA integrity_check(1)').fetchall() != [('ok',)]:
                 return dict(result, reason='INTEGRITY_CHECK_FAILED')
+            # Startup has no operation identity. Validate the image/schema only,
+            # never infer a journal terminal state or authority from an absent row.
+            if cancel_identity is None:
+                if time.monotonic() - started > MAX_SECONDS:
+                    return dict(result, reason='INSPECTION_BUDGET_EXCEEDED')
+                return dict(result, accepted=True, reason='SCHEMA_VERIFIED')
             row = db.execute('SELECT binding,state FROM recoveries WHERE identity=?', (cancel_identity,)).fetchone()
             if time.monotonic() - started > MAX_SECONDS:
                 return dict(result, reason='INSPECTION_BUDGET_EXCEEDED')
@@ -77,3 +83,19 @@ def inspect_recovery_status(snapshot, expected_sha256, cancel_identity):
             return dict(result, accepted=True, reason='RECOVERY_JOURNAL_ONLY', journal_phase=row[1])
     except (sqlite3.Error, ValueError, TypeError, OverflowError, MemoryError, RecursionError):
         return dict(result, reason='INVALID_OR_UNREADABLE_IMAGE')
+
+
+def inspect_recovery_status(snapshot, expected_sha256, cancel_identity):
+    if type(cancel_identity) is not str or re.fullmatch('[0-9a-f]{64}', cancel_identity) is None:
+        return dict(_inspect_snapshot(b'', expected_sha256), reason='INVALID_EXPECTED_CONTEXT')
+    return _inspect_snapshot(snapshot, expected_sha256, cancel_identity)
+
+
+def inspect_recovery_snapshot(snapshot, expected_sha256):
+    """Bounded startup schema/integrity check; no operation or source authority."""
+    result = _inspect_snapshot(snapshot, expected_sha256)
+    return dict(schema='rokt.offline-recovery-snapshot.v1', accepted=result['accepted'],
+                reason=result['reason'], source_authorized='UNKNOWN',
+                execution_terminal='UNKNOWN', lock_closed='UNKNOWN',
+                allow_dispatch=False, allow_cancel_dispatch=False,
+                replay_allowed=False, production_accepted=False)

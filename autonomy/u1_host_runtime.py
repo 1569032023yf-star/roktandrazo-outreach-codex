@@ -125,6 +125,10 @@ def main(argv=None):
             lifetime.enter_context(pinned_provider_environment(a.provider_config,a.provider_config_sha256))
         snapshot=read_file(Path(a.snapshot),MAX_SNAPSHOT_BYTES)
         token=validate_startup_bytes(token_bytes,a.token_sha256,snapshot,a.snapshot_sha256,a.credential_expires_at)
+        from autonomy.recovery_status import inspect_recovery_snapshot
+        inspection=inspect_recovery_snapshot(snapshot,a.snapshot_sha256)
+        if not inspection['accepted']:
+            raise ValueError('STARTUP_SNAPSHOT_REJECTED:'+inspection['reason'])
         connect=original_owner_reader(a.original_owner_db) if a.original_owner_db else None
         if a.preflight:
             # resolve_release performs read-only pointer/manifest/namespace checks;
@@ -139,7 +143,7 @@ def main(argv=None):
                 startup_inputs_verified=True,release_integrity_verified=True,
                 provider_config_pinned=a.provider_config is not None,
                 owner_mode='original_owner_db' if connect else 'event_runtime' if a.event_runtime else 'none',
-                owner_authority_verified=False,live_lock_verified=False,snapshot_schema_verified=False,
+                owner_authority_verified=False,live_lock_verified=False,snapshot_schema_verified=True,
                 provider_contract='CONTRACT_MISSING',allow_install=False,allow_dispatch=False,
                 allow_cancel_dispatch=False,smtp_enabled=False,listener_started=False,production_ready=False)))
             return

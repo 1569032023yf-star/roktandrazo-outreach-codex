@@ -75,6 +75,22 @@ class RecoveryStatusTests(unittest.TestCase):
             self.assertFalse(result['accepted'])
             self.assertEqual(result['reason'],'INSPECTION_BUDGET_EXCEEDED')
 
+    def test_startup_schema_check_never_claims_operation_authority(self):
+        from autonomy.recovery_status import inspect_recovery_snapshot
+        for state in ('PREPARED','COMPLETED'):
+            raw=self.image(state);result=inspect_recovery_snapshot(raw,hashlib.sha256(raw).hexdigest())
+            self.assertTrue(result['accepted']);self.assertEqual(result['reason'],'SCHEMA_VERIFIED')
+            self.assertNotIn('journal_phase',result)
+            self.assertEqual(result['execution_terminal'],'UNKNOWN')
+            self.assertEqual(result['source_authorized'],'UNKNOWN')
+            self.assertFalse(result['replay_allowed']);self.assertFalse(result['allow_dispatch'])
+        for raw in (self.image(version=2),self.image(extra=True),self.image(wal=True),b'x'*100):
+            self.assertFalse(inspect_recovery_snapshot(raw,hashlib.sha256(raw).hexdigest())['accepted'])
+        raw=self.image()
+        from unittest.mock import patch
+        with patch('autonomy.recovery_status.time.monotonic',side_effect=[0,3]):
+            self.assertEqual(inspect_recovery_snapshot(raw,hashlib.sha256(raw).hexdigest())['reason'],'INSPECTION_BUDGET_EXCEEDED')
+
     def test_actual_partial_recovery_then_completed_snapshot_remains_observation(self):
         import test_cancellation_cost as fixtures
         from test_cancellation_recovery import prepare, authorization
