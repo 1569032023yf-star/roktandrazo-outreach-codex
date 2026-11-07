@@ -135,3 +135,25 @@ ReleaseStore(sys.argv[1]).activate(sys.argv[2],expected_current=None)
             with self.assertRaises(ValueError):build_bundle(self.root/'bad',{name:b'x'},'a'*40)
 
 if __name__=='__main__':unittest.main()
+
+
+class BoundedReadTests(unittest.TestCase):
+    def test_opened_file_size_and_admission_limit(self):
+        from autonomy.release_store import read_file
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'file';path.write_bytes(b'abc')
+            self.assertEqual(read_file(path),b'abc')
+            self.assertEqual(read_file(path,3),b'abc')
+            with self.assertRaisesRegex(ValueError,'FILE_TOO_LARGE'):read_file(path,2)
+            path.write_bytes(b'')
+            self.assertEqual(read_file(path),b'')
+
+    def test_size_change_after_handle_inspection_is_rejected(self):
+        from autonomy.release_store import read_file
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'file';path.write_bytes(b'abc')
+            for observed_size in (2,4):
+                with self.subTest(observed_size=observed_size):
+                    with patch('autonomy.release_store.os.fstat',return_value=SimpleNamespace(st_nlink=1,st_size=observed_size)):
+                        with self.assertRaisesRegex(ValueError,'FILE_SIZE_CHANGED'):read_file(path)

@@ -82,8 +82,14 @@ def checked_manifest(raw):
 def read_file(path, limit=MAX_FILE):
     path = ordinary(path)
     if path.stat().st_nlink != 1: raise ValueError('HARDLINK_REJECTED')
-    with path.open('rb') as f: data = f.read(limit+1)
-    if len(data) > limit: raise ValueError('FILE_TOO_LARGE')
+    with path.open('rb') as f:
+        info = os.fstat(f.fileno())
+        if info.st_nlink != 1: raise ValueError('HARDLINK_REJECTED')
+        if info.st_size > limit: raise ValueError('FILE_TOO_LARGE')
+        # Allocate for this opened file, not the 256 MiB admission ceiling.
+        # One extra byte detects growth; short reads also fail closed.
+        data = f.read(info.st_size + 1)
+        if len(data) != info.st_size: raise ValueError('FILE_SIZE_CHANGED')
     return data
 
 
