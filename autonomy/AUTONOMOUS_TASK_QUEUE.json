@@ -7,8 +7,8 @@
       "id": "rokt-razo-20261107T181111Z",
       "status": "offline_snapshot_admission_verified_review_pending",
       "source_sha": "9e2446fefc52e083430debec278886223b22716b",
-      "updated_at": "2026-11-07T18:19:47.028240+00:00",
-      "checkpoint": "autonomy/evidence/u1_snapshot_admission_20261108/REPORT.md",
+      "updated_at": "2026-11-08T05:15:32.276498+08:00",
+      "checkpoint": "u1_host_provider_admission_20261108",
       "canonical_updated": false,
       "tests": "33 PASS;5 packaged probes VERIFIED",
       "artifacts": {
@@ -6617,7 +6617,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-07T18:19:47.028240+00:00",
+  "updated_at": "2026-11-08T05:15:32.276498+08:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -6915,7 +6915,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "autonomy/evidence/u1_snapshot_admission_20261108/REPORT.md",
+  "checkpoint": "u1_host_provider_admission_20261108",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
@@ -10641,5 +10641,30 @@
       "rollback-tools.zip": "6280524aefce303aec014093b3e53ee26a56f642747bca8d67ff9d9e078a12ac"
     },
     "next_action": "Integrate packaged Provider Worker preflight with pinned host configuration and verify exact isolated-Python startup/import path without requests; independent fixed-candidate review and shared chat-entry coordination before main integration"
+  },
+  "u1_host_provider_admission_latest": {
+    "task_id": "rokt-razo-20261107T211244Z",
+    "started_at": "2026-11-08T05:12:50.4894479+08:00",
+    "recorded_at": "2026-11-08T05:15:32.276498+08:00",
+    "worktree": "D:\\CODEX\\roktandrazo-workspace\\u1-host-provider-admission-20261108",
+    "start_sha": "102d7e87380e665827dde77ce4a1fab525491f48",
+    "source_sha": "99d60197a7bae19f53303afbcad87d52848bac2a",
+    "tests": "python -B -m unittest test_u1_host_runtime test_provider_worker test_provider_environment test_bootstrap_arguments",
+    "tests_passed": 35,
+    "test_seconds": 7.879,
+    "review": "PENDING",
+    "new_package": "NOT_BUILT",
+    "canonical_updated": false,
+    "canonical_sha256": "6c917ad0019123cd7243477efee83d56346ed132e64d9ce119af4937320df40e",
+    "allow_install": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "SMTP": false,
+    "DEVELOPMENT_COMPLETE": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "BUSINESS_GROWTH": "UNKNOWN",
+    "next_action": "Build and verify fresh fixed-SHA disabled package with isolated Python Provider startup preflight; obtain independent fixed-version review."
   }
 }
