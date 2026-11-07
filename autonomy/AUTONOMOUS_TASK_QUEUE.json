@@ -4,6 +4,20 @@
   "description_en": "Independent development queue; never starts production discovery.",
   "tasks": [
     {
+      "id": "rokt-razo-20261107T120935Z",
+      "status": "offline_native_job_verified_review_pending",
+      "source_sha": "4fc6db7c22e16885d68b81e7309d51286e7609b7",
+      "updated_at": "2026-11-07T12:22:38.232493+00:00",
+      "checkpoint": "autonomy/evidence/u1_native_job_20261107/REPORT.md",
+      "canonical_updated": false,
+      "tests": "20 combined PASS;2 packaged EXE lifecycle PASS;5 extracted probes VERIFIED",
+      "artifacts": {
+        "install.zip": "7cb252758305d5491db128eacb6f83c1588c95fa7c05df1de052737ec7931420",
+        "rollback-tools.zip": "065a4cc1cb4f4d3403750dca452687f47028cd80e4ed912494166bafd07c95cd"
+      },
+      "next_action": "Finish business startup argument/import closure; independent review of fixed cumulative source and archives; prove shared chat-entry coordination before main integration"
+    },
+    {
       "id": "rokt-razo-20261107T090934Z",
       "status": "offline_bootstrap_verified_review_pending",
       "source_sha": "afbf24f263e42304d3d73f90e564e3eb48692154",
@@ -6603,7 +6617,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-07T09:26:09.305779+00:00",
+  "updated_at": "2026-11-07T12:22:38.232493+00:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -6901,7 +6915,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "autonomy/evidence/u1_bootstrap_read_20261107/REPORT.md",
+  "checkpoint": "autonomy/evidence/u1_native_job_20261107/REPORT.md",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
@@ -10585,5 +10599,19 @@
     "SMTP": false,
     "provider_contract": "CONTRACT_MISSING",
     "next_action": "Finish remaining business startup argument/import closure; independent review of cumulative fixed source and archives; prove shared-entry adoption before main integration"
+  },
+  "u1_native_job_latest": {
+    "id": "rokt-razo-20261107T120935Z",
+    "status": "offline_native_job_verified_review_pending",
+    "source_sha": "4fc6db7c22e16885d68b81e7309d51286e7609b7",
+    "updated_at": "2026-11-07T12:22:38.232493+00:00",
+    "checkpoint": "autonomy/evidence/u1_native_job_20261107/REPORT.md",
+    "canonical_updated": false,
+    "tests": "20 combined PASS;2 packaged EXE lifecycle PASS;5 extracted probes VERIFIED",
+    "artifacts": {
+      "install.zip": "7cb252758305d5491db128eacb6f83c1588c95fa7c05df1de052737ec7931420",
+      "rollback-tools.zip": "065a4cc1cb4f4d3403750dca452687f47028cd80e4ed912494166bafd07c95cd"
+    },
+    "next_action": "Finish business startup argument/import closure; independent review of fixed cumulative source and archives; prove shared chat-entry coordination before main integration"
   }
 }

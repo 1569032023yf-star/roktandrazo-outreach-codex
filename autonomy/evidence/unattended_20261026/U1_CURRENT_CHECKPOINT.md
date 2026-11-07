@@ -1,3 +1,6 @@
+中文：固定4fc6db7c22e16885d68b81e7309d51286e7609b7修复原生宿主创建至Job分配的崩溃窗口；20项组合与2项包内真实EXE生命周期核验通过，新5058文件CPython包五探针VERIFIED。独审PENDING，main/canonical未改，门禁false。见autonomy/evidence/u1_native_job_20261107/REPORT.md。
+English:Fixed 4fc6db7c22e16885d68b81e7309d51286e7609b7 binds native child Job during creation;20 combined and2 packaged-EXE checks pass;fresh5058-file CPython archive five probes VERIFIED. Review PENDING;main/canonical unchanged;gates false. See report above.
+
 中文：固定afbf24f263e42304d3d73f90e564e3eb48692154修复真实独立宿主启动的大分配及平方级路径扫描；27项通过，新5058文件实际CPython包五探针及最终完整性VERIFIED，引导解析3.374秒。独审PENDING，主树/canonical未改，全部生产门禁false。见autonomy/evidence/u1_bootstrap_read_20261107/REPORT.md。
 English: Fixed afbf24f263e42304d3d73f90e564e3eb48692154 bounds real standalone bootstrap reads/path checks;27 pass and fresh5058-file runtime archive with five probes/final integrity VERIFIED; bootstrap3.374s. Review PENDING; main/canonical unchanged; production gates false. See autonomy/evidence/u1_bootstrap_read_20261107/REPORT.md.
 

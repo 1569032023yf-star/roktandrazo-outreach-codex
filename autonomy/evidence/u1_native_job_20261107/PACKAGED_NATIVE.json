@@ -1,0 +1,10 @@
+{
+  "binary_sha256": "50c66942ee1a671b78fdcf84c9af20f76629eaa441254e69a67a0cf1f5810976",
+  "tests": 2,
+  "passed": true,
+  "production_service_started": false,
+  "production_installation": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "SMTP": false
+}

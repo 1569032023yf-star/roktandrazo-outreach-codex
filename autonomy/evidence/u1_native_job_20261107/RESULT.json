@@ -1,0 +1,61 @@
+{
+  "task_id": "rokt-razo-20261107T120935Z",
+  "started_at": "2026-11-07T20:09:51.1829104+08:00",
+  "ended_at": "2026-11-07T12:22:38.232493+00:00",
+  "workdir": "D:\\CODEX\\roktandrazo-workspace\\u1-native-job-20261107",
+  "branch": "codex/u1-native-job-20261107",
+  "start_sha": "0965a26fcce2410cea94acd486e2413d9da6bd0f",
+  "source_commit": "4fc6db7c22e16885d68b81e7309d51286e7609b7",
+  "files": [
+    "autonomy/windows/RoktU1Bridge.cs",
+    "test_native_host_job.py"
+  ],
+  "tests": {
+    "command": "python -B -m unittest test_native_host_job test_disabled_host_package test_bootstrap_arguments",
+    "count": 20,
+    "result": "PASS",
+    "seconds": 12.099
+  },
+  "packaged_native_tests": {
+    "count": 2,
+    "result": "PASS",
+    "seconds": 1.033
+  },
+  "initial_fixture_failure": "2/13 failed: test output targeted pinned runtime input; fixture separated, then20/20 passed; implementation unchanged",
+  "package": {
+    "artifacts": {
+      "install.zip": "7cb252758305d5491db128eacb6f83c1588c95fa7c05df1de052737ec7931420",
+      "rollback-tools.zip": "065a4cc1cb4f4d3403750dca452687f47028cd80e4ed912494166bafd07c95cd"
+    },
+    "files": 5058,
+    "independent_review": "PENDING",
+    "manifest_sha256": "2d61d7f5ce57da9e772c733be8cc8ad6c9ba754a11fc002e6262869704928309",
+    "package_complete": false,
+    "production_ready": false,
+    "python_runtime_bundled": true,
+    "source_commit": "4fc6db7c22e16885d68b81e7309d51286e7609b7"
+  },
+  "archive_check": {
+    "files": 5058,
+    "rollback_host_files_equal": 4960,
+    "native_exe_sha256": "50c66942ee1a671b78fdcf84c9af20f76629eaa441254e69a67a0cf1f5810976",
+    "source_commit": "4fc6db7c22e16885d68b81e7309d51286e7609b7"
+  },
+  "extracted_verification": "VERIFIED",
+  "independent_review": "PENDING",
+  "canonical_updated": false,
+  "main_updated": false,
+  "statuses": {
+    "DEVELOPMENT_COMPLETE": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "BUSINESS_GROWTH": "UNKNOWN"
+  },
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "SMTP": false,
+  "provider_contract": "CONTRACT_MISSING",
+  "next_action": "Finish business startup argument/import closure; independent review of fixed cumulative source and archives; prove shared chat-entry coordination before main integration"
+}
