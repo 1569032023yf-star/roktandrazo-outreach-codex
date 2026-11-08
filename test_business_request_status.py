@@ -264,6 +264,40 @@ class BusinessRequestStatusTests(unittest.TestCase):
         finally:
             case.doCleanups()
 
+    def test_original_owner_event_intent_without_slot_or_budget_is_unknown(self):
+        import test_original_inventory_owner as original
+        case = original.OriginalOwnerTests('runTest'); case.setUp()
+        try:
+            event = case.event()
+            case.f.adapter.prepare_event(event)
+            before = case.session()
+            status = case.f.adapter.request_status(event['admission'])
+            self.assertEqual(status['business_state'], 'UNKNOWN_RECONCILE_ONLY')
+            self.assertEqual(status['slot_state'], 'NOT_RECORDED')
+            self.assertIsNone(status['resource_budget'])
+            for key in ('replay_authorized', 'allow_dispatch',
+                        'allow_cancel_dispatch', 'production_execution'):
+                self.assertIs(status[key], False)
+            self.assertEqual(case.f.backend.calls, 0)
+            self.assertEqual(case.f.slots.snapshot(), [])
+            self.assertEqual(case.session(), before)
+            self.assertFalse(case.release())
+        finally:
+            case.doCleanups()
+
+    def test_unrecognized_adapter_subclass_cannot_claim_not_recorded(self):
+        from autonomy.single_slot_adapter import SingleSlotAdapter
+        from autonomy.business_request_status import _project
+
+        class OtherAuthorityAdapter(SingleSlotAdapter):
+            pass
+
+        adapter = object.__new__(OtherAuthorityAdapter)
+        result = _project(adapter, {'request_id': 'fixture', 'run_id': 'fixture'},
+                          {}, None, None)
+        self.assertEqual(result['business_state'], 'UNKNOWN_RECONCILE_ONLY')
+        self.assertFalse(result['replay_authorized'])
+
 
 if __name__ == '__main__':
     unittest.main()

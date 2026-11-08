@@ -10,7 +10,7 @@ import sqlite3
 
 from autonomy.growth_ledger import SCHEMA, SCHEMA_VERSION, GrowthError, digest, opaque, vector
 from autonomy.drain_bundle_preflight import SLOT_SCHEMA
-from autonomy.single_slot_adapter import AdapterError
+from autonomy.single_slot_adapter import AdapterError, SingleSlotAdapter
 from autonomy.unattended_policy import INVENTORY
 
 
@@ -77,7 +77,10 @@ def _project(adapter, common, expected, slot, reservation):
             raise AdapterError('REQUEST_STATUS_CLAIM_CONFLICT')
         result['slot_state'] = state.upper()
     if reservation is None:
-        if slot is None:
+        # An original owner can persist an event intent before either ledger
+        # receives a row.  An admission alone cannot identify that event.
+        # Unknown adapter subclasses may hold other unobserved authorities too.
+        if slot is None and type(adapter) is SingleSlotAdapter:
             result['business_state'] = 'NOT_RECORDED'
         # A scheduled slot has no request ID. It cannot establish that this
         # specific request was recorded, even if the slot is pending/deferred.
