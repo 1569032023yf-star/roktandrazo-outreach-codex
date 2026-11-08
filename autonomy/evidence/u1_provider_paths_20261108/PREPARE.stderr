@@ -1,0 +1,242 @@
+{"stage": "HOST_PREPARATION_START", "count": 0, "elapsed_seconds": 2.342}
+
+{"stage": "HOST_PIN_START", "count": 0, "elapsed_seconds": 2.44}
+
+{"stage": "RUNTIME_PIN_START", "count": 0, "elapsed_seconds": 2.578}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 128, "elapsed_seconds": 3.525}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 256, "elapsed_seconds": 4.195}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 384, "elapsed_seconds": 4.924}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 512, "elapsed_seconds": 5.709}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 640, "elapsed_seconds": 6.687}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 768, "elapsed_seconds": 8.209}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 896, "elapsed_seconds": 9.647}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 1024, "elapsed_seconds": 11.069}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 1152, "elapsed_seconds": 12.49}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 1280, "elapsed_seconds": 13.076}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 1408, "elapsed_seconds": 13.82}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 1536, "elapsed_seconds": 14.385}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 1664, "elapsed_seconds": 14.956}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 1792, "elapsed_seconds": 15.55}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 1920, "elapsed_seconds": 15.962}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 2048, "elapsed_seconds": 16.431}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 2176, "elapsed_seconds": 17.018}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 2304, "elapsed_seconds": 17.527}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 2432, "elapsed_seconds": 18.423}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 2560, "elapsed_seconds": 19.005}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 2688, "elapsed_seconds": 19.538}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 2816, "elapsed_seconds": 21.951}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 2944, "elapsed_seconds": 22.293}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 3072, "elapsed_seconds": 22.568}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 3200, "elapsed_seconds": 22.809}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 3328, "elapsed_seconds": 23.044}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 3456, "elapsed_seconds": 23.277}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 3584, "elapsed_seconds": 23.836}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 3712, "elapsed_seconds": 24.48}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 3840, "elapsed_seconds": 24.937}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 3968, "elapsed_seconds": 25.526}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 4096, "elapsed_seconds": 25.897}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 4224, "elapsed_seconds": 26.273}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 4352, "elapsed_seconds": 26.687}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 4480, "elapsed_seconds": 27.058}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 4608, "elapsed_seconds": 27.423}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 4736, "elapsed_seconds": 27.741}
+
+{"stage": "RUNTIME_FILES_PINNED", "count": 4864, "elapsed_seconds": 28.168}
+
+{"stage": "RUNTIME_LAYOUT_VERIFIED", "count": 4943, "elapsed_seconds": 28.835}
+
+{"stage": "RUNTIME_PIN_VERIFIED", "count": 4943, "elapsed_seconds": 28.835}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 128, "elapsed_seconds": 28.875}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 256, "elapsed_seconds": 28.885}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 384, "elapsed_seconds": 28.896}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 512, "elapsed_seconds": 28.907}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 640, "elapsed_seconds": 28.922}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 768, "elapsed_seconds": 28.949}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 896, "elapsed_seconds": 28.968}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 1024, "elapsed_seconds": 28.991}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 1152, "elapsed_seconds": 29.04}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 1280, "elapsed_seconds": 29.052}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 1408, "elapsed_seconds": 29.063}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 1536, "elapsed_seconds": 29.075}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 1664, "elapsed_seconds": 29.085}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 1792, "elapsed_seconds": 29.096}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 1920, "elapsed_seconds": 29.105}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 2048, "elapsed_seconds": 29.114}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 2176, "elapsed_seconds": 29.123}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 2304, "elapsed_seconds": 29.132}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 2432, "elapsed_seconds": 29.143}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 2560, "elapsed_seconds": 29.154}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 2688, "elapsed_seconds": 29.163}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 2816, "elapsed_seconds": 29.375}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 2944, "elapsed_seconds": 29.39}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 3072, "elapsed_seconds": 29.398}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 3200, "elapsed_seconds": 29.408}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 3328, "elapsed_seconds": 29.416}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 3456, "elapsed_seconds": 29.423}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 3584, "elapsed_seconds": 29.434}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 3712, "elapsed_seconds": 29.445}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 3840, "elapsed_seconds": 29.454}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 3968, "elapsed_seconds": 29.477}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 4096, "elapsed_seconds": 29.485}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 4224, "elapsed_seconds": 29.493}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 4352, "elapsed_seconds": 29.501}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 4480, "elapsed_seconds": 29.509}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 4608, "elapsed_seconds": 29.517}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 4736, "elapsed_seconds": 29.525}
+
+{"stage": "RUNTIME_ROWS_VERIFIED", "count": 4864, "elapsed_seconds": 29.534}
+
+{"stage": "FILES_COPIED", "count": 128, "elapsed_seconds": 29.644}
+
+{"stage": "FILES_COPIED", "count": 256, "elapsed_seconds": 29.692}
+
+{"stage": "FILES_COPIED", "count": 384, "elapsed_seconds": 29.739}
+
+{"stage": "FILES_COPIED", "count": 512, "elapsed_seconds": 29.787}
+
+{"stage": "FILES_COPIED", "count": 640, "elapsed_seconds": 29.844}
+
+{"stage": "FILES_COPIED", "count": 768, "elapsed_seconds": 29.909}
+
+{"stage": "FILES_COPIED", "count": 896, "elapsed_seconds": 29.968}
+
+{"stage": "FILES_COPIED", "count": 1024, "elapsed_seconds": 30.032}
+
+{"stage": "FILES_COPIED", "count": 1152, "elapsed_seconds": 30.108}
+
+{"stage": "FILES_COPIED", "count": 1280, "elapsed_seconds": 30.162}
+
+{"stage": "FILES_COPIED", "count": 1408, "elapsed_seconds": 30.204}
+
+{"stage": "FILES_COPIED", "count": 1536, "elapsed_seconds": 30.25}
+
+{"stage": "FILES_COPIED", "count": 1664, "elapsed_seconds": 30.294}
+
+{"stage": "FILES_COPIED", "count": 1792, "elapsed_seconds": 30.339}
+
+{"stage": "FILES_COPIED", "count": 1920, "elapsed_seconds": 30.382}
+
+{"stage": "FILES_COPIED", "count": 2048, "elapsed_seconds": 30.432}
+
+{"stage": "FILES_COPIED", "count": 2176, "elapsed_seconds": 30.483}
+
+{"stage": "FILES_COPIED", "count": 2304, "elapsed_seconds": 30.534}
+
+{"stage": "FILES_COPIED", "count": 2432, "elapsed_seconds": 30.588}
+
+{"stage": "FILES_COPIED", "count": 2560, "elapsed_seconds": 30.634}
+
+{"stage": "FILES_COPIED", "count": 2688, "elapsed_seconds": 30.672}
+
+{"stage": "FILES_COPIED", "count": 2816, "elapsed_seconds": 31.154}
+
+{"stage": "FILES_COPIED", "count": 2944, "elapsed_seconds": 31.201}
+
+{"stage": "FILES_COPIED", "count": 3072, "elapsed_seconds": 31.237}
+
+{"stage": "FILES_COPIED", "count": 3200, "elapsed_seconds": 31.274}
+
+{"stage": "FILES_COPIED", "count": 3328, "elapsed_seconds": 31.311}
+
+{"stage": "FILES_COPIED", "count": 3456, "elapsed_seconds": 31.348}
+
+{"stage": "FILES_COPIED", "count": 3584, "elapsed_seconds": 31.386}
+
+{"stage": "FILES_COPIED", "count": 3712, "elapsed_seconds": 31.427}
+
+{"stage": "FILES_COPIED", "count": 3840, "elapsed_seconds": 31.466}
+
+{"stage": "FILES_COPIED", "count": 3968, "elapsed_seconds": 31.52}
+
+{"stage": "FILES_COPIED", "count": 4096, "elapsed_seconds": 31.579}
+
+{"stage": "FILES_COPIED", "count": 4224, "elapsed_seconds": 31.633}
+
+{"stage": "FILES_COPIED", "count": 4352, "elapsed_seconds": 31.673}
+
+{"stage": "FILES_COPIED", "count": 4480, "elapsed_seconds": 31.708}
+
+{"stage": "FILES_COPIED", "count": 4608, "elapsed_seconds": 31.742}
+
+{"stage": "FILES_COPIED", "count": 4736, "elapsed_seconds": 31.775}
+
+{"stage": "FILES_COPIED", "count": 4864, "elapsed_seconds": 31.81}
+
+{"stage": "FINAL_PIN_REVALIDATE_START", "count": 4959, "elapsed_seconds": 31.837}
+
+{"stage": "HOST_MANIFEST_WRITTEN", "count": 4959, "elapsed_seconds": 32.225}
+

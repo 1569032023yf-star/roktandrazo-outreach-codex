@@ -1,0 +1,97 @@
+{
+  "source_commit": "70d85c6ec56901d644c5d7e6dd984de2aaf081a6",
+  "archive_sha256": "bedfd0e67f0093041e1f22d35542d05ee70dbf561870279f58ca8870ecc93bca",
+  "manifest_sha256": "90a7661ed8688844260e9f20a22c4ecd41b52ab3c4caa1691c3cbfe3bed237cf",
+  "outcome": "VERIFIED",
+  "description_zh": "仅离线入口导入、包内子进程和完整性；不证明正式业务、安装或回滚。",
+  "description_en": "Offline entrypoint imports, packaged subprocess and integrity only; not formal business, installation or rollback acceptance.",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "production_ready": false,
+  "checks": [
+    {
+      "arguments": [
+        "-I",
+        "-B",
+        "-c",
+        "\nimport sys,json,importlib,socket,subprocess,sqlite3,smtplib\nfrom pathlib import Path\napp=Path(sys.argv[1]).resolve(); runtime=Path(sys.executable).resolve().parent\nassert sys.flags.isolated and all(Path(p).resolve().is_relative_to(runtime) for p in sys.path)\nsys.path.insert(0,str(app))\ndef deny(*args,**kwargs): raise RuntimeError('NETWORK_FORBIDDEN_OFFLINE_PROBE')\nsocket.socket.connect=deny; socket.create_connection=deny\nsqlite3.connect=deny; smtplib.SMTP=deny; smtplib.SMTP_SSL=deny\nnames=['autonomy.u1_host_runtime','autonomy.inventory_event_bridge',\n       'autonomy.original_inventory_owner','autonomy.process_backend',\n       'publisher_channel.install_command','autonomy.windows.u1_bootstrap',\n       'discovery.providers.google_places','discovery.providers.browser_maps',\n       'discovery.providers.serpapi_maps','discovery.providers.contracts',\n       'discovery.discovery_service']\nbusiness_roots={'bd_db','history_crosscheck','lead_hygiene_gate','outreach_control',\n                'retail_city_queue','broad_outreach_gate','email_hygiene','timezone_resolver'}\nfor name in names: importlib.import_module(name)\norigins={}\nfor name,module in list(sys.modules.items()):\n if name.split('.')[0] in ('autonomy','publisher_channel','discovery') or name in business_roots:\n  origin=getattr(module,'__file__',None)\n  if origin:\n   assert Path(origin).resolve().is_relative_to(app),(name,origin)\n   origins[name]=str(Path(origin).resolve().relative_to(app))\nassert business_roots <= set(origins), sorted(business_roots-set(origins))\nchild=subprocess.run([sys.executable,'-I','-B','-c',\n 'import sys; assert sys.flags.isolated; print(\"ISOLATED_CHILD_OK\")'],\n capture_output=True,text=True,timeout=20,check=True)\nprint(json.dumps(dict(module_origins=origins,child_stdout=child.stdout)))\n",
+        "D:\\CODEX\\roktandrazo-workspace\\u1-provider-paths-20261108\\extracted\\payload\\python"
+      ],
+      "returncode": 0,
+      "stdout": "{\"module_origins\": {\"autonomy.unattended_policy\": \"autonomy\\\\unattended_policy.py\", \"autonomy.lock_recovery\": \"autonomy\\\\lock_recovery.py\", \"autonomy.growth_ledger\": \"autonomy\\\\growth_ledger.py\", \"autonomy.bridge_acceptance\": \"autonomy\\\\bridge_acceptance.py\", \"autonomy.host_preparation\": \"autonomy\\\\host_preparation.py\", \"autonomy.cancellation_terminal\": \"autonomy\\\\cancellation_terminal.py\", \"autonomy.single_slot_adapter\": \"autonomy\\\\single_slot_adapter.py\", \"autonomy.cancellation_recovery\": \"autonomy\\\\cancellation_recovery.py\", \"autonomy.growth_snapshot\": \"autonomy\\\\growth_snapshot.py\", \"autonomy.recovery_status\": \"autonomy\\\\recovery_status.py\", \"autonomy.host_readonly_http\": \"autonomy\\\\host_readonly_http.py\", \"autonomy.release_store\": \"autonomy\\\\release_store.py\", \"autonomy.u1_host_runtime\": \"autonomy\\\\u1_host_runtime.py\", \"autonomy.process_control\": \"autonomy\\\\process_control.py\", \"autonomy.process_job\": \"autonomy\\\\process_job.py\", \"autonomy.process_backend\": \"autonomy\\\\process_backend.py\", \"autonomy.inventory_event_bridge\": \"autonomy\\\\inventory_event_bridge.py\", \"autonomy.inventory_maintenance\": \"autonomy\\\\inventory_maintenance.py\", \"autonomy.original_inventory_owner\": \"autonomy\\\\original_inventory_owner.py\", \"autonomy.disabled_host_package\": \"autonomy\\\\disabled_host_package.py\", \"autonomy.directory_identity\": \"autonomy\\\\directory_identity.py\", \"autonomy.host_file_transaction\": \"autonomy\\\\host_file_transaction.py\", \"publisher_channel.install_verifier\": \"publisher_channel\\\\install_verifier.py\", \"publisher_channel.install_inputs\": \"publisher_channel\\\\install_inputs.py\", \"publisher_channel.install_maintenance\": \"publisher_channel\\\\install_maintenance.py\", \"publisher_channel.install_process\": \"publisher_channel\\\\install_process.py\", \"publisher_channel.install_command\": \"publisher_channel\\\\install_command.py\", \"autonomy.windows.u1_bootstrap\": \"autonomy\\\\windows\\\\u1_bootstrap.py\", \"discovery\": \"discovery\\\\__init__.py\", \"discovery.providers\": \"discovery\\\\providers\\\\__init__.py\", \"discovery.models\": \"discovery\\\\models.py\", \"discovery.providers.contracts\": \"discovery\\\\providers\\\\contracts.py\", \"discovery.providers.base\": \"discovery\\\\providers\\\\base.py\", \"discovery.providers.google_places\": \"discovery\\\\providers\\\\google_places.py\", \"discovery.providers.browser_maps\": \"discovery\\\\providers\\\\browser_maps.py\", \"discovery.providers.serpapi_maps\": \"discovery\\\\providers\\\\serpapi_maps.py\", \"history_crosscheck\": \"history_crosscheck.py\", \"bd_db\": \"bd_db.py\", \"discovery.normalizer\": \"discovery\\\\normalizer.py\", \"lead_hygiene_gate\": \"lead_hygiene_gate.py\", \"outreach_control\": \"outreach_control.py\", \"retail_city_queue\": \"retail_city_queue.py\", \"email_hygiene\": \"email_hygiene.py\", \"broad_outreach_gate\": \"broad_outreach_gate.py\", \"timezone_resolver\": \"timezone_resolver.py\", \"discovery.discovery_service\": \"discovery\\\\discovery_service.py\"}, \"child_stdout\": \"ISOLATED_CHILD_OK\\n\"}\n",
+      "stderr": "",
+      "outcome": "PASSED"
+    },
+    {
+      "arguments": [
+        "-I",
+        "-B",
+        "-m",
+        "pip",
+        "--isolated",
+        "--disable-pip-version-check",
+        "check"
+      ],
+      "returncode": 0,
+      "stdout": "No broken requirements found.\n",
+      "stderr": "",
+      "outcome": "PASSED"
+    },
+    {
+      "arguments": [
+        "--validate-runtime",
+        "D:\\CODEX\\roktandrazo-workspace\\u1-provider-paths-20261108\\extracted\\payload\\host\\runtime\\python\\U1_RUNTIME_CONTENT.json",
+        "5ca4bd5242a6432ea41d18e0140ae0b7b0a999565cb8319aa7cb2dca392a897e",
+        "D:\\CODEX\\roktandrazo-workspace\\u1-provider-paths-20261108\\extracted\\payload\\host\\runtime\\python\\python.exe"
+      ],
+      "returncode": 0,
+      "stdout": "VALID_PINNED_RUNTIME\n",
+      "stderr": "",
+      "outcome": "PASSED"
+    },
+    {
+      "arguments": [
+        "-I",
+        "-B",
+        "-c",
+        "\nimport sys,json,tempfile,secrets,time,threading,http.client,socket\nfrom pathlib import Path\nsys.path.insert(0,sys.argv[1])\nfrom autonomy.release_store import ReleaseStore,build_bundle,sha\nfrom autonomy.u1_host_runtime import open_host\noriginal_connect=socket.socket.connect\ndef local_only(self,address):\n if not isinstance(address,tuple) or address[0]!='127.0.0.1':\n  raise RuntimeError('EXTERNAL_NETWORK_FORBIDDEN')\n return original_connect(self,address)\nsocket.socket.connect=local_only\nwith tempfile.TemporaryDirectory(prefix='u1-offline-http-',dir=sys.argv[2]) as tmp:\n root=Path(tmp);release=root/'release';state=root/'state';release.mkdir();state.mkdir()\n version=build_bundle(root/'fixture',{'fixture.txt':b'offline release fixture'},'a'*40)\n store=ReleaseStore(release);store.stage(root/'fixture',version);store.activate(version,expected_current=None)\n token=secrets.token_hex(32);snapshot=b'offline snapshot fixture'\n with open_host(release,state,token,int(time.time())+60,snapshot,sha(snapshot),port=0) as server:\n  worker=threading.Thread(target=server.serve_forever,kwargs={'poll_interval':0.01});worker.start()\n  statuses=[]\n  try:\n   for headers,expected in [({},401),({'Authorization':'Bearer '+token},200)]:\n    client=http.client.HTTPConnection('127.0.0.1',server.server_port,timeout=5)\n    try:\n     client.request('GET','/v1/health',headers=headers);reply=client.getresponse()\n     assert reply.status==expected,(reply.status,expected)\n     reply.read();statuses.append(reply.status)\n    finally:client.close()\n  finally:server.shutdown();worker.join(10)\n  assert not worker.is_alive()\nprint(json.dumps(dict(local_http_statuses=statuses,fixture_release=True,\n fixture_snapshot=True,formal_provider=False,production_ports_tested=False)))\n",
+        "D:\\CODEX\\roktandrazo-workspace\\u1-provider-paths-20261108\\extracted\\payload\\python",
+        "D:\\CODEX\\roktandrazo-workspace\\u1-provider-paths-20261108"
+      ],
+      "returncode": 0,
+      "stdout": "{\"local_http_statuses\": [401, 200], \"fixture_release\": true, \"fixture_snapshot\": true, \"formal_provider\": false, \"production_ports_tested\": false}\n",
+      "stderr": "",
+      "outcome": "PASSED"
+    },
+    {
+      "arguments": [
+        "-I",
+        "-B",
+        "-c",
+        "\nimport sys,json,tempfile,runpy,socket,sqlite3,smtplib,time\nfrom pathlib import Path\nroot=Path(sys.argv[1]);sys.path.insert(0,str(root/'payload/python'))\nfrom autonomy.release_store import ReleaseStore\n\ndef deny(*args,**kwargs):raise RuntimeError('SIDE_EFFECT_FORBIDDEN_OFFLINE_BOOTSTRAP')\nsocket.socket.connect=deny;socket.create_connection=deny\nreal_connect=sqlite3.connect\n# Only standalone caller-approved bytes are inspected in an in-memory database.\ndef memory_only(database,*args,**kwargs):\n if database!=':memory:':return deny()\n return real_connect(database,*args,**kwargs)\nsqlite3.connect=memory_only;smtplib.SMTP=deny;smtplib.SMTP_SSL=deny\n# Execute the actual packaged service bootstrap definitions, without starting it.\nbootstrap=runpy.run_path(str(root/'payload/host/service/u1_bootstrap.py'))\nwith tempfile.TemporaryDirectory(prefix='b',dir=sys.argv[3]) as tmp:\n store=ReleaseStore(Path(tmp));store.stage(root,sys.argv[2])\n store.activate(sys.argv[2],expected_current=None)\n started=time.monotonic();folder=bootstrap['resolve_release'](Path(tmp))\n assert folder==Path(tmp)/'versions'/sys.argv[2]/'payload/python'\n import hashlib,io\n from contextlib import redirect_stdout\n # Exercise the actual packaged bootstrap -> host argument path; no authority read.\n state=Path(tmp)/'state';state.mkdir()\n token=Path(tmp)/'token';token.write_bytes(b'a'*64)\n from autonomy.cancellation_recovery import SCHEMA,HANDOFF_SCHEMA\n from contextlib import closing\n snapshot=Path(tmp)/'snapshot'\n with closing(sqlite3.connect(':memory:')) as db:\n  db.execute(SCHEMA);db.execute(HANDOFF_SCHEMA);db.execute('PRAGMA user_version=1');db.commit()\n  snapshot.write_bytes(db.serialize())\n config=Path(tmp)/'runtime.json'\n config.write_text(json.dumps(dict(schema='rokt.u1-python-runtime.v2',inventory_id='1784775229336',\n  release_root=tmp,state_root=str(state),token_file=str(token),token_sha256=hashlib.sha256(token.read_bytes()).hexdigest(),\n  credential_expires_at=int(time.time())+300,snapshot=str(snapshot),snapshot_sha256=hashlib.sha256(snapshot.read_bytes()).hexdigest(),\n  allow_dispatch=False,allow_cancel_dispatch=False,smtp_enabled=False)),encoding='utf-8')\n before={str(p.relative_to(Path(tmp))):hashlib.sha256(p.read_bytes()).hexdigest() for p in Path(tmp).rglob('*') if p.is_file()}\n output=io.StringIO()\n with redirect_stdout(output):bootstrap['main'](str(config),preflight=True)\n report=json.loads(output.getvalue())\n assert report['startup_inputs_verified'] and report['snapshot_schema_verified'] and not report['listener_started'] and not report['production_ready']\n after={str(p.relative_to(Path(tmp))):hashlib.sha256(p.read_bytes()).hexdigest() for p in Path(tmp).rglob('*') if p.is_file()}\n assert before==after,'PREFLIGHT_MUTATED_INPUTS'\n print(json.dumps(dict(packaged_service_bootstrap_integrity=True,\n   elapsed_seconds=time.monotonic()-started,fixture_store=True,service_started=False,\n   production_installation=False)))\n",
+        "D:\\CODEX\\roktandrazo-workspace\\u1-provider-paths-20261108\\extracted",
+        "90a7661ed8688844260e9f20a22c4ecd41b52ab3c4caa1691c3cbfe3bed237cf",
+        "D:\\CODEX\\roktandrazo-workspace"
+      ],
+      "returncode": 0,
+      "stdout": "{\"packaged_service_bootstrap_integrity\": true, \"elapsed_seconds\": 10.174768199911341, \"fixture_store\": true, \"service_started\": false, \"production_installation\": false}\n",
+      "stderr": "",
+      "outcome": "PASSED"
+    }
+  ],
+  "active_check": null,
+  "manifest_files": 5058,
+  "offline_entrypoint_imports_verified": true,
+  "discovery_business_imports_verified": true,
+  "packaged_service_bootstrap_integrity_verified": true,
+  "loopback_http_with_fixtures_verified": true,
+  "production_ports_verified": false,
+  "full_business_import_closure": false,
+  "bootstrap_arguments_verified": true,
+  "packaged_startup_preflight_verified": true,
+  "installation_verified": false,
+  "rollback_verified": false,
+  "provider_accepted": false
+}

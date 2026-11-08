@@ -1,0 +1,2 @@
+{"returncode": 0, "stdout": "{\"packaged_service_bootstrap_integrity\": true, \"elapsed_seconds\": 10.228649300057441, \"fixture_store\": true, \"service_started\": false, \"production_installation\": false}\n", "stderr": "", "external_requests_allowed": false, "data_files_created": false}
+

@@ -7,8 +7,8 @@
       "id": "rokt-razo-20261107T181111Z",
       "status": "offline_snapshot_admission_verified_review_pending",
       "source_sha": "9e2446fefc52e083430debec278886223b22716b",
-      "updated_at": "2026-11-08T11:13:45.295650+08:00",
-      "checkpoint": "u1_provider_paths_20261108",
+      "updated_at": "2026-11-08T14:16:46.453789+08:00",
+      "checkpoint": "u1_provider_paths_package_20261108",
       "canonical_updated": false,
       "tests": "33 PASS;5 packaged probes VERIFIED",
       "artifacts": {
@@ -6617,7 +6617,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-08T11:13:45.295650+08:00",
+  "updated_at": "2026-11-08T14:16:46.453789+08:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -6915,7 +6915,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "u1_provider_paths_20261108",
+  "checkpoint": "u1_provider_paths_package_20261108",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
@@ -10722,5 +10722,34 @@
     "PRODUCTION_ACCEPTED": false,
     "BUSINESS_GROWTH": "UNKNOWN",
     "next_action": "Pin browser_maps packaged startup configuration with absolute data paths; verify fresh disabled archive for new source; independent fixed-version review and coordinated integration remain pending."
+  },
+  "u1_provider_paths_package_latest": {
+    "task_id": "rokt-razo-20261108T060953Z",
+    "started_at": "2026-11-08T14:10:06.9771108+08:00",
+    "recorded_at": "2026-11-08T14:16:46.453789+08:00",
+    "worktree": "D:\\CODEX\\roktandrazo-workspace\\u1-provider-paths-20261108",
+    "start_sha": "b61a9f42b2566671150a4ce5a394829f34f2da9f",
+    "source_sha": "70d85c6ec56901d644c5d7e6dd984de2aaf081a6",
+    "artifacts": {
+      "install.zip": "bedfd0e67f0093041e1f22d35542d05ee70dbf561870279f58ca8870ecc93bca",
+      "rollback-tools.zip": "d2246179a752c74088bd706ea6557b0499095047e1c013431ca51df097ceb20d"
+    },
+    "manifest_sha256": "90a7661ed8688844260e9f20a22c4ecd41b52ab3c4caa1691c3cbfe3bed237cf",
+    "manifest_files": 5058,
+    "rollback_equal": 4960,
+    "packaged_browser_preflight": "PASSED",
+    "review": "PENDING",
+    "canonical_updated": false,
+    "canonical_sha256": "6c917ad0019123cd7243477efee83d56346ed132e64d9ce119af4937320df40e",
+    "allow_install": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "SMTP": false,
+    "DEVELOPMENT_COMPLETE": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "BUSINESS_GROWTH": "UNKNOWN",
+    "next_action": "Audit existing publisher/install maintenance IPC and original-owner session call chain for remaining P0 integration blockers; independent fixed-candidate review remains PENDING."
   }
 }

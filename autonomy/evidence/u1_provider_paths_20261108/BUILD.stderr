@@ -1,0 +1,10 @@
+{"stage": "PREPARED_HOST_PIN_START", "count": 0, "elapsed_seconds": 0.914}
+
+{"stage": "PREPARED_HOST_PIN_VERIFIED", "count": 4960, "elapsed_seconds": 31.006}
+
+{"stage": "INSTALL_ARCHIVE_START", "count": 5058, "elapsed_seconds": 35.404}
+
+{"stage": "INSTALL_ARCHIVE_COMPLETE", "count": 5058, "elapsed_seconds": 44.563}
+
+{"stage": "ROLLBACK_TOOLS_START", "count": 4960, "elapsed_seconds": 44.564}
+
