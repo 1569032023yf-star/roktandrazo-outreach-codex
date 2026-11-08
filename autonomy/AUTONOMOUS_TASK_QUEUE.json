@@ -7,8 +7,8 @@
       "id": "rokt-razo-20261107T181111Z",
       "status": "offline_snapshot_admission_verified_review_pending",
       "source_sha": "9e2446fefc52e083430debec278886223b22716b",
-      "updated_at": "2026-11-08T08:17:04.029716+08:00",
-      "checkpoint": "u1_host_provider_package_20261108",
+      "updated_at": "2026-11-08T11:13:45.295650+08:00",
+      "checkpoint": "u1_provider_paths_20261108",
       "canonical_updated": false,
       "tests": "33 PASS;5 packaged probes VERIFIED",
       "artifacts": {
@@ -6617,7 +6617,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-08T08:17:04.029716+08:00",
+  "updated_at": "2026-11-08T11:13:45.295650+08:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -6915,7 +6915,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "u1_host_provider_package_20261108",
+  "checkpoint": "u1_provider_paths_20261108",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
@@ -10697,5 +10697,30 @@
     "PRODUCTION_ACCEPTED": false,
     "BUSINESS_GROWTH": "UNKNOWN",
     "next_action": "Independent review of pinned host/provider candidate and safe shared-entry coordination before main integration; formal Provider receipts remain CONTRACT_MISSING."
+  },
+  "u1_provider_paths_latest": {
+    "task_id": "rokt-razo-20261108T031050Z",
+    "started_at": "2026-11-08T11:11:07.2924881+08:00",
+    "recorded_at": "2026-11-08T11:13:45.295650+08:00",
+    "worktree": "D:\\CODEX\\roktandrazo-workspace\\u1-provider-paths-20261108",
+    "start_sha": "391c17d22e9d0f20220681223ccd97420e0eb66c",
+    "source_sha": "70d85c6ec56901d644c5d7e6dd984de2aaf081a6",
+    "tests": "python -B -m unittest test_provider_environment test_provider_worker test_u1_host_runtime test_bootstrap_arguments",
+    "tests_passed": 36,
+    "test_seconds": 8.923,
+    "review": "PENDING",
+    "new_package": "NOT_BUILT",
+    "canonical_updated": false,
+    "canonical_sha256": "6c917ad0019123cd7243477efee83d56346ed132e64d9ce119af4937320df40e",
+    "allow_install": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "SMTP": false,
+    "DEVELOPMENT_COMPLETE": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "BUSINESS_GROWTH": "UNKNOWN",
+    "next_action": "Pin browser_maps packaged startup configuration with absolute data paths; verify fresh disabled archive for new source; independent fixed-version review and coordinated integration remain pending."
   }
 }
