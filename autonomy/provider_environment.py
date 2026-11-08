@@ -1,5 +1,6 @@
 """Pinned provider-only configuration, not dispatch or credential authorization."""
 import json
+from pathlib import Path
 from contextlib import contextmanager
 from publisher_channel.install_inputs import InstallInputPins
 
@@ -34,6 +35,16 @@ def pinned_provider_environment(path, expected_sha256):
             raise ValueError('REAL_PROVIDER_REQUIRED')
         if 'BROWSER_MAPS_MODE' in environment and environment['BROWSER_MAPS_MODE'] not in ('file', 'direct', 'auto'):
             raise ValueError('BROWSER_MODE_REJECTED')
+        # Service and Worker working directories differ. Never resolve approved
+        # file inputs against whichever directory happened to launch the process.
+        for key in ('BROWSER_MAPS_CACHE_DIR', 'BROWSER_MAPS_JSON_FILE'):
+            if key not in environment:
+                continue
+            path_value = environment[key]
+            if key == 'BROWSER_MAPS_JSON_FILE' and path_value == '':
+                continue  # Explicitly unset input keeps existing cache fallback.
+            if not Path(path_value).is_absolute():
+                raise ValueError('PROVIDER_ABSOLUTE_PATH_REQUIRED')
         pins.revalidate()
         yield dict(environment)
         pins.revalidate()

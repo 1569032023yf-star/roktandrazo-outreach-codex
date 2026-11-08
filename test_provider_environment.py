@@ -48,6 +48,29 @@ class ProviderEnvironmentTests(unittest.TestCase):
             path,digest=self.config(root,raw=b'{"schema":"rokt.provider-environment.v1","environment":{},"environment":{}}')
             with self.assertRaisesRegex(ValueError,'DUPLICATE'):load_pinned_provider_environment(path,digest)
 
+    def test_browser_file_paths_are_independent_of_launch_directory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            for key,values in {
+                'BROWSER_MAPS_CACHE_DIR':['','cache','../cache','D:cache'],
+                'BROWSER_MAPS_JSON_FILE':['input.json','../input.json','D:input.json'],
+            }.items():
+                for value in values:
+                    with self.subTest(key=key,value=value):
+                        path,digest=self.config(root,{'WORKBUDDY_DISCOVERY_PROVIDER':'browser_maps',key:value})
+                        with self.assertRaisesRegex(ValueError,'PROVIDER_ABSOLUTE_PATH_REQUIRED'):
+                            load_pinned_provider_environment(path,digest)
+            from autonomy.provider_environment import pinned_provider_adapter
+            missing_cache=root/'absent-cache';missing_input=root/'absent.json'
+            path,digest=self.config(root,{'WORKBUDDY_DISCOVERY_PROVIDER':'browser_maps',
+                'BROWSER_MAPS_CACHE_DIR':str(missing_cache),'BROWSER_MAPS_JSON_FILE':str(missing_input)})
+            with pinned_provider_adapter(path,digest) as adapter:
+                self.assertEqual(adapter._cache_dir,missing_cache)
+                self.assertEqual(adapter._json_file,str(missing_input))
+            self.assertFalse(missing_cache.exists());self.assertFalse(missing_input.exists())
+            path,digest=self.config(root,{'WORKBUDDY_DISCOVERY_PROVIDER':'browser_maps','BROWSER_MAPS_JSON_FILE':''})
+            self.assertEqual(load_pinned_provider_environment(path,digest)['BROWSER_MAPS_JSON_FILE'],'')
+
     def test_real_loader_needs_no_code_root_env_and_replaces_inherited_provider(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);path,digest=self.config(root)
