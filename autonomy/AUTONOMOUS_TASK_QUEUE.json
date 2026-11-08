@@ -7,8 +7,8 @@
       "id": "rokt-razo-20261107T181111Z",
       "status": "offline_snapshot_admission_verified_review_pending",
       "source_sha": "9e2446fefc52e083430debec278886223b22716b",
-      "updated_at": "2026-11-08T05:15:32.276498+08:00",
-      "checkpoint": "u1_host_provider_admission_20261108",
+      "updated_at": "2026-11-08T08:17:04.029716+08:00",
+      "checkpoint": "u1_host_provider_package_20261108",
       "canonical_updated": false,
       "tests": "33 PASS;5 packaged probes VERIFIED",
       "artifacts": {
@@ -6617,7 +6617,7 @@
     "published_evidence_commit": "6e9ab89c05a1c7ba68344e09aabd2ee56ac56f91",
     "publication_readback_at": "2026-10-29T07:18:24.981413+00:00"
   },
-  "updated_at": "2026-11-08T05:15:32.276498+08:00",
+  "updated_at": "2026-11-08T08:17:04.029716+08:00",
   "workbuddy_production_consumption_latest": {
     "commit": "3033463370e7adf62943e642632955c74394bc7c",
     "receipt": "autonomy/evidence/workbuddy_refresh_20261101/CONSUMPTION_RECEIPT.json",
@@ -6915,7 +6915,7 @@
     "allow_dispatch": false,
     "next": "implement durable installation journal and injectable OS adapter; no production execution"
   },
-  "checkpoint": "u1_host_provider_admission_20261108",
+  "checkpoint": "u1_host_provider_package_20261108",
   "u1_publication_recovery_latest": {
     "updated_at": "2026-11-02T09:01:44.396442+00:00",
     "source_commit": "82031ac3391889f29fc5df3ecc994ecc95fe0f78",
@@ -10666,5 +10666,36 @@
     "PRODUCTION_ACCEPTED": false,
     "BUSINESS_GROWTH": "UNKNOWN",
     "next_action": "Build and verify fresh fixed-SHA disabled package with isolated Python Provider startup preflight; obtain independent fixed-version review."
+  },
+  "u1_host_provider_package_latest": {
+    "task_id": "rokt-razo-20261108T000917Z",
+    "started_at": "2026-11-08T08:09:28.4470841+08:00",
+    "recorded_at": "2026-11-08T08:17:04.029716+08:00",
+    "worktree": "D:\\CODEX\\roktandrazo-workspace\\u1-host-provider-admission-20261108",
+    "start_sha": "a60a775fbfedf8eafdb779d6b12fd9ad6c7a1243",
+    "source_sha": "99d60197a7bae19f53303afbcad87d52848bac2a",
+    "manifest_sha256": "354f059a08f3309abc1af6646f0a37842c8791147ada562dd5c55f2638535fc0",
+    "artifacts": {
+      "install.zip": "bba8286580268ba1bb5feafdf41fa4099bf4b0e91faa82a6d555940e5ad07179",
+      "rollback-tools.zip": "5166b5217982ffc3001ff0cac6170ba1a91682bb4a7a085f42bf2651cda2ca81"
+    },
+    "manifest_files": 5058,
+    "rollback_equal": 4960,
+    "archive_verification": "VERIFIED",
+    "packaged_provider_preflight": "PASSED",
+    "probe_seconds": 10.191006999986712,
+    "review": "PENDING",
+    "canonical_updated": false,
+    "canonical_sha256": "6c917ad0019123cd7243477efee83d56346ed132e64d9ce119af4937320df40e",
+    "allow_install": false,
+    "allow_dispatch": false,
+    "allow_cancel_dispatch": false,
+    "SMTP": false,
+    "DEVELOPMENT_COMPLETE": false,
+    "RELEASE_READY": false,
+    "PRODUCTION_DEPLOYED": false,
+    "PRODUCTION_ACCEPTED": false,
+    "BUSINESS_GROWTH": "UNKNOWN",
+    "next_action": "Independent review of pinned host/provider candidate and safe shared-entry coordination before main integration; formal Provider receipts remain CONTRACT_MISSING."
   }
 }
