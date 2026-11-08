@@ -54,6 +54,18 @@ class EventBridgeTests(unittest.TestCase):
     def event(self):
         return dict(inventory_id=INVENTORY,admission=self.f.admission(),schedule=self.f.plan,idle=self.f.idle,budget_request=self.f.request)
 
+    def test_invalid_provider_request_rejected_before_event_preparation(self):
+        with self.host() as bridge, exclusive_lock(self.f.runtime):
+            event = self.event()
+            event['admission'] = self.f.admission(provider_request={'provider': 'disabled'})
+            with patch.object(self.f.adapter, 'prepare_event') as prepare:
+                with self.assertRaises(ValueError):
+                    bridge.consume(event)
+                prepare.assert_not_called()
+            with closing(__import__('sqlite3').connect(self.state/'inventory-events.sqlite')) as conn:
+                self.assertEqual(conn.execute('SELECT count(*) FROM events').fetchone()[0], 0)
+            self.assertFalse(self.backend_fixture.marker.exists())
+
     def test_actual_service_event_existing_owner_child_and_settlement(self):
         with self.host() as bridge,exclusive_lock(self.f.runtime):
             event=self.event();result=bridge.consume(event)

@@ -204,6 +204,13 @@ class SingleSlotAdapter:
             except Exception:pass # Persisted claimed/running also blocks replay.
         return {'outcome':'UNKNOWN_RECONCILE_ONLY','production_execution':False}
 
+    def request_status(self, admission):
+        """Read the bound local request without dispatch, settlement or replay.
+        只读查询绑定请求；不代表正式 Provider 回执或货币费用。
+        """
+        from autonomy.business_request_status import request_status
+        return request_status(self, admission)
+
     def execute(self,admission,schedule,idle,budget_request):
         """At most one backend call. All failures after preparation block replay."""
         p,common=self._admission(admission)
