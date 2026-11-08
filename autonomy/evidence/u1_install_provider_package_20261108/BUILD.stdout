@@ -1,0 +1,2 @@
+{"artifacts": {"install.zip": "581cde956b798ca5545baff09fb3c425832fdac179a496a90d79579a7753783d", "rollback-tools.zip": "45891829ae5de6657775c07ff7123cb209f470caa0ec66936f28adff686ad511"}, "files": 5058, "independent_review": "PENDING", "manifest_sha256": "b79ed3484dfaa52a5785d7f09c991b4681919034539bde415af2c328211b95d9", "package_complete": false, "production_ready": false, "python_runtime_bundled": true, "source_commit": "c2e81ff6e333ae64c2af1a2160ddcd972953bd74"}
+

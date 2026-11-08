@@ -1,0 +1,30 @@
+Traceback (most recent call last):
+
+  File "<frozen runpy>", line 198, in _run_module_as_main
+
+  File "<frozen runpy>", line 88, in _run_code
+
+  File "D:\CODEX\roktandrazo-workspace\u1-provider-paths-20261108\tools\verify_u1_delivery.py", line 214, in <module>
+
+    print(json.dumps(verify_with_report(parser.parse_args()),ensure_ascii=True))
+
+                     ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+
+  File "D:\CODEX\roktandrazo-workspace\u1-provider-paths-20261108\tools\verify_u1_delivery.py", line 202, in verify_with_report
+
+    try: result=verify(args,progress=progress)
+
+                ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "D:\CODEX\roktandrazo-workspace\u1-provider-paths-20261108\tools\verify_u1_delivery.py", line 134, in verify
+
+    root=extract_checked(args.archive,args.archive_sha256,args.output)
+
+  File "D:\CODEX\roktandrazo-workspace\u1-provider-paths-20261108\tools\verify_u1_runtime_host.py", line 22, in extract_checked
+
+    if digest.hexdigest()!=expected:raise ValueError('ARCHIVE_HASH_MISMATCH')
+
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+ValueError: ARCHIVE_HASH_MISMATCH
+
