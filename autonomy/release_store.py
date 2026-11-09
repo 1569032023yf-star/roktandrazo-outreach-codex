@@ -60,14 +60,17 @@ def checked_manifest(raw):
         m['inventory_id'] != INVENTORY or not re.fullmatch('[0-9a-f]{40}', m['source_commit']) or
         type(m['files']) is not dict or not 1 <= len(m['files']) <= (8192 if m['schema']==LARGE_SCHEMA else 512)):
         raise ValueError('INVALID_MANIFEST')
-    seen = set()
+    paths = []
     for name, digest in m['files'].items():
         safe_path(name)
         if not re.fullmatch('[0-9a-f]{64}', digest): raise ValueError('INVALID_HASH')
-        lower = name.casefold()
-        if any(lower == x or lower.startswith(x+'/') or x.startswith(lower+'/') for x in seen):
+        paths.append(tuple(name.casefold().split('/')))
+    # A component tuple sorts immediately before all of its descendants.
+    # Compare adjacent tuples, rather than every pair of complete paths.
+    paths.sort()
+    for previous, current in zip(paths, paths[1:]):
+        if len(previous) <= len(current) and current[:len(previous)] == previous:
             raise ValueError('PATH_COLLISION')
-        seen.add(lower)
     if raw != canonical(m): raise ValueError('NONCANONICAL_MANIFEST')
     return m
 

@@ -35,3 +35,27 @@ class LargeRuntimeReleaseTests(unittest.TestCase):
             for names in ({'A':source,'a':source},{'../escape':source}):
                 with self.assertRaises(ValueError):build_bundle_from_paths(root/'out',names,'a'*40)
                 self.assertFalse((root/'out').exists())
+
+
+class ManifestNamespaceTests(unittest.TestCase):
+    def manifest(self, names):
+        return canonical(dict(schema='rokt.release-manifest.v2',
+            inventory_id='1784775229336',source_commit='a'*40,
+            files={name:'b'*64 for name in names}))
+
+    def test_ancestors_collide_in_both_orders_and_case(self):
+        for names in [('A','a/b'),('a/b','A'),('a/b/c','A/B'),
+                      ('a','a+suffix','a/b'),('A','a')]:
+            with self.subTest(names=names):
+                with self.assertRaisesRegex(ValueError,'PATH_COLLISION'):
+                    checked_manifest(self.manifest(names))
+
+    def test_siblings_maximum_count_and_deep_path(self):
+        names=['a','a+suffix','ab/c','dir/a','dir/ab']
+        self.assertEqual(len(checked_manifest(self.manifest(names))['files']),5)
+        names=[f'runtime/python/Lib/module{i}.py' for i in range(8192)]
+        self.assertEqual(len(checked_manifest(self.manifest(names))['files']),8192)
+        deep='/'.join(['a']*10000)
+        self.assertEqual(len(checked_manifest(self.manifest([deep,'sibling']))['files']),2)
+        with self.assertRaisesRegex(ValueError,'PATH_COLLISION'):
+            checked_manifest(self.manifest([deep,deep+'/child']))
