@@ -73,9 +73,12 @@ class InstallCommand:
             for key,digest in (('python','python_sha256'),('token_file','token_sha256'),('snapshot','snapshot_sha256')):
                 self.pins.add(p[key],p[digest])
             if 'provider_config' in p:
-                from autonomy.provider_environment import load_pinned_provider_environment
+                from autonomy.provider_environment import pinned_provider_adapter
                 self.pins.add(p['provider_config'],p['provider_config_sha256'],limit=65536)
-                load_pinned_provider_environment(p['provider_config'],p['provider_config_sha256'])
+                # Admit the same real adapter as host startup before any install.
+                # Construction performs no dispatch; retain the outer input pin.
+                with pinned_provider_adapter(p['provider_config'],p['provider_config_sha256']):
+                    pass
             if complete:pin_python_runtime(self.pins,p['python_runtime_manifest'],p['python_runtime_manifest_sha256'],p['python'])
             if 'original_owner_db' in p:
                 self.pins.add_mutable_reference(p['original_owner_db'])

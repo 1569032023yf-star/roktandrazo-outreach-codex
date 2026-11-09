@@ -60,6 +60,24 @@ class InstallCommandTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'RUNTIME_PLAN'):
             with command.InstallCommand('isolated',dict(approval,runtime_plan_sha256=digest(raw))):pass
 
+    def test_malformed_real_adapter_configuration_blocks_package_admission(self):
+        provider=self.root/'provider-invalid.json'
+        provider.write_text(json.dumps({'schema':'rokt.provider-environment.v1','environment':{
+            'WORKBUDDY_DISCOVERY_PROVIDER':'google_places',
+            'GOOGLE_PLACES_LOCATION_BIAS_JSON':'[]'}}))
+        path=self.release/'u1-runtime-plan.json';plan=json.loads(path.read_bytes())
+        plan.update(provider_config=str(provider),provider_config_sha256=digest(provider.read_bytes()))
+        raw=json.dumps(plan).encode();path.write_bytes(raw)
+        approval=dict(self.approval,runtime_plan_sha256=digest(raw))
+        before={p:p.read_bytes() for p in (provider,path,self.token,self.snapshot)}
+        with patch.object(command,'run_tree',side_effect=AssertionError('NO_PROCESS_ALLOWED')):
+            with self.assertRaisesRegex(ValueError,'PROVIDER_LOCATION_OBJECT_REQUIRED'):
+                with command.InstallCommand('isolated',approval):pass
+        self.assertEqual(before,{p:p.read_bytes() for p in before})
+        # Failed admission releases handles and creates no installation output.
+        provider.write_bytes(b'released')
+        self.assertEqual(list(self.runtime.iterdir()),[])
+
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory(prefix='u1-command-');self.addCleanup(self.temp.cleanup)
         self.root=Path(self.temp.name);self.releases=self.root/'releases';self.release=self.releases/'isolated'
