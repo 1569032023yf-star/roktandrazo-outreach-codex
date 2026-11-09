@@ -217,6 +217,18 @@ class OriginalOwnerAuthority:
                 conn.rollback()
                 raise
 
+    def claim_tree_closed(self, claim):
+        """Read closure and its exact claim under the captured original owner."""
+        with closing(self.connect()) as conn:
+            conn.execute('BEGIN')
+            try:
+                session = self._check(conn)
+                if session['event_digest'] is None or session['claim'] != claim:
+                    raise ValueError('ORIGINAL_OWNER_CLAIM_JOIN_REQUIRED')
+                return session['tree_state'] == 'verified_closed'
+            finally:
+                conn.rollback()
+
     def receipt_binding(self, claim=None):
         with closing(self.connect()) as conn:
             conn.execute('BEGIN')

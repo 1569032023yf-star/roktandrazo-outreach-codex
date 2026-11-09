@@ -10,7 +10,7 @@ import sqlite3
 
 from autonomy.growth_ledger import SCHEMA, SCHEMA_VERSION, GrowthError, digest, opaque, vector
 from autonomy.drain_bundle_preflight import SLOT_SCHEMA
-from autonomy.single_slot_adapter import AdapterError, SingleSlotAdapter
+from autonomy.single_slot_adapter import AdapterError, SingleSlotAdapter, OriginalOwnerSlotAdapter
 from autonomy.unattended_policy import INVENTORY
 
 
@@ -121,7 +121,11 @@ def _project(adapter, common, expected, slot, reservation):
         if (joined and state == 'settled' and slot['state'] in ('completed', 'failed')
                 and type(slot['receipt']) is str and slot['receipt']):
             opaque(slot['receipt'])
-            result['business_state'] = slot['state'].upper()
+            # A supervisor lease's tree flag is global, not claim-bound.
+            # Only this exact authority can join closure to this request.
+            if (type(adapter) is OriginalOwnerSlotAdapter
+                    and adapter._terminal_tree_closed(common, claim_hash)):
+                result['business_state'] = slot['state'].upper()
     except (GrowthError, ValueError, TypeError, KeyError):
         raise AdapterError('REQUEST_STATUS_RECORD_REJECTED') from None
     return result

@@ -380,6 +380,14 @@ class OriginalOwnerSlotAdapter(SingleSlotAdapter):
         except Exception:
             raise AdapterError('ORIGINAL_OWNER_LOST') from None
 
+    def _terminal_tree_closed(self, common, claim_hash):
+        if type(self) is not OriginalOwnerSlotAdapter:
+            return False
+        try:
+            return self.original_owner.claim_tree_closed(dict(common, claim_token_hash=claim_hash))
+        except Exception:
+            raise AdapterError('ORIGINAL_OWNER_LOST') from None
+
     def _mark_tree(self, state):
         self.original_owner.mark_tree(state)
 

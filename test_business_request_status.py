@@ -69,7 +69,7 @@ class BusinessRequestStatusTests(unittest.TestCase):
                         admission = f.admission()
                         self.assertEqual(f.run_one(admission)['outcome'], expected)
                         first = f.adapter.request_status(admission)
-                        self.assertEqual(first['business_state'], expected)
+                        self.assertEqual(first['business_state'], 'UNKNOWN_RECONCILE_ONLY')
                         self.assertEqual(first['resource_budget']['state'], 'SETTLED')
                         self.assertEqual(first['resource_budget']['actual'], amounts())
                         self.assertIsNone(first['provider_billing']['billed_amount'])
@@ -90,7 +90,7 @@ class BusinessRequestStatusTests(unittest.TestCase):
                 self.assertEqual(status['business_state'], 'UNKNOWN_RECONCILE_ONLY')
                 self.assertIsNone(status['resource_budget']['actual'])
             self.f.adapter.reconcile(admission, **self.f.backend.receipts)
-            self.assertEqual(self.read(admission)['business_state'], 'COMPLETED')
+            self.assertEqual(self.read(admission)['business_state'], 'UNKNOWN_RECONCILE_ONLY')
             self.assertEqual(self.f.backend.calls, 1)
 
     def test_terminal_slot_with_failed_settlement_is_unknown_until_repaired(self):
@@ -103,7 +103,7 @@ class BusinessRequestStatusTests(unittest.TestCase):
             self.assertEqual(status['business_state'], 'UNKNOWN_RECONCILE_ONLY')
             self.assertIsNone(status['resource_budget']['actual'])
             self.f.adapter.reconcile(admission, **self.f.backend.receipts)
-            self.assertEqual(self.read(admission)['business_state'], 'COMPLETED')
+            self.assertEqual(self.read(admission)['business_state'], 'UNKNOWN_RECONCILE_ONLY')
             self.assertEqual(self.f.backend.calls, 1)
 
     def test_known_zero_resource_usage_is_distinct_from_unknown_monetary_cost(self):
@@ -261,6 +261,52 @@ class BusinessRequestStatusTests(unittest.TestCase):
             self.assertTrue(case.release())
             with self.assertRaises(AdapterError):
                 case.f.adapter.request_status(event['admission'])
+        finally:
+            case.doCleanups()
+
+    def test_closure_write_failure_keeps_lease_status_unknown_until_reconcile(self):
+        with exclusive_lock(self.f.runtime):
+            admission = self.f.admission()
+            original = self.f.adapter._mark_tree
+            def fail_closed(state):
+                if state == 'verified_closed':
+                    raise OSError('injected closure failure')
+                return original(state)
+            with patch.object(self.f.adapter, '_mark_tree', side_effect=fail_closed):
+                self.assertEqual(self.f.run_one(admission)['outcome'], 'UNKNOWN_RECONCILE_ONLY')
+            status = self.read(admission)
+            self.assertEqual(status['slot_state'], 'COMPLETED')
+            self.assertEqual(status['resource_budget']['state'], 'SETTLED')
+            self.assertEqual(status['business_state'], 'UNKNOWN_RECONCILE_ONLY')
+            self.assertFalse(status['replay_authorized'])
+            mark_tree('verified_closed')  # A global lease state is not a claim receipt.
+            self.assertEqual(self.read(admission)['business_state'], 'UNKNOWN_RECONCILE_ONLY')
+            self.f.adapter.reconcile(admission, **self.f.backend.receipts)
+            self.assertEqual(self.read(admission)['business_state'], 'UNKNOWN_RECONCILE_ONLY')
+            self.assertEqual(self.f.backend.calls, 1)
+
+    def test_original_owner_closure_failure_keeps_status_unknown_until_reconcile(self):
+        import test_original_inventory_owner as original
+        case = original.OriginalOwnerTests('runTest'); case.setUp()
+        try:
+            event = case.event()
+            case.f.adapter.prepare_event(event)
+            real_mark = case.f.adapter._mark_tree
+            def fail_closed(state):
+                if state == 'verified_closed':
+                    raise OSError('injected closure failure')
+                return real_mark(state)
+            with patch.object(case.f.adapter, '_mark_tree', side_effect=fail_closed):
+                self.assertEqual(case.f.run_one(event['admission'])['outcome'], 'UNKNOWN_RECONCILE_ONLY')
+            status = case.f.adapter.request_status(event['admission'])
+            self.assertEqual(status['business_state'], 'UNKNOWN_RECONCILE_ONLY')
+            self.assertEqual(status['slot_state'], 'COMPLETED')
+            self.assertEqual(status['resource_budget']['state'], 'SETTLED')
+            self.assertFalse(case.release())
+            case.f.adapter.reconcile(event['admission'], **case.f.backend.receipts)
+            self.assertEqual(case.f.adapter.request_status(event['admission'])['business_state'], 'COMPLETED')
+            self.assertEqual(case.f.backend.calls, 1)
+            self.assertTrue(case.release())
         finally:
             case.doCleanups()
 
