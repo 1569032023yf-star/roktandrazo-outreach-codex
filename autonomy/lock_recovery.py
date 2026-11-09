@@ -146,15 +146,12 @@ def _bound_lease(binding, claim_hash=None, *, action):
                 raise RuntimeError('RECOVERY_ONLY_NO_NEW_TREE')
             if stored.get('tree_state') not in ('not_started', 'verified_closed'):
                 raise RuntimeError('ASSOCIATED_TREE_UNVERIFIED')
-            if stored.get('tree_binding') == binding and stored.get('tree_aborted') is not True:
+            if stored.get('tree_binding') == binding:
                 raise RuntimeError('DUPLICATE_TREE_BINDING')
             # A separate durable fence survives a failed close-state fsync.
             # It is never removed unless the close-state fsync succeeded.
             _create_tree_fence(lock, stored['token'])
-            attempt = uuid.uuid4().hex
-            updated = dict(stored, tree_state='unverified', tree_binding=binding, tree_claim_hash=None,
-                           tree_attempt=attempt)
-            updated.pop('tree_aborted', None)
+            updated = dict(stored, tree_state='unverified', tree_binding=binding, tree_claim_hash=None)
             updated.pop('tree_generic_token', None)
         elif action == 'claim':
             if (stored.get('tree_state') != 'unverified' or stored.get('tree_binding') != binding
@@ -162,44 +159,15 @@ def _bound_lease(binding, claim_hash=None, *, action):
                     or claim_hash is None):
                 raise RuntimeError('TREE_CLAIM_BINDING_MISMATCH')
             updated = dict(stored, tree_claim_hash=claim_hash)
-            updated.pop('tree_attempt', None)
         else:
             raise ValueError('TREE_ACTION_REJECTED')
         # On a partial write or failed fsync, in-memory cleanup must fail closed.
         owned.clear(); owned.update(updated)
         _write_state(lock, updated)
-        if action == 'begin':
-            return attempt
 
 
 def begin_bound_tree(binding):
-    return _bound_lease(binding, action='begin')
-
-
-def abort_unclaimed_tree(binding, attempt):
-    """Close only a proven pre-dispatch attempt; no ledger or budget changes."""
-    lease = _ACTIVE_LEASE.get()
-    if lease is None or type(attempt) is not str or not attempt:
-        raise RuntimeError('TREE_ATTEMPT_REJECTED')
-    lock, owned = lease
-    with _guard(lock.parent):
-        stored = json.loads(lock.read_bytes())
-        if (stored != owned or stored.get('pid') != os.getpid()
-                or process_identity(os.getpid()) != stored.get('process_identity')
-                or stored.get('schema_version') != 3
-                or stored.get('tree_state') != 'unverified'
-                or stored.get('tree_binding') != binding
-                or stored.get('tree_claim_hash', 'missing') is not None
-                or stored.get('tree_attempt') != attempt):
-            raise RuntimeError('TREE_ATTEMPT_REJECTED')
-        fence = _tree_fence(lock)
-        if fence.read_text(encoding='utf-8') != stored['token']:
-            raise RuntimeError('TREE_FENCE_IDENTITY_MISMATCH')
-        updated = dict(stored, tree_state='verified_closed', tree_aborted=True)
-        updated.pop('tree_attempt', None)
-        _write_state(lock, updated)
-        owned.clear(); owned.update(updated)
-        fence.unlink()
+    _bound_lease(binding, action='begin')
 
 
 def bind_tree_claim(binding, claim_hash):

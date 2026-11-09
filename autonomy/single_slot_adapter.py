@@ -152,7 +152,7 @@ class SingleSlotAdapter:
         return digest(dict(inventory_id=INVENTORY, **common))
 
     def _begin_tree(self, common):
-        return lock_recovery.begin_bound_tree(self._tree_binding(common))
+        lock_recovery.begin_bound_tree(self._tree_binding(common))
 
     def _bind_tree_claim(self, common, token):
         lock_recovery.bind_tree_claim(self._tree_binding(common), digest(token))
@@ -221,6 +221,42 @@ class SingleSlotAdapter:
         from autonomy.business_request_status import request_status
         return request_status(self, admission)
 
+    def _stale_schedule_preflight(self, common, due):
+        """Read-only rejection hint; never closes a fence or proves prior history."""
+        from autonomy.durable_slots import DurableSlots
+        if type(self) is not SingleSlotAdapter or type(self.slots) is not DurableSlots or due < 0:
+            return False
+        try:
+            active=lock_recovery._ACTIVE_LEASE.get()
+            if active is None:
+                return False
+            lock,owned=active
+            with lock_recovery._guard(self.runtime):
+                stored=json.loads(Path(lock).read_bytes())
+                if (Path(lock).resolve(strict=True)!=self.runtime/'supervisor.lock'
+                        or stored!=owned or stored.get('schema_version')!=3
+                        or stored.get('pid')!=os.getpid()
+                        or lock_recovery.process_identity(os.getpid())!=stored.get('process_identity')
+                        or stored.get('tree_state') not in ('not_started','verified_closed')
+                        or stored.get('recovery_only',False) is not False
+                        or stored.get('recovery_required',False) is not False
+                        or stored.get('tree_binding')==self._tree_binding(common)
+                        or os.path.lexists(lock_recovery._tree_fence(Path(lock)))):
+                    return False
+                path=Path(self.target.slots_path).resolve(strict=True)
+                if path_id(path)!=self.ids['slots_id']:
+                    return False
+                # Do not use an injected slots connection or ledger method.
+                with closing(sqlite3.connect(path.as_uri()+'?mode=ro',uri=True,timeout=1,isolation_level=None)) as db:
+                    db.execute('BEGIN')
+                    authority=db.execute('SELECT epoch,owner FROM authority WHERE singleton=1').fetchone()
+                    existing=db.execute('SELECT 1 FROM slots WHERE slot=?',(common['slot'],)).fetchone()
+                    newer=db.execute('SELECT 1 FROM slots WHERE due>=? LIMIT 1',(due,)).fetchone()
+                    return authority==(common['epoch'],common['owner']) and existing is None and newer is not None
+        except Exception:
+            # Unavailable or racing snapshots take the original fail-closed path.
+            return False
+
     def execute(self,admission,schedule,idle,budget_request):
         """At most one backend call. All failures after preparation block replay."""
         p,common=self._admission(admission)
@@ -243,28 +279,12 @@ class SingleSlotAdapter:
         if type(missed) is not list or any(type(x) is not list or len(x)!=2 for x in missed):
             raise AdapterError('INVALID_SCHEDULE')
         missed=tuple(tuple(x) for x in missed)
+        if self._stale_schedule_preflight(common,due):
+            return {'outcome':'STALE_SCHEDULE_PRECHECK_REJECTED','production_execution':False}
         token=None
         try:
-            attempt=self._begin_tree(common)
-            from autonomy.durable_slots import DurableSlots, VerifiedStaleSchedule
-            from autonomy.ledger_evidence import LedgerEvidenceVerifier
-            exact_slots = (type(self.slots) is DurableSlots and self.slots.connect is sqlite3.connect
-                and type(self.slots.verify) is LedgerEvidenceVerifier
-                and self.slots.verify.consumer is self.consumer
-                and not any(name in vars(self.slots) for name in ('admit_due','_admit_transaction','_tx','_authority','_evidence')))
-            trusted_abort = type(self) is SingleSlotAdapter and exact_slots
-            stale_proof = object()
-            try:
-                kwargs = {'_stale_proof': stale_proof} if trusted_abort else {}
-                self.slots.admit_due(p['slot'],due,schedule,now=self._now(),epoch=p['epoch'],owner=p['owner'],missed=missed,**kwargs)
-            except Exception as error:
-                # Only the exact offline implementations may attest to this
-                # no-admission branch. OriginalOwner uses a different fence.
-                if (not trusted_abort or type(error) is not VerifiedStaleSchedule
-                        or len(error.args) != 2 or error.args[1] is not stale_proof):
-                    raise
-                lock_recovery.abort_unclaimed_tree(self._tree_binding(common), attempt)
-                return {'outcome':'STALE_SCHEDULE_REJECTED','production_execution':False}
+            self._begin_tree(common)
+            self.slots.admit_due(p['slot'],due,schedule,now=self._now(),epoch=p['epoch'],owner=p['owner'],missed=missed)
             token=self._claim(budget_request,p['slot'],idle,p['epoch'],p['owner'])
             self._bind_tree_claim(common, token)
             self._admission(admission) # Recheck signed lifetime and exact lease.
