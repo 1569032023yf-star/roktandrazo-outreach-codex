@@ -39,17 +39,26 @@ class DurableSlots:
         self.fault = fault or (lambda stage: None)
 
     @contextmanager
-    def _tx(self):
+    def _tx(self, *, _bound_path=None, _check=None):
         c = None
         try:
-            c = self.connect(self.path, timeout=5, isolation_level=None)
+            if _check is not None:
+                _check()
+            c = (sqlite3.connect(_bound_path, timeout=5, isolation_level=None)
+                 if _bound_path is not None else self.connect(self.path, timeout=5, isolation_level=None))
             c.row_factory = sqlite3.Row
             c.execute('PRAGMA synchronous=FULL')
             c.execute('BEGIN IMMEDIATE')
+            if _check is not None:
+                _check(c)
             yield c
             self.fault('before_commit')
+            if _check is not None:
+                _check(c)
             c.commit()
             self.fault('after_commit')
+            if _check is not None:
+                _check(c)
         except (sqlite3.Error, OSError):
             if c is not None:
                 c.rollback()
@@ -106,7 +115,7 @@ class DurableSlots:
         return expected_epoch+1
 
     def admit_due(self, slot, next_due, evidence, *, now, epoch, owner, missed=(),
-                  _before_admit=None, _reject_stale=False):
+                  _before_admit=None, _reject_stale=False, _transaction=None):
         """Accept one trusted latest due, never compute cron or catch-up firings."""
         _key(slot)
         _integer(next_due)
@@ -129,7 +138,7 @@ class DurableSlots:
             raise LedgerError('EVIDENCE_CONFLICT')
         if next_due > now:
             raise LedgerError('NOT_DUE')
-        with self._tx() as c:
+        with (self._tx() if _transaction is None else _transaction()) as c:
             self._authority(c, epoch, owner)
             row = c.execute('SELECT * FROM slots WHERE slot=?', (slot,)).fetchone()
             if row:

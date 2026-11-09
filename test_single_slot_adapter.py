@@ -197,6 +197,93 @@ class SingleSlotTests(unittest.TestCase):
             self.assertEqual(self.slots.snapshot(),[])
         self.assertEqual(self.backend.calls,0)
 
+    def test_verifier_cannot_redirect_to_stale_decoy_database(self):
+        from contextlib import closing
+        import sqlite3
+        decoy=self.root/'decoy.sqlite'
+        with closing(sqlite3.connect(self.slots.path)) as source, closing(sqlite3.connect(decoy)) as dest:
+            source.backup(dest)
+            dest.execute("INSERT INTO slots(slot,inventory,due,state) VALUES (?,?,?,'pending')",('newer',INVENTORY,T+10))
+            dest.commit()
+        original_path=self.slots.path
+        verify=self.slots.verify
+        def redirect(evidence):
+            value=verify(evidence)
+            self.slots.path=str(decoy)
+            return value
+        with exclusive_lock(self.runtime):
+            admission=self.admission();self.slots.verify=redirect
+            try:self.assertEqual(self.run_one(admission)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+            finally:self.slots.path=original_path
+            self.assertEqual(self.slots.snapshot(),[])
+            self.assertFalse((self.runtime/'supervisor.tree-unverified').exists())
+        with closing(sqlite3.connect(decoy)) as db:
+            self.assertEqual(db.execute('SELECT slot FROM slots').fetchall(),[('newer',)])
+        self.assertEqual(self.backend.calls,0)
+
+    def test_commit_callback_cannot_redirect_bound_ledger_after_fence(self):
+        from contextlib import closing
+        import sqlite3
+        decoy=self.root/'decoy.sqlite'
+        with closing(sqlite3.connect(self.slots.path)) as source, closing(sqlite3.connect(decoy)) as dest:
+            source.backup(dest)
+        original_path=self.slots.path
+        def redirect(stage):
+            if stage=='before_commit':self.slots.path=str(decoy)
+        with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'):
+            with exclusive_lock(self.runtime):
+                admission=self.admission();self.slots.fault=redirect
+                try:self.assertEqual(self.run_one(admission)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+                finally:self.slots.path=original_path
+        self.assertEqual(self.slots.snapshot(),[])
+        with closing(sqlite3.connect(decoy)) as db:
+            self.assertEqual(db.execute('SELECT count(*) FROM slots').fetchone()[0],0)
+        self.assertTrue((self.runtime/'supervisor.tree-unverified').exists())
+        self.assertEqual(self.backend.calls,0)
+
+    @unittest.skipUnless(__import__('os').name=='nt','Windows file pin contract')
+    def test_verifier_cannot_replace_pinned_database(self):
+        from contextlib import closing
+        import os
+        import sqlite3
+        replacement=self.root/'replacement.sqlite'
+        with closing(sqlite3.connect(self.slots.path)) as source, closing(sqlite3.connect(replacement)) as dest:
+            source.backup(dest)
+        verify=self.slots.verify;attempt=[]
+        def replace(evidence):
+            value=verify(evidence)
+            try:os.replace(replacement,self.slots.path);attempt.append('replaced')
+            except PermissionError:attempt.append('blocked')
+            return value
+        with exclusive_lock(self.runtime):
+            admission=self.admission();self.slots.verify=replace
+            self.assertEqual(self.run_one(admission)['outcome'],'COMPLETED')
+        self.assertTrue(attempt)
+        self.assertTrue(all(result=='blocked' for result in attempt))
+        self.assertEqual(self.backend.calls,1)
+
+    @unittest.expectedFailure
+    def test_idle_verifier_cannot_redirect_later_claim_to_decoy_database(self):
+        """Known blocker: execution after admission still uses a mutable connector."""
+        from contextlib import closing
+        import sqlite3
+        decoy=self.root/'claim-decoy.sqlite'
+        with closing(sqlite3.connect(self.slots.path)) as source, closing(sqlite3.connect(decoy)) as dest:
+            source.backup(dest)
+            dest.execute("INSERT INTO slots(slot,inventory,due,state) VALUES (?,?,?,'pending')",('one',INVENTORY,T+10))
+            dest.commit()
+        verify=self.slots.verify
+        def redirect_idle(evidence):
+            value=verify(evidence)
+            if value.get('kind')=='idle':
+                self.slots.connect=lambda path,**kwargs:sqlite3.connect(decoy,**kwargs)
+            return value
+        with exclusive_lock(self.runtime):
+            admission=self.admission();self.slots.verify=redirect_idle
+            result=self.run_one(admission)
+            self.assertEqual(result['outcome'],'UNKNOWN_RECONCILE_ONLY')
+            self.assertEqual(self.backend.calls,0)
+
     def test_unknown_tree_blocks_a_distinct_request_before_any_backend_call(self):
         self.backend.mode='lost'
         with exclusive_lock(self.runtime):

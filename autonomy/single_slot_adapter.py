@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 import time
 import sqlite3
-from contextlib import closing
+from contextlib import closing, contextmanager
 
 from autonomy import lock_recovery
 from autonomy.growth_ledger import digest
@@ -24,6 +24,36 @@ OPERATION_SCHEMA = 'rokt.offline-operation.v1'
 
 class AdapterError(RuntimeError):
     pass
+
+
+@contextmanager
+def _pin_windows_ledger(path):
+    """Prevent rename/delete of the exact local DB until its transaction ends."""
+    if os.name != 'nt':
+        raise AdapterError('LEDGER_PIN_UNAVAILABLE')
+    import ctypes
+    import msvcrt
+    from ctypes import wintypes
+    kernel=ctypes.WinDLL('kernel32',use_last_error=True)
+    kernel.CreateFileW.argtypes=[wintypes.LPCWSTR,wintypes.DWORD,wintypes.DWORD,
+        wintypes.LPVOID,wintypes.DWORD,wintypes.DWORD,wintypes.HANDLE]
+    kernel.CreateFileW.restype=wintypes.HANDLE
+    kernel.CloseHandle.argtypes=[wintypes.HANDLE]
+    handle=kernel.CreateFileW(str(path),0x80000000,0x1|0x2,None,3,0,None)
+    if handle == wintypes.HANDLE(-1).value:
+        raise AdapterError('LEDGER_PIN_UNAVAILABLE')
+    try:
+        fd=msvcrt.open_osfhandle(handle,os.O_RDONLY)
+    except BaseException:
+        kernel.CloseHandle(handle)
+        raise
+    try:
+        info=os.fstat(fd)
+        if not info.st_ino or info.st_nlink != 1:
+            raise AdapterError('LEDGER_IDENTITY_UNAVAILABLE')
+        yield (info.st_dev,info.st_ino)
+    finally:
+        os.close(fd)
 
 
 def path_id(path):
@@ -106,6 +136,8 @@ class SingleSlotAdapter:
             stat=self.runtime.stat()
             self.runtime_identity=(stat.st_dev,stat.st_ino)
             self.ids=dict(runtime_id=path_id(self.runtime),slots_id=path_id(target.slots_path),budget_id=path_id(target.budget_path),backend_id=target.backend_id)
+            slots_stat=Path(target.slots_path).stat()
+            self.slots_file_identity=(slots_stat.st_dev,slots_stat.st_ino)
 
     def _now(self):
         value=self.wall_clock()
@@ -270,10 +302,26 @@ class SingleSlotAdapter:
         if lease is None or Path(lease[0]).resolve(strict=True)!=self.runtime/'supervisor.lock':
             raise AdapterError('EXPECTED_LOCK_REQUIRED')
         binding=self._tree_binding(common)
-        with lock_recovery._guard(self.runtime):
+        with lock_recovery._guard(self.runtime), _pin_windows_ledger(Path(self.target.slots_path).resolve(strict=True)) as file_id:
             stat=self.runtime.stat()
-            if (stat.st_dev,stat.st_ino)!=self.runtime_identity or path_id(self.slots.path)!=self.ids['slots_id']:
+            if ((stat.st_dev,stat.st_ino)!=self.runtime_identity or file_id!=self.slots_file_identity
+                    or path_id(self.slots.path)!=self.ids['slots_id']):
                 raise AdapterError('LEDGER_TARGET_MISMATCH')
+            target_path=Path(self.target.slots_path).resolve(strict=True)
+            def check_ledger(connection=None):
+                info=target_path.stat()
+                if ((info.st_dev,info.st_ino)!=file_id or info.st_nlink!=1
+                        or path_id(self.slots.path)!=self.ids['slots_id']
+                        or path_id(self.target.slots_path)!=self.ids['slots_id']
+                        or self.slots.connect is not sqlite3.connect
+                        or getattr(self.slots._tx,'__func__',None) is not DurableSlots._tx):
+                    raise AdapterError('LEDGER_TARGET_MISMATCH')
+                if connection is not None:
+                    db_path=connection.execute('PRAGMA database_list').fetchone()[2]
+                    db_info=Path(db_path).stat()
+                    if (db_info.st_dev,db_info.st_ino)!=file_id:
+                        raise AdapterError('LEDGER_TARGET_MISMATCH')
+            check_ledger()
             lock_recovery._bound_lease_locked(binding,action='validate_begin')
             def begin():
                 if lock_recovery._ACTIVE_LEASE.get() is not lease:
@@ -281,7 +329,8 @@ class SingleSlotAdapter:
                 lock_recovery._bound_lease_locked(binding,action='begin')
             outcome=DurableSlots.admit_due(self.slots,common['slot'],due,schedule,now=now,
                 epoch=common['epoch'],owner=common['owner'],missed=missed,
-                _reject_stale=True,_before_admit=begin)
+                _reject_stale=True,_before_admit=begin,
+                _transaction=lambda:DurableSlots._tx(self.slots,_bound_path=str(target_path),_check=check_ledger))
             if lock_recovery._ACTIVE_LEASE.get() is not lease:
                 raise AdapterError('LOCK_INSTANCE_CHANGED')
             return outcome
@@ -309,11 +358,18 @@ class SingleSlotAdapter:
             raise AdapterError('INVALID_SCHEDULE')
         missed=tuple(tuple(x) for x in missed)
         token=None
+        ledger_pin=None
         try:
             from autonomy.durable_slots import DurableSlots
             if (type(self) is SingleSlotAdapter and type(self.slots) is DurableSlots
+                    and os.name == 'nt'
                     and self.slots.connect is sqlite3.connect
                     and getattr(self.slots._tx,'__func__',None) is DurableSlots._tx):
+                pin=_pin_windows_ledger(Path(self.target.slots_path).resolve(strict=True))
+                pin_identity=pin.__enter__()
+                ledger_pin=pin
+                if pin_identity!=self.slots_file_identity:
+                    raise AdapterError('LEDGER_TARGET_MISMATCH')
                 outcome=self._guarded_admit_due(common,due,schedule,missed)
                 if outcome=='STALE_SCHEDULE_PRECHECK_REJECTED':
                     return {'outcome':outcome,'production_execution':False}
@@ -349,6 +405,9 @@ class SingleSlotAdapter:
             return self.reconcile(admission,result['slot_receipt'],result['budget_receipt'])
         except Exception:
             return self._unknown(p,token)
+        finally:
+            if ledger_pin is not None:
+                ledger_pin.__exit__(None,None,None)
 
     def reserve_cancellation(self,admission,cancel_request,*,cost_request=None):
         """Persist intent only. Signed cancellation facts do not authorize dispatch."""
