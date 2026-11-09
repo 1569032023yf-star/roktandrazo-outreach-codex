@@ -55,6 +55,98 @@ class SingleSlotTests(unittest.TestCase):
         return signed('offline_slot_admission',T+10,**payload)
     def run_one(self,e):return self.adapter.execute(e,self.plan,self.idle,self.request)
 
+    def second_request(self):
+        common=dict(slot='two',epoch=1,owner='owner')
+        common.update(run_id=digest(dict(inventory_id=INVENTORY,**common)),request_id=oid('two-request'))
+        plan=signed('schedule',T+10,slot='two',epoch=1,owner='owner',next_due=T+11,latest_due=True)
+        idle=signed('idle',T+10,**common,external_state='idle',existing_lock_held=True)
+        request=signed('budget_request',T+10,run_id=common['run_id'],request_id=common['request_id'],
+            day=business_day(T+10),amount=amounts(),cache_hit=False,claim_binding=dict(inventory_id=INVENTORY,**common))
+        return common,plan,idle,request
+
+    def test_unknown_tree_blocks_a_distinct_request_before_any_backend_call(self):
+        self.backend.mode='lost'
+        with exclusive_lock(self.runtime):
+            a=self.admission()
+            self.assertEqual(self.run_one(a)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+            receipts=dict(self.backend.receipts)
+            common,plan,idle,request=self.second_request()
+            self.adapter.wall_clock=lambda:T+11
+            b=self.admission(**common)
+            self.assertEqual(self.adapter.execute(b,plan,idle,request)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+            self.assertEqual(self.backend.calls,1)
+            self.assertEqual([r[0] for r in self.slots.snapshot()],['one'])
+            self.assertEqual(self.adapter.reconcile(a,**receipts)['outcome'],'COMPLETED')
+
+    def test_prior_receipt_cannot_close_a_later_unknown_tree(self):
+        with exclusive_lock(self.runtime):
+            a=self.admission()
+            self.assertEqual(self.run_one(a)['outcome'],'COMPLETED')
+            a_receipts=dict(self.backend.receipts)
+            self.backend.mode='lost'
+            common,plan,idle,request=self.second_request()
+            self.adapter.wall_clock=lambda:T+11
+            b=self.admission(**common)
+            self.assertEqual(self.adapter.execute(b,plan,idle,request)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+            b_receipts=dict(self.backend.receipts)
+            with self.assertRaisesRegex(RuntimeError,'TREE_CLAIM_BINDING_MISMATCH'):
+                self.adapter.reconcile(a,**a_receipts)
+            self.assertEqual(self.adapter.reconcile(b,**b_receipts)['outcome'],'COMPLETED')
+            self.assertEqual(self.backend.calls,2)
+
+    def test_close_write_ack_failure_keeps_fence_after_owner_exit(self):
+        from unittest.mock import patch
+        from autonomy import lock_recovery
+        real_write=lock_recovery._write_state
+        def fail_after_write(lock,state):
+            real_write(lock,state)
+            if state['tree_state']=='verified_closed':
+                raise OSError('injected close fsync acknowledgement failure')
+        with self.assertRaisesRegex(RuntimeError,'LOCK_CHANGED'):
+            with exclusive_lock(self.runtime) as owned:
+                with patch.object(lock_recovery,'_write_state',side_effect=fail_after_write):
+                    self.assertEqual(self.run_one(self.admission())['outcome'],'UNKNOWN_RECONCILE_ONLY')
+                token=owned['token']
+        self.assertTrue((self.runtime/'supervisor.tree-unverified').exists())
+        with patch.object(lock_recovery,'process_identity',return_value=None):
+            with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'):
+                lock_recovery.recover_lock(self.runtime,token)
+
+    def test_prior_lease_duplicate_requires_settlement_and_no_unresolved_slot(self):
+        with exclusive_lock(self.runtime):
+            self.assertEqual(self.run_one(self.admission())['outcome'],'COMPLETED')
+            receipts=dict(self.backend.receipts)
+        with exclusive_lock(self.runtime):
+            admission=self.admission()
+            with self.budget.tx() as db:
+                db.execute("UPDATE reservations SET state='unknown' WHERE id=?",(self.common['request_id'],))
+            with self.assertRaisesRegex(AdapterError,'PRIOR_LEASE_RECEIPT_UNPROVEN'):
+                self.adapter.reconcile(admission,**receipts)
+            with self.budget.tx() as db:
+                db.execute("UPDATE reservations SET state='settled' WHERE id=?",(self.common['request_id'],))
+            self.adapter.wall_clock=lambda:T+11
+            common,plan,idle,_=self.second_request()
+            self.slots.admit_due('two',T+11,plan,now=T+11,epoch=1,owner='owner')
+            token=self.slots.claim('two',idle,now=T+11,epoch=1,owner='owner')
+            self.slots.mark_unknown('two',token,epoch=1,owner='owner')
+            before=self.slots.snapshot()
+            with self.assertRaisesRegex(AdapterError,'PRIOR_LEASE_RECEIPT_UNPROVEN'):
+                self.adapter.reconcile(admission,**receipts)
+            self.assertEqual(self.slots.snapshot(),before)
+            self.assertEqual(self.backend.calls,1)
+
+    def test_generic_child_after_completed_request_cannot_be_closed_by_old_receipt(self):
+        with exclusive_lock(self.runtime):
+            admission=self.admission()
+            self.assertEqual(self.run_one(admission)['outcome'],'COMPLETED')
+            receipts=dict(self.backend.receipts)
+            tree_token=mark_tree('unverified')
+            with self.assertRaisesRegex(RuntimeError,'LEGACY_TREE_BINDING_MISSING'):
+                self.adapter.reconcile(admission,**receipts)
+            self.assertTrue((self.runtime/'supervisor.tree-unverified').exists())
+            mark_tree('verified_closed',tree_token=tree_token)
+            self.assertEqual(self.backend.calls,1)
+
     def test_protocol_version_default_deny_before_claim(self):
         with exclusive_lock(self.runtime):
             for value in (None, True, 1, 'v0'):
@@ -79,7 +171,8 @@ class SingleSlotTests(unittest.TestCase):
                 actual=amounts(2),externally_reconciled=True)
             for expected in ('OVERRUN','DUPLICATE'):
                 # A previously clean fence cannot authorize overrun closure.
-                mark_tree('verified_closed')
+                mark_tree('verified_closed', binding=self.adapter._tree_binding(self.common),
+                          claim_hash=digest(self.backend.operation['token']))
                 result=self.adapter.reconcile(admission,self.backend.receipts['slot_receipt'],receipt)
                 self.assertEqual(result['outcome'],'UNKNOWN_RECONCILE_ONLY')
                 self.assertEqual(result['budget_result'],expected)
@@ -328,7 +421,8 @@ class SingleSlotTests(unittest.TestCase):
                 idle=signed('idle',T+10,slot='next',epoch=1,owner='owner',external_state='idle',existing_lock_held=True)
                 token=self.slots.claim('next',idle,now=T+11,epoch=1,owner='owner')
                 self.slots.mark_unknown('next',token,epoch=1,owner='owner')
-                mark_tree('unverified')
+                mark_tree('unverified', binding=self.adapter._tree_binding(self.common),
+                          claim_hash=digest(self.backend.operation['token']))
                 with self.assertRaisesRegex(AdapterError,'OTHER_EXECUTION_UNRESOLVED'):
                     self.adapter.reconcile(e,**self.backend.receipts)
         self.assertTrue((self.runtime/'supervisor.lock').exists())
@@ -378,7 +472,8 @@ class SingleSlotTests(unittest.TestCase):
         def fail(stage):
             if stage=='before_commit':raise OSError('synthetic-storage-failure')
         self.budget.fault=fail
-        with exclusive_lock(self.runtime):self.assertEqual(self.run_one(self.admission())['outcome'],'UNKNOWN_RECONCILE_ONLY')
+        with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'), exclusive_lock(self.runtime):
+            self.assertEqual(self.run_one(self.admission())['outcome'],'UNKNOWN_RECONCILE_ONLY')
         self.assertEqual(self.backend.calls,0);self.assertEqual(self.slots.snapshot()[0][2],'pending')
 
     def test_settlement_storage_failure_keeps_recovery_fence(self):
@@ -467,7 +562,7 @@ class SingleSlotTests(unittest.TestCase):
         def failed_ack(*a,**kw):
             old(*a,**kw);raise OSError('synthetic-ack-lost')
         self.slots.start=failed_ack
-        with exclusive_lock(self.runtime):
+        with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'), exclusive_lock(self.runtime):
             e=self.admission();self.run_one(e);self.run_one(e)
         self.assertEqual(self.backend.calls,0);self.assertEqual(self.slots.snapshot()[0][2],'unknown')
 

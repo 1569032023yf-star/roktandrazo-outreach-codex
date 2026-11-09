@@ -64,13 +64,21 @@ class OwnerDrainPreflightTests(unittest.TestCase):
         fields=dict(self.fields,old_lock_sha256=expected['old_lock_sha256'])
         self.assertEqual(self.check(fields,expected,lock=duplicate)['reason'],'LOCK_SCHEMA_REJECTED')
 
+    def test_legacy_unbound_lock_is_not_evidence_for_this_request(self):
+        legacy=json.loads(self.lock)
+        legacy.pop('tree_binding');legacy.pop('tree_claim_hash');legacy['schema_version']=2
+        raw=json.dumps(legacy).encode('utf-8')
+        expected=dict(self.expected,old_lock_sha256=hashlib.sha256(raw).hexdigest())
+        fields=dict(self.fields,old_lock_sha256=expected['old_lock_sha256'])
+        self.assertEqual(self.check(fields,expected,lock=raw)['reason'],'LOCK_SCHEMA_REJECTED')
+
     def test_signed_but_wrong_persisted_claim_rejected(self):
         expected=dict(self.expected,claim_token_hash='a'*64)
         fields=dict(self.fields,claim_token_hash='a'*64)
-        self.assertEqual(self.check(fields,expected)['reason'],'PERSISTED_CLAIM_MISMATCH')
+        self.assertEqual(self.check(fields,expected)['reason'],'LOCK_SCHEMA_REJECTED')
         expected=dict(self.expected,request_id='b'*64)
         fields=dict(self.fields,request_id='b'*64)
-        self.assertEqual(self.check(fields,expected)['reason'],'PERSISTED_CLAIM_UNRESOLVED_REQUIRED')
+        self.assertEqual(self.check(fields,expected)['reason'],'LOCK_SCHEMA_REJECTED')
 
     def test_persisted_boolean_epoch_not_equal_to_integer_claim(self):
         with closing(sqlite3.connect(':memory:')) as db:

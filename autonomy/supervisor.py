@@ -261,7 +261,7 @@ def run_agent(task, root, timeout=600):
     sandbox = 'workspace-write' if task['role'] == 'developer' else 'read-only'
     args = [exe, '-a', 'never', 'exec', '-s', sandbox, '--ephemeral',
             '--json', '-C', str(root), prompt]
-    mark_tree('unverified')
+    tree_token = mark_tree('unverified')
     try:
         result = run_tree(args, timeout=timeout, cwd=root)
     except Exception as error:
@@ -269,7 +269,7 @@ def run_agent(task, root, timeout=600):
         lock_error_type = None
         if verified:
             try:
-                mark_tree('verified_closed')
+                mark_tree('verified_closed', tree_token=tree_token)
             except Exception as lock_error:
                 # Preserve the process failure even if its lock receipt cannot persist.
                 lock_error_type = type(lock_error).__name__
@@ -286,7 +286,7 @@ def run_agent(task, root, timeout=600):
                 'error_type': type(error).__name__,
                 'lock_state_update_failed': lock_error_type is not None,
                 'lock_state_update_error_type': lock_error_type}
-    mark_tree('verified_closed')
+    mark_tree('verified_closed', tree_token=tree_token)
     events = []
     for line in result.stdout.splitlines():
         try:

@@ -29,7 +29,7 @@ def owner_observer(runtime):
             raise ValueError('OWNER_RUNTIME_CHANGED')
         with lock_recovery._guard(runtime):
             lease=json.loads(read_file(runtime/'supervisor.lock',8192))
-            if (lease.get('schema_version')!=2 or type(lease.get('pid')) is not int or
+            if (type(lease.get('schema_version')) is not int or lease['schema_version']!=3 or type(lease.get('pid')) is not int or
                     lease.get('recovery_only') or lease.get('recovery_required') or
                     not lease.get('token') or not lease.get('process_identity') or
                     lock_recovery.process_identity(lease['pid'])!=lease['process_identity']):

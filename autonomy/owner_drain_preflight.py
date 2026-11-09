@@ -51,9 +51,13 @@ def inspect_owner_drain(consumer,envelope,*,now,expected,lock_bytes,budget_snaps
         return dict(denied,reason='LOCK_HASH_MISMATCH')
     try:
         lock=json.loads(lock_bytes.decode('utf-8'),object_pairs_hook=_unique)
-        if type(lock) is not dict or set(lock)!={'schema_version','pid','started_at','process_identity','token','tree_state'}:
+        base={'schema_version','pid','started_at','process_identity','token','tree_state'}
+        if type(lock) is not dict or set(lock) != base | {'tree_binding','tree_claim_hash'}:
             raise ValueError('schema')
-        if type(lock['schema_version']) is not int or lock['schema_version']!=2:
+        if (lock['tree_binding'] != digest(dict(inventory_id=INVENTORY,**common))
+                or lock['tree_claim_hash'] != expected['claim_token_hash']):
+            raise ValueError('claim binding')
+        if type(lock['schema_version']) is not int or lock['schema_version']!=3:
             raise ValueError('version')
         if type(lock['pid']) is not int or not 0<lock['pid']<=0xffffffff:
             raise ValueError('pid')

@@ -132,7 +132,8 @@ class BusinessRequestStatusTests(unittest.TestCase):
             self.assertEqual(status['business_state'], 'UNKNOWN_RECONCILE_ONLY')
             self.assertEqual(status['resource_budget']['state'], 'OVERRUN')
             self.assertEqual(status['resource_budget']['actual'], amounts(2))
-            mark_tree('verified_closed')  # Fixture cleanup only, never production.
+            mark_tree('verified_closed', binding=self.f.adapter._tree_binding(self.f.common),
+                      claim_hash=digest(self.f.backend.operation['token']))  # Fixture cleanup only.
 
     def test_reads_are_byte_preserving_and_do_not_return_claim_secrets(self):
         with exclusive_lock(self.f.runtime):
@@ -245,7 +246,9 @@ class BusinessRequestStatusTests(unittest.TestCase):
             with patch.object(self.f.adapter.backend, 'execute_once', side_effect=AssertionError('replay')):
                 self.assertEqual(self.read(admission), first)
             self.assertFalse((self.f.root/'unused-cache').exists())
-            mark_tree('verified_closed')  # Fixture cleanup; request stays UNKNOWN.
+            from autonomy.lock_recovery import _ACTIVE_LEASE
+            owned = _ACTIVE_LEASE.get()[1]
+            mark_tree('verified_closed', binding=owned['tree_binding'], claim_hash=owned['tree_claim_hash'])  # Fixture cleanup only.
 
     def test_original_owner_execution_and_status_join_without_legacy_lease(self):
         import test_original_inventory_owner as original
@@ -268,10 +271,10 @@ class BusinessRequestStatusTests(unittest.TestCase):
         with exclusive_lock(self.f.runtime):
             admission = self.f.admission()
             original = self.f.adapter._mark_tree
-            def fail_closed(state):
+            def fail_closed(state, *args):
                 if state == 'verified_closed':
                     raise OSError('injected closure failure')
-                return original(state)
+                return original(state, *args)
             with patch.object(self.f.adapter, '_mark_tree', side_effect=fail_closed):
                 self.assertEqual(self.f.run_one(admission)['outcome'], 'UNKNOWN_RECONCILE_ONLY')
             status = self.read(admission)
@@ -279,7 +282,8 @@ class BusinessRequestStatusTests(unittest.TestCase):
             self.assertEqual(status['resource_budget']['state'], 'SETTLED')
             self.assertEqual(status['business_state'], 'UNKNOWN_RECONCILE_ONLY')
             self.assertFalse(status['replay_authorized'])
-            mark_tree('verified_closed')  # A global lease state is not a claim receipt.
+            with self.assertRaisesRegex(RuntimeError, 'TREE_CLAIM_BINDING_MISMATCH'):
+                mark_tree('verified_closed')  # An unbound close cannot clear this request.
             self.assertEqual(self.read(admission)['business_state'], 'UNKNOWN_RECONCILE_ONLY')
             self.f.adapter.reconcile(admission, **self.f.backend.receipts)
             self.assertEqual(self.read(admission)['business_state'], 'UNKNOWN_RECONCILE_ONLY')
@@ -292,10 +296,10 @@ class BusinessRequestStatusTests(unittest.TestCase):
             event = case.event()
             case.f.adapter.prepare_event(event)
             real_mark = case.f.adapter._mark_tree
-            def fail_closed(state):
+            def fail_closed(state, *args):
                 if state == 'verified_closed':
                     raise OSError('injected closure failure')
-                return real_mark(state)
+                return real_mark(state, *args)
             with patch.object(case.f.adapter, '_mark_tree', side_effect=fail_closed):
                 self.assertEqual(case.f.run_one(event['admission'])['outcome'], 'UNKNOWN_RECONCILE_ONLY')
             status = case.f.adapter.request_status(event['admission'])

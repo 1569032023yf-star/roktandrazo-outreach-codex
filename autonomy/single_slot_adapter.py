@@ -134,7 +134,7 @@ class SingleSlotAdapter:
             # identity check with supported lock mutations and recovery.
             with lock_recovery._guard(self.runtime):
                 stored=json.loads(Path(path).read_bytes())
-                if stored!=owned or stored.get('schema_version')!=2:
+                if stored!=owned or stored.get('schema_version')!=3:
                     raise AdapterError('LOCK_INSTANCE_CHANGED')
                 if type(stored.get('pid')) is not int or stored['pid']!=os.getpid():
                     raise AdapterError('LOCK_PROCESS_MISMATCH')
@@ -147,8 +147,18 @@ class SingleSlotAdapter:
         except AdapterError:raise
         except Exception:raise AdapterError('LOCK_IDENTITY_UNAVAILABLE') from None
 
-    def _mark_tree(self, state):
-        lock_recovery.mark_tree(state)
+    @staticmethod
+    def _tree_binding(common):
+        return digest(dict(inventory_id=INVENTORY, **common))
+
+    def _begin_tree(self, common):
+        lock_recovery.begin_bound_tree(self._tree_binding(common))
+
+    def _bind_tree_claim(self, common, token):
+        lock_recovery.bind_tree_claim(self._tree_binding(common), digest(token))
+
+    def _mark_tree(self, state, common=None, token=None):
+        lock_recovery.mark_tree(state, binding=self._tree_binding(common), claim_hash=digest(token))
 
     def _protected_paths(self):
         return (self.slots.path, self.budget.path, self.runtime/'supervisor.lock')
@@ -235,12 +245,14 @@ class SingleSlotAdapter:
         missed=tuple(tuple(x) for x in missed)
         token=None
         try:
+            self._begin_tree(common)
             self.slots.admit_due(p['slot'],due,schedule,now=self._now(),epoch=p['epoch'],owner=p['owner'],missed=missed)
             token=self._claim(budget_request,p['slot'],idle,p['epoch'],p['owner'])
+            self._bind_tree_claim(common, token)
             self._admission(admission) # Recheck signed lifetime and exact lease.
             self.slots.start(p['slot'],token,epoch=p['epoch'],owner=p['owner'])
             self._lock()
-            self._mark_tree('unverified')
+            self._mark_tree('unverified', common, token)
             started=self.monotonic()
             if type(started) not in (int,float) or not 0<=started<float('inf'):
                 raise AdapterError('CLOCK_UNAVAILABLE')
@@ -333,12 +345,27 @@ class SingleSlotAdapter:
         self._bound(br,{'claim_token_hash':digest(token)})
         # Both receipts must join the persisted reservation and exact claim.
         with self.budget.tx() as c:
-            row=c.execute('SELECT claim_hash,binding FROM reservations WHERE id=?',(common['request_id'],)).fetchone()
+            row=c.execute('SELECT claim_hash,binding,state,receipt_hash FROM reservations WHERE id=?',(common['request_id'],)).fetchone()
             expected=dict(inventory_id=INVENTORY,**common)
             if row is None or row['claim_hash']!=digest(token) or json.loads(row['binding'])!=expected:
                 raise AdapterError('CLAIM_RECEIPT_CONFLICT')
         self._lock()
-        self._mark_tree('unverified')
+        # A new lease may inspect an already settled old request without
+        # reopening or mutating its unrelated execution tree.
+        active=lock_recovery._ACTIVE_LEASE.get()
+        if (type(self) is SingleSlotAdapter and active is not None and
+                active[1].get('tree_state') == 'not_started' and 'tree_binding' not in active[1]):
+            mapped=self.slots._evidence(slot_receipt,kind='receipt',now=self._now(),
+                slot=common['slot'],state=sr['state'],epoch=common['epoch'],owner=common['owner'],external_drained=True)
+            with closing(sqlite3.connect(Path(self.slots.path).resolve().as_uri()+'?mode=ro',uri=True)) as db:
+                slot=db.execute('SELECT state,epoch,owner,token,receipt FROM slots WHERE slot=?',(common['slot'],)).fetchone()
+                unresolved=db.execute("SELECT 1 FROM slots WHERE state IN ('claimed','running','unknown') LIMIT 1").fetchone()
+            if (slot == (sr['state'],common['epoch'],common['owner'],token,digest(mapped)) and
+                    unresolved is None and row['state']=='settled' and row['receipt_hash']==digest(br)):
+                return {'outcome':sr['state'].upper(),'slot_result':'DUPLICATE_RECEIPT',
+                        'budget_result':'DUPLICATE','production_execution':False}
+            raise AdapterError('PRIOR_LEASE_RECEIPT_UNPROVEN')
+        self._mark_tree('unverified', common, token)
         state=self.slots.reconcile(p['slot'],sr['state'],slot_receipt,now=self._now(),epoch=p['epoch'],owner=p['owner'])
         if any(row[2] in ('claimed','running','unknown') for row in self.slots.snapshot()):
             raise AdapterError('OTHER_EXECUTION_UNRESOLVED')
@@ -350,7 +377,7 @@ class SingleSlotAdapter:
             return {'outcome':'UNKNOWN_RECONCILE_ONLY','slot_result':state,'budget_result':settled,'production_execution':False}
         # Keep the recovery fence until both durable ledgers acknowledge the
         # receipt. A storage failure must not release an unresolved reservation.
-        self._mark_tree('verified_closed')
+        self._mark_tree('verified_closed', common, token)
         return {'outcome':sr['state'].upper(),'slot_result':state,'budget_result':settled,'production_execution':False}
 
 
@@ -388,7 +415,13 @@ class OriginalOwnerSlotAdapter(SingleSlotAdapter):
         except Exception:
             raise AdapterError('ORIGINAL_OWNER_LOST') from None
 
-    def _mark_tree(self, state):
+    def _begin_tree(self, common):
+        self._lock()  # prepare_event already fenced this exact original owner.
+
+    def _bind_tree_claim(self, common, token):
+        pass  # _claim has bound the complete claim in the original owner DB.
+
+    def _mark_tree(self, state, common=None, token=None):
         self.original_owner.mark_tree(state)
 
     def _protected_paths(self):

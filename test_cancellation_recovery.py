@@ -226,10 +226,13 @@ class CancellationRecoveryTests(unittest.TestCase):
             finally:lock_recovery._ACTIVE_LEASE.reset(lease)
             self.assertEqual((c.runtime/'supervisor.lock').read_bytes(),raw)
             self.run_recovery(data)
+            with self.assertRaisesRegex(RuntimeError,'RECOVERY_ONLY_NO_NEW_TREE'):
+                lock_recovery.mark_tree('unverified')
             with closing(sqlite3.connect(self.path)) as db:
                 db.execute('PRAGMA user_version=2');db.commit()
             with self.assertRaisesRegex(AdapterError,'RECOVERY_SCHEMA_REJECTED'):self.run_recovery(data)
-            lock_recovery.mark_tree('verified_closed')
+            owned=lock_recovery._ACTIVE_LEASE.get()[1]
+            lock_recovery.mark_tree('verified_closed',binding=owned['tree_binding'],claim_hash=owned['tree_claim_hash'])
         with tempfile.TemporaryDirectory(prefix='u1-old-guard-') as temp:
             guard=Path(temp)/'supervisor.recovery.lock';guard.write_bytes(b'')
             with self.assertRaisesRegex(RuntimeError,'LEGACY_OR_UNKNOWN'):

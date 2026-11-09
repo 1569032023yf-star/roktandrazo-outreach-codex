@@ -66,13 +66,15 @@ def _owner(adapter, authorization, raw, expected, prepare):
         adapter._lock()
         with lock_recovery._guard(adapter.runtime):
             if lock.read_bytes()!=raw:raise AdapterError('RECOVERY_LOCK_CHANGED')
+            if active[1].get('tree_state') == 'verified_closed' and not os.path.lexists(lock_recovery._tree_fence(lock)):
+                lock_recovery._create_tree_fence(lock,active[1]['token'])
             active[1].update(tree_state='unverified',recovery_only=True,recovery_required=True)
             lock_recovery._write_state(lock,active[1])
         prepare()
         yield
         return
     old=json.loads(raw)
-    if (type(old) is not dict or old.get('schema_version')!=2 or
+    if (type(old) is not dict or old.get('schema_version')!=3 or
         type(old.get('pid')) is not int or old['pid']<=0 or
         type(old.get('token')) is not str or not old['token'] or
         type(old.get('process_identity')) is not str or not old['process_identity'] or
@@ -82,6 +84,8 @@ def _owner(adapter, authorization, raw, expected, prepare):
         if lock.read_bytes()!=raw:raise AdapterError('RECOVERY_LOCK_CHANGED')
         if lock_recovery.process_identity(old['pid'])==old['process_identity']:
             raise AdapterError('RECOVERY_OWNER_STILL_ALIVE')
+        if old['tree_state'] == 'verified_closed' and not os.path.lexists(lock_recovery._tree_fence(lock)):
+            lock_recovery._create_tree_fence(lock,old['token'])
         prepare()
         owned=dict(old,pid=os.getpid(),process_identity=lock_recovery.process_identity(os.getpid()),
                    tree_state='unverified',recovery_only=True,recovery_required=True)
@@ -156,6 +160,9 @@ def recover_cancellation(adapter, authorization, terminal, original_receipt,
     cr=adapter._verify(cost_receipt,'budget_receipt')
     common={k:binding[k] for k in ('slot','epoch','owner','run_id')}
     common['request_id']=binding['original_request_id']
+    if (original_lock.get('tree_binding') != adapter._tree_binding(common) or
+            original_lock.get('tree_claim_hash') != binding['claim_token_hash']):
+        raise AdapterError('RECOVERY_TREE_BINDING_UNPROVEN')
     adapter._bound(br,dict(common,claim_token_hash=binding['claim_token_hash'],
         outcome='known',externally_reconciled=True))
     vector(br['actual'])
@@ -181,7 +188,8 @@ def recover_cancellation(adapter, authorization, terminal, original_receipt,
         with _owner(adapter,authorization,raw,authority,prepare):
             try:
                 # Fence before any durable progress, including a completed duplicate.
-                lock_recovery.mark_tree('unverified')
+                tree_args = dict(binding=adapter._tree_binding(common), claim_hash=binding['claim_token_hash'])
+                lock_recovery.mark_tree('unverified', **tree_args)
                 fault('after_prepared')
                 adapter._lock()
                 slot=adapter.slots.reconcile(common['slot'],sr['state'],original_receipt,
@@ -194,7 +202,7 @@ def recover_cancellation(adapter, authorization, terminal, original_receipt,
                     raise AdapterError('RECOVERY_COST_OVERRUN')
                 _record(str(path),identity,fixed,'COMPLETED',fault,raw)
                 fault('before_verified_closed')
-                lock_recovery.mark_tree('verified_closed')
+                lock_recovery.mark_tree('verified_closed', **tree_args)
                 return dict(denied,outcome='DUPLICATE_COMPLETED' if old[0]=='COMPLETED' else 'COMPLETED',
                             slot_result=slot,cost_result=fee,budget_result=original)
             except Exception:

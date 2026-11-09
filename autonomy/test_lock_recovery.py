@@ -30,7 +30,7 @@ class LockRecoveryTests(unittest.TestCase):
     def test_real_crashed_instance_can_be_explicitly_recovered(self):
         state = self.crash()
         self.assertIsNone(l.process_identity(state['pid']))
-        self.assertEqual(state['schema_version'], 2)
+        self.assertEqual(state['schema_version'], 3)
         self.assertEqual(state['tree_state'], 'not_started')
         with self.assertRaises(FileExistsError):
             with s.exclusive(self.runtime): pass
@@ -100,9 +100,35 @@ class LockRecoveryTests(unittest.TestCase):
 
     def test_verified_closed_releases_normally(self):
         with s.exclusive(self.runtime):
-            l.mark_tree('unverified')
-            l.mark_tree('verified_closed')
+            tree_token = l.mark_tree('unverified')
+            l.mark_tree('verified_closed', tree_token=tree_token)
         self.assertFalse(self.lock.exists())
+
+    def test_generic_tree_concurrent_begin_and_stale_close_are_rejected(self):
+        from concurrent.futures import ThreadPoolExecutor
+        from contextvars import copy_context
+        from threading import Barrier
+        with s.exclusive(self.runtime):
+            gate=Barrier(2)
+            def begin():
+                gate.wait(timeout=5)
+                try:
+                    return l.mark_tree('unverified')
+                except (RuntimeError,FileExistsError):
+                    return None
+            contexts=[copy_context(),copy_context()]
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                calls=[pool.submit(ctx.run,begin) for ctx in contexts]
+                tokens=[f.result(timeout=10) for f in calls]
+            self.assertEqual(sum(token is not None for token in tokens),1)
+            first=next(token for token in tokens if token is not None)
+            with self.assertRaisesRegex(RuntimeError,'TREE_CLAIM_BINDING_MISMATCH'):
+                l.mark_tree('verified_closed',tree_token='wrong')
+            l.mark_tree('verified_closed',tree_token=first)
+            second=l.mark_tree('unverified')
+            with self.assertRaisesRegex(RuntimeError,'TREE_CLAIM_BINDING_MISMATCH'):
+                l.mark_tree('verified_closed',tree_token=first)
+            l.mark_tree('verified_closed',tree_token=second)
 
     def test_runner_timeout_metadata_survives_durable_queue_and_no_rerun(self):
         s.init(self.runtime)

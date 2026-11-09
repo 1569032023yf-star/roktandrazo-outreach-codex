@@ -17,6 +17,16 @@ import test_process_backend as backend_fixtures
 
 
 class EventBridgeTests(unittest.TestCase):
+    def test_observer_accepts_current_v3_and_rejects_legacy_v2(self):
+        with exclusive_lock(self.f.runtime):
+            observe=owner_observer(self.f.runtime)
+            self.assertEqual(observe(),self.f.adapter._lock())
+            state=json.loads((self.f.runtime/'supervisor.lock').read_bytes())
+            state['schema_version']=2
+            with patch('autonomy.inventory_event_bridge.read_file',return_value=json.dumps(state).encode()):
+                with self.assertRaisesRegex(ValueError,'EXISTING_LIVE_OWNER_REQUIRED'):
+                    observe()
+
     def test_ambiguous_request_cannot_create_or_reserve_event(self):
         import urllib.request
         with self.host() as bridge,exclusive_lock(self.f.runtime):
