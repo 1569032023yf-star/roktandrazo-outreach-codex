@@ -3,6 +3,7 @@ import argparse
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 
 from autonomy.release_store import ReleaseStore
@@ -81,6 +82,10 @@ print(json.dumps(dict(local_http_statuses=statuses,fixture_release=True,
 BOOTSTRAP_PROBE = r'''
 import sys,json,tempfile,runpy,socket,sqlite3,smtplib,time
 from pathlib import Path
+started=time.monotonic()
+def mark(stage):
+ print('U1_BOOTSTRAP_STAGE %s %.6f' % (stage,time.monotonic()-started),file=sys.stderr,flush=True)
+mark('init')
 root=Path(sys.argv[1]);sys.path.insert(0,str(root/'payload/python'))
 from autonomy.release_store import ReleaseStore
 
@@ -95,13 +100,17 @@ sqlite3.connect=memory_only;smtplib.SMTP=deny;smtplib.SMTP_SSL=deny
 # Execute the actual packaged service bootstrap definitions, without starting it.
 bootstrap=runpy.run_path(str(root/'payload/host/service/u1_bootstrap.py'))
 with tempfile.TemporaryDirectory(prefix='b',dir=sys.argv[3]) as tmp:
+ mark('stage')
  store=ReleaseStore(Path(tmp));store.stage(root,sys.argv[2])
+ mark('activate')
  store.activate(sys.argv[2],expected_current=None)
- started=time.monotonic();folder=bootstrap['resolve_release'](Path(tmp))
+ mark('resolve')
+ folder=bootstrap['resolve_release'](Path(tmp))
  assert folder==Path(tmp)/'versions'/sys.argv[2]/'payload/python'
  import hashlib,io
  from contextlib import redirect_stdout
  # Exercise the actual packaged bootstrap -> host argument path; no authority read.
+ mark('fixture')
  state=Path(tmp)/'state';state.mkdir()
  token=Path(tmp)/'token';token.write_bytes(b'a'*64)
  from autonomy.cancellation_recovery import SCHEMA,HANDOFF_SCHEMA
@@ -115,17 +124,49 @@ with tempfile.TemporaryDirectory(prefix='b',dir=sys.argv[3]) as tmp:
   release_root=tmp,state_root=str(state),token_file=str(token),token_sha256=hashlib.sha256(token.read_bytes()).hexdigest(),
   credential_expires_at=int(time.time())+300,snapshot=str(snapshot),snapshot_sha256=hashlib.sha256(snapshot.read_bytes()).hexdigest(),
   allow_dispatch=False,allow_cancel_dispatch=False,smtp_enabled=False)),encoding='utf-8')
+ mark('before_snapshot')
  before={str(p.relative_to(Path(tmp))):hashlib.sha256(p.read_bytes()).hexdigest() for p in Path(tmp).rglob('*') if p.is_file()}
  output=io.StringIO()
+ mark('host_preflight')
  with redirect_stdout(output):bootstrap['main'](str(config),preflight=True)
  report=json.loads(output.getvalue())
  assert report['startup_inputs_verified'] and report['snapshot_schema_verified'] and not report['listener_started'] and not report['production_ready']
+ mark('after_snapshot')
  after={str(p.relative_to(Path(tmp))):hashlib.sha256(p.read_bytes()).hexdigest() for p in Path(tmp).rglob('*') if p.is_file()}
  assert before==after,'PREFLIGHT_MUTATED_INPUTS'
- print(json.dumps(dict(packaged_service_bootstrap_integrity=True,
-   elapsed_seconds=time.monotonic()-started,fixture_store=True,service_started=False,
-   production_installation=False)))
+ mark('cleanup')
+mark('complete')
+print(json.dumps(dict(packaged_service_bootstrap_integrity=True,
+  elapsed_seconds=time.monotonic()-started,fixture_store=True,service_started=False,
+  production_installation=False)))
 '''
+
+
+BOOTSTRAP_STAGES = ('init', 'stage', 'activate', 'resolve', 'fixture',
+                    'before_snapshot', 'host_preflight', 'after_snapshot',
+                    'cleanup', 'complete')
+
+
+def bootstrap_stage_timings(output):
+    """Accept only an ordered prefix of fixed child markers; discard raw output."""
+    if isinstance(output, bytes):
+        output = output[:32768].decode('utf-8', errors='replace')
+    elif isinstance(output, str):
+        output = output[:32768]
+    else:
+        return []
+    timings = []
+    for line in output.splitlines():
+        match = re.fullmatch(r'U1_BOOTSTRAP_STAGE ([a-z_]+) (\d{1,3}\.\d{6})', line)
+        if not match or len(timings) >= len(BOOTSTRAP_STAGES):
+            continue
+        stage, elapsed = match.group(1), float(match.group(2))
+        if stage != BOOTSTRAP_STAGES[len(timings)] or elapsed > 120:
+            continue
+        if timings and elapsed < timings[-1]['elapsed_seconds']:
+            continue
+        timings.append(dict(stage=stage, elapsed_seconds=elapsed))
+    return timings
 
 
 def verify(args, progress=None):
@@ -158,16 +199,31 @@ def verify(args, progress=None):
             [str(runtime/'python.exe'),'-I','-B','-c',HTTP_PROBE,str(root/'payload/python'),str(root.parent)],
             [str(runtime/'python.exe'),'-I','-B','-c',BOOTSTRAP_PROBE,str(root),args.manifest_sha256,str(root.parent.parent)]]
         for command in commands:
-            progress(dict(arguments=command[1:],outcome='RUNNING'))
+            is_bootstrap = len(command) >= 5 and command[4] == BOOTSTRAP_PROBE
+            descriptor = (dict(probe='packaged_bootstrap') if is_bootstrap
+                          else dict(arguments=command[1:]))
+            progress(dict(descriptor,outcome='RUNNING'))
             try:
                 result=subprocess.run(command,cwd=root,env=env,capture_output=True,text=True,timeout=120)
             except BaseException as exc:
-                progress(dict(arguments=command[1:],outcome='UNKNOWN',error_type=type(exc).__name__,error=str(exc)))
+                if is_bootstrap:
+                    exc._u1_bootstrap_probe = True
+                    progress(dict(descriptor,outcome='UNKNOWN',error_type=type(exc).__name__,
+                                  stage_timings=bootstrap_stage_timings(getattr(exc,'stderr',None))))
+                else:
+                    progress(dict(descriptor,outcome='UNKNOWN',error_type=type(exc).__name__,error=str(exc)))
                 raise
-            item=dict(arguments=command[1:],returncode=result.returncode,stdout=result.stdout,stderr=result.stderr,
-                      outcome='PASSED' if result.returncode==0 else 'FAILED')
+            if is_bootstrap:
+                stages=bootstrap_stage_timings(result.stderr)
+                item=dict(descriptor,returncode=result.returncode,
+                          stage_timings=stages,
+                          outcome='PASSED' if result.returncode==0 and
+                          len(stages)==len(BOOTSTRAP_STAGES) else 'FAILED')
+            else:
+                item=dict(descriptor,returncode=result.returncode,stdout=result.stdout,stderr=result.stderr,
+                          outcome='PASSED' if result.returncode==0 else 'FAILED')
             results.append(item);progress(item)
-            if result.returncode: raise ValueError('DELIVERY_PROBE_FAILED:'+json.dumps(results))
+            if item['outcome'] != 'PASSED': raise ValueError('DELIVERY_PROBE_FAILED:'+json.dumps(results))
         progress(dict(stage='revalidate_input_pins',outcome='RUNNING'))
         pins.revalidate()
     # Recheck after subprocess probes to detect unexpected package writes.
@@ -202,7 +258,8 @@ def verify_with_report(args):
         try: result=verify(args,progress=progress)
         except BaseException as exc:
             state.update(outcome='UNKNOWN' if isinstance(exc,(subprocess.TimeoutExpired,KeyboardInterrupt,SystemExit)) else 'FAILED',
-                         error_type=type(exc).__name__,error=str(exc));persist();raise
+                         error_type=type(exc).__name__,
+                         error='BOOTSTRAP_PROBE_ERROR' if getattr(exc,'_u1_bootstrap_probe',False) else str(exc));persist();raise
         state.update(result,outcome='VERIFIED',active_check=None);persist()
         return state
 
