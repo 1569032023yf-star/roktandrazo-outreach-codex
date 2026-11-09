@@ -21,6 +21,21 @@ def read(path,limit):
     return raw
 
 
+def _validate_artifact_paths(files):
+    reserved={'CON','PRN','AUX','NUL'}|{f'{p}{i}' for p in ('COM','LPT') for i in range(1,10)}
+    paths=[]
+    for name,digest in files.items():
+        if (type(name) is not str or not re.fullmatch('[A-Za-z0-9_./+-]+',name) or
+            any(x in ('','.','..') or x.endswith('.') or x.split('.')[0].upper() in reserved for x in name.split('/')) or
+            not re.fullmatch('[0-9a-f]{64}',digest)):raise ValueError('ARTIFACT_PATH')
+        paths.append(tuple(name.casefold().split('/')))
+    # Component sorting makes an ancestor adjacent to its first descendant.
+    paths.sort()
+    for previous,current in zip(paths,paths[1:]):
+        if len(previous)<=len(current) and current[:len(previous)]==previous:
+            raise ValueError('PATH_COLLISION')
+
+
 def resolve_release(root):
     root=Path(root)
     transactions=root/'transactions'
@@ -41,15 +56,10 @@ def resolve_release(root):
         m['inventory_id']!='1784775229336' or not re.fullmatch('[0-9a-f]{40}',m['source_commit']) or
         type(m['files']) is not dict or not 1<=len(m['files'])<=(8192 if large else 512)):raise ValueError('MANIFEST_SCHEMA')
     if raw!=json.dumps(m,sort_keys=True,separators=(',', ':'),allow_nan=False).encode():raise ValueError('NONCANONICAL_MANIFEST')
-    seen=set();total=0
-    reserved={'CON','PRN','AUX','NUL'}|{f'{p}{i}' for p in ('COM','LPT') for i in range(1,10)}
+    _validate_artifact_paths(m['files'])
+    total=0
     for name,digest in m['files'].items():
-        if (type(name) is not str or not re.fullmatch('[A-Za-z0-9_./+-]+',name) or
-            any(x in ('','.','..') or x.endswith('.') or x.split('.')[0].upper() in reserved for x in name.split('/')) or
-            not re.fullmatch('[0-9a-f]{64}',digest)):raise ValueError('ARTIFACT_PATH')
-        lower=name.casefold()
-        if any(lower==x or lower.startswith(x+'/') or x.startswith(lower+'/') for x in seen):raise ValueError('PATH_COLLISION')
-        seen.add(lower);data=read(folder/'payload'/name,(256 if large else 128)*1024*1024);total+=len(data)
+        data=read(folder/'payload'/name,(256 if large else 128)*1024*1024);total+=len(data)
         if total>(1024 if large else 128)*1024*1024 or hashlib.sha256(data).hexdigest()!=digest:raise ValueError('ARTIFACT_HASH')
     required={'python/autonomy/u1_host_runtime.py','python/autonomy/host_readonly_http.py','python/autonomy/release_store.py'}
     if not required<=set(m['files']):raise ValueError('HOST_MISSING')

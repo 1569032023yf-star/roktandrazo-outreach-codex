@@ -91,4 +91,44 @@ class BootstrapArgumentTests(unittest.TestCase):
                     release.assert_not_called();run.assert_not_called()
 
 
+class BootstrapNamespaceTests(unittest.TestCase):
+    def check_paths(self,names):
+        bootstrap._validate_artifact_paths({name:'b'*64 for name in names})
+
+    def test_rejects_case_and_ancestors_even_with_string_sort_interleaving(self):
+        for names in [('A','a'),('a','a+','a/b'),('a/b','A'),('a/b/c','A/B')]:
+            with self.subTest(names=names),self.assertRaisesRegex(ValueError,'PATH_COLLISION'):
+                self.check_paths(names)
+        self.check_paths(['a','a+','ab/c','dir/a','dir/ab'])
+
+    def test_rejects_unsafe_names_and_hashes(self):
+        for name in ('../escape','CON.txt','foo/..','a//b','a./x'):
+            with self.subTest(name=name),self.assertRaisesRegex(ValueError,'ARTIFACT_PATH'):
+                self.check_paths([name])
+        with self.assertRaisesRegex(ValueError,'ARTIFACT_PATH'):
+            bootstrap._validate_artifact_paths({'a':'invalid'})
+
+    def test_maximum_count_and_deep_path(self):
+        self.check_paths([f'runtime/python/Lib/module{i}.py' for i in range(8192)])
+        deep='/'.join(['a']*10000)
+        self.check_paths([deep,'sibling'])
+        with self.assertRaisesRegex(ValueError,'PATH_COLLISION'):
+            self.check_paths([deep,deep+'/child'])
+
+    def test_real_release_rejects_colliding_manifest_before_payload_reads(self):
+        import hashlib
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            manifest=dict(schema='rokt.release-manifest.v2',inventory_id='1784775229336',
+                source_commit='a'*40,files={'a':'b'*64,'a+':'b'*64,'a/b':'b'*64})
+            raw=json.dumps(manifest,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
+            version=hashlib.sha256(raw).hexdigest()
+            folder=root/'versions'/version;folder.mkdir(parents=True)
+            (folder/'manifest.json').write_bytes(raw)
+            (root/'active.json').write_text(json.dumps(dict(schema='rokt.release-store.v1',
+                inventory_id='1784775229336',version=version)),encoding='utf-8')
+            with self.assertRaisesRegex(ValueError,'PATH_COLLISION'):
+                bootstrap.resolve_release(root)
+
+
 if __name__=='__main__':unittest.main()
