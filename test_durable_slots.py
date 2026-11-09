@@ -52,6 +52,31 @@ class DurableTests(unittest.TestCase):
     def claim(self):
         return self.l.claim('s1',idle(),now=10,epoch=1,owner='owner')
 
+    def test_stale_proof_requires_successful_rollback_and_close(self):
+        from autonomy.durable_slots import VerifiedStaleSchedule
+        class WrappedConnection:
+            def __init__(self, inner, failure):
+                object.__setattr__(self,'inner',inner);object.__setattr__(self,'failure',failure)
+            def __getattr__(self,name): return getattr(self.inner,name)
+            def __setattr__(self,name,value): setattr(self.inner,name,value)
+            def rollback(self):
+                self.inner.rollback()
+                if self.failure=='rollback': raise OSError('rollback acknowledgement lost')
+            def close(self):
+                self.inner.close()
+                if self.failure=='close': raise OSError('close acknowledgement lost')
+        ev=evidence('schedule',slot='s2',next_due=10,epoch=1,owner='owner',latest_due=True)
+        proof=object()
+        with self.assertRaises(VerifiedStaleSchedule) as caught:
+            self.l.admit_due('s2',10,ev,now=10,epoch=1,owner='owner',_stale_proof=proof)
+        self.assertIs(caught.exception.args[1],proof)
+        for failure in ('rollback','close'):
+            with self.subTest(failure=failure):
+                ledger=DurableSlots(self.path,verify=verified,
+                    connect=lambda *a,**k: WrappedConnection(sqlite3.connect(*a,**k),failure))
+                with self.assertRaises(OSError):
+                    ledger.admit_due('s2',10,ev,now=10,epoch=1,owner='owner',_stale_proof=proof)
+
     def test_signed_missed_slots_cannot_be_omitted(self):
         e=evidence('schedule',slot='s3',next_due=30,epoch=1,owner='owner',latest_due=True,missed=[['s2',20]])
         before=self.l.snapshot()

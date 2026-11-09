@@ -64,6 +64,102 @@ class SingleSlotTests(unittest.TestCase):
             day=business_day(T+10),amount=amounts(),cache_hit=False,claim_binding=dict(inventory_id=INVENTORY,**common))
         return common,plan,idle,request
 
+    def test_stale_before_claim_closes_only_its_attempt_and_can_retry(self):
+        with exclusive_lock(self.runtime) as owned:
+            self.assertEqual(self.run_one(self.admission())['outcome'],'COMPLETED')
+            common,_,idle,request=self.second_request()
+            stale=signed('schedule',T+10,slot='two',epoch=1,owner='owner',next_due=T+10,latest_due=True)
+            admission=self.admission(**common)
+            before=self.slots.snapshot()
+            self.assertEqual(self.adapter.execute(admission,stale,idle,request)['outcome'],'STALE_SCHEDULE_REJECTED')
+            self.assertEqual(self.backend.calls,1)
+            self.assertEqual(self.slots.snapshot(),before)
+            self.assertEqual(owned['tree_state'],'verified_closed')
+            self.assertFalse((self.runtime/'supervisor.tree-unverified').exists())
+            self.adapter.wall_clock=lambda:T+11
+            next_plan=signed('schedule',T+10,slot='two',epoch=1,owner='owner',next_due=T+11,latest_due=True)
+            self.assertEqual(self.adapter.execute(admission,next_plan,idle,request)['outcome'],'COMPLETED')
+            self.assertEqual(self.backend.calls,2)
+
+    def test_abort_requires_current_attempt_and_preserves_fence_on_mismatch(self):
+        from autonomy import lock_recovery
+        with exclusive_lock(self.runtime):
+            binding=self.adapter._tree_binding(self.common)
+            attempt=lock_recovery.begin_bound_tree(binding)
+            with self.assertRaisesRegex(RuntimeError,'TREE_ATTEMPT_REJECTED'):
+                lock_recovery.abort_unclaimed_tree(binding,'wrong-attempt')
+            self.assertTrue((self.runtime/'supervisor.tree-unverified').exists())
+            lock_recovery.abort_unclaimed_tree(binding,attempt)
+            with self.assertRaisesRegex(RuntimeError,'TREE_ATTEMPT_REJECTED'):
+                lock_recovery.abort_unclaimed_tree(binding,attempt)
+
+    def test_forged_stale_exception_does_not_close_fence(self):
+        from autonomy.durable_slots import VerifiedStaleSchedule
+        def fake_fault(stage):
+            if stage=='after_commit': raise VerifiedStaleSchedule('STALE_SCHEDULE',object())
+        self.slots.fault=fake_fault
+        with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'):
+            with exclusive_lock(self.runtime):
+                self.assertEqual(self.run_one(self.admission())['outcome'],'UNKNOWN_RECONCILE_ONLY')
+        self.assertEqual(self.backend.calls,0)
+        self.assertTrue((self.runtime/'supervisor.tree-unverified').exists())
+
+    def test_bound_claim_cannot_be_aborted_as_unclaimed(self):
+        from autonomy import lock_recovery
+        with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'):
+            with exclusive_lock(self.runtime):
+                binding=self.adapter._tree_binding(self.common)
+                attempt=lock_recovery.begin_bound_tree(binding)
+                lock_recovery.bind_tree_claim(binding,digest('claimed-token'))
+                with self.assertRaisesRegex(RuntimeError,'TREE_ATTEMPT_REJECTED'):
+                    lock_recovery.abort_unclaimed_tree(binding,attempt)
+        self.assertTrue((self.runtime/'supervisor.tree-unverified').exists())
+
+    def test_abort_close_ack_failure_preserves_fence(self):
+        from unittest.mock import patch
+        from autonomy import lock_recovery
+        real_write=lock_recovery._write_state
+        def fail_after_close(lock,state):
+            real_write(lock,state)
+            if state.get('tree_aborted') is True:
+                raise OSError('injected close acknowledgement loss')
+        with self.assertRaisesRegex(RuntimeError,'LOCK_CHANGED'):
+            with exclusive_lock(self.runtime):
+                self.assertEqual(self.run_one(self.admission())['outcome'],'COMPLETED')
+                common,_,idle,request=self.second_request()
+                stale=signed('schedule',T+10,slot='two',epoch=1,owner='owner',next_due=T+10,latest_due=True)
+                with patch.object(lock_recovery,'_write_state',side_effect=fail_after_close):
+                    self.assertEqual(self.adapter.execute(self.admission(**common),stale,idle,request)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+        self.assertEqual(self.backend.calls,1)
+        self.assertTrue((self.runtime/'supervisor.tree-unverified').exists())
+
+    def test_untrusted_slot_override_stale_never_aborts(self):
+        from autonomy.durable_slots import VerifiedStaleSchedule
+        def fake_admit(*args,**kwargs):
+            raise VerifiedStaleSchedule('STALE_SCHEDULE',object())
+        self.slots.admit_due=fake_admit
+        with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'):
+            with exclusive_lock(self.runtime):
+                self.assertEqual(self.run_one(self.admission())['outcome'],'UNKNOWN_RECONCILE_ONLY')
+        self.assertEqual(self.backend.calls,0)
+        self.assertTrue((self.runtime/'supervisor.tree-unverified').exists())
+
+    def test_abort_unlink_failure_keeps_fence_and_blocks_release(self):
+        from unittest.mock import patch
+        original_unlink=Path.unlink
+        def fail_fence(path,*args,**kwargs):
+            if path.name=='supervisor.tree-unverified': raise OSError('injected unlink failure')
+            return original_unlink(path,*args,**kwargs)
+        with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'):
+            with exclusive_lock(self.runtime):
+                self.assertEqual(self.run_one(self.admission())['outcome'],'COMPLETED')
+                common,_,idle,request=self.second_request()
+                stale=signed('schedule',T+10,slot='two',epoch=1,owner='owner',next_due=T+10,latest_due=True)
+                with patch.object(Path,'unlink',fail_fence):
+                    self.assertEqual(self.adapter.execute(self.admission(**common),stale,idle,request)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+        self.assertEqual(self.backend.calls,1)
+        self.assertTrue((self.runtime/'supervisor.tree-unverified').exists())
+
     def test_unknown_tree_blocks_a_distinct_request_before_any_backend_call(self):
         self.backend.mode='lost'
         with exclusive_lock(self.runtime):

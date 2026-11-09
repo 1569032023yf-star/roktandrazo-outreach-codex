@@ -19,6 +19,14 @@ class LedgerError(RuntimeError):
     pass
 
 
+class VerifiedStaleSchedule(LedgerError):
+    """A specific stale branch completed its transaction rollback and close."""
+
+
+class _StaleBeforeAdmission(Exception):
+    pass
+
+
 def _integer(value):
     if type(value) is not int or value < 0:
         raise LedgerError('INVALID_INTEGER')
@@ -105,7 +113,7 @@ class DurableSlots:
             c.execute("INSERT INTO audit(event,epoch) VALUES ('AUTHORITY_CHANGED',?)", (expected_epoch+1,))
         return expected_epoch+1
 
-    def admit_due(self, slot, next_due, evidence, *, now, epoch, owner, missed=()):
+    def admit_due(self, slot, next_due, evidence, *, now, epoch, owner, missed=(), _stale_proof=None):
         """Accept one trusted latest due, never compute cron or catch-up firings."""
         _key(slot)
         _integer(next_due)
@@ -128,6 +136,16 @@ class DurableSlots:
             raise LedgerError('EVIDENCE_CONFLICT')
         if next_due > now:
             raise LedgerError('NOT_DUE')
+        stale_proof = object()
+        try:
+            return self._admit_transaction(slot, next_due, epoch, owner, missed, stale_proof)
+        except _StaleBeforeAdmission as error:
+            if len(error.args) != 1 or error.args[0] is not stale_proof:
+                raise
+            # _tx has successfully rolled back and closed before control reaches here.
+            raise VerifiedStaleSchedule('STALE_SCHEDULE', _stale_proof) from None
+
+    def _admit_transaction(self, slot, next_due, epoch, owner, missed, stale_proof):
         with self._tx() as c:
             self._authority(c, epoch, owner)
             row = c.execute('SELECT * FROM slots WHERE slot=?', (slot,)).fetchone()
@@ -136,7 +154,7 @@ class DurableSlots:
                     raise LedgerError('SLOT_CONFLICT')
                 return row['state']
             if c.execute('SELECT 1 FROM slots WHERE due>=?', (next_due,)).fetchone():
-                raise LedgerError('STALE_SCHEDULE')
+                raise _StaleBeforeAdmission(stale_proof)
             for old_slot, old_due in missed:
                 old = c.execute('SELECT due,state FROM slots WHERE slot=?',(old_slot,)).fetchone()
                 if old and (old['due'] != old_due or old['state'] not in ('pending','deferred')):

@@ -152,7 +152,7 @@ class SingleSlotAdapter:
         return digest(dict(inventory_id=INVENTORY, **common))
 
     def _begin_tree(self, common):
-        lock_recovery.begin_bound_tree(self._tree_binding(common))
+        return lock_recovery.begin_bound_tree(self._tree_binding(common))
 
     def _bind_tree_claim(self, common, token):
         lock_recovery.bind_tree_claim(self._tree_binding(common), digest(token))
@@ -245,8 +245,26 @@ class SingleSlotAdapter:
         missed=tuple(tuple(x) for x in missed)
         token=None
         try:
-            self._begin_tree(common)
-            self.slots.admit_due(p['slot'],due,schedule,now=self._now(),epoch=p['epoch'],owner=p['owner'],missed=missed)
+            attempt=self._begin_tree(common)
+            from autonomy.durable_slots import DurableSlots, VerifiedStaleSchedule
+            from autonomy.ledger_evidence import LedgerEvidenceVerifier
+            exact_slots = (type(self.slots) is DurableSlots and self.slots.connect is sqlite3.connect
+                and type(self.slots.verify) is LedgerEvidenceVerifier
+                and self.slots.verify.consumer is self.consumer
+                and not any(name in vars(self.slots) for name in ('admit_due','_admit_transaction','_tx','_authority','_evidence')))
+            trusted_abort = type(self) is SingleSlotAdapter and exact_slots
+            stale_proof = object()
+            try:
+                kwargs = {'_stale_proof': stale_proof} if trusted_abort else {}
+                self.slots.admit_due(p['slot'],due,schedule,now=self._now(),epoch=p['epoch'],owner=p['owner'],missed=missed,**kwargs)
+            except Exception as error:
+                # Only the exact offline implementations may attest to this
+                # no-admission branch. OriginalOwner uses a different fence.
+                if (not trusted_abort or type(error) is not VerifiedStaleSchedule
+                        or len(error.args) != 2 or error.args[1] is not stale_proof):
+                    raise
+                lock_recovery.abort_unclaimed_tree(self._tree_binding(common), attempt)
+                return {'outcome':'STALE_SCHEDULE_REJECTED','production_execution':False}
             token=self._claim(budget_request,p['slot'],idle,p['epoch'],p['owner'])
             self._bind_tree_claim(common, token)
             self._admission(admission) # Recheck signed lifetime and exact lease.
