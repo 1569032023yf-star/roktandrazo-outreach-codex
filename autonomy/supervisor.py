@@ -361,7 +361,11 @@ def cycle(runtime=RUNTIME, root=ROOT, source='manual', runner=run_agent):
                                               'result': 'UNKNOWN'})
         atomic_json(runtime / 'queue.json', state)
         reconcile(runtime, state)
+        task_id_counts = {}
+        for task in state['tasks']:
+            task_id_counts[task['id']] = task_id_counts.get(task['id'], 0) + 1
         eligible = [t for t in state['tasks'] if t['status'] == 'queued'
+                    and task_id_counts[t['id']] == 1
                     and not _controller_managed(t)
                     and not t.get('outcome_unknown') and t['attempts'] < 3]
         record = {'cycle_id': str(uuid.uuid4()), 'source': source, 'started_at': now(),
@@ -423,7 +427,10 @@ def recover_unknown(runtime, task_id, readonly_check):
     """
     with exclusive(runtime):
         state = read(runtime / 'queue.json')
-        task = next(t for t in state['tasks'] if t['id'] == task_id)
+        matches = [t for t in state['tasks'] if t['id'] == task_id]
+        if len(matches) != 1:
+            raise ValueError('TASK_ID_NOT_UNIQUE')
+        task = matches[0]
         if task['status'] != 'unknown' or not task.get('outcome_unknown'):
             raise ValueError('TASK_NOT_QUARANTINED')
         if _controller_managed(task):
