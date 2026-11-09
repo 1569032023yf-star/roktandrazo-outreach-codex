@@ -66,7 +66,7 @@ def claim_next(runtime, workstream):
                     or task.get('outcome_unknown') is not False
                     or task.get('needs_reassessment', False) is not False
                     or task.get('blocked_reason') or task.get('depends_on')
-                    or task.get('lease_cycle_id') or task.get('controller_claim')
+                    or task.get('lease_cycle_id') or 'controller_claim' in task
                     or task.get('production_execution') is not False
                     or task.get('allow_dispatch') is not False
                     or not re.fullmatch(r'[0-9a-f]{40}', str(task.get('source_commit', '')))):

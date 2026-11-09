@@ -328,6 +328,12 @@ def enqueue_independent_review(state, task):
                 'status': 'queued', 'attempts': 0, 'role': 'reviewer', 'blocked_cycles': 0})
 
 
+def _controller_managed(task):
+    # Even an empty or malformed receipt may represent an interrupted launch.
+    return ('controller_claim' in task or task.get('executor') in
+            ('controller_claimed', 'controller_running', 'controller_unknown', 'native_subagent'))
+
+
 def cycle(runtime=RUNTIME, root=ROOT, source='manual', runner=run_agent):
     if source not in {'manual', 'codex_heartbeat'}:
         raise ValueError('INVALID_SOURCE')
@@ -356,6 +362,7 @@ def cycle(runtime=RUNTIME, root=ROOT, source='manual', runner=run_agent):
         atomic_json(runtime / 'queue.json', state)
         reconcile(runtime, state)
         eligible = [t for t in state['tasks'] if t['status'] == 'queued'
+                    and not _controller_managed(t)
                     and not t.get('outcome_unknown') and t['attempts'] < 3]
         record = {'cycle_id': str(uuid.uuid4()), 'source': source, 'started_at': now(),
                   'status': 'idle', 'task_id': None, 'human_trigger_excluded': source == 'manual'}
@@ -419,6 +426,8 @@ def recover_unknown(runtime, task_id, readonly_check):
         task = next(t for t in state['tasks'] if t['id'] == task_id)
         if task['status'] != 'unknown' or not task.get('outcome_unknown'):
             raise ValueError('TASK_NOT_QUARANTINED')
+        if _controller_managed(task):
+            raise ValueError('CONTROLLER_RECONCILIATION_REQUIRED')
         result = readonly_check(json.loads(json.dumps(task)))
         if (not isinstance(result, dict) or result.get('read_only') is not True
                 or result.get('resolution') not in {'completed', 'not_executed'}

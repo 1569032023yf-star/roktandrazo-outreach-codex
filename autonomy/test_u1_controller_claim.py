@@ -107,6 +107,26 @@ class ControllerClaimTests(unittest.TestCase):
                 claims.claim_next(self.runtime, 'A')
         self.assertEqual(self.saved()['status'], 'pending')
 
+    def test_legacy_paths_never_replay_controller_receipts(self):
+        from autonomy import supervisor
+        markers = [{'controller_claim': v} for v in ({}, None, 'malformed')]
+        markers += [{'executor': v} for v in ('controller_claimed', 'controller_running',
+                                                'controller_unknown', 'native_subagent')]
+        for marker in markers:
+            with self.subTest(marker=marker):
+                self.write([dict(self.task, **marker)])
+                self.assertIsNone(claims.claim_next(self.runtime, 'A'))
+                self.write([dict(self.task, status='unknown', outcome_unknown=True, **marker)])
+                before = (self.runtime / 'queue.json').read_bytes()
+                with self.assertRaisesRegex(ValueError, 'CONTROLLER_RECONCILIATION_REQUIRED'):
+                    supervisor.recover_unknown(self.runtime, self.task_id,
+                                               lambda _: self.fail('checker must not run'))
+                self.assertEqual((self.runtime / 'queue.json').read_bytes(), before)
+                self.write([dict(self.task, status='queued', **marker)])
+                record = supervisor.cycle(self.runtime, runner=lambda *_: self.fail('must not run'))
+                self.assertEqual(record['status'], 'idle')
+                self.assertEqual(self.saved()['status'], 'queued')
+
 
 if __name__ == '__main__':
     unittest.main()
