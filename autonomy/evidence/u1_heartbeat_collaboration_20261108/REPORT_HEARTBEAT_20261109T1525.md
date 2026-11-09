@@ -1,0 +1,23 @@
+# U1 定时周期 / Scheduled U1 cycle — 2026-11-09 15:25 UTC
+
+任务 / Task `rokt-razo`; heartbeat `2026-11-09T15:25:25.712Z`; 主控实际目录 / controller directory `D:\CODEX\roktandrazo-workspace\roktandrazo-outreach-autonomy`; 起始主线 / initial main `f20b6f241212d12b4e961bf9b5fcad72170e4abe`. 本轮开发协调槽 / development slot `93895c1a-5b4c-4f96-9381-c8f54ccf5192`, `2026-11-09T15:26:19.847535Z`–`2026-11-09T15:38:29.729127Z`, `FINISHED`. 工作结束后仅终止已核验的本轮等待子进程，协调器退出码 1；槽 1 字节锁已实测释放。The identified cycle wait subprocess was stopped at completion, the coordinator returned exit code 1, and its slot byte lock was verified free. No platform-wide hard timeout is asserted.
+
+## 结果 / Results
+
+- 隔离候选 / Isolated candidate `6cbd1799aa0e789bff93382b6b850c6dfb17573c`, branch `codex/u1-lease-execution-fence-20261109`: 代码已推送并远端核验。相对旧候选 `f62b2d7a` 增加参数化只读调度预检及两项测试；预检仅在建立 fence 前拒绝已观察到的过期调度，不证明同一请求从未执行，也不生成业务或费用回执。Pushed and remote SHA verified. A parameterized read-only precheck rejects an observed stale schedule before creating a fence; it does not prove request history or create a business or cost receipt.
+- 定向组合 / Focused combination: `python -X utf8 -B -m unittest test_durable_slots test_single_slot_adapter test_business_request_status test_original_inventory_owner test_cancellation_recovery test_cancellation_owner_death autonomy.test_lock_recovery test_owner_drain_preflight autonomy.test_supervisor test_inventory_event_bridge.EventBridgeTests.test_observer_accepts_current_v3_and_rejects_legacy_v2` — 144 passed in 42.243 s, using temporary offline fixtures. 固定版本独审另外运行两项定向测试并以临时 SQLite 复现预检后的真实竞争。Independent review additionally passed two focused tests and reproduced a real post-precheck race with temporary SQLite.
+- 独审结论 / Independent review: **预检优化范围 PASS，原 P1 未根治**。竞争时仍返回 `UNKNOWN_RECONCILE_ONLY`、保留 fence 并阻止释放；OriginalOwner 路径亦未解决。该候选及之前更大的执行锁变更均未合并，不能据此宣布完整开发或发布完成。Scoped precheck review PASS; the underlying P1 remains in races and the OriginalOwner path. The fence stays and release is blocked. Neither the candidate nor its larger parent change was merged.
+- 被拒绝版本 / Rejected version `ca8754a78ca98e1f54413a23d3fd4603e2b432bb`: independent review reproduced two P1 paths that could close a fence after claim. 已推送的历史提交保留审查证据，但其自动 abort、attempt 和 stale 证明路径已从 `6cbd1799` 最终源码移除。The previously pushed commit remains in branch history for audit; its unsafe abort, attempt and stale-proof code was removed from the final candidate source.
+- 已知限制 / Limits: `isolated_offline` 为既有签名隔离前提，尚未独立证明配置的物理路径一定不属于生产；旧 Host 完整包启动超时根因仍 UNKNOWN。本轮没有构建新完整包。The existing signed isolated scope does not independently establish that configured physical paths are non-production; the older Host package timeout remains UNKNOWN. No new complete package was built.
+
+## 协调与门禁 / Coordination and gates
+
+A `codex/u1-provider-offline-20261106` = `d76eb049967f3f9811af46db0a73a3a9685d497a`, clean; B `codex/u1-host-preparation-20261026` = `29e9ef5cebc68c69e84b881f808314e6d712c6a2`, 原有未跟踪文件保留 / existing untracked files preserved; C 初始 / initial `f20b6f241212d12b4e961bf9b5fcad72170e4abe`. 各分支远端 SHA 已核对；旧 C 路径为指向 D 盘工作区的 Junction。Remote branch SHAs were checked; the old C path is a Junction to the D workspace. 本机协调器仅覆盖合作进程。The local coordinator covers cooperating processes only.
+
+本地 canonical 队列在既有互斥下原子更新并读回：A 原完成状态保留、修复后续 `pending_recovery_fix`；B、C 继续 `pending` / `not_started`。写入队列不等于启动聊天。本轮实际启动只读原生子代理并收到设计和固定版本审核结果；未向 A/B 已有聊天发送启动指令。The local canonical queue was atomically updated and read back under the existing mutex: A retains its completed task with `pending_recovery_fix`; B and C remain `pending` / `not_started`. Queue writes do not launch chats. Read-only native agents provided design and fixed-version reviews; existing A/B chats were not started.
+
+`SCHEDULE_TRIGGERED=true`; `C_EXECUTED=true`; `AGENT_DELEGATED=true`; `AGENT_RESULT_RECEIVED=true`; `CODE_INTEGRATED=false`. `DEVELOPMENT_COMPLETE=false`; `RELEASE_READY=false`; `PRODUCTION_DEPLOYED=UNKNOWN`; `PRODUCTION_ACCEPTED=UNKNOWN`; `BUSINESS_GROWTH=UNKNOWN`. 报告推送、代码推送、代码合并及生产验收分开记录。Report publication, code push, integration and production acceptance are distinct.
+
+下一步：证明领取与 fence 绑定之间的原子边界，分别处理 OriginalOwner 和预检后竞争；任何不确定的 claim、写入、确认或执行保持 UNKNOWN；随后针对新固定 SHA 独审并重新验证。继续 Host 完整包和恢复验证。Next: establish the atomic boundary between claim and fence binding, address both OriginalOwner and post-precheck races, retain UNKNOWN on uncertainty, then independently review and validate a newly fixed SHA. Continue Host full-package and recovery validation.
+
+未执行生产采集、发送邮件、修改生产数据库或安装服务；未创建新调度器。报告自检未包含密钥、凭据或敏感数据。No production collection, email, production database changes, service installation or new scheduler. Report self-check: no keys, credentials or sensitive data included.
