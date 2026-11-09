@@ -1,0 +1,90 @@
+{
+  "source_commit": "c2e81ff6e333ae64c2af1a2160ddcd972953bd74",
+  "manifest_sha256": "b79ed3484dfaa52a5785d7f09c991b4681919034539bde415af2c328211b95d9",
+  "archive_sha256": "581cde956b798ca5545baff09fb3c425832fdac179a496a90d79579a7753783d",
+  "outcome": "VERIFIED",
+  "manifest_files": 5058,
+  "offline_entrypoint_imports_verified": true,
+  "packaged_service_bootstrap_integrity_verified": true,
+  "packaged_startup_preflight_verified": true,
+  "installation_verified": false,
+  "rollback_verified": false,
+  "provider_accepted": false,
+  "allow_install": false,
+  "allow_dispatch": false,
+  "smtp_enabled": false,
+  "production_ready": false,
+  "private_raw_report_sha256": "ef13929716f91a704be33f6907497d09634812b0cfe85ffe25cf147991424174",
+  "verifier_commit": "f6fe30b087e679a1c485d26852c495983e6802ba",
+  "coordinator_run": "e408ce9b-6678-4b61-a2ac-02f857310f46",
+  "checks": [
+    {
+      "index": 1,
+      "outcome": "PASSED",
+      "returncode": 0
+    },
+    {
+      "index": 2,
+      "outcome": "PASSED",
+      "returncode": 0
+    },
+    {
+      "index": 3,
+      "outcome": "PASSED",
+      "returncode": 0
+    },
+    {
+      "index": 4,
+      "outcome": "PASSED",
+      "returncode": 0
+    },
+    {
+      "index": 5,
+      "outcome": "PASSED",
+      "returncode": 0,
+      "probe": "packaged_bootstrap",
+      "stage_timings": [
+        {
+          "stage": "init",
+          "elapsed_seconds": 1e-06
+        },
+        {
+          "stage": "stage",
+          "elapsed_seconds": 0.054079
+        },
+        {
+          "stage": "activate",
+          "elapsed_seconds": 69.017234
+        },
+        {
+          "stage": "resolve",
+          "elapsed_seconds": 72.60098
+        },
+        {
+          "stage": "fixture",
+          "elapsed_seconds": 75.833861
+        },
+        {
+          "stage": "before_snapshot",
+          "elapsed_seconds": 75.945439
+        },
+        {
+          "stage": "host_preflight",
+          "elapsed_seconds": 76.972433
+        },
+        {
+          "stage": "after_snapshot",
+          "elapsed_seconds": 83.78236
+        },
+        {
+          "stage": "cleanup",
+          "elapsed_seconds": 84.895871
+        },
+        {
+          "stage": "complete",
+          "elapsed_seconds": 85.411536
+        }
+      ]
+    }
+  ]
+}

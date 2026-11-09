@@ -1,0 +1,11 @@
+{"elapsed_seconds": 0.0, "event": "probe_started", "manifest_sha256": "b79ed3484dfaa52a5785d7f09c991b4681919034539bde415af2c328211b95d9", "payload_files": 5058, "source_commit": "c2e81ff6e333ae64c2af1a2160ddcd972953bd74", "target": "D:\\U1_STAGE_PROBE_20261108_1510"}
+{"elapsed_seconds": 0.001, "event": "source_verify_start"}
+{"duration_seconds": 2.938, "elapsed_seconds": 2.939, "event": "source_verify_complete"}
+{"durable_write_seconds": 2.605, "elapsed_seconds": 6.092, "event": "copy_progress", "files": 1000}
+{"durable_write_seconds": 5.101, "elapsed_seconds": 8.981, "event": "copy_progress", "files": 2000}
+{"durable_write_seconds": 9.279, "elapsed_seconds": 13.668, "event": "copy_progress", "files": 3000}
+{"durable_write_seconds": 12.585, "elapsed_seconds": 17.405, "event": "copy_progress", "files": 4000}
+{"durable_write_seconds": 15.966, "elapsed_seconds": 21.208, "event": "copy_progress", "files": 5000}
+{"elapsed_seconds": 21.392, "event": "staged_verify_start"}
+{"duration_seconds": 34.829, "elapsed_seconds": 56.221, "event": "staged_verify_complete"}
+{"copied_files": 5059, "durable_write_seconds": 16.128, "elapsed_seconds": 56.225, "event": "stage_complete", "version": "b79ed3484dfaa52a5785d7f09c991b4681919034539bde415af2c328211b95d9"}

@@ -1,0 +1,37 @@
+{
+  "command": "python -B -m unittest test_business_request_status test_original_inventory_owner test_single_slot_adapter test_inventory_event_bridge -q",
+  "baseline": {
+    "version": "baseline_d76eb04",
+    "tests": 68,
+    "exit_code": 1,
+    "errors": [
+      "test_actual_service_event_existing_owner_child_and_settlement (test_inventory_event_bridge.EventBridgeTests.test_actual_service_event_existing_owner_child_and_settlement)",
+      "test_ambiguous_request_cannot_create_or_reserve_event (test_inventory_event_bridge.EventBridgeTests.test_ambiguous_request_cannot_create_or_reserve_event)",
+      "test_expiry_during_reserve_withholds_event_and_preserves_reservation (test_inventory_event_bridge.EventBridgeTests.test_expiry_during_reserve_withholds_event_and_preserves_reservation)",
+      "test_lost_report_does_not_repeat_completed_child (test_inventory_event_bridge.EventBridgeTests.test_lost_report_does_not_repeat_completed_child)",
+      "test_no_lease_foreign_owner_bad_auth_and_bad_admission (test_inventory_event_bridge.EventBridgeTests.test_no_lease_foreign_owner_bad_auth_and_bad_admission)",
+      "test_reserved_after_process_loss_reopen_cannot_dispatch (test_inventory_event_bridge.EventBridgeTests.test_reserved_after_process_loss_reopen_cannot_dispatch)"
+    ],
+    "failures": [],
+    "development_guard_errors": 6
+  },
+  "merged": {
+    "version": "merged_75ff81e",
+    "tests": 70,
+    "exit_code": 1,
+    "errors": [
+      "test_actual_service_event_existing_owner_child_and_settlement (test_inventory_event_bridge.EventBridgeTests.test_actual_service_event_existing_owner_child_and_settlement)",
+      "test_ambiguous_request_cannot_create_or_reserve_event (test_inventory_event_bridge.EventBridgeTests.test_ambiguous_request_cannot_create_or_reserve_event)",
+      "test_expiry_during_reserve_withholds_event_and_preserves_reservation (test_inventory_event_bridge.EventBridgeTests.test_expiry_during_reserve_withholds_event_and_preserves_reservation)",
+      "test_lost_report_does_not_repeat_completed_child (test_inventory_event_bridge.EventBridgeTests.test_lost_report_does_not_repeat_completed_child)",
+      "test_no_lease_foreign_owner_bad_auth_and_bad_admission (test_inventory_event_bridge.EventBridgeTests.test_no_lease_foreign_owner_bad_auth_and_bad_admission)",
+      "test_reserved_after_process_loss_reopen_cannot_dispatch (test_inventory_event_bridge.EventBridgeTests.test_reserved_after_process_loss_reopen_cannot_dispatch)"
+    ],
+    "failures": [],
+    "development_guard_errors": 6
+  },
+  "same_error_ids": true,
+  "same_failure_ids": true,
+  "note_zh": "组合测试未通过；比较不代表全量回归通过。",
+  "note_en": "The combined suite did not pass; this comparison is not a full-regression pass."
+}
