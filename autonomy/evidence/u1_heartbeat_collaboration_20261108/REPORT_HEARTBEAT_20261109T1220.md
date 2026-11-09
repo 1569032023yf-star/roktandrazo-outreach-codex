@@ -2,6 +2,8 @@
 
 任务 / Task: `rokt-razo`; heartbeat `2026-11-09T12:20:53.176Z`; 实际主控目录 / actual controller directory: `D:\CODEX\roktandrazo-workspace\roktandrazo-outreach-autonomy`. 开始时主线 / initial main: `bd5ac2eb414650c82a95f084b98e7ff68d5348b2`. 09:17 周期留下的隔离候选未完成回执，本轮在核实后继续；不推断该周期已经交付。The isolated candidate left by the 09:17 cycle had no completed receipt; this cycle resumed it after verification without asserting earlier delivery.
 
+开发协调槽 / Development coordination slot: `7ddc147a-605a-407f-99b4-5fc0aaa6d705`, `2026-11-09T12:22:49.716373Z`–`2026-11-09T12:40:08.674133Z`, receipt `FINISHED`; 本轮等待子进程在工作结束后定向终止，协调器退出码为 1，槽位字节锁已实测释放。The cycle's wait subprocess was intentionally stopped at completion; the coordinator returned exit code 1 and the slot byte lock was verified free. The earlier report commit was `8a38a46e4c88663f0a6122d33e6fb34c3813c34f`, pushed and verified before this final receipt update.
+
 ## 实际工作和状态 / Actual work and status
 
 - 请求锁候选 / Request-lock candidate: `f62b2d7aab18ca9e3cd70859b9e8e016d9a7b800`, branch `codex/u1-lease-execution-fence-20261109`, pushed and remote SHA verified. 在独立 D 盘 worktree 加入请求及 claim 绑定、未知树阻断、版本 3 锁和 fence、通用子树 token、恢复专用保护，以及旧版恢复器拒绝版本 3 的限制。Offline changes add request/claim binding, unverified-tree blocking, a v3 lock/fence, generic-tree tokens and recovery-only protection. The old v2 recovery code rejected a synthetic v3 lock in an independent temporary fixture.
