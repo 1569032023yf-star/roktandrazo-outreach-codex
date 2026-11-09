@@ -257,6 +257,35 @@ class SingleSlotAdapter:
             # Unavailable or racing snapshots take the original fail-closed path.
             return False
 
+    def _guarded_admit_due(self, common, due, schedule, missed):
+        """Fence and admit under guard -> SQLite write lock, without dispatch.
+
+        This optimization is restricted to the ordinary local ledger path. The
+        two persisted stores are not atomic: any uncertain fence or commit
+        outcome remains fenced and is handled as UNKNOWN by the caller.
+        """
+        from autonomy.durable_slots import DurableSlots
+        now=self._now()
+        lease=lock_recovery._ACTIVE_LEASE.get()
+        if lease is None or Path(lease[0]).resolve(strict=True)!=self.runtime/'supervisor.lock':
+            raise AdapterError('EXPECTED_LOCK_REQUIRED')
+        binding=self._tree_binding(common)
+        with lock_recovery._guard(self.runtime):
+            stat=self.runtime.stat()
+            if (stat.st_dev,stat.st_ino)!=self.runtime_identity or path_id(self.slots.path)!=self.ids['slots_id']:
+                raise AdapterError('LEDGER_TARGET_MISMATCH')
+            lock_recovery._bound_lease_locked(binding,action='validate_begin')
+            def begin():
+                if lock_recovery._ACTIVE_LEASE.get() is not lease:
+                    raise AdapterError('LOCK_INSTANCE_CHANGED')
+                lock_recovery._bound_lease_locked(binding,action='begin')
+            outcome=DurableSlots.admit_due(self.slots,common['slot'],due,schedule,now=now,
+                epoch=common['epoch'],owner=common['owner'],missed=missed,
+                _reject_stale=True,_before_admit=begin)
+            if lock_recovery._ACTIVE_LEASE.get() is not lease:
+                raise AdapterError('LOCK_INSTANCE_CHANGED')
+            return outcome
+
     def execute(self,admission,schedule,idle,budget_request):
         """At most one backend call. All failures after preparation block replay."""
         p,common=self._admission(admission)
@@ -279,12 +308,20 @@ class SingleSlotAdapter:
         if type(missed) is not list or any(type(x) is not list or len(x)!=2 for x in missed):
             raise AdapterError('INVALID_SCHEDULE')
         missed=tuple(tuple(x) for x in missed)
-        if self._stale_schedule_preflight(common,due):
-            return {'outcome':'STALE_SCHEDULE_PRECHECK_REJECTED','production_execution':False}
         token=None
         try:
-            self._begin_tree(common)
-            self.slots.admit_due(p['slot'],due,schedule,now=self._now(),epoch=p['epoch'],owner=p['owner'],missed=missed)
+            from autonomy.durable_slots import DurableSlots
+            if (type(self) is SingleSlotAdapter and type(self.slots) is DurableSlots
+                    and self.slots.connect is sqlite3.connect
+                    and getattr(self.slots._tx,'__func__',None) is DurableSlots._tx):
+                outcome=self._guarded_admit_due(common,due,schedule,missed)
+                if outcome=='STALE_SCHEDULE_PRECHECK_REJECTED':
+                    return {'outcome':outcome,'production_execution':False}
+            else:
+                if self._stale_schedule_preflight(common,due):
+                    return {'outcome':'STALE_SCHEDULE_PRECHECK_REJECTED','production_execution':False}
+                self._begin_tree(common)
+                self.slots.admit_due(p['slot'],due,schedule,now=self._now(),epoch=p['epoch'],owner=p['owner'],missed=missed)
             token=self._claim(budget_request,p['slot'],idle,p['epoch'],p['owner'])
             self._bind_tree_claim(common, token)
             self._admission(admission) # Recheck signed lifetime and exact lease.

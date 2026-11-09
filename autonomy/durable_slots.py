@@ -105,7 +105,8 @@ class DurableSlots:
             c.execute("INSERT INTO audit(event,epoch) VALUES ('AUTHORITY_CHANGED',?)", (expected_epoch+1,))
         return expected_epoch+1
 
-    def admit_due(self, slot, next_due, evidence, *, now, epoch, owner, missed=()):
+    def admit_due(self, slot, next_due, evidence, *, now, epoch, owner, missed=(),
+                  _before_admit=None, _reject_stale=False):
         """Accept one trusted latest due, never compute cron or catch-up firings."""
         _key(slot)
         _integer(next_due)
@@ -134,9 +135,15 @@ class DurableSlots:
             if row:
                 if row['due'] != next_due:
                     raise LedgerError('SLOT_CONFLICT')
+                if _before_admit is not None:
+                    _before_admit()
                 return row['state']
             if c.execute('SELECT 1 FROM slots WHERE due>=?', (next_due,)).fetchone():
+                if _reject_stale:
+                    return 'STALE_SCHEDULE_PRECHECK_REJECTED'
                 raise LedgerError('STALE_SCHEDULE')
+            if _before_admit is not None:
+                _before_admit()
             for old_slot, old_due in missed:
                 old = c.execute('SELECT due,state FROM slots WHERE slot=?',(old_slot,)).fetchone()
                 if old and (old['due'] != old_due or old['state'] not in ('pending','deferred')):

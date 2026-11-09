@@ -126,8 +126,8 @@ def _create_tree_fence(lock, token):
         os.fsync(fence.fileno())
 
 
-def _bound_lease(binding, claim_hash=None, *, action):
-    """Atomically bind a single request/claim to a cooperative local lease."""
+def _bound_lease_locked(binding, claim_hash=None, *, action):
+    """Validate or update a lease while the caller holds its recovery guard."""
     import re
     if (type(binding) is not str or not re.fullmatch(r'[0-9a-f]{64}', binding)
             or (claim_hash is not None and
@@ -137,33 +137,44 @@ def _bound_lease(binding, claim_hash=None, *, action):
     if lease is None:
         raise RuntimeError('EXPECTED_LOCK_REQUIRED')
     lock, owned = lease
-    with _guard(lock.parent):
-        stored = json.loads(lock.read_bytes())
-        if stored != owned or stored.get('pid') != os.getpid() or process_identity(os.getpid()) != stored.get('process_identity'):
-            raise RuntimeError('LOCK_CHANGED')
-        if action == 'begin':
-            if stored.get('recovery_only',False) is not False or stored.get('recovery_required',False) is not False:
-                raise RuntimeError('RECOVERY_ONLY_NO_NEW_TREE')
-            if stored.get('tree_state') not in ('not_started', 'verified_closed'):
-                raise RuntimeError('ASSOCIATED_TREE_UNVERIFIED')
-            if stored.get('tree_binding') == binding:
-                raise RuntimeError('DUPLICATE_TREE_BINDING')
-            # A separate durable fence survives a failed close-state fsync.
-            # It is never removed unless the close-state fsync succeeded.
-            _create_tree_fence(lock, stored['token'])
-            updated = dict(stored, tree_state='unverified', tree_binding=binding, tree_claim_hash=None)
-            updated.pop('tree_generic_token', None)
-        elif action == 'claim':
-            if (stored.get('tree_state') != 'unverified' or stored.get('tree_binding') != binding
-                    or 'tree_claim_hash' not in stored or stored['tree_claim_hash'] is not None
-                    or claim_hash is None):
-                raise RuntimeError('TREE_CLAIM_BINDING_MISMATCH')
-            updated = dict(stored, tree_claim_hash=claim_hash)
-        else:
-            raise ValueError('TREE_ACTION_REJECTED')
-        # On a partial write or failed fsync, in-memory cleanup must fail closed.
-        owned.clear(); owned.update(updated)
-        _write_state(lock, updated)
+    stored = json.loads(lock.read_bytes())
+    if stored != owned or stored.get('pid') != os.getpid() or process_identity(os.getpid()) != stored.get('process_identity'):
+        raise RuntimeError('LOCK_CHANGED')
+    if action in ('begin', 'validate_begin'):
+        if stored.get('recovery_only',False) is not False or stored.get('recovery_required',False) is not False:
+            raise RuntimeError('RECOVERY_ONLY_NO_NEW_TREE')
+        if stored.get('tree_state') not in ('not_started', 'verified_closed'):
+            raise RuntimeError('ASSOCIATED_TREE_UNVERIFIED')
+        if stored.get('tree_binding') == binding:
+            raise RuntimeError('DUPLICATE_TREE_BINDING')
+        if os.path.lexists(_tree_fence(lock)):
+            raise RuntimeError('ASSOCIATED_TREE_UNVERIFIED')
+        if action == 'validate_begin':
+            return
+        # Persist the fence before updating the lease. Never infer its closure.
+        _create_tree_fence(lock, stored['token'])
+        updated = dict(stored, tree_state='unverified', tree_binding=binding, tree_claim_hash=None)
+        updated.pop('tree_generic_token', None)
+    elif action == 'claim':
+        if (stored.get('tree_state') != 'unverified' or stored.get('tree_binding') != binding
+                or 'tree_claim_hash' not in stored or stored['tree_claim_hash'] is not None
+                or claim_hash is None):
+            raise RuntimeError('TREE_CLAIM_BINDING_MISMATCH')
+        updated = dict(stored, tree_claim_hash=claim_hash)
+    else:
+        raise ValueError('TREE_ACTION_REJECTED')
+    # On a partial write or failed fsync, in-memory cleanup must fail closed.
+    owned.clear(); owned.update(updated)
+    _write_state(lock, updated)
+
+
+def _bound_lease(binding, claim_hash=None, *, action):
+    """Atomically bind a single request/claim to a cooperative local lease."""
+    lease = _ACTIVE_LEASE.get()
+    if lease is None:
+        raise RuntimeError('EXPECTED_LOCK_REQUIRED')
+    with _guard(lease[0].parent):
+        _bound_lease_locked(binding, claim_hash, action=action)
 
 
 def begin_bound_tree(binding):

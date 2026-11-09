@@ -81,17 +81,121 @@ class SingleSlotTests(unittest.TestCase):
             self.assertEqual(self.adapter.execute(admission,plan,idle,request)['outcome'],'COMPLETED')
             self.assertEqual(self.backend.calls,2)
 
-    def test_racing_or_unavailable_preflight_retains_original_unknown_fence(self):
+    def test_unavailable_preflight_still_rejects_stale_before_fence(self):
         from unittest.mock import patch
+        with exclusive_lock(self.runtime):
+            self.assertEqual(self.run_one(self.admission())['outcome'],'COMPLETED')
+            common,_,idle,request=self.second_request()
+            stale=signed('schedule',T+10,slot='two',epoch=1,owner='owner',next_due=T+10,latest_due=True)
+            with patch.object(self.adapter,'_stale_schedule_preflight',return_value=False):
+                self.assertEqual(self.adapter.execute(self.admission(**common),stale,idle,request)['outcome'],'STALE_SCHEDULE_PRECHECK_REJECTED')
+        self.assertEqual(self.backend.calls,1)
+        self.assertFalse((self.runtime/'supervisor.tree-unverified').exists())
+
+    def test_new_due_committed_before_admission_is_rejected_without_fence(self):
+        from contextlib import closing
+        import sqlite3
+        import threading
+        from unittest.mock import patch
+        ready=threading.Event(); proceed=threading.Event(); committed=threading.Event(); errors=[]
+        def writer():
+            try:
+                with closing(sqlite3.connect(self.slots.path,timeout=2)) as db:
+                    ready.set()
+                    if not proceed.wait(2):raise TimeoutError('writer barrier')
+                    db.execute("INSERT INTO slots(slot,inventory,due,state) VALUES (?,?,?,'pending')",('newer',INVENTORY,T+10))
+                    db.commit()
+                committed.set()
+            except Exception as error:errors.append(error);committed.set()
+        thread=threading.Thread(target=writer)
+        with exclusive_lock(self.runtime) as owned:
+            admission=self.admission()
+            original=self.adapter._guarded_admit_due
+            def at_boundary(*args):
+                self.assertTrue(ready.wait(2));proceed.set();self.assertTrue(committed.wait(2))
+                self.assertFalse(errors)
+                return original(*args)
+            thread.start()
+            with patch.object(self.adapter,'_guarded_admit_due',side_effect=at_boundary):
+                self.assertEqual(self.run_one(admission)['outcome'],'STALE_SCHEDULE_PRECHECK_REJECTED')
+            thread.join(2);self.assertFalse(thread.is_alive())
+            self.assertEqual(owned['tree_state'],'not_started')
+            self.assertEqual(self.backend.calls,0)
+            self.assertFalse((self.runtime/'supervisor.tree-unverified').exists())
+
+    def test_competing_writer_cannot_enter_between_check_and_fence(self):
+        from contextlib import closing
+        import sqlite3
+        import threading
+        from unittest.mock import patch
+        from autonomy import lock_recovery
+        begin=threading.Event(); checked=threading.Event(); outcomes=[]
+        def writer():
+            if not begin.wait(2):outcomes.append('barrier_timeout');checked.set();return
+            try:
+                with closing(sqlite3.connect(self.slots.path,timeout=0,isolation_level=None)) as db:
+                    db.execute('BEGIN IMMEDIATE')
+                    outcomes.append('unexpected_write_lock')
+                    db.rollback()
+            except sqlite3.OperationalError as error:
+                outcomes.append('locked' if 'locked' in str(error).lower() else str(error))
+            finally:checked.set()
+        original=lock_recovery._bound_lease_locked
+        def boundary(*args,**kwargs):
+            if kwargs.get('action')=='begin':
+                begin.set();self.assertTrue(checked.wait(2));self.assertEqual(outcomes,['locked'])
+            return original(*args,**kwargs)
+        thread=threading.Thread(target=writer)
+        with exclusive_lock(self.runtime):
+            admission=self.admission();thread.start()
+            with patch.object(lock_recovery,'_bound_lease_locked',side_effect=boundary):
+                self.assertEqual(self.run_one(admission)['outcome'],'COMPLETED')
+            thread.join(2);self.assertFalse(thread.is_alive())
+        self.assertEqual(self.backend.calls,1)
+
+    def test_slot_commit_ack_failure_preserves_fence_without_dispatch(self):
+        def fail(stage):
+            if stage=='after_commit':raise OSError('synthetic lost admission acknowledgement')
         with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'):
             with exclusive_lock(self.runtime):
-                self.assertEqual(self.run_one(self.admission())['outcome'],'COMPLETED')
-                common,_,idle,request=self.second_request()
-                stale=signed('schedule',T+10,slot='two',epoch=1,owner='owner',next_due=T+10,latest_due=True)
-                with patch.object(self.adapter,'_stale_schedule_preflight',return_value=False):
-                    self.assertEqual(self.adapter.execute(self.admission(**common),stale,idle,request)['outcome'],'UNKNOWN_RECONCILE_ONLY')
-        self.assertEqual(self.backend.calls,1)
+                admission=self.admission();self.slots.fault=fail
+                self.assertEqual(self.run_one(admission)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+        self.assertEqual(self.backend.calls,0)
         self.assertTrue((self.runtime/'supervisor.tree-unverified').exists())
+
+    def test_begin_state_write_ack_failure_preserves_fence_without_dispatch(self):
+        from unittest.mock import patch
+        from autonomy import lock_recovery
+        real_write=lock_recovery._write_state
+        def fail_after_write(lock,state):
+            real_write(lock,state)
+            if state.get('tree_state')=='unverified':
+                raise OSError('synthetic lost begin state acknowledgement')
+        with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'):
+            with exclusive_lock(self.runtime):
+                admission=self.admission()
+                with patch.object(lock_recovery,'_write_state',side_effect=fail_after_write):
+                    self.assertEqual(self.run_one(admission)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+        self.assertEqual(self.backend.calls,0)
+        self.assertEqual(self.slots.snapshot(),[])
+        self.assertTrue((self.runtime/'supervisor.tree-unverified').exists())
+
+    def test_changed_active_lease_during_schedule_verification_cannot_fence(self):
+        from autonomy import lock_recovery
+        tokens=[]
+        verify=self.slots.verify
+        def change_lease(evidence):
+            tokens.append(lock_recovery._ACTIVE_LEASE.set(None))
+            return verify(evidence)
+        with exclusive_lock(self.runtime):
+            admission=self.admission();self.slots.verify=change_lease
+            try:
+                self.assertEqual(self.run_one(admission)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+            finally:
+                for token in reversed(tokens):lock_recovery._ACTIVE_LEASE.reset(token)
+            self.assertFalse((self.runtime/'supervisor.tree-unverified').exists())
+            self.assertEqual(self.slots.snapshot(),[])
+        self.assertEqual(self.backend.calls,0)
 
     def test_unknown_tree_blocks_a_distinct_request_before_any_backend_call(self):
         self.backend.mode='lost'
