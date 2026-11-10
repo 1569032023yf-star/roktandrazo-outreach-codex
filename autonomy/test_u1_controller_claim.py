@@ -108,6 +108,52 @@ class ControllerClaimTests(unittest.TestCase):
         self.assertEqual(self.saved()['status'], 'controller_unknown')
         self.assertIsNone(claims.claim_next(self.runtime, 'A'))
 
+    def test_legacy_paths_never_replay_controller_receipts(self):
+        from autonomy import supervisor
+        markers = [{'controller_claim': v} for v in ({}, None, 'malformed')]
+        markers += [{'executor': v} for v in ('controller_claimed', 'controller_running',
+                                                'controller_unknown', 'native_subagent')]
+        for marker in markers:
+            with self.subTest(marker=marker):
+                self.write([dict(self.task, **marker)])
+                self.assertIsNone(claims.claim_next(self.runtime, 'A'))
+                self.write([dict(self.task, status='unknown', outcome_unknown=True, **marker)])
+                before = (self.runtime / 'queue.json').read_bytes()
+                with self.assertRaisesRegex(ValueError, 'CONTROLLER_RECONCILIATION_REQUIRED'):
+                    supervisor.recover_unknown(self.runtime, self.task_id,
+                                               lambda _: self.fail('checker must not run'))
+                self.assertEqual((self.runtime / 'queue.json').read_bytes(), before)
+                self.write([dict(self.task, status='queued', **marker)])
+                record = supervisor.cycle(self.runtime, runner=lambda *_: self.fail('must not run'))
+                self.assertEqual(record['status'], 'idle')
+                self.assertEqual(self.saved()['status'], 'queued')
+
+    def test_duplicate_id_never_recovers_or_runs_either_copy(self):
+        from autonomy import supervisor
+        plain = dict(self.task, status='unknown', outcome_unknown=True)
+        marked = dict(plain, controller_claim={})
+        for tasks in ([plain, marked], [marked, plain]):
+            with self.subTest(first_marked='controller_claim' in tasks[0]):
+                self.write(tasks)
+                before = (self.runtime / 'queue.json').read_bytes()
+                with self.assertRaisesRegex(ValueError, 'TASK_ID_NOT_UNIQUE'):
+                    supervisor.recover_unknown(self.runtime, self.task_id,
+                                               lambda _: self.fail('checker must not run'))
+                self.assertEqual((self.runtime / 'queue.json').read_bytes(), before)
+                self.write([dict(t, status='queued', outcome_unknown=False) for t in tasks])
+                record = supervisor.cycle(self.runtime, runner=lambda *_: self.fail('must not run'))
+                self.assertEqual(record['status'], 'idle')
+
+    def test_controller_states_stay_out_of_legacy_cycle(self):
+        from autonomy import supervisor
+        for status in ('controller_claimed', 'controller_running', 'controller_unknown'):
+            with self.subTest(status=status):
+                self.write([dict(self.task, status=status, controller_claim={'id': 'fixture'})])
+                record = supervisor.cycle(self.runtime, runner=lambda *_: self.fail('must not run'))
+                self.assertEqual(record['status'], 'idle')
+                self.assertEqual(self.saved()['status'], status)
+
+
 
 if __name__ == '__main__':
     unittest.main()
