@@ -8,6 +8,7 @@ from contextlib import contextmanager
 from pathlib import Path
 import os
 import sqlite3
+import threading
 
 from autonomy.single_slot_adapter import AdapterError, _pin_windows_ledger
 
@@ -53,27 +54,32 @@ def pinned_recovery_log(path, *, expected_identity, protected):
             raise AdapterError('RECOVERY_LOG_IDENTITY_CHANGED')
 
         active = True
+        gate = threading.Lock()
 
         def check(connection):
-            try:
-                if not active:
-                    raise AdapterError('RECOVERY_LOG_PIN_INACTIVE')
-                if type(connection) is not sqlite3.Connection:
-                    raise AdapterError('RECOVERY_LOG_CONNECTION_REJECTED')
-                if _identity(path) != expected_identity:
-                    raise AdapterError('RECOVERY_LOG_IDENTITY_CHANGED')
-                _reject_aliases(path, others)
-                databases = connection.execute('PRAGMA database_list').fetchall()
-                main = [row for row in databases if row[1] == 'main']
-                if len(main) != 1 or not main[0][2]:
-                    raise AdapterError('RECOVERY_LOG_CONNECTION_REJECTED')
-                opened = Path(main[0][2]).resolve(strict=True)
-                if opened != path or _identity(opened) != expected_identity:
-                    raise AdapterError('RECOVERY_LOG_CONNECTION_REJECTED')
-            except (OSError, ValueError) as exc:
-                raise AdapterError('RECOVERY_LOG_UNVERIFIED') from exc
+            with gate:
+                try:
+                    if not active:
+                        raise AdapterError('RECOVERY_LOG_PIN_INACTIVE')
+                    if type(connection) is not sqlite3.Connection:
+                        raise AdapterError('RECOVERY_LOG_CONNECTION_REJECTED')
+                    if _identity(path) != expected_identity:
+                        raise AdapterError('RECOVERY_LOG_IDENTITY_CHANGED')
+                    _reject_aliases(path, others)
+                    databases = connection.execute('PRAGMA database_list').fetchall()
+                    main = [row for row in databases if row[1] == 'main']
+                    if len(main) != 1 or not main[0][2]:
+                        raise AdapterError('RECOVERY_LOG_CONNECTION_REJECTED')
+                    opened = Path(main[0][2]).resolve(strict=True)
+                    if opened != path or _identity(opened) != expected_identity:
+                        raise AdapterError('RECOVERY_LOG_CONNECTION_REJECTED')
+                except (OSError, ValueError) as exc:
+                    raise AdapterError('RECOVERY_LOG_UNVERIFIED') from exc
 
         try:
             yield check
         finally:
-            active = False
+            # Drain in-flight checks before the enclosing context releases the
+            # pin; future checks fail even during the small window before close.
+            with gate:
+                active = False

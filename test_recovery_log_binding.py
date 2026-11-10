@@ -6,9 +6,12 @@ import sqlite3
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
+from unittest.mock import patch
 
 from autonomy.cancellation_recovery import _record, recover_cancellation
+from autonomy import recovery_log_binding
 from autonomy.recovery_log_binding import pinned_recovery_log
 from autonomy.single_slot_adapter import AdapterError
 
@@ -77,6 +80,57 @@ class RecoveryLogBindingTests(unittest.TestCase):
             with closing(sqlite3.connect(self.log, factory=Subclass)) as connection:
                 with self.assertRaisesRegex(AdapterError, 'CONNECTION_REJECTED'):
                     check(connection)
+
+    def test_exit_waits_for_inflight_check_before_releasing_pin(self):
+        entered = threading.Event()
+        resume = threading.Event()
+        exited = threading.Event()
+        outcomes = []
+        original = recovery_log_binding._identity
+        guard = self.guard()
+        check = guard.__enter__()
+        connection = sqlite3.connect(self.log, check_same_thread=False)
+
+        def stalled_identity(path):
+            if threading.current_thread().name == 'check-thread' and not entered.is_set():
+                entered.set()
+                if not resume.wait(5):
+                    raise RuntimeError('test timed out waiting for resume')
+            return original(path)
+
+        def run_check():
+            try:
+                check(connection)
+                outcomes.append('checked')
+            except BaseException as error:
+                outcomes.append(error)
+
+        def run_exit():
+            try:
+                guard.__exit__(None, None, None)
+            finally:
+                exited.set()
+
+        try:
+            with patch.object(recovery_log_binding, '_identity', side_effect=stalled_identity):
+                checking = threading.Thread(target=run_check, name='check-thread')
+                closing_thread = threading.Thread(target=run_exit, name='close-thread')
+                checking.start()
+                self.assertTrue(entered.wait(5))
+                closing_thread.start()
+                self.assertFalse(exited.wait(0.2), 'pin was released during a check')
+                resume.set()
+                checking.join(5)
+                closing_thread.join(5)
+                self.assertFalse(checking.is_alive())
+                self.assertFalse(closing_thread.is_alive())
+                self.assertEqual(outcomes, ['checked'])
+                self.assertTrue(exited.is_set())
+                with self.assertRaisesRegex(AdapterError, 'PIN_INACTIVE'):
+                    check(connection)
+        finally:
+            resume.set()
+            connection.close()
 
     def test_alias_sidecars_and_hardlinks_are_rejected(self):
         for path in (self.other, Path(str(self.other) + '-wal'),
