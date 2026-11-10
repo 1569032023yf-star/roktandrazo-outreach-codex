@@ -44,6 +44,40 @@ class RecoveryLogBindingTests(unittest.TestCase):
         self.assertEqual(recover_cancellation(None, None, None, None, None, None,
                          recovery_path=self.log)['outcome'], 'UNKNOWN_RECONCILE_ONLY')
 
+    def test_pin_checker_expires_on_normal_and_exception_exit(self):
+        for exceptional in (False, True):
+            with self.subTest(exceptional=exceptional):
+                try:
+                    with self.guard() as check:
+                        with closing(sqlite3.connect(self.log)) as connection:
+                            check(connection)
+                            if exceptional:
+                                raise RuntimeError('injected')
+                except RuntimeError:
+                    if not exceptional: raise
+                with closing(sqlite3.connect(self.log)) as connection:
+                    with self.assertRaisesRegex(AdapterError, 'PIN_INACTIVE'):
+                        check(connection)
+
+    def test_fake_connection_and_subclass_are_rejected(self):
+        log = self.log
+        class Fake:
+            def execute(self, statement):
+                class Result:
+                    def fetchall(self):
+                        return [(0, 'main', str(log))]
+                return Result()
+
+        class Subclass(sqlite3.Connection):
+            pass
+
+        with self.guard() as check:
+            with self.assertRaisesRegex(AdapterError, 'CONNECTION_REJECTED'):
+                check(Fake())
+            with closing(sqlite3.connect(self.log, factory=Subclass)) as connection:
+                with self.assertRaisesRegex(AdapterError, 'CONNECTION_REJECTED'):
+                    check(connection)
+
     def test_alias_sidecars_and_hardlinks_are_rejected(self):
         for path in (self.other, Path(str(self.other) + '-wal'),
                      Path(str(self.other) + '-journal'), Path(str(self.other) + '-shm')):

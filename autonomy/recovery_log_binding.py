@@ -7,6 +7,7 @@ It does not protect SQLite sidecars from external writes or bind the owner fence
 from contextlib import contextmanager
 from pathlib import Path
 import os
+import sqlite3
 
 from autonomy.single_slot_adapter import AdapterError, _pin_windows_ledger
 
@@ -51,8 +52,14 @@ def pinned_recovery_log(path, *, expected_identity, protected):
         if pinned != expected_identity or _identity(path) != expected_identity:
             raise AdapterError('RECOVERY_LOG_IDENTITY_CHANGED')
 
+        active = True
+
         def check(connection):
             try:
+                if not active:
+                    raise AdapterError('RECOVERY_LOG_PIN_INACTIVE')
+                if type(connection) is not sqlite3.Connection:
+                    raise AdapterError('RECOVERY_LOG_CONNECTION_REJECTED')
                 if _identity(path) != expected_identity:
                     raise AdapterError('RECOVERY_LOG_IDENTITY_CHANGED')
                 _reject_aliases(path, others)
@@ -66,4 +73,7 @@ def pinned_recovery_log(path, *, expected_identity, protected):
             except (OSError, ValueError) as exc:
                 raise AdapterError('RECOVERY_LOG_UNVERIFIED') from exc
 
-        yield check
+        try:
+            yield check
+        finally:
+            active = False
