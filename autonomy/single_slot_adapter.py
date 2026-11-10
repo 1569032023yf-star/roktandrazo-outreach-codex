@@ -131,13 +131,49 @@ class CancellationJournal:
                     raise AdapterError('CANCEL_JOURNAL_ALIAS_REJECTED')
         return path
 
-    def reserve(self, identity, binding, *, protected):
+    def reserve(self, identity, binding, *, protected, _expected_path=None, _check=None,
+                _expected_identity=None, _must_create=False):
         path=self.checked_path(protected)
+        if _expected_path is not None and path != _expected_path:
+            from autonomy.ledger_binding import LedgerBindingError
+            raise LedgerBindingError('CANCEL_JOURNAL_CHANGED')
+        if _check is not None: _check()
         try:
-            with closing(sqlite3.connect(str(path),timeout=5,isolation_level=None)) as c:
+            with ExitStack() as pins:
+                if _check is not None:
+                    from autonomy.ledger_binding import LedgerBindingError
+                    try:
+                        try:
+                            fd=os.open(path,os.O_CREAT|os.O_EXCL|os.O_RDWR,0o600)
+                        except FileExistsError:
+                            if _must_create: raise LedgerBindingError('CANCEL_JOURNAL_CHANGED')
+                            before=path.stat()
+                        else:
+                            try: before=os.fstat(fd)
+                            finally: os.close(fd)
+                            if _expected_identity is not None:
+                                raise LedgerBindingError('CANCEL_JOURNAL_CHANGED')
+                        journal_identity=pins.enter_context(_pin_windows_ledger(path))
+                    except (AdapterError,OSError) as exc:
+                        raise LedgerBindingError('CANCEL_JOURNAL_PIN_UNAVAILABLE') from exc
+                    if (before.st_dev,before.st_ino)!=journal_identity or before.st_nlink!=1:
+                        raise LedgerBindingError('CANCEL_JOURNAL_CHANGED')
+                    if _expected_identity is not None and journal_identity!=_expected_identity:
+                        raise LedgerBindingError('CANCEL_JOURNAL_CHANGED')
+                c=pins.enter_context(closing(sqlite3.connect(str(path),timeout=5,isolation_level=None)))
+                if _check is not None:
+                    def check_connection():
+                        dbpath=Path(c.execute('PRAGMA database_list').fetchone()[2]).resolve(strict=True)
+                        info=path.stat()
+                        if (dbpath != path or not os.path.samefile(dbpath,path)
+                                or (info.st_dev,info.st_ino)!=journal_identity or info.st_nlink!=1):
+                            raise LedgerBindingError('CANCEL_JOURNAL_CONNECTION_CHANGED')
+                        _check()
+                    check_connection()
                 c.execute('PRAGMA synchronous=FULL')
                 c.execute('BEGIN IMMEDIATE')
                 try:
+                    if _check is not None: check_connection()
                     objects=c.execute("SELECT type,sql FROM sqlite_master WHERE name NOT GLOB 'sqlite_*'").fetchall()
                     version=c.execute('PRAGMA user_version').fetchone()[0]
                     if not objects and version==0:
@@ -153,7 +189,10 @@ class CancellationJournal:
                     else:
                         c.execute('INSERT INTO cancellations VALUES (?,?,?)',(identity,encoded,'RESERVED_RECONCILE_ONLY'))
                         outcome='RESERVED_RECONCILE_ONLY'
-                    self.fault('before_commit');c.commit();self.fault('after_commit')
+                    self.fault('before_commit')
+                    if _check is not None: check_connection()
+                    c.commit();self.fault('after_commit')
+                    if _check is not None: check_connection()
                 except BaseException:
                     c.rollback();raise
             return dict(outcome=outcome,allow_cancel_dispatch=False,production_execution=False)
@@ -516,17 +555,72 @@ class SingleSlotAdapter:
         """Persist intent only. Signed cancellation facts do not authorize dispatch."""
         if type(self.cancellation_journal) is not CancellationJournal:
             raise AdapterError('CANCEL_JOURNAL_NOT_CONFIGURED')
-        p,common=self._admission(admission,require_backend=False)
+        if self.target is None:
+            raise AdapterError('OFFLINE_BACKEND_NOT_CONFIGURED')
+        if type(self) is not SingleSlotAdapter or os.name != 'nt':
+            raise AdapterError('CANCEL_LEDGER_BINDING_UNAVAILABLE')
+        from autonomy.ledger_binding import LedgerBindingError
+        try:
+            with self._bound_ledgers() as ledgers:
+                return self._reserve_cancellation_bound(admission,cancel_request,cost_request=cost_request,ledgers=ledgers)
+        except LedgerBindingError:
+            return dict(outcome='UNKNOWN_RECONCILE_ONLY',allow_cancel_dispatch=False,production_execution=False)
+
+    def _reserve_cancellation_bound(self,admission,cancel_request,*,cost_request,ledgers):
+        from autonomy.ledger_binding import LedgerBindingError
         journal=self.cancellation_journal
-        protected=self._protected_paths()
+        journal_path=journal.path.resolve(strict=False)
+        with ExitStack() as pins:
+            identity=None
+            if journal_path.exists():
+                try:
+                    info=journal_path.stat()
+                    identity=pins.enter_context(_pin_windows_ledger(journal_path))
+                    if (info.st_dev,info.st_ino)!=identity or info.st_nlink!=1:
+                        raise LedgerBindingError('CANCEL_JOURNAL_CHANGED')
+                except (OSError,AdapterError) as exc:
+                    raise LedgerBindingError('CANCEL_JOURNAL_PIN_UNAVAILABLE') from exc
+            return self._reserve_cancellation_with_journal(admission,cancel_request,cost_request=cost_request,
+                ledgers=ledgers,journal=journal,journal_path=journal_path,journal_identity=identity)
+
+    def _reserve_cancellation_with_journal(self,admission,cancel_request,*,cost_request,ledgers,
+            journal,journal_path,journal_identity):
+        from autonomy.ledger_binding import LedgerBindingError
+        p,common=self._admission(admission,require_backend=False)
+        ledgers.check()
+        if (self.cancellation_journal is not journal or type(journal) is not CancellationJournal
+                or getattr(journal.checked_path,'__func__',None) is not CancellationJournal.checked_path
+                or getattr(journal.reserve,'__func__',None) is not CancellationJournal.reserve
+                or journal.path.resolve(strict=False) != journal_path):
+            raise LedgerBindingError('CANCEL_JOURNAL_CHANGED')
+        protected=(ledgers.slots_path,ledgers.budget_path,self.runtime/'supervisor.lock')
         path=journal.checked_path(protected)
+        def check():
+            from autonomy.ledger_binding import LedgerBindingError
+            ledgers.check()
+            try:
+                if (self.cancellation_journal is not journal
+                        or getattr(journal.reserve,'__func__',None) is not CancellationJournal.reserve
+                        or getattr(journal.checked_path,'__func__',None) is not CancellationJournal.checked_path
+                        or journal.checked_path(protected) != path):
+                    raise LedgerBindingError('CANCEL_JOURNAL_CHANGED')
+                if journal_identity is not None:
+                    info=path.stat()
+                    if (info.st_dev,info.st_ino)!=journal_identity or info.st_nlink!=1:
+                        raise LedgerBindingError('CANCEL_JOURNAL_CHANGED')
+            except (AdapterError,OSError) as exc:
+                raise LedgerBindingError('CANCEL_JOURNAL_CHANGED') from exc
+        check()
         journal_id=hashlib.sha256(os.path.normcase(str(path)).encode()).hexdigest()
         request=self._verify(cancel_request,'offline_cancel_request')
+        check()
         expected=dict(self.ids,**self._lock(),**common,inventory_id=INVENTORY,
             journal_id=journal_id,cancel_protocol=CANCEL_PROTOCOL,scope='isolated_offline',production_execution=False)
         self._bound(request,expected)
-        with closing(sqlite3.connect(Path(self.slots.path).resolve().as_uri()+'?mode=ro',uri=True)) as c:
+        with closing(sqlite3.connect(Path(ledgers.slots_path).resolve().as_uri()+'?mode=ro',uri=True)) as c:
+            ledgers.check(ledger=self.slots,kind='slots',connection=c)
             row=c.execute('SELECT state,epoch,owner,token FROM slots WHERE slot=?',(common['slot'],)).fetchone()
+            ledgers.check(ledger=self.slots,kind='slots',connection=c)
         if row is None or row[0] not in ('claimed','running','unknown') or row[1:3]!=(common['epoch'],common['owner']) or type(row[3]) is not str:
             raise AdapterError('CANCEL_CLAIM_NOT_UNRESOLVED')
         claim_hash=digest(row[3])
@@ -568,7 +662,9 @@ class SingleSlotAdapter:
                     raise AdapterError('CANCEL_COST_RECONCILIATION_REQUIRED')
             self._lock()
             binding=cost_binding
-        return journal.reserve(identity,binding,protected=protected)
+        check()
+        return journal.reserve(identity,binding,protected=protected,_expected_path=path,_check=check,
+            _expected_identity=journal_identity,_must_create=journal_identity is None)
 
     def reconcile(self,admission,slot_receipt,budget_receipt):
         from autonomy.ledger_binding import LedgerBindingError
