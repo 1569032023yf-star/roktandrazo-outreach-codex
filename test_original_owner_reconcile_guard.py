@@ -5,12 +5,12 @@ import unittest
 from unittest.mock import patch
 
 from autonomy.single_slot_adapter import SingleSlotAdapter
-from test_original_inventory_owner import OriginalOwnerTests
+import test_original_inventory_owner as owner_fixtures
 
 
 class OriginalOwnerReconcileGuardTests(unittest.TestCase):
     def test_normal_and_direct_base_calls_preserve_three_real_databases(self):
-        fixture = OriginalOwnerTests('runTest')
+        fixture = owner_fixtures.OriginalOwnerTests('runTest')
         fixture.setUp()
         self.addCleanup(fixture.doCleanups)
         adapter = fixture.f.adapter
@@ -30,8 +30,9 @@ class OriginalOwnerReconcileGuardTests(unittest.TestCase):
              patch.object(fixture.f.slots, 'reconcile', side_effect=AssertionError('slot write')), \
              patch.object(fixture.f.budget, 'settle', side_effect=AssertionError('budget write')), \
              patch('autonomy.single_slot_adapter.sqlite3.connect', side_effect=AssertionError('database opened')):
-            for call in (adapter.reconcile,
-                         lambda *args: SingleSlotAdapter.reconcile(adapter, *args)):
+            for call in (adapter.reconcile, adapter._reconcile_impl,
+                         lambda *args: SingleSlotAdapter.reconcile(adapter, *args),
+                         lambda *args: SingleSlotAdapter._reconcile_impl(adapter, *args)):
                 self.assertEqual(call({}, {}, {}),
                                  {'outcome': 'UNKNOWN_RECONCILE_ONLY', 'production_execution': False})
         self.assertEqual(before, dumps())

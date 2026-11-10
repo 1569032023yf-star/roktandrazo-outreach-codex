@@ -683,6 +683,10 @@ class SingleSlotAdapter:
 
     def _reconcile_impl(self,admission,slot_receipt,budget_receipt):
         """Reconcile authenticated receipts without calling the execution backend."""
+        # Guard this entry as well: callers must not bypass the public method
+        # when the original owner fence is not bound across both ledgers.
+        if isinstance(self, OriginalOwnerSlotAdapter):
+            return {'outcome':'UNKNOWN_RECONCILE_ONLY','production_execution':False}
         p,common=self._admission(admission,require_backend=False)
         sr=self._verify(slot_receipt,'receipt');br=self._verify(budget_receipt,'budget_receipt')
         self._bound(sr,dict(common,external_drained=True))
