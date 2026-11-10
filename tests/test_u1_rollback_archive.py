@@ -34,15 +34,15 @@ class RollbackArchiveTests(unittest.TestCase):
 
     def test_temporary_script_is_pinned_during_subprocess(self):
         from unittest import mock
-        import subprocess
-        real=subprocess.run;observed=[]
+        from tools import verify_u1_rollback as module
+        real=module.run_tree;observed=[]
         def intercept(command,**kwargs):
             script=Path(command[5])
             with self.assertRaises(PermissionError):script.write_bytes(b'tamper')
             with self.assertRaises(PermissionError):script.parent.rename(script.parent.with_name('replaced'))
             observed.append(True)
             return real(command,**kwargs)
-        with mock.patch('tools.verify_u1_rollback.subprocess.run',side_effect=intercept):
+        with mock.patch('tools.verify_u1_rollback.run_tree',side_effect=intercept):
             self.run_archive([('host/config/host.json',self.host),('release_store.py',self.tool)])
         self.assertEqual(observed,[True])
 
@@ -75,7 +75,7 @@ class RollbackDeliveryLifetimeTests(unittest.TestCase):
                  mock.patch.object(delivery,'InstallInputPins',return_value=pins), \
                  mock.patch.object(delivery,'pin_package',return_value=host_manifest), \
                  mock.patch.object(delivery,'pin_python_runtime'), \
-                 mock.patch.object(delivery.subprocess,'run',return_value=SimpleNamespace(returncode=0,stdout='',stderr='')), \
+                 mock.patch.object(delivery,'run_tree',return_value=SimpleNamespace(returncode=0,stdout='',stderr='')), \
                  mock.patch('tools.verify_u1_rollback.verify_rollback',side_effect=rollback):
                 store.return_value._verify.return_value=manifest
                 delivery.verify(args)

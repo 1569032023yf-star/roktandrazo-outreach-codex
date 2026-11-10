@@ -8,6 +8,7 @@ import time
 from contextlib import contextmanager
 
 from autonomy.release_store import ReleaseStore
+from autonomy.process_job import run_tree
 from publisher_channel.install_inputs import InstallInputPins, pin_package, pin_python_runtime
 from tools.verify_u1_runtime_host import extract_checked
 
@@ -123,7 +124,7 @@ def verify(args, progress=None):
         for command in commands:
             progress(dict(arguments=command[1:],outcome='RUNNING'))
             try:
-                result=subprocess.run(command,cwd=root,env=env,capture_output=True,text=True,timeout=120)
+                result=run_tree(command,cwd=root,env=env,timeout=120)
             except BaseException as exc:
                 progress(dict(arguments=command[1:],outcome='UNKNOWN',error_type=type(exc).__name__,error=str(exc)))
                 raise
@@ -173,7 +174,7 @@ def verify_with_report(args):
             persist()
         try: result=verify(args,progress=progress)
         except BaseException as exc:
-            state.update(outcome='UNKNOWN' if isinstance(exc,(subprocess.TimeoutExpired,KeyboardInterrupt,SystemExit)) else 'FAILED',
+            state.update(outcome='UNKNOWN' if isinstance(exc,(subprocess.TimeoutExpired,KeyboardInterrupt,SystemExit)) or getattr(exc,'outcome',None)=='UNKNOWN' else 'FAILED',
                          error_type=type(exc).__name__,error=str(exc));persist();raise
         state.update(result,outcome='VERIFIED');persist()
         return state

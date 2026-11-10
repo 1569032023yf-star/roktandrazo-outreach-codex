@@ -134,7 +134,7 @@ def _finish(primary, cleanup_errors):
 def run_tree(args, *, timeout, cwd=None, stdout_limit_bytes=4*1024*1024,
              stderr_limit_bytes=1024*1024, event_limit_bytes=256*1024,
              cleanup_timeout=10, stdin_bytes=None, assert_live=None, maintenance_handler=None,
-             lifecycle=None):
+             lifecycle=None, env=None):
     """Supervise a tree; an optional trusted authority check must return True.
 
     Checks precede launch, precede Windows resume, run during execution and
@@ -154,6 +154,12 @@ def run_tree(args, *, timeout, cwd=None, stdout_limit_bytes=4*1024*1024,
             raise ValueError('Output byte limits must be positive integers')
     if timeout <= 0 or cleanup_timeout <= 0:
         raise ValueError('Timeouts must be positive')
+    if env is not None:
+        if not isinstance(env, dict) or any(type(k) is not str or type(v) is not str or not k or '=' in k or '\x00' in k or '\x00' in v for k, v in env.items()):
+            raise ValueError('Environment must contain valid string keys and values')
+        if os.name == 'nt' and len({k.upper() for k in env}) != len(env):
+            raise ValueError('Environment keys must be case insensitive unique')
+        env = dict(env)
     _assert_live(assert_live)
     if stdin_bytes is not None and (type(stdin_bytes) is not bytes or len(stdin_bytes)>65536):
         raise ValueError('Bounded bytes input required')
@@ -182,9 +188,9 @@ def run_tree(args, *, timeout, cwd=None, stdout_limit_bytes=4*1024*1024,
                 control.poll()
             return True
         if os.name == 'nt':
-            result = _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, tick, lifecycle)
+            result = _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, tick, lifecycle, env)
         else:
-            result = _posix_tree(args, timeout, cwd, capture, cleanup_timeout, input_stream, tick)
+            result = _posix_tree(args, timeout, cwd, capture, cleanup_timeout, input_stream, tick, env)
         try:
             _assert_live(assert_live)
             if control is not None:
@@ -213,9 +219,9 @@ def _posix_cleanup(process, timeout):
         time.sleep(0.02)
 
 
-def _posix_tree(args, timeout, cwd, capture, cleanup_timeout, input_stream, assert_live=None):
+def _posix_tree(args, timeout, cwd, capture, cleanup_timeout, input_stream, assert_live=None, env=None):
     process = subprocess.Popen(args, cwd=cwd, stdin=input_stream,
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True, env=env)
     primary = None
     errors = []
     try:
@@ -243,7 +249,7 @@ def _posix_tree(args, timeout, cwd, capture, cleanup_timeout, input_stream, asse
     return result
 
 
-def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, assert_live=None, lifecycle=None):
+def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, assert_live=None, lifecycle=None, env=None):
     import ctypes as c
     from ctypes import wintypes as w
     import msvcrt
@@ -379,8 +385,16 @@ def _windows_job(args, timeout, cwd, capture, cleanup_timeout, input_stream, ass
         startup.dwFlags = 0x100
         startup.hStdInput, startup.hStdOutput, startup.hStdError = handles
         command = c.create_unicode_buffer(subprocess.list2cmdline(args))
-        checked(k.CreateProcessW(args[0] if lifecycle is not None else None, command, None, None, True, 0x4 | 0x08000000 | 0x80000,
-            None, str(cwd) if cwd else None, c.byref(extended), c.byref(info)))
+        environment = None
+        flags = 0x4 | 0x08000000 | 0x80000
+        if env is not None:
+            block = '\x00'.join(k + '=' + v for k, v in sorted(env.items(), key=lambda row: row[0].upper())) + '\x00\x00'
+            if len(block.encode('utf-16-le')) > 65534:
+                raise ValueError('Windows environment is too large')
+            environment = c.create_unicode_buffer(block)
+            flags |= 0x400
+        checked(k.CreateProcessW(args[0] if lifecycle is not None else None, command, None, None, True, flags,
+            c.cast(environment, c.c_void_p) if environment is not None else None, str(cwd) if cwd else None, c.byref(extended), c.byref(info)))
         for stream in writes:
             stream.close()
         checked(k.AssignProcessToJobObject(job, info.hProcess))

@@ -10,6 +10,7 @@ import tempfile
 import zipfile
 
 from autonomy.release_store import safe_path
+from autonomy.process_job import run_tree
 from publisher_channel.install_inputs import InstallInputPins
 
 
@@ -81,8 +82,8 @@ def verify_rollback(archive, expected, manifest, python, scratch):
             # the isolated interpreter and nested rollback CLI subprocess.
             with InstallInputPins() as tool_pins:
                 tool_pins.add_verified(script,script_digest,limit=2*1024*1024)
-                result=subprocess.run([str(python),'-I','-B','-c',POINTER_PROBE,str(script),tmp],
-                                      cwd=tmp,env=env,capture_output=True,text=True,timeout=45)
+                result=run_tree([str(python),'-I','-B','-c',POINTER_PROBE,str(script),tmp],
+                                cwd=tmp,env=env,timeout=45)
                 if result.returncode or result.stdout.strip()!='ISOLATED_POINTER_ROLLBACK_OK':
                     raise ValueError('ROLLBACK_FIXTURE_FAILED:'+result.stderr[-2000:])
                 tool_pins.revalidate()
