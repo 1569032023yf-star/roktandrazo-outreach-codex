@@ -190,6 +190,9 @@ class ExistingOwnerBridge:
         return result
 
     def consume(self,event):
+        from autonomy.single_slot_adapter import OriginalOwnerSlotAdapter, AdapterError
+        if isinstance(self.adapter, OriginalOwnerSlotAdapter):
+            raise AdapterError('ORIGINAL_OWNER_EXECUTION_DISABLED')
         owner=self.adapter._lock()
         # Validate authority BEFORE reserving the transport event. This does not
         # create a claim or budget reservation; execute still repeats all gates.

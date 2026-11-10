@@ -464,6 +464,8 @@ class SingleSlotAdapter:
             return outcome
 
     def execute(self,admission,schedule,idle,budget_request):
+        if isinstance(self, OriginalOwnerSlotAdapter):
+            return {'outcome':'UNKNOWN_RECONCILE_ONLY','production_execution':False}
         from autonomy.ledger_binding import LedgerBindingError
         if type(self) is SingleSlotAdapter and self.target is not None and os.name == 'nt':
             try:
@@ -475,6 +477,8 @@ class SingleSlotAdapter:
 
     def _execute_impl(self,admission,schedule,idle,budget_request):
         """At most one backend call. All failures after preparation block replay."""
+        if isinstance(self, OriginalOwnerSlotAdapter):
+            return {'outcome':'UNKNOWN_RECONCILE_ONLY','production_execution':False}
         p,common=self._admission(admission)
         budget=self._verify(budget_request,'budget_request')
         self._bound(budget,{'run_id':common['run_id'],'request_id':common['request_id']})
@@ -789,23 +793,12 @@ class OriginalOwnerSlotAdapter(SingleSlotAdapter):
         return (self.slots.path, self.budget.path, self.original_owner.database_path)
 
     def prepare_event(self, event):
-        if (type(event) is not dict or
-                set(event) != {'inventory_id','admission','schedule','idle','budget_request'} or
-                event['inventory_id'] != INVENTORY or
-                any(type(event[k]) is not dict for k in ('admission','schedule','idle','budget_request'))):
-            raise AdapterError('EXACT_ORIGINAL_EVENT_REQUIRED')
-        self._admission(event['admission'])
-        from autonomy.release_store import canonical
-        if len(canonical(event)) > 65536:
-            raise AdapterError('ORIGINAL_EVENT_TOO_LARGE')
-        self.original_owner.prepare_event(digest(event))
+        # Preserve existing owner fences and create no new intent until both
+        # ledgers have a safe shared recovery protocol.
+        raise AdapterError('ORIGINAL_OWNER_EXECUTION_DISABLED')
 
     def execute(self, admission, schedule, idle, budget_request):
-        event = dict(inventory_id=INVENTORY,admission=admission,schedule=schedule,
-                     idle=idle,budget_request=budget_request)
-        if self.original_owner.event_binding()['original_event_digest'] != digest(event):
-            raise AdapterError('ORIGINAL_OWNER_EVENT_MISMATCH')
-        return super().execute(admission,schedule,idle,budget_request)
+        return {'outcome':'UNKNOWN_RECONCILE_ONLY','production_execution':False}
 
     def _claim(self, budget_request, slot, idle, epoch, owner):
         token = self.budget.reserve_then_claim(budget_request,self.slots,slot,idle,
