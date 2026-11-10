@@ -5,11 +5,36 @@ import tempfile
 import time
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest import mock
+import json
 
 from autonomy.process_job import run_tree
 
 
 class OfflineProbeJobTests(unittest.TestCase):
+    def test_primary_exception_cleanup_status_is_persisted_without_losing_error(self):
+        from tools import verify_u1_delivery as delivery
+        with tempfile.TemporaryDirectory(dir=Path.cwd()) as td:
+            for cleanup_verified in (False, True):
+                with self.subTest(cleanup_verified=cleanup_verified):
+                    path=Path(td)/('report-'+str(cleanup_verified)+'.json')
+                    args=SimpleNamespace(report=str(path),source_commit='a'*40,
+                                         archive_sha256='b'*64,manifest_sha256='c'*64)
+                    error=OSError('original failure')
+                    error.cleanup_verified=cleanup_verified
+                    error.cleanup_errors=() if cleanup_verified else ('PROCESS_TREE_CLEANUP_UNVERIFIED',)
+                    with mock.patch.object(delivery,'verify',side_effect=error):
+                        with self.assertRaises(OSError) as caught:
+                            delivery.verify_with_report(args)
+                    self.assertIs(caught.exception,error)
+                    saved=json.loads(path.read_text(encoding='utf-8'))
+                    self.assertEqual(saved['outcome'],'FAILED' if cleanup_verified else 'UNKNOWN')
+                    self.assertEqual(saved['error_type'],'OSError')
+                    self.assertEqual(saved['error'],'original failure')
+                    self.assertIs(saved['cleanup_verified'],cleanup_verified)
+                    self.assertEqual(saved['cleanup_errors'],list(error.cleanup_errors))
+
     def test_environment_is_exact_and_unicode_safe(self):
         env = {'SystemRoot': os.environ['SystemRoot']} if os.name == 'nt' else {}
         env['U1_TEST_VALUE'] = '\u6e2c\u8a66'

@@ -174,8 +174,14 @@ def verify_with_report(args):
             persist()
         try: result=verify(args,progress=progress)
         except BaseException as exc:
-            state.update(outcome='UNKNOWN' if isinstance(exc,(subprocess.TimeoutExpired,KeyboardInterrupt,SystemExit)) or getattr(exc,'outcome',None)=='UNKNOWN' else 'FAILED',
-                         error_type=type(exc).__name__,error=str(exc));persist();raise
+            cleanup_verified=getattr(exc,'cleanup_verified',None)
+            state.update(outcome='UNKNOWN' if isinstance(exc,(subprocess.TimeoutExpired,KeyboardInterrupt,SystemExit)) or getattr(exc,'outcome',None)=='UNKNOWN' or cleanup_verified is False else 'FAILED',
+                         error_type=type(exc).__name__,error=str(exc))
+            if cleanup_verified is not None:
+                state['cleanup_verified']=cleanup_verified
+                state['cleanup_errors']=[code for code in getattr(exc,'cleanup_errors',())
+                                         if isinstance(code,str) and code.isidentifier()]
+            persist();raise
         state.update(result,outcome='VERIFIED');persist()
         return state
 
