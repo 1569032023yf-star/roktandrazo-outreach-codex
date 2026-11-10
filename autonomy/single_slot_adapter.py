@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 import time
 import sqlite3
-from contextlib import closing, contextmanager
+from contextlib import closing, contextmanager, ExitStack
 
 from autonomy import lock_recovery
 from autonomy.growth_ledger import digest
@@ -24,6 +24,56 @@ OPERATION_SCHEMA = 'rokt.offline-operation.v1'
 
 class AdapterError(RuntimeError):
     pass
+
+
+class _LedgerBinding:
+    """Hold exact cooperative local ledger identities for one operation."""
+    def __init__(self, adapter, slots_path, budget_path, slots_id, budget_id):
+        self.adapter = adapter
+        self.slots = adapter.slots
+        self.budget = adapter.budget
+        self.target = adapter.target
+        self.ids = dict(adapter.ids)
+        self.slots_path = str(slots_path)
+        self.budget_path = str(budget_path)
+        self.slots_id = slots_id
+        self.budget_id = budget_id
+
+    def check(self, *, ledger=None, kind=None, connection=None):
+        from autonomy.durable_slots import DurableSlots
+        from autonomy.growth_ledger import GrowthLedger
+        from autonomy.ledger_binding import LedgerBindingError
+        try:
+            adapter = self.adapter
+            if (adapter.slots is not self.slots or adapter.budget is not self.budget
+                    or adapter.target is not self.target or adapter.ids != self.ids
+                    or type(self.slots) is not DurableSlots or type(self.budget) is not GrowthLedger
+                    or self.slots.connect is not sqlite3.connect
+                    or getattr(self.slots._tx, '__func__', None) is not DurableSlots._tx
+                    or getattr(self.budget.tx, '__func__', None) is not GrowthLedger.tx
+                    or path_id(self.slots.path) != self.ids['slots_id']
+                    or path_id(self.target.slots_path) != self.ids['slots_id']
+                    or path_id(self.budget.path) != self.ids['budget_id']
+                    or path_id(self.target.budget_path) != self.ids['budget_id']):
+                raise LedgerBindingError('LEDGER_BINDING_CHANGED')
+            for path, expected in ((self.slots_path,self.slots_id),(self.budget_path,self.budget_id)):
+                info = Path(path).stat()
+                if (info.st_dev,info.st_ino) != expected or info.st_nlink != 1:
+                    raise LedgerBindingError('LEDGER_FILE_CHANGED')
+            if kind not in (None,'slots','budget'):
+                raise LedgerBindingError('LEDGER_KIND_REJECTED')
+            if ledger is not None and ledger is not (self.slots if kind == 'slots' else self.budget):
+                raise LedgerBindingError('LEDGER_OBJECT_CHANGED')
+            if connection is not None:
+                dbpath = connection.execute('PRAGMA database_list').fetchone()[2]
+                info = Path(dbpath).stat()
+                expected = self.slots_id if kind == 'slots' else self.budget_id
+                if (info.st_dev,info.st_ino) != expected:
+                    raise LedgerBindingError('LEDGER_CONNECTION_CHANGED')
+        except LedgerBindingError:
+            raise
+        except Exception:
+            raise LedgerBindingError('LEDGER_BINDING_UNVERIFIED') from None
 
 
 @contextmanager
@@ -138,6 +188,45 @@ class SingleSlotAdapter:
             self.ids=dict(runtime_id=path_id(self.runtime),slots_id=path_id(target.slots_path),budget_id=path_id(target.budget_path),backend_id=target.backend_id)
             slots_stat=Path(target.slots_path).stat()
             self.slots_file_identity=(slots_stat.st_dev,slots_stat.st_ino)
+            budget_stat=Path(target.budget_path).stat()
+            self.budget_file_identity=(budget_stat.st_dev,budget_stat.st_ino)
+
+    @contextmanager
+    def _bound_ledgers(self):
+        from autonomy.ledger_binding import CURRENT, LedgerBindingError
+        active=CURRENT.get()
+        if active is not None:
+            if active.adapter is not self:
+                raise LedgerBindingError('NESTED_LEDGER_BINDING')
+            active.check()
+            yield active
+            active.check()
+            return
+        stack=ExitStack()
+        try:
+            slots_path=Path(self.target.slots_path).resolve(strict=True)
+            budget_path=Path(self.target.budget_path).resolve(strict=True)
+            if os.path.samefile(slots_path,budget_path):
+                raise LedgerBindingError('LEDGER_ALIAS_REJECTED')
+            slots_id=stack.enter_context(_pin_windows_ledger(slots_path))
+            budget_id=stack.enter_context(_pin_windows_ledger(budget_path))
+            if slots_id!=self.slots_file_identity or budget_id!=self.budget_file_identity:
+                raise LedgerBindingError('LEDGER_FILE_CHANGED')
+            binding=_LedgerBinding(self,slots_path,budget_path,slots_id,budget_id)
+            binding.check()
+        except (AdapterError,OSError) as exc:
+            stack.close()
+            raise LedgerBindingError('LEDGER_BINDING_UNAVAILABLE') from exc
+        except BaseException:
+            stack.close()
+            raise
+        with stack:
+            token=CURRENT.set(binding)
+            try:
+                yield binding
+                binding.check()
+            finally:
+                CURRENT.reset(token)
 
     def _now(self):
         value=self.wall_clock()
@@ -336,6 +425,16 @@ class SingleSlotAdapter:
             return outcome
 
     def execute(self,admission,schedule,idle,budget_request):
+        from autonomy.ledger_binding import LedgerBindingError
+        if type(self) is SingleSlotAdapter and self.target is not None and os.name == 'nt':
+            try:
+                with self._bound_ledgers():
+                    return self._execute_impl(admission,schedule,idle,budget_request)
+            except LedgerBindingError:
+                return {'outcome':'UNKNOWN_RECONCILE_ONLY','production_execution':False}
+        return self._execute_impl(admission,schedule,idle,budget_request)
+
+    def _execute_impl(self,admission,schedule,idle,budget_request):
         """At most one backend call. All failures after preparation block replay."""
         p,common=self._admission(admission)
         budget=self._verify(budget_request,'budget_request')
@@ -393,10 +492,14 @@ class SingleSlotAdapter:
             if provider_request is not None:
                 operation['provider_request'] = provider_request
             operation['idempotency_key']=digest(operation)
+            from autonomy.ledger_binding import CURRENT
+            binding=CURRENT.get()
+            if binding is not None: binding.check()
             # v1 backend must enforce deadline outside this Python callback and
             # durably deduplicate this exact identity. This is a contract, not
             # proof of capabilities. No cancellation dispatch is implemented.
             result=self.backend.execute_once(operation,deadline_monotonic=started+wall)
+            if binding is not None: binding.check()
             ended=self.monotonic()
             if type(ended) not in (int,float) or not started<=ended<=started+wall:
                 raise AdapterError('BACKEND_RESULT_LATE_OR_CLOCK_CHANGED')
@@ -468,6 +571,16 @@ class SingleSlotAdapter:
         return journal.reserve(identity,binding,protected=protected)
 
     def reconcile(self,admission,slot_receipt,budget_receipt):
+        from autonomy.ledger_binding import LedgerBindingError
+        if type(self) is SingleSlotAdapter and self.target is not None and os.name == 'nt':
+            try:
+                with self._bound_ledgers():
+                    return self._reconcile_impl(admission,slot_receipt,budget_receipt)
+            except LedgerBindingError:
+                return {'outcome':'UNKNOWN_RECONCILE_ONLY','production_execution':False}
+        return self._reconcile_impl(admission,slot_receipt,budget_receipt)
+
+    def _reconcile_impl(self,admission,slot_receipt,budget_receipt):
         """Reconcile authenticated receipts without calling the execution backend."""
         p,common=self._admission(admission,require_backend=False)
         sr=self._verify(slot_receipt,'receipt');br=self._verify(budget_receipt,'budget_receipt')
@@ -491,9 +604,15 @@ class SingleSlotAdapter:
                 active[1].get('tree_state') == 'not_started' and 'tree_binding' not in active[1]):
             mapped=self.slots._evidence(slot_receipt,kind='receipt',now=self._now(),
                 slot=common['slot'],state=sr['state'],epoch=common['epoch'],owner=common['owner'],external_drained=True)
-            with closing(sqlite3.connect(Path(self.slots.path).resolve().as_uri()+'?mode=ro',uri=True)) as db:
+            from autonomy.ledger_binding import CURRENT
+            binding=CURRENT.get()
+            if binding is not None: binding.check()
+            path=binding.slots_path if binding is not None else self.slots.path
+            with closing(sqlite3.connect(Path(path).resolve().as_uri()+'?mode=ro',uri=True)) as db:
+                if binding is not None: binding.check(ledger=self.slots,kind='slots',connection=db)
                 slot=db.execute('SELECT state,epoch,owner,token,receipt FROM slots WHERE slot=?',(common['slot'],)).fetchone()
                 unresolved=db.execute("SELECT 1 FROM slots WHERE state IN ('claimed','running','unknown') LIMIT 1").fetchone()
+                if binding is not None: binding.check(ledger=self.slots,kind='slots',connection=db)
             if (slot == (sr['state'],common['epoch'],common['owner'],token,digest(mapped)) and
                     unresolved is None and row['state']=='settled' and row['receipt_hash']==digest(br)):
                 return {'outcome':sr['state'].upper(),'slot_result':'DUPLICATE_RECEIPT',
@@ -511,6 +630,9 @@ class SingleSlotAdapter:
             return {'outcome':'UNKNOWN_RECONCILE_ONLY','slot_result':state,'budget_result':settled,'production_execution':False}
         # Keep the recovery fence until both durable ledgers acknowledge the
         # receipt. A storage failure must not release an unresolved reservation.
+        from autonomy.ledger_binding import CURRENT
+        binding=CURRENT.get()
+        if binding is not None: binding.check()
         self._mark_tree('verified_closed', common, token)
         return {'outcome':sr['state'].upper(),'slot_result':state,'budget_result':settled,'production_execution':False}
 

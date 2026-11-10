@@ -262,9 +262,10 @@ class SingleSlotTests(unittest.TestCase):
         self.assertTrue(all(result=='blocked' for result in attempt))
         self.assertEqual(self.backend.calls,1)
 
-    @unittest.expectedFailure
     def test_idle_verifier_cannot_redirect_later_claim_to_decoy_database(self):
-        """Known blocker: execution after admission still uses a mutable connector."""
+        """Changing the connector must not release the real pending fence."""
+        import os
+        if os.name != 'nt': self.skipTest('Windows ledger pin required')
         from contextlib import closing
         import sqlite3
         decoy=self.root/'claim-decoy.sqlite'
@@ -278,11 +279,105 @@ class SingleSlotTests(unittest.TestCase):
             if value.get('kind')=='idle':
                 self.slots.connect=lambda path,**kwargs:sqlite3.connect(decoy,**kwargs)
             return value
-        with exclusive_lock(self.runtime):
+        with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'), exclusive_lock(self.runtime):
             admission=self.admission();self.slots.verify=redirect_idle
             result=self.run_one(admission)
             self.assertEqual(result['outcome'],'UNKNOWN_RECONCILE_ONLY')
             self.assertEqual(self.backend.calls,0)
+        with closing(sqlite3.connect(self.slots.path)) as db:
+            self.assertEqual(db.execute("SELECT state FROM slots WHERE slot='one'").fetchone(),('pending',))
+        with closing(sqlite3.connect(decoy)) as db:
+            self.assertEqual(db.execute("SELECT state FROM slots WHERE slot='one'").fetchone(),('pending',))
+        self.assertTrue((self.runtime/'supervisor.tree-unverified').exists())
+
+    def test_idle_verifier_cannot_redirect_budget_to_decoy(self):
+        import os, sqlite3
+        from contextlib import closing
+        if os.name != 'nt': self.skipTest('Windows ledger pin required')
+        decoy=self.root/'budget-decoy.sqlite'
+        with closing(sqlite3.connect(self.budget.path)) as source, closing(sqlite3.connect(decoy)) as dest:
+            source.backup(dest)
+        original=self.budget.path
+        verify=self.slots.verify
+        def redirect_idle(evidence):
+            value=verify(evidence)
+            if value.get('kind')=='idle': self.budget.path=str(decoy)
+            return value
+        with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'), exclusive_lock(self.runtime):
+            admission=self.admission();self.slots.verify=redirect_idle
+            self.assertEqual(self.run_one(admission)['outcome'],'UNKNOWN_RECONCILE_ONLY')
+            self.assertEqual(self.backend.calls,0)
+        for path in (original,str(decoy)):
+            with closing(sqlite3.connect(path)) as db:
+                self.assertEqual(db.execute('SELECT count(*) FROM reservations').fetchone(),(0,))
+        self.assertTrue((self.runtime/'supervisor.tree-unverified').exists())
+
+    def test_backend_cannot_redirect_receipt_or_close_fence(self):
+        import os, sqlite3
+        from contextlib import closing
+        if os.name != 'nt': self.skipTest('Windows ledger pin required')
+        decoy=self.root/'backend-decoy.sqlite'
+        with closing(sqlite3.connect(self.slots.path)) as source, closing(sqlite3.connect(decoy)) as dest:
+            source.backup(dest)
+        execute=self.backend.execute_once
+        def redirect_after_call(*args,**kwargs):
+            result=execute(*args,**kwargs)
+            self.slots.connect=lambda path,**kw:sqlite3.connect(decoy,**kw)
+            return result
+        self.backend.execute_once=redirect_after_call
+        with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'), exclusive_lock(self.runtime):
+            result=self.run_one(self.admission())
+            self.assertEqual(result['outcome'],'UNKNOWN_RECONCILE_ONLY')
+            self.assertEqual(self.backend.calls,1)
+        with closing(sqlite3.connect(self.slots.path)) as db:
+            self.assertEqual(db.execute("SELECT state FROM slots WHERE slot='one'").fetchone(),('running',))
+        with closing(sqlite3.connect(decoy)) as db:
+            self.assertIsNone(db.execute("SELECT state FROM slots WHERE slot='one'").fetchone())
+        self.assertTrue((self.runtime/'supervisor.tree-unverified').exists())
+
+    def test_budget_after_commit_redirect_preserves_real_reservation_and_fence(self):
+        import os, sqlite3
+        from contextlib import closing
+        if os.name != 'nt': self.skipTest('Windows ledger pin required')
+        original=self.budget.path
+        decoy=self.root/'budget-after-commit.sqlite'
+        with closing(sqlite3.connect(original)) as source, closing(sqlite3.connect(decoy)) as dest:
+            source.backup(dest)
+        def redirect(phase):
+            if phase=='after_commit': self.budget.path=str(decoy)
+        self.budget.fault=redirect
+        with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'), exclusive_lock(self.runtime):
+            result=self.run_one(self.admission())
+            self.assertEqual(result['outcome'],'UNKNOWN_RECONCILE_ONLY')
+            self.assertEqual(self.backend.calls,0)
+        with closing(sqlite3.connect(original)) as db:
+            self.assertEqual(db.execute('SELECT state FROM reservations').fetchall(),[('reserved',)])
+        with closing(sqlite3.connect(decoy)) as db:
+            self.assertEqual(db.execute('SELECT count(*) FROM reservations').fetchone(),(0,))
+        self.assertTrue((self.runtime/'supervisor.tree-unverified').exists())
+
+    def test_receipt_verifier_redirect_fails_closed(self):
+        import os, sqlite3
+        from contextlib import closing
+        if os.name != 'nt': self.skipTest('Windows ledger pin required')
+        decoy=self.root/'receipt-decoy.sqlite'
+        with closing(sqlite3.connect(self.slots.path)) as source, closing(sqlite3.connect(decoy)) as dest:
+            source.backup(dest)
+        verify=self.slots.verify
+        def redirect_receipt(evidence):
+            value=verify(evidence)
+            if value.get('kind')=='receipt':
+                self.slots.connect=lambda path,**kwargs:sqlite3.connect(decoy,**kwargs)
+            return value
+        self.slots.verify=redirect_receipt
+        with self.assertRaisesRegex(RuntimeError,'ASSOCIATED_TREE_UNVERIFIED'), exclusive_lock(self.runtime):
+            self.assertEqual(self.run_one(self.admission())['outcome'],'UNKNOWN_RECONCILE_ONLY')
+            self.assertEqual(self.backend.calls,1)
+        with closing(sqlite3.connect(self.slots.path)) as db:
+            self.assertEqual(db.execute("SELECT state FROM slots WHERE slot='one'").fetchone(),('running',))
+        with closing(sqlite3.connect(decoy)) as db:
+            self.assertIsNone(db.execute("SELECT state FROM slots WHERE slot='one'").fetchone())
+        self.assertTrue((self.runtime/'supervisor.tree-unverified').exists())
 
     def test_unknown_tree_blocks_a_distinct_request_before_any_backend_call(self):
         self.backend.mode='lost'

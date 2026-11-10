@@ -98,12 +98,15 @@ class GrowthLedger:
 
     @contextmanager
     def tx(self, *, initialize=False):
+        from autonomy.ledger_binding import binding_for
+        binding=binding_for(self, 'budget')
         c=None
         try:
-            c=sqlite3.connect(self.path,timeout=5,isolation_level=None)
+            c=sqlite3.connect(binding.budget_path if binding is not None else self.path,timeout=5,isolation_level=None)
             c.row_factory=sqlite3.Row
             c.execute('PRAGMA synchronous=FULL')
             c.execute('BEGIN IMMEDIATE')
+            if binding is not None: binding.check(ledger=self,kind='budget',connection=c)
             tables=c.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'").fetchall()
             expected={sql.lower() for sql in SCHEMA}
             actual={r[0].lower() for r in tables}
@@ -112,7 +115,10 @@ class GrowthLedger:
                 if version!=SCHEMA_VERSION or actual!=expected:
                     raise GrowthError('INCOMPATIBLE_SCHEMA')
             yield c
-            self.fault('before_commit'); c.commit(); self.fault('after_commit')
+            self.fault('before_commit')
+            if binding is not None: binding.check(ledger=self,kind='budget',connection=c)
+            c.commit(); self.fault('after_commit')
+            if binding is not None: binding.check(ledger=self,kind='budget',connection=c)
         except (sqlite3.Error,OSError):
             if c is not None:c.rollback()
             raise GrowthError('STORAGE_OUTCOME_UNVERIFIED') from None

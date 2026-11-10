@@ -40,6 +40,16 @@ class DurableSlots:
 
     @contextmanager
     def _tx(self, *, _bound_path=None, _check=None):
+        from autonomy.ledger_binding import binding_for
+        binding = binding_for(self, 'slots')
+        if binding is not None:
+            _bound_path = binding.slots_path
+            previous_check = _check
+            def check(connection=None):
+                binding.check(ledger=self, kind='slots', connection=connection)
+                if previous_check is not None:
+                    previous_check(connection)
+            _check = check
         c = None
         try:
             if _check is not None:
@@ -223,8 +233,14 @@ class DurableSlots:
     def snapshot(self):
         # Read-only URI: a missing ledger must not silently be recreated.
         from pathlib import Path
+        from autonomy.ledger_binding import binding_for
+        binding = binding_for(self, 'slots')
         try:
-            with closing(sqlite3.connect(Path(self.path).resolve().as_uri()+'?mode=ro',uri=True)) as c:
-                return c.execute('SELECT slot,due,state,epoch FROM slots ORDER BY due').fetchall()
+            path = binding.slots_path if binding is not None else self.path
+            with closing(sqlite3.connect(Path(path).resolve().as_uri()+'?mode=ro',uri=True)) as c:
+                if binding is not None: binding.check(ledger=self, kind='slots', connection=c)
+                rows = c.execute('SELECT slot,due,state,epoch FROM slots ORDER BY due').fetchall()
+                if binding is not None: binding.check(ledger=self, kind='slots', connection=c)
+                return rows
         except sqlite3.Error:
             raise LedgerError('STORAGE_OUTCOME_UNVERIFIED') from None
