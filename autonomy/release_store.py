@@ -78,9 +78,16 @@ def checked_manifest(raw):
 def read_file(path, limit=MAX_FILE):
     path = ordinary(path)
     if path.stat().st_nlink != 1: raise ValueError('HARDLINK_REJECTED')
-    with path.open('rb') as f: data = f.read(limit+1)
+    # Request bounded chunks instead of allocating limit+1 bytes for every
+    # small file. Read one byte beyond the limit to retain growth/size checks.
+    data = bytearray()
+    with path.open('rb') as f:
+        while len(data) <= limit:
+            chunk = f.read(min(64 * 1024, limit + 1 - len(data)))
+            if not chunk: break
+            data.extend(chunk)
     if len(data) > limit: raise ValueError('FILE_TOO_LARGE')
-    return data
+    return bytes(data)
 
 
 def durable_new(path, raw):

@@ -4,6 +4,8 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import time
+from contextlib import contextmanager
 
 from autonomy.release_store import ReleaseStore
 from publisher_channel.install_inputs import InstallInputPins, pin_package, pin_python_runtime
@@ -80,8 +82,19 @@ print(json.dumps(dict(local_http_statuses=statuses,fixture_release=True,
 
 def verify(args, progress=None):
     progress=progress or (lambda value:None)
-    root=extract_checked(args.archive,args.archive_sha256,args.output)
-    manifest=ReleaseStore(root)._verify(root,args.manifest_sha256)
+    started=time.monotonic()
+    @contextmanager
+    def phase(name):
+        phase_start=time.monotonic()
+        progress(dict(kind='phase',phase=name,outcome='RUNNING',elapsed_seconds=round(phase_start-started,3)))
+        yield
+        progress(dict(kind='phase',phase=name,outcome='PASSED',
+                      elapsed_seconds=round(time.monotonic()-started,3),
+                      duration_seconds=round(time.monotonic()-phase_start,3)))
+    with phase('ARCHIVE_EXTRACTION'):
+        root=extract_checked(args.archive,args.archive_sha256,args.output)
+    with phase('INITIAL_MANIFEST_AND_PAYLOAD'):
+        manifest=ReleaseStore(root)._verify(root,args.manifest_sha256)
     if manifest['source_commit']!=args.source_commit: raise ValueError('SOURCE_MISMATCH')
     delivery=json.loads((root/'payload/DELIVERY.json').read_text(encoding='utf-8'))
     if (delivery.get('source_commit')!=args.source_commit or
@@ -92,11 +105,12 @@ def verify(args, progress=None):
     host=root/'payload/host'; runtime=host/'runtime/python'; results=[]
     host_digest=manifest['files']['host/manifest.json']
     with InstallInputPins() as pins:
-        host_manifest=pin_package(pins,host,host_digest,args.source_commit)
-        rows={row['path']:row['sha256'] for row in host_manifest['files']}
-        content_digest=rows['runtime/python/U1_RUNTIME_CONTENT.json']
-        if content_digest!=delivery['runtime_manifest_sha256']: raise ValueError('RUNTIME_BINDING')
-        pin_python_runtime(pins,str(runtime/'U1_RUNTIME_CONTENT.json'),content_digest,str(runtime/'python.exe'))
+        with phase('HOST_AND_RUNTIME_PINNING'):
+            host_manifest=pin_package(pins,host,host_digest,args.source_commit)
+            rows={row['path']:row['sha256'] for row in host_manifest['files']}
+            content_digest=rows['runtime/python/U1_RUNTIME_CONTENT.json']
+            if content_digest!=delivery['runtime_manifest_sha256']: raise ValueError('RUNTIME_BINDING')
+            pin_python_runtime(pins,str(runtime/'U1_RUNTIME_CONTENT.json'),content_digest,str(runtime/'python.exe'))
         env={k:v for k,v in os.environ.items() if not k.upper().startswith(('PYTHON','PIP_'))}
         commands=[
             [str(runtime/'python.exe'),'-I','-B','-c',IMPORT_PROBE,str(root/'payload/python')],
@@ -114,9 +128,11 @@ def verify(args, progress=None):
                       outcome='PASSED' if result.returncode==0 else 'FAILED')
             results.append(item);progress(item)
             if result.returncode: raise ValueError('DELIVERY_PROBE_FAILED:'+json.dumps(results))
-        pins.revalidate()
+        with phase('FINAL_PIN_REVALIDATION'):
+            pins.revalidate()
     # Recheck after subprocess probes to detect unexpected package writes.
-    ReleaseStore(root)._verify(root,args.manifest_sha256)
+    with phase('FINAL_MANIFEST_AND_PAYLOAD'):
+        ReleaseStore(root)._verify(root,args.manifest_sha256)
     return dict(checks=results,manifest_files=len(manifest['files']),offline_entrypoint_imports_verified=True,
                 discovery_business_imports_verified=True,
                 loopback_http_with_fixtures_verified=True,production_ports_verified=False,
@@ -131,13 +147,17 @@ def verify_with_report(args):
                    description_zh='仅离线入口导入、包内子进程和完整性；不证明正式业务、安装或回滚。',
                    description_en='Offline entrypoint imports, packaged subprocess and integrity only; not formal business, installation or rollback acceptance.',
                    allow_install=False,allow_dispatch=False,allow_cancel_dispatch=False,smtp_enabled=False,
-                   production_ready=False,checks=[],active_check=None)
+                   production_ready=False,checks=[],active_check=None,phases=[],active_phase=None)
         def persist():
             record.seek(0);json.dump(state,record,indent=2,ensure_ascii=False)
             record.truncate();record.flush();os.fsync(record.fileno())
         persist()
         def progress(item):
-            if item['outcome']=='RUNNING':state['active_check']=item
+            if item.get('kind')=='phase':
+                if item['outcome']=='RUNNING':state['active_phase']=item
+                else:
+                    state['phases'].append(item);state['active_phase']=None
+            elif item['outcome']=='RUNNING':state['active_check']=item
             else:
                 state['checks'].append(item);state['active_check']=None
             persist()

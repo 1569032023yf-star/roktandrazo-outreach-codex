@@ -11,6 +11,33 @@ class ReleaseStoreTests(unittest.TestCase):
         self.root=Path(self.tmp.name);(self.root/'store').mkdir();self.store=ReleaseStore(self.root/'store')
     def package(self,name,files):
         p=self.root/name;v=build_bundle(p,files,'a'*40);self.store.stage(p,v);return v
+
+    def test_bounded_reads_preserve_exact_size_and_reject_oversize(self):
+        from autonomy.release_store import read_file
+        path=self.root/'bounded.bin'
+        for size in (0,1,65535,65536,65537,131073):
+            with self.subTest(size=size):
+                data=bytes((n%251 for n in range(size)));path.write_bytes(data)
+                self.assertEqual(read_file(path,size),data)
+                if size:
+                    with self.assertRaisesRegex(ValueError,'FILE_TOO_LARGE'):
+                        read_file(path,size-1)
+
+    def test_large_limit_does_not_request_a_large_buffer(self):
+        from autonomy.release_store import read_file,MAX_FILE
+        path=self.root/'small.bin';path.write_bytes(b'small fixture')
+        original=Path.open;requests=[]
+        class Reader:
+            def __init__(self, inner):self.inner=inner
+            def __enter__(self):self.inner.__enter__();return self
+            def __exit__(self,*args):return self.inner.__exit__(*args)
+            def read(self,size):requests.append(size);return self.inner.read(size)
+        def monitored_open(p,*args,**kwargs):
+            return Reader(original(p,*args,**kwargs))
+        with patch.object(Path,'open',monitored_open):
+            self.assertEqual(read_file(path,MAX_FILE),b'small fixture')
+        self.assertTrue(requests)
+        self.assertLessEqual(max(requests),65536)
     @unittest.skipUnless(__import__('os').name=='nt','Windows path contract')
     def test_final_sha_layout_rejected_before_staging(self):
         deep=self.root/('x'*60);deep.mkdir();store=ReleaseStore(deep)
