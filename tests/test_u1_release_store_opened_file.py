@@ -48,3 +48,33 @@ class ReleaseStoreOpenedFileTests(unittest.TestCase):
         with mock.patch.object(release_store,'ordinary',side_effect=race):
             with self.assertRaises((ValueError,OSError)):
                 release_store.read_file(path)
+
+    def test_parent_symlink_replaced_after_path_check(self):
+        parent=self.root/'parent';parent.mkdir();(parent/'source').write_bytes(b'safe')
+        evil=self.root/'evil';evil.mkdir();(evil/'source').write_bytes(b'other')
+        probe=self.root/'probe'
+        try: os.symlink(evil,probe,target_is_directory=True)
+        except OSError as e: self.skipTest(f'directory symlink unavailable: {e}')
+        probe.unlink()
+        original=release_store.ordinary
+        def race(value):
+            checked=original(value)
+            parent.rename(self.root/'saved')
+            os.symlink(evil,parent,target_is_directory=True)
+            return checked
+        try:
+            with mock.patch.object(release_store,'ordinary',side_effect=race):
+                with self.assertRaises((ValueError,OSError)):
+                    release_store.read_file(parent/'source')
+        finally:
+            if parent.is_symlink(): parent.unlink()
+
+    @unittest.skipIf(os.name == 'nt', 'FIFO requires POSIX')
+    def test_fifo_is_rejected_without_blocking(self):
+        import subprocess,sys
+        fifo=self.root/'fifo';os.mkfifo(fifo)
+        result=subprocess.run([sys.executable,'-c',
+            'from autonomy.release_store import read_file;import sys;read_file(sys.argv[1])',str(fifo)],
+            capture_output=True,timeout=3)
+        self.assertNotEqual(result.returncode,0)
+        self.assertIn(b'ORDINARY_FILE_REQUIRED',result.stderr)

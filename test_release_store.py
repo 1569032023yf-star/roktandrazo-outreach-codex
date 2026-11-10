@@ -1,4 +1,5 @@
 """发布器实际文件生命周期 / Actual file publisher lifecycle."""
+from contextlib import contextmanager
 import tempfile
 from pathlib import Path
 import unittest
@@ -26,7 +27,8 @@ class ReleaseStoreTests(unittest.TestCase):
     def test_large_limit_does_not_request_a_large_buffer(self):
         from autonomy.release_store import read_file,MAX_FILE
         path=self.root/'small.bin';path.write_bytes(b'small fixture')
-        original=Path.open;requests=[]
+        from autonomy.release_store import _open_checked_file
+        original=_open_checked_file;requests=[]
         class Reader:
             def __init__(self, inner):self.inner=inner
             def __enter__(self):self.inner.__enter__();return self
@@ -34,16 +36,18 @@ class ReleaseStoreTests(unittest.TestCase):
             def read(self,size):requests.append(size);return self.inner.read(size)
             def fileno(self):return self.inner.fileno()
             def seek(self,offset):return self.inner.seek(offset)
-        def monitored_open(p,*args,**kwargs):
-            return Reader(original(p,*args,**kwargs))
-        with patch.object(Path,'open',monitored_open):
+        @contextmanager
+        def monitored_open(p):
+            with original(p) as inner: yield Reader(inner)
+        with patch('autonomy.release_store._open_checked_file',monitored_open):
             self.assertEqual(read_file(path,MAX_FILE),b'small fixture')
         self.assertTrue(requests)
         self.assertLessEqual(max(requests),65536)
 
     def test_read_file_handles_growth_shrink_and_bounded_retry(self):
         from autonomy.release_store import read_file
-        path=self.root/'changing.bin';original=Path.open
+        from autonomy.release_store import _open_checked_file
+        path=self.root/'changing.bin';original=Path.open;opened=_open_checked_file
         def run_change(initial, changes, limit):
             path.write_bytes(initial);requests=[]
             class Reader:
@@ -65,8 +69,10 @@ class ReleaseStoreTests(unittest.TestCase):
                         # Growth after EOF but before the post-read size check.
                         with original(path,'wb') as writer:writer.write(change)
                     return data
-            def monitored_open(p,*args,**kwargs):return Reader(original(p,*args,**kwargs))
-            with patch.object(Path,'open',monitored_open):
+            @contextmanager
+            def monitored_open(p):
+                with opened(p) as inner: yield Reader(inner)
+            with patch('autonomy.release_store._open_checked_file',monitored_open):
                 try:return read_file(path,limit),requests
                 finally:self.assertTrue(all(n<=limit+1 for n in requests))
         self.assertEqual(run_change(b'abcd',[b'abcdef'],8)[0],b'abcdef')

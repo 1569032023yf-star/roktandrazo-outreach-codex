@@ -4,7 +4,7 @@ Publication changes only this store's active.json; consumers must resolve it.
 Trusted destination ACL and Inventory maintenance exclusion remain caller duties.
 """
 import argparse
-from contextlib import contextmanager
+from contextlib import contextmanager, ExitStack
 import hashlib
 import json
 import os
@@ -78,6 +78,44 @@ def checked_manifest(raw):
 @contextmanager
 def _open_checked_file(path):
     """Open the final component without following links and inspect that handle."""
+    with ExitStack() as guards:
+        if os.name == 'nt':
+            # Pin each ordinary ancestor against replacement for the read lifetime.
+            from publisher_channel.install_inputs import InstallInputPins
+            pins = guards.enter_context(InstallInputPins())
+            pins._parents(path)
+            yield from _open_final_file(path)
+        else:
+            # An open directory fd anchors each lookup even if its name is renamed.
+            if not all(hasattr(os, key) for key in ('O_NOFOLLOW','O_DIRECTORY','O_NONBLOCK')):
+                raise ValueError('NOFOLLOW_UNAVAILABLE')
+            fd = os.open(path.anchor, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_NONBLOCK)
+            try:
+                for part in path.parts[1:-1]:
+                    child = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=fd)
+                    os.close(fd); fd = child
+                file_fd = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=fd)
+            finally:
+                os.close(fd)
+            with _read_fd(file_fd) as f:
+                yield f
+
+
+@contextmanager
+def _read_fd(fd):
+    try:
+        with os.fdopen(fd, 'rb') as f:
+            fd = None
+            info = os.fstat(f.fileno())
+            if not stat.S_ISREG(info.st_mode): raise ValueError('ORDINARY_FILE_REQUIRED')
+            if info.st_nlink != 1: raise ValueError('HARDLINK_REJECTED')
+            yield f
+    finally:
+        if fd is not None: os.close(fd)
+
+
+def _open_final_file(path):
+    # Caller holds all Windows ancestor handles for the entire read.
     if os.name == 'nt':
         import ctypes as c
         from ctypes import wintypes as w
@@ -102,18 +140,9 @@ def _open_checked_file(path):
             api.CloseHandle(handle)
             raise
     else:
-        # O_NOFOLLOW must be available: do not silently fall back to following links.
-        if not hasattr(os, 'O_NOFOLLOW'): raise ValueError('NOFOLLOW_UNAVAILABLE')
-        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
-    try:
-        with os.fdopen(fd, 'rb') as f:
-            fd = None
-            info = os.fstat(f.fileno())
-            if not stat.S_ISREG(info.st_mode): raise ValueError('ORDINARY_FILE_REQUIRED')
-            if info.st_nlink != 1: raise ValueError('HARDLINK_REJECTED')
-            yield f
-    finally:
-        if fd is not None: os.close(fd)
+        raise ValueError('WINDOWS_REQUIRED')
+    with _read_fd(fd) as f:
+        yield f
 
 
 def read_file(path, limit=MAX_FILE):
