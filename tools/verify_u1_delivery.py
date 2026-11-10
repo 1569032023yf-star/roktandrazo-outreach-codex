@@ -131,16 +131,18 @@ def verify(args, progress=None):
                       outcome='PASSED' if result.returncode==0 else 'FAILED')
             results.append(item);progress(item)
             if result.returncode: raise ValueError('DELIVERY_PROBE_FAILED:'+json.dumps(results))
+        rollback={}
+        if rollback_archive:
+            from tools.verify_u1_rollback import verify_rollback
+            with phase('ROLLBACK_ARCHIVE_AND_POINTER_FIXTURE'):
+                # Keep runtime files and their ancestors pinned through both
+                # fixture subprocesses, then revalidate those same handles.
+                rollback=verify_rollback(rollback_archive,rollback_sha,manifest,runtime/'python.exe',root.parent)
         with phase('FINAL_PIN_REVALIDATION'):
             pins.revalidate()
-    # Recheck after subprocess probes to detect unexpected package writes.
+    # Recheck after all subprocess probes to detect unexpected package writes.
     with phase('FINAL_MANIFEST_AND_PAYLOAD'):
         ReleaseStore(root)._verify(root,args.manifest_sha256)
-    rollback={}
-    if rollback_archive:
-        from tools.verify_u1_rollback import verify_rollback
-        with phase('ROLLBACK_ARCHIVE_AND_POINTER_FIXTURE'):
-            rollback=verify_rollback(rollback_archive,rollback_sha,manifest,runtime/'python.exe',root.parent)
     return dict(**rollback,checks=results,manifest_files=len(manifest['files']),offline_entrypoint_imports_verified=True,
                 discovery_business_imports_verified=True,
                 loopback_http_with_fixtures_verified=True,production_ports_verified=False,

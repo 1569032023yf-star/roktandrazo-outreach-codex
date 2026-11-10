@@ -77,11 +77,16 @@ def verify_rollback(archive, expected, manifest, python, scratch):
         with tempfile.TemporaryDirectory(prefix='u1-rollback-fixture-',dir=scratch) as tmp:
             script=Path(tmp)/'release_store.py';script.write_bytes(tool)
             env={k:v for k,v in os.environ.items() if not k.upper().startswith(('PYTHON','PIP_'))}
-            result=subprocess.run([str(python),'-I','-B','-c',POINTER_PROBE,str(script),tmp],
-                                  cwd=tmp,env=env,capture_output=True,text=True,timeout=45)
-            if result.returncode or result.stdout.strip()!='ISOLATED_POINTER_ROLLBACK_OK':
-                raise ValueError('ROLLBACK_FIXTURE_FAILED:'+result.stderr[-2000:])
+            # The extracted script remains bound to the approved manifest during
+            # the isolated interpreter and nested rollback CLI subprocess.
+            with InstallInputPins() as tool_pins:
+                tool_pins.add_verified(script,script_digest,limit=2*1024*1024)
+                result=subprocess.run([str(python),'-I','-B','-c',POINTER_PROBE,str(script),tmp],
+                                      cwd=tmp,env=env,capture_output=True,text=True,timeout=45)
+                if result.returncode or result.stdout.strip()!='ISOLATED_POINTER_ROLLBACK_OK':
+                    raise ValueError('ROLLBACK_FIXTURE_FAILED:'+result.stderr[-2000:])
+                tool_pins.revalidate()
         pins.revalidate()
     return dict(rollback_archive_sha256=expected,rollback_host_files=len(hosts),
-                rollback_archive_parity_verified=True,isolated_pointer_rollback_verified=True,
+                rollback_host_and_tool_parity_verified=True,isolated_pointer_rollback_verified=True,
                 rollback_verified=False,installation_verified=False,production_ready=False)
