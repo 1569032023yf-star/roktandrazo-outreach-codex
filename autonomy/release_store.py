@@ -75,10 +75,50 @@ def checked_manifest(raw):
     return m
 
 
+@contextmanager
+def _open_checked_file(path):
+    """Open the final component without following links and inspect that handle."""
+    if os.name == 'nt':
+        import ctypes as c
+        from ctypes import wintypes as w
+        import msvcrt
+        class AttributeTag(c.Structure):
+            _fields_ = [('attributes', w.DWORD), ('tag', w.DWORD)]
+        api = c.WinDLL('kernel32', use_last_error=True)
+        api.CreateFileW.argtypes = [w.LPCWSTR, w.DWORD, w.DWORD, c.c_void_p, w.DWORD, w.DWORD, w.HANDLE]
+        api.CreateFileW.restype = w.HANDLE
+        api.GetFileInformationByHandleEx.argtypes = [w.HANDLE, c.c_int, c.c_void_p, w.DWORD]
+        api.GetFileInformationByHandleEx.restype = w.BOOL
+        api.CloseHandle.argtypes = [w.HANDLE]; api.CloseHandle.restype = w.BOOL
+        handle = api.CreateFileW(str(path), 0x80000000, 3, None, 3, 0x00200000, None)
+        if handle == c.c_void_p(-1).value: raise c.WinError(c.get_last_error())
+        try:
+            tag = AttributeTag()
+            if not api.GetFileInformationByHandleEx(handle, 9, c.byref(tag), c.sizeof(tag)):
+                raise c.WinError(c.get_last_error())
+            if tag.attributes & (0x400 | 0x10): raise ValueError('REPARSE_PATH')
+            fd = msvcrt.open_osfhandle(handle, os.O_RDONLY | os.O_BINARY)
+        except BaseException:
+            api.CloseHandle(handle)
+            raise
+    else:
+        # O_NOFOLLOW must be available: do not silently fall back to following links.
+        if not hasattr(os, 'O_NOFOLLOW'): raise ValueError('NOFOLLOW_UNAVAILABLE')
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    try:
+        with os.fdopen(fd, 'rb') as f:
+            fd = None
+            info = os.fstat(f.fileno())
+            if not stat.S_ISREG(info.st_mode): raise ValueError('ORDINARY_FILE_REQUIRED')
+            if info.st_nlink != 1: raise ValueError('HARDLINK_REJECTED')
+            yield f
+    finally:
+        if fd is not None: os.close(fd)
+
+
 def read_file(path, limit=MAX_FILE):
     path = ordinary(path)
-    if path.stat().st_nlink != 1: raise ValueError('HARDLINK_REJECTED')
-    with path.open('rb') as f:
+    with _open_checked_file(path) as f:
         # A single bytes allocation sized to the opened file avoids both the
         # limit-sized allocation for small files and a second full-size copy.
         # Read one extra byte and recheck the handle size to detect growth.
