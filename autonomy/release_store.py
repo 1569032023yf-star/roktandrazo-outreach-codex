@@ -78,16 +78,22 @@ def checked_manifest(raw):
 def read_file(path, limit=MAX_FILE):
     path = ordinary(path)
     if path.stat().st_nlink != 1: raise ValueError('HARDLINK_REJECTED')
-    # Request bounded chunks instead of allocating limit+1 bytes for every
-    # small file. Read one byte beyond the limit to retain growth/size checks.
-    data = bytearray()
     with path.open('rb') as f:
-        while len(data) <= limit:
-            chunk = f.read(min(64 * 1024, limit + 1 - len(data)))
-            if not chunk: break
-            data.extend(chunk)
-    if len(data) > limit: raise ValueError('FILE_TOO_LARGE')
-    return bytes(data)
+        # A single bytes allocation sized to the opened file avoids both the
+        # limit-sized allocation for small files and a second full-size copy.
+        # Read one extra byte and recheck the handle size to detect growth.
+        for attempt in range(3):
+            size = os.fstat(f.fileno()).st_size
+            if size > limit: raise ValueError('FILE_TOO_LARGE')
+            if attempt: f.seek(0)
+            data = f.read(size + 1)
+            if len(data) > limit: raise ValueError('FILE_TOO_LARGE')
+            after = os.fstat(f.fileno()).st_size
+            if after > limit: raise ValueError('FILE_TOO_LARGE')
+            if len(data) == size == after: return data
+            # Drop the old buffer before retrying; never hold two large reads.
+            del data
+        raise ValueError('FILE_CHANGED_DURING_READ')
 
 
 def durable_new(path, raw):

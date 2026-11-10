@@ -32,12 +32,50 @@ class ReleaseStoreTests(unittest.TestCase):
             def __enter__(self):self.inner.__enter__();return self
             def __exit__(self,*args):return self.inner.__exit__(*args)
             def read(self,size):requests.append(size);return self.inner.read(size)
+            def fileno(self):return self.inner.fileno()
+            def seek(self,offset):return self.inner.seek(offset)
         def monitored_open(p,*args,**kwargs):
             return Reader(original(p,*args,**kwargs))
         with patch.object(Path,'open',monitored_open):
             self.assertEqual(read_file(path,MAX_FILE),b'small fixture')
         self.assertTrue(requests)
         self.assertLessEqual(max(requests),65536)
+
+    def test_read_file_handles_growth_shrink_and_bounded_retry(self):
+        from autonomy.release_store import read_file
+        path=self.root/'changing.bin';original=Path.open
+        def run_change(initial, changes, limit):
+            path.write_bytes(initial);requests=[]
+            class Reader:
+                def __init__(self, inner):self.inner=inner
+                def __enter__(self):self.inner.__enter__();return self
+                def __exit__(self,*args):return self.inner.__exit__(*args)
+                def fileno(self):return self.inner.fileno()
+                def seek(self,offset):return self.inner.seek(offset)
+                def read(self,size):
+                    requests.append(size)
+                    change = changes[len(requests)-1] if len(requests)<=len(changes) else None
+                    after = isinstance(change,tuple)
+                    if after: change = change[0]
+                    if change is not None and not after:
+                        # Modify after sizing the open handle but before its read.
+                        with original(path,'wb') as writer:writer.write(change)
+                    data=self.inner.read(size)
+                    if change is not None and after:
+                        # Growth after EOF but before the post-read size check.
+                        with original(path,'wb') as writer:writer.write(change)
+                    return data
+            def monitored_open(p,*args,**kwargs):return Reader(original(p,*args,**kwargs))
+            with patch.object(Path,'open',monitored_open):
+                try:return read_file(path,limit),requests
+                finally:self.assertTrue(all(n<=limit+1 for n in requests))
+        self.assertEqual(run_change(b'abcd',[b'abcdef'],8)[0],b'abcdef')
+        self.assertEqual(run_change(b'abcd',[(b'abcdef',)],8)[0],b'abcdef')
+        self.assertEqual(run_change(b'abcd',[b'ab'],8)[0],b'ab')
+        with self.assertRaisesRegex(ValueError,'FILE_TOO_LARGE'):
+            run_change(b'abcd',[b'abcdefg'],6)
+        with self.assertRaisesRegex(ValueError,'FILE_CHANGED_DURING_READ'):
+            run_change(b'a',[b'ab',b'abc',b'abcd'],8)
     @unittest.skipUnless(__import__('os').name=='nt','Windows path contract')
     def test_final_sha_layout_rejected_before_staging(self):
         deep=self.root/('x'*60);deep.mkdir();store=ReleaseStore(deep)
