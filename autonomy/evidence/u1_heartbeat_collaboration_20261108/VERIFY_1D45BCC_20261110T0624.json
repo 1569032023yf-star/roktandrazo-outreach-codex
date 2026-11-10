@@ -1,0 +1,118 @@
+{
+  "source_commit": "1d45bccd379d652baa0a2c6e566cd507ee87b739",
+  "archive_sha256": "ebf390c9d9dacb6367dcc47bed6fe7833e468ed15534fd97f5bd017f90390a10",
+  "manifest_sha256": "31280b9341b4632704ba045e16b473c67e1bd12950a0fe610333b84c401df0e8",
+  "outcome": "VERIFIED",
+  "description_zh": "仅离线入口导入、包内子进程和完整性；不证明正式业务、安装或回滚。",
+  "description_en": "Offline entrypoint imports, packaged subprocess and integrity only; not formal business, installation or rollback acceptance.",
+  "allow_install": false,
+  "allow_dispatch": false,
+  "allow_cancel_dispatch": false,
+  "smtp_enabled": false,
+  "production_ready": false,
+  "checks": [
+    {
+      "arguments": [
+        "-I",
+        "-B",
+        "-c",
+        "\nimport sys,json,importlib,socket,subprocess,sqlite3,smtplib\nfrom pathlib import Path\napp=Path(sys.argv[1]).resolve(); runtime=Path(sys.executable).resolve().parent\nassert sys.flags.isolated and all(Path(p).resolve().is_relative_to(runtime) for p in sys.path)\nsys.path.insert(0,str(app))\ndef deny(*args,**kwargs): raise RuntimeError('NETWORK_FORBIDDEN_OFFLINE_PROBE')\nsocket.socket.connect=deny; socket.create_connection=deny\nsqlite3.connect=deny; smtplib.SMTP=deny; smtplib.SMTP_SSL=deny\nnames=['autonomy.u1_host_runtime','autonomy.inventory_event_bridge',\n       'autonomy.original_inventory_owner','autonomy.process_backend',\n       'publisher_channel.install_command','autonomy.windows.u1_bootstrap',\n       'discovery.providers.google_places','discovery.providers.browser_maps',\n       'discovery.providers.serpapi_maps','discovery.providers.contracts',\n       'discovery.discovery_service']\nbusiness_roots={'bd_db','history_crosscheck','lead_hygiene_gate','outreach_control',\n                'retail_city_queue','broad_outreach_gate','email_hygiene','timezone_resolver'}\nfor name in names: importlib.import_module(name)\norigins={}\nfor name,module in list(sys.modules.items()):\n if name.split('.')[0] in ('autonomy','publisher_channel','discovery') or name in business_roots:\n  origin=getattr(module,'__file__',None)\n  if origin:\n   assert Path(origin).resolve().is_relative_to(app),(name,origin)\n   origins[name]=str(Path(origin).resolve().relative_to(app))\nassert business_roots <= set(origins), sorted(business_roots-set(origins))\nchild=subprocess.run([sys.executable,'-I','-B','-c',\n 'import sys; assert sys.flags.isolated; print(\"ISOLATED_CHILD_OK\")'],\n capture_output=True,text=True,timeout=20,check=True)\nprint(json.dumps(dict(module_origins=origins,child_stdout=child.stdout)))\n",
+        "D:\\CODEX\\roktandrazo-workspace\\roktandrazo-outreach-autonomy\\u1-verify-1d45bcc-20261110-0624\\payload\\python"
+      ],
+      "returncode": 0,
+      "stdout": "{\"module_origins\": {\"autonomy.unattended_policy\": \"autonomy\\\\unattended_policy.py\", \"autonomy.lock_recovery\": \"autonomy\\\\lock_recovery.py\", \"autonomy.growth_ledger\": \"autonomy\\\\growth_ledger.py\", \"autonomy.bridge_acceptance\": \"autonomy\\\\bridge_acceptance.py\", \"autonomy.host_preparation\": \"autonomy\\\\host_preparation.py\", \"autonomy.cancellation_terminal\": \"autonomy\\\\cancellation_terminal.py\", \"autonomy.single_slot_adapter\": \"autonomy\\\\single_slot_adapter.py\", \"autonomy.cancellation_recovery\": \"autonomy\\\\cancellation_recovery.py\", \"autonomy.growth_snapshot\": \"autonomy\\\\growth_snapshot.py\", \"autonomy.recovery_status\": \"autonomy\\\\recovery_status.py\", \"autonomy.host_readonly_http\": \"autonomy\\\\host_readonly_http.py\", \"autonomy.release_store\": \"autonomy\\\\release_store.py\", \"autonomy.u1_host_runtime\": \"autonomy\\\\u1_host_runtime.py\", \"autonomy.process_control\": \"autonomy\\\\process_control.py\", \"autonomy.process_job\": \"autonomy\\\\process_job.py\", \"autonomy.process_backend\": \"autonomy\\\\process_backend.py\", \"autonomy.inventory_event_bridge\": \"autonomy\\\\inventory_event_bridge.py\", \"autonomy.inventory_maintenance\": \"autonomy\\\\inventory_maintenance.py\", \"autonomy.original_inventory_owner\": \"autonomy\\\\original_inventory_owner.py\", \"autonomy.disabled_host_package\": \"autonomy\\\\disabled_host_package.py\", \"autonomy.directory_identity\": \"autonomy\\\\directory_identity.py\", \"autonomy.host_file_transaction\": \"autonomy\\\\host_file_transaction.py\", \"publisher_channel.install_verifier\": \"publisher_channel\\\\install_verifier.py\", \"publisher_channel.install_inputs\": \"publisher_channel\\\\install_inputs.py\", \"publisher_channel.install_maintenance\": \"publisher_channel\\\\install_maintenance.py\", \"publisher_channel.install_process\": \"publisher_channel\\\\install_process.py\", \"publisher_channel.install_command\": \"publisher_channel\\\\install_command.py\", \"autonomy.windows.u1_bootstrap\": \"autonomy\\\\windows\\\\u1_bootstrap.py\", \"discovery\": \"discovery\\\\__init__.py\", \"discovery.providers\": \"discovery\\\\providers\\\\__init__.py\", \"discovery.models\": \"discovery\\\\models.py\", \"discovery.providers.contracts\": \"discovery\\\\providers\\\\contracts.py\", \"discovery.providers.base\": \"discovery\\\\providers\\\\base.py\", \"discovery.providers.google_places\": \"discovery\\\\providers\\\\google_places.py\", \"discovery.providers.browser_maps\": \"discovery\\\\providers\\\\browser_maps.py\", \"discovery.providers.serpapi_maps\": \"discovery\\\\providers\\\\serpapi_maps.py\", \"history_crosscheck\": \"history_crosscheck.py\", \"bd_db\": \"bd_db.py\", \"discovery.normalizer\": \"discovery\\\\normalizer.py\", \"lead_hygiene_gate\": \"lead_hygiene_gate.py\", \"outreach_control\": \"outreach_control.py\", \"retail_city_queue\": \"retail_city_queue.py\", \"email_hygiene\": \"email_hygiene.py\", \"broad_outreach_gate\": \"broad_outreach_gate.py\", \"timezone_resolver\": \"timezone_resolver.py\", \"discovery.discovery_service\": \"discovery\\\\discovery_service.py\"}, \"child_stdout\": \"ISOLATED_CHILD_OK\\n\"}\n",
+      "stderr": "",
+      "outcome": "PASSED"
+    },
+    {
+      "arguments": [
+        "-I",
+        "-B",
+        "-m",
+        "pip",
+        "--isolated",
+        "--disable-pip-version-check",
+        "check"
+      ],
+      "returncode": 0,
+      "stdout": "No broken requirements found.\n",
+      "stderr": "",
+      "outcome": "PASSED"
+    },
+    {
+      "arguments": [
+        "--validate-runtime",
+        "D:\\CODEX\\roktandrazo-workspace\\roktandrazo-outreach-autonomy\\u1-verify-1d45bcc-20261110-0624\\payload\\host\\runtime\\python\\U1_RUNTIME_CONTENT.json",
+        "5ca4bd5242a6432ea41d18e0140ae0b7b0a999565cb8319aa7cb2dca392a897e",
+        "D:\\CODEX\\roktandrazo-workspace\\roktandrazo-outreach-autonomy\\u1-verify-1d45bcc-20261110-0624\\payload\\host\\runtime\\python\\python.exe"
+      ],
+      "returncode": 0,
+      "stdout": "VALID_PINNED_RUNTIME\n",
+      "stderr": "",
+      "outcome": "PASSED"
+    },
+    {
+      "arguments": [
+        "-I",
+        "-B",
+        "-c",
+        "\nimport sys,json,tempfile,secrets,time,threading,http.client,socket\nfrom pathlib import Path\nsys.path.insert(0,sys.argv[1])\nfrom autonomy.release_store import ReleaseStore,build_bundle,sha\nfrom autonomy.u1_host_runtime import open_host\noriginal_connect=socket.socket.connect\ndef local_only(self,address):\n if not isinstance(address,tuple) or address[0]!='127.0.0.1':\n  raise RuntimeError('EXTERNAL_NETWORK_FORBIDDEN')\n return original_connect(self,address)\nsocket.socket.connect=local_only\nwith tempfile.TemporaryDirectory(prefix='u1-offline-http-',dir=sys.argv[2]) as tmp:\n root=Path(tmp);release=root/'release';state=root/'state';release.mkdir();state.mkdir()\n version=build_bundle(root/'fixture',{'fixture.txt':b'offline release fixture'},'a'*40)\n store=ReleaseStore(release);store.stage(root/'fixture',version);store.activate(version,expected_current=None)\n token=secrets.token_hex(32);snapshot=b'offline snapshot fixture'\n with open_host(release,state,token,int(time.time())+60,snapshot,sha(snapshot),port=0) as server:\n  worker=threading.Thread(target=server.serve_forever,kwargs={'poll_interval':0.01});worker.start()\n  statuses=[]\n  try:\n   for headers,expected in [({},401),({'Authorization':'Bearer '+token},200)]:\n    client=http.client.HTTPConnection('127.0.0.1',server.server_port,timeout=5)\n    try:\n     client.request('GET','/v1/health',headers=headers);reply=client.getresponse()\n     assert reply.status==expected,(reply.status,expected)\n     reply.read();statuses.append(reply.status)\n    finally:client.close()\n  finally:server.shutdown();worker.join(10)\n  assert not worker.is_alive()\nprint(json.dumps(dict(local_http_statuses=statuses,fixture_release=True,\n fixture_snapshot=True,formal_provider=False,production_ports_tested=False)))\n",
+        "D:\\CODEX\\roktandrazo-workspace\\roktandrazo-outreach-autonomy\\u1-verify-1d45bcc-20261110-0624\\payload\\python",
+        "D:\\CODEX\\roktandrazo-workspace\\roktandrazo-outreach-autonomy"
+      ],
+      "returncode": 0,
+      "stdout": "{\"local_http_statuses\": [401, 200], \"fixture_release\": true, \"fixture_snapshot\": true, \"formal_provider\": false, \"production_ports_tested\": false}\n",
+      "stderr": "",
+      "outcome": "PASSED"
+    }
+  ],
+  "active_check": null,
+  "phases": [
+    {
+      "kind": "phase",
+      "phase": "ARCHIVE_EXTRACTION",
+      "outcome": "PASSED",
+      "elapsed_seconds": 5.545,
+      "duration_seconds": 5.545
+    },
+    {
+      "kind": "phase",
+      "phase": "INITIAL_MANIFEST_AND_PAYLOAD",
+      "outcome": "PASSED",
+      "elapsed_seconds": 42.422,
+      "duration_seconds": 36.859
+    },
+    {
+      "kind": "phase",
+      "phase": "HOST_AND_RUNTIME_PINNING",
+      "outcome": "PASSED",
+      "elapsed_seconds": 45.172,
+      "duration_seconds": 2.746
+    },
+    {
+      "kind": "phase",
+      "phase": "FINAL_PIN_REVALIDATION",
+      "outcome": "PASSED",
+      "elapsed_seconds": 49.104,
+      "duration_seconds": 0.355
+    },
+    {
+      "kind": "phase",
+      "phase": "FINAL_MANIFEST_AND_PAYLOAD",
+      "outcome": "PASSED",
+      "elapsed_seconds": 52.679,
+      "duration_seconds": 3.542
+    }
+  ],
+  "active_phase": null,
+  "manifest_files": 5059,
+  "offline_entrypoint_imports_verified": true,
+  "discovery_business_imports_verified": true,
+  "loopback_http_with_fixtures_verified": true,
+  "production_ports_verified": false,
+  "full_business_import_closure": false,
+  "bootstrap_arguments_verified": false,
+  "installation_verified": false,
+  "rollback_verified": false,
+  "provider_accepted": false
+}
