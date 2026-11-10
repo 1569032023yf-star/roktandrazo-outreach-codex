@@ -124,6 +124,32 @@ class ReleaseStoreTests(unittest.TestCase):
                 build_archive_from_paths(failed,{'app/a.py':source},'a'*40)
         self.assertTrue(failed.exists())
 
+    def test_large_file_read_buffers_are_released_between_files_and_passes(self):
+        from autonomy.release_store import build_bundle_from_paths, build_archive_from_paths, read_file
+        first=self.root/'first';second=self.root/'second'
+        first.write_bytes(b'first payload');second.write_bytes(b'second payload')
+        sources={'a':first,'b':second};live=[]
+        class Tracked(bytes):
+            def __new__(cls, value):
+                result=super().__new__(cls,value);live.append(id(result));return result
+            def __del__(self):live.remove(id(self))
+        def tracked(path, limit=256*1024*1024):
+            value=read_file(path,limit)
+            if value in (b'first payload',b'second payload'):
+                self.assertFalse(live,'previous payload still held while reading next')
+                return Tracked(value)
+            return value
+        with patch('autonomy.release_store.read_file',side_effect=tracked):
+            folder=self.root/'bundle';version=build_bundle_from_paths(folder,sources,'a'*40)
+            self.assertFalse(live)
+            build_archive_from_paths(self.root/'bundle.zip',sources,'a'*40)
+            self.assertFalse(live)
+            self.store._verify(folder,version)
+            self.assertFalse(live)
+            (folder/'payload/a').write_bytes(b'tampered')
+            with self.assertRaisesRegex(ValueError,'ARTIFACT_MISMATCH'):
+                self.store._verify(folder,version)
+
     def test_first_install_upgrade_and_complete_pointer_rollback(self):
         v1=self.package('one',{'app/old.py':b'old'});a=self.store.activate(v1,expected_current=None)
         v2=self.package('two',{'app/new.py':b'new','app/other.py':b'other'})

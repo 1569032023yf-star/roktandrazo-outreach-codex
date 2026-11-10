@@ -128,6 +128,7 @@ def build_bundle_from_paths(destination, files, source_commit):
         safe_path(name);raw=read_file(path);total+=len(raw)
         if total>MAX_LARGE_TOTAL:raise ValueError('PACKAGE_TOO_LARGE')
         hashes[name]=sha(raw)
+        del raw
     manifest=canonical(dict(schema=LARGE_SCHEMA,inventory_id=INVENTORY,
                             source_commit=source_commit,files=hashes))
     if len(manifest)>MAX_MANIFEST:raise ValueError('MANIFEST_TOO_LARGE')
@@ -138,6 +139,7 @@ def build_bundle_from_paths(destination, files, source_commit):
         if sha(raw)!=hashes[name]:raise ValueError('SOURCE_CHANGED')
         target=dest/'payload'/name;target.parent.mkdir(parents=True,exist_ok=True)
         durable_new(target,raw)
+        del raw
     durable_new(dest/'manifest.json',manifest)
     return sha(manifest)
 
@@ -157,6 +159,7 @@ def build_archive_from_paths(destination, files, source_commit, *, source_reader
         safe_path(name); raw = read_source(path); total += len(raw)
         if total > MAX_LARGE_TOTAL: raise ValueError('PACKAGE_TOO_LARGE')
         hashes[name] = sha(raw)
+        del raw
     manifest = canonical(dict(schema=LARGE_SCHEMA, inventory_id=INVENTORY,
         source_commit=source_commit, files=hashes))
     if len(manifest) > MAX_MANIFEST: raise ValueError('MANIFEST_TOO_LARGE')
@@ -168,6 +171,7 @@ def build_archive_from_paths(destination, files, source_commit, *, source_reader
                 raw = read_source(path)
                 if sha(raw) != hashes[name]: raise ValueError('SOURCE_CHANGED')
                 archive.writestr('payload/' + name, raw)
+                del raw
             archive.writestr('manifest.json', manifest)
         output.flush(); os.fsync(output.fileno())
     return sha(manifest)
@@ -210,6 +214,7 @@ class ReleaseStore:
         for name, digest in m['files'].items():
             data = read_file(folder/'payload'/name); total += len(data)
             if total > (MAX_LARGE_TOTAL if m['schema']==LARGE_SCHEMA else MAX_TOTAL) or sha(data) != digest: raise ValueError('ARTIFACT_MISMATCH')
+            del data
         actual = set()
         for p in folder.rglob('*'):
             ordinary(p)
