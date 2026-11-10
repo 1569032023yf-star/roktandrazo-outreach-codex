@@ -102,6 +102,9 @@ def verify(args, progress=None):
         any(delivery.get(k) is not False for k in
             ('allow_install','allow_dispatch','allow_cancel_dispatch','smtp_enabled','production_ready'))):
         raise ValueError('DELIVERY_BINDING_OR_GATE')
+    rollback_archive=getattr(args,'rollback_archive',None)
+    rollback_sha=getattr(args,'rollback_archive_sha256',None)
+    if bool(rollback_archive)!=bool(rollback_sha): raise ValueError('ROLLBACK_ARGUMENT_PAIR_REQUIRED')
     host=root/'payload/host'; runtime=host/'runtime/python'; results=[]
     host_digest=manifest['files']['host/manifest.json']
     with InstallInputPins() as pins:
@@ -133,11 +136,16 @@ def verify(args, progress=None):
     # Recheck after subprocess probes to detect unexpected package writes.
     with phase('FINAL_MANIFEST_AND_PAYLOAD'):
         ReleaseStore(root)._verify(root,args.manifest_sha256)
-    return dict(checks=results,manifest_files=len(manifest['files']),offline_entrypoint_imports_verified=True,
+    rollback={}
+    if rollback_archive:
+        from tools.verify_u1_rollback import verify_rollback
+        with phase('ROLLBACK_ARCHIVE_AND_POINTER_FIXTURE'):
+            rollback=verify_rollback(rollback_archive,rollback_sha,manifest,runtime/'python.exe',root.parent)
+    return dict(**rollback,checks=results,manifest_files=len(manifest['files']),offline_entrypoint_imports_verified=True,
                 discovery_business_imports_verified=True,
                 loopback_http_with_fixtures_verified=True,production_ports_verified=False,
                 full_business_import_closure=False,bootstrap_arguments_verified=False,
-                installation_verified=False,rollback_verified=False,provider_accepted=False)
+                provider_accepted=False,**({} if rollback else dict(installation_verified=False,rollback_verified=False)))
 
 
 def verify_with_report(args):
@@ -173,4 +181,6 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     for key in ('archive','archive-sha256','manifest-sha256','source-commit','output','report'):
         parser.add_argument('--'+key,required=True)
+    parser.add_argument('--rollback-archive')
+    parser.add_argument('--rollback-archive-sha256')
     print(json.dumps(verify_with_report(parser.parse_args()),ensure_ascii=True))
