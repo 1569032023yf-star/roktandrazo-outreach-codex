@@ -153,9 +153,10 @@ def run_tree(args, *, timeout, cwd=None, stdout_limit_bytes=4*1024*1024,
     for value in (stdout_limit_bytes, stderr_limit_bytes, event_limit_bytes):
         if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
             raise ValueError('Output byte limits must be positive integers')
-    if any(type(value) not in (int, float) or not math.isfinite(value) or value <= 0
+    # Keep Windows DWORD waits finite and match the backend wall bound.
+    if any(type(value) not in (int, float) or not 0 < value <= 3600 or not math.isfinite(value)
            for value in (timeout, cleanup_timeout)):
-        raise ValueError('Timeouts must be finite positive numbers')
+        raise ValueError('Timeouts must be finite positive numbers at most 3600 seconds')
     if env is not None:
         if not isinstance(env, dict) or any(type(k) is not str or type(v) is not str or not k or '=' in k or '\x00' in k or '\x00' in v for k, v in env.items()):
             raise ValueError('Environment must contain valid string keys and values')

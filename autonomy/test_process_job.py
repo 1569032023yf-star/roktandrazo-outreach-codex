@@ -16,12 +16,20 @@ class ProcessTests(unittest.TestCase):
 
     def test_nonfinite_timeouts_rejected_before_launch(self):
         for key in ('timeout', 'cleanup_timeout'):
-            for value in (float('nan'), float('inf'), float('-inf'), 0, -1, True, '3'):
+            for value in (float('nan'), float('inf'), float('-inf'), 0, -1, True, '3',
+                          3600.001, 4294967.295, 4294967.296, 1e308, 10**400):
                 with self.subTest(key=key, value=value), patch.object(p, '_assert_live') as live:
                     kwargs = {'timeout': 3, key: value}
                     with self.assertRaises(ValueError):
                         p.run_tree([sys.executable, '-c', 'pass'], **kwargs)
                     live.assert_not_called()
+
+    def test_timeout_upper_bound_admitted_before_launch(self):
+        for key in ('timeout', 'cleanup_timeout'):
+            kwargs = {'timeout': 3, key: 3600}
+            with self.subTest(key=key), patch.object(p, '_assert_live', side_effect=RuntimeError('prelaunch')):
+                with self.assertRaisesRegex(RuntimeError, 'prelaunch'):
+                    p.run_tree([sys.executable, '-c', 'pass'], **kwargs)
 
     def test_success_and_nonzero(self):
         result = self.run_code('import sys; print("ok"); print("err",file=sys.stderr);sys.exit(7)')
