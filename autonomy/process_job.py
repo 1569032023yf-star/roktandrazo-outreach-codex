@@ -1,6 +1,7 @@
 """Bounded process trees / 有界进程树：输出只存在有界内存中。"""
 from __future__ import annotations
 import os
+import math
 import subprocess
 import threading
 import time
@@ -152,8 +153,9 @@ def run_tree(args, *, timeout, cwd=None, stdout_limit_bytes=4*1024*1024,
     for value in (stdout_limit_bytes, stderr_limit_bytes, event_limit_bytes):
         if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
             raise ValueError('Output byte limits must be positive integers')
-    if timeout <= 0 or cleanup_timeout <= 0:
-        raise ValueError('Timeouts must be positive')
+    if any(type(value) not in (int, float) or not math.isfinite(value) or value <= 0
+           for value in (timeout, cleanup_timeout)):
+        raise ValueError('Timeouts must be finite positive numbers')
     if env is not None:
         if not isinstance(env, dict) or any(type(k) is not str or type(v) is not str or not k or '=' in k or '\x00' in k or '\x00' in v for k, v in env.items()):
             raise ValueError('Environment must contain valid string keys and values')
