@@ -667,6 +667,11 @@ class SingleSlotAdapter:
             _expected_identity=journal_identity,_must_create=journal_identity is None)
 
     def reconcile(self,admission,slot_receipt,budget_receipt):
+        # The original owner lives in a third durable store whose identity and
+        # fence have not been bound across both ledger transactions. Calling
+        # this base method directly must not bypass the subclass guard below.
+        if isinstance(self, OriginalOwnerSlotAdapter):
+            return {'outcome':'UNKNOWN_RECONCILE_ONLY','production_execution':False}
         from autonomy.ledger_binding import LedgerBindingError
         if type(self) is SingleSlotAdapter and self.target is not None and os.name == 'nt':
             try:
@@ -811,11 +816,7 @@ class OriginalOwnerSlotAdapter(SingleSlotAdapter):
         return {k:v for k,v in result.items() if k not in ('lock_token_hash','process_identity_hash')}
 
     def reconcile(self, admission, slot_receipt, budget_receipt):
-        p, common = self._admission(admission,require_backend=False)
-        sr=self._verify(slot_receipt,'receipt'); br=self._verify(budget_receipt,'budget_receipt')
-        token=sr.get('token')
-        if type(token) is not str or not token:
-            raise AdapterError('INVALID_TERMINAL_RECEIPT')
-        expected=self.original_owner.receipt_binding(dict(common,claim_token_hash=digest(token)))
-        self._bound(sr,expected); self._bound(br,expected)
-        return super().reconcile(admission,slot_receipt,budget_receipt)
+        # Receipt inspection is deliberately deferred: until both ledgers and
+        # the original owner fence are bound as one recovery protocol, neither
+        # successful receipts nor a readable owner authorize reconciliation.
+        return {'outcome':'UNKNOWN_RECONCILE_ONLY','production_execution':False}
