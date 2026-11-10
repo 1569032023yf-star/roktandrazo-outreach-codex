@@ -29,10 +29,23 @@ def _db(path):
     return closing(sqlite3.connect(Path(path).resolve(strict=True).as_uri()+'?mode=ro', uri=True))
 
 
-def _record(path, identity, binding, state, fault, raw):
-    with closing(sqlite3.connect(path, timeout=5, isolation_level=None)) as db:
+def _record(path, identity, binding, state, fault, raw, *, check_connection):
+    """Write an offline recovery record only under the caller's identity guard.
+
+    This primitive does not establish that guard: the caller must pin and bind
+    every participating store and the owner fence.  Recovery remains disabled
+    until that complete protocol exists.  Check again around injected callbacks
+    and the commit because those are observable mutation boundaries.
+    """
+    if not callable(check_connection):
+        raise AdapterError('RECOVERY_BINDING_REQUIRED')
+    # Opening must not silently create a replacement if the pinned file vanished.
+    uri=Path(path).resolve(strict=True).as_uri()+'?mode=rw'
+    with closing(sqlite3.connect(uri, uri=True, timeout=5, isolation_level=None)) as db:
+        check_connection(db)
         db.execute('PRAGMA synchronous=FULL');db.execute('BEGIN IMMEDIATE')
         try:
+            check_connection(db)
             objects=db.execute("SELECT type,sql FROM sqlite_master WHERE name NOT GLOB 'sqlite_*' ORDER BY name").fetchall()
             version=db.execute('PRAGMA user_version').fetchone()[0]
             if not objects and version==0:
@@ -45,7 +58,8 @@ def _record(path, identity, binding, state, fault, raw):
             db.execute('INSERT OR IGNORE INTO handoffs VALUES (?,?)',(_hash(raw),raw.decode('utf-8')))
             if old is None:db.execute('INSERT INTO recoveries VALUES (?,?,?)',(identity,encoded,state))
             elif state=='COMPLETED':db.execute("UPDATE recoveries SET state='COMPLETED' WHERE identity=?",(identity,))
-            fault('before_'+state.lower()+'_commit');db.commit();fault('after_'+state.lower()+'_commit')
+            fault('before_'+state.lower()+'_commit');check_connection(db)
+            db.commit();fault('after_'+state.lower()+'_commit');check_connection(db)
             return old[1] if old else None
         except BaseException:
             db.rollback();raise
