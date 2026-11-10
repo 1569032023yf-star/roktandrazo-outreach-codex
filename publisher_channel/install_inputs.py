@@ -38,7 +38,7 @@ def pin_python_runtime(pins, manifest_path, expected, python, *, progress=lambda
             path.casefold()=='u1_runtime_content.json' or
             any(p in ('','.','..') or p.endswith('.') or p.split('.')[0].upper() in reserved for p in path.split('/')) or
             path.casefold() in seen):reject('PYTHON_RUNTIME_ENTRY')
-        seen.add(path.casefold());total+=len(pins.add(root/path,digest))
+        seen.add(path.casefold());total+=pins.add_verified(root/path,digest)
         if total>1024*1024*1024:reject('PYTHON_RUNTIME_SIZE')
         if count%128==0:progress('RUNTIME_FILES_PINNED',count)
     actual=set()
@@ -104,24 +104,28 @@ class InstallInputPins:
             key=str(parent).casefold()
             if key not in self.directories:self.directories[key]=self._open(parent,True)
 
-    def _read(self,handle,limit,system_component=False):
+    def _read(self,handle,limit,system_component=False,*,capture=True):
         info=FileInformation();self._checked(self.api.GetFileInformationByHandle(handle,c.byref(info)))
         size=(info.size_high<<32)|info.size_low
         if info.links<1 or (not system_component and info.links!=1) or size>limit:reject('LINKS_OR_SIZE')
-        self._checked(self.api.SetFilePointerEx(handle,0,None,0));pieces=[];total=0
+        self._checked(self.api.SetFilePointerEx(handle,0,None,0));pieces=[] if capture else None;total=0;digest=hashlib.sha256()
         while True:
             chunk=c.create_string_buffer(65536);count=w.DWORD()
             self._checked(self.api.ReadFile(handle,chunk,len(chunk),c.byref(count),None))
             if not count.value:break
             total+=count.value
             if total>limit:reject('SIZE_LIMIT')
-            pieces.append(chunk.raw[:count.value])
-        raw=b''.join(pieces)
-        if len(raw)!=size:reject('SIZE_CHANGED')
-        return raw
+            data=chunk.raw[:count.value];digest.update(data)
+            if capture:pieces.append(data)
+        if total!=size:reject('SIZE_CHANGED')
+        return (b''.join(pieces) if capture else total),digest.hexdigest()
 
     def add(self,path,expected,*,limit=256*1024*1024):
-        return self._add(path,expected,limit=limit,system_component=False)
+        return self._add(path,expected,limit=limit,system_component=False,capture=True)
+
+    def add_verified(self,path,expected,*,limit=256*1024*1024):
+        """Pin and verify file content without retaining it; return its length."""
+        return self._add(path,expected,limit=limit,system_component=False,capture=False)
 
     def add_mutable_reference(self,path):
         """Hold only identity: allow original DB writes, deny replacement/deletion.
@@ -154,9 +158,9 @@ class InstallInputPins:
         root=Path(buffer.value)
         allowed={str(root/p).casefold() for p in RUNTIME_PATHS.values()}|{str(root/'System32/WindowsPowerShell/v1.0/powershell.exe').casefold()}
         if str(self.path(path)).casefold() not in allowed:reject('FIXED_SYSTEM_COMPONENT_REQUIRED')
-        return self._add(path,expected,limit=256*1024*1024,system_component=True)
+        return self._add(path,expected,limit=256*1024*1024,system_component=True,capture=True)
 
-    def _add(self,path,expected,*,limit,system_component):
+    def _add(self,path,expected,*,limit,system_component,capture):
         if not self.active or not sha(expected) or type(limit) is not int or not 0<limit<=256*1024*1024:reject('PIN_CONTRACT')
         path=self.path(path);key=str(path).casefold()
         if key in self.references:reject('CONFLICTING_PIN')
@@ -166,16 +170,16 @@ class InstallInputPins:
         else:
             self._parents(path);handle,identity=self._open(path,False)
             self.files[key]=(handle,identity,expected,limit,system_component)
-        raw=self._read(handle,limit,system_component)
-        if hashlib.sha256(raw).hexdigest()!=expected:reject('DIGEST_MISMATCH')
-        return raw
+        result,digest=self._read(handle,limit,system_component,capture=capture)
+        if digest!=expected:reject('DIGEST_MISMATCH')
+        return result
 
     def revalidate(self):
         if not self.active:reject('PINS_NOT_ACTIVE')
         for handle,identity in self.directories.values():
             if self._identity(handle,True)!=identity:reject('DIRECTORY_IDENTITY_CHANGED')
         for handle,identity,expected,limit,system_component in self.files.values():
-            if self._identity(handle,False)!=identity or hashlib.sha256(self._read(handle,limit,system_component)).hexdigest()!=expected:reject('FILE_CHANGED')
+            if self._identity(handle,False)!=identity or self._read(handle,limit,system_component,capture=False)[1]!=expected:reject('FILE_CHANGED')
         for path in self.references:
             self.add_mutable_reference(path)
         return True
@@ -227,8 +231,12 @@ def pin_package(pins,root,manifest_sha256,source_commit):
         seen.add(lower);parents.update(ancestors);total+=row['size']
         if total>1024*1024*1024:reject('TOTAL_SIZE')
         limit=2*1024*1024 if large and path=='runtime/python/U1_RUNTIME_CONTENT.json' else 256*1024*1024
-        raw=pins.add(root/path,row['sha256'],limit=limit)
-        if len(raw)!=row['size']:reject('ENTRY_SIZE')
+        if path=='config/host.json':
+            raw=pins.add(root/path,row['sha256'],limit=limit)
+            size=len(raw)
+        else:
+            size=pins.add_verified(root/path,row['sha256'],limit=limit)
+        if size!=row['size']:reject('ENTRY_SIZE')
         if path=='config/host.json':
             expected=dict(schema='rokt.disabled-host-config.v1',inventory_id='1784775229336',service_name='RoktU1Bridge',
                           allow_dispatch=False,allow_cancel_dispatch=False,smtp_enabled=False,scheduler_created=False)
