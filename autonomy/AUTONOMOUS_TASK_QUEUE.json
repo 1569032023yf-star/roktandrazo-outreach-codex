@@ -10429,5 +10429,16 @@
     "allow_cancel_dispatch": false,
     "SMTP": false,
     "next_action": "Complete original-owner Provider operation admission and business startup argument integration; obtain independent review of the new source before rebuilding the fixed package. Authoritative billing and terminal receipts remain CONTRACT_MISSING."
+  },
+  "u1_heartbeat_20261110T1828Z": {
+    "source_commit": "dd04f1d024877321169bc1084142974611a7fef6",
+    "provider_candidate": "850ed29b380e1ffb903558420aa67a89122356b2",
+    "provider_integrated": false,
+    "code_integrated": true,
+    "production_accepted": "UNKNOWN",
+    "business_growth": "UNKNOWN",
+    "package_verification": "VERIFIED_OFFLINE_ONLY",
+    "report": "autonomy/evidence/u1_heartbeat_collaboration_20261108/REPORT_HEARTBEAT_20261110T1828.md",
+    "finished_at": "2026-11-10T18:42:00.259359+00:00"
   }
 }
