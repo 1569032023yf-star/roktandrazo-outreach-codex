@@ -51,3 +51,7 @@ SCHEDULE_TRIGGERED=true; C_EXECUTED=true; AGENT_DELEGATED=true; AGENT_RESULT_REC
 中文：下一步优先接入可验证的原生子代理启动及结果回执、恢复中断对账，完成 Provider 真实账本及 fence 身份绑定；在隔离环境验证完整安装和回滚、Windows 符号链接、POSIX FIFO 与受信任 ACL。不得将本地锁声称为全球锁，生产派发维持关闭。报告准备于 2026-11-10 06:50 UTC；报告提交及远端核验在本行之后发生，不能预先断言。
 
 English: Next, bind verifiable native agent start and result receipts and interrupted-run reconciliation, complete identity binding for real Provider ledgers and fence, and validate complete installation/rollback, Windows symlinks, POSIX FIFO and trusted ACLs in isolation. Do not describe local locks as global; production dispatch remains disabled. This report was prepared at 06:50 UTC; its commit and remote verification occur after this line and are not preclaimed.
+
+中文：报告及机器回执提交 94ef017185087b931f21c094437c128988e0dd5c 已推送，远端 SHA 已核验；本确认另行提交。代码已整合和报告已推送均不代表生产已验收。
+
+English: Report and machine-receipt commit 94ef017185087b931f21c094437c128988e0dd5c was pushed and its remote SHA verified; this confirmation is committed separately. Code integration and a pushed report do not establish production acceptance.
