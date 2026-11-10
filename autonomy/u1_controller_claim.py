@@ -30,19 +30,6 @@ def _task(state, task_id):
     return found[0]
 
 
-def _unblocked(task, task_id):
-    # A concurrent reconciler may have quarantined the task after our claim.
-    # Never clear a new unknown outcome or a newly imposed safety fence.
-    return (task.get('id') == task_id and task.get('workstream') == REGISTERED[task_id]
-            and task.get('role') == 'developer'
-            and task.get('outcome_unknown') is False
-            and task.get('needs_reassessment', False) is False
-            and not task.get('blocked_reason') and not task.get('depends_on')
-            and not task.get('lease_cycle_id')
-            and task.get('production_execution') is False
-            and task.get('allow_dispatch') is False)
-
-
 def claim_next(runtime, workstream):
     """Claim one registered never-started task; claiming does not launch it.
 
@@ -83,58 +70,20 @@ def claim_next(runtime, workstream):
 
 
 def acknowledge_started(runtime, task_id, claim_id, native_agent_id):
-    """Record an independently observed native start; this is not a launcher."""
-    if (task_id not in REGISTERED or not isinstance(native_agent_id, str)
-            or not re.fullmatch(r'/[a-z0-9_/]{1,200}', native_agent_id)):
-        raise ValueError('START_RECEIPT_REJECTED')
-    with exclusive(runtime):
-        path, state = _queue(runtime)
-        task = _task(state, task_id)
-        claim = task.get('controller_claim')
-        if (not _unblocked(task, task_id) or task.get('status') != 'controller_claimed'
-                or task.get('executor') != 'controller_claimed'
-                or type(task.get('attempts')) is not int or task['attempts'] != 0
-                or not isinstance(claim, dict)
-                or claim.get('source_commit') != task.get('source_commit')
-                or claim.get('id') != claim_id or claim.get('execution_started') is not False):
-            raise ValueError('CLAIM_MISMATCH')
-        claim.update(execution_started=True, native_agent_id=native_agent_id, started_at=now())
-        task.update(status='controller_running', executor='native_subagent', attempts=1)
-        atomic_json(path, state)
+    """Disabled until an authenticated native start receipt is available.
+
+    A caller-provided string is not proof of a running agent. No queue state is
+    read or changed by this compatibility entry point.
+    """
+    raise RuntimeError('NATIVE_RECEIPT_VERIFIER_UNAVAILABLE')
 
 
 def record_result(runtime, task_id, claim_id, *, evidence_sha256, candidate_commit=None):
-    """Record a received result, never its review or integration approval.
+    """Disabled until actual result provenance can be independently verified.
 
-    Missing candidate commit means unknown outcome and remains quarantined.
-    The caller must verify the actual result and hash before passing evidence.
+    A hash and a commit-shaped string alone do not prove that work occurred.
     """
-    if (task_id not in REGISTERED or not isinstance(evidence_sha256, str)
-            or not re.fullmatch(r'[0-9a-f]{64}', evidence_sha256)
-            or (candidate_commit is not None and
-                (not isinstance(candidate_commit, str) or
-                 not re.fullmatch(r'[0-9a-f]{40}', candidate_commit)))):
-        raise ValueError('RESULT_RECEIPT_REJECTED')
-    with exclusive(runtime):
-        path, state = _queue(runtime)
-        task = _task(state, task_id)
-        claim = task.get('controller_claim')
-        if (not _unblocked(task, task_id) or task.get('status') != 'controller_running'
-                or task.get('executor') != 'native_subagent'
-                or type(task.get('attempts')) is not int or task['attempts'] != 1
-                or not isinstance(claim, dict)
-                or claim.get('source_commit') != task.get('source_commit')
-                or claim.get('id') != claim_id or claim.get('execution_started') is not True):
-            raise ValueError('CLAIM_MISMATCH')
-        claim.update(result_received_at=now(), evidence_sha256=evidence_sha256)
-        if candidate_commit is None:
-            # The legacy supervisor does not register these tasks. Its generic
-            # unknown recovery must not requeue them into the legacy runner.
-            task.update(status='controller_unknown', outcome_unknown=True, needs_reassessment=True)
-        else:
-            task.update(status='needs_review', candidate_commit=candidate_commit,
-                        review_status='NOT_STARTED', outcome_unknown=False)
-        atomic_json(path, state)
+    raise RuntimeError('NATIVE_RECEIPT_VERIFIER_UNAVAILABLE')
 
 
 def quarantine_interrupted(runtime, task_id, claim_id):
