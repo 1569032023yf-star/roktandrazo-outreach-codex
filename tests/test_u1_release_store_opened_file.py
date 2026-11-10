@@ -78,3 +78,15 @@ class ReleaseStoreOpenedFileTests(unittest.TestCase):
             capture_output=True,timeout=3)
         self.assertNotEqual(result.returncode,0)
         self.assertIn(b'ORDINARY_FILE_REQUIRED',result.stderr)
+
+    def test_rollback_tool_runs_in_isolated_python_without_publisher_package(self):
+        import json,shutil,subprocess,sys
+        tool=self.root/'release_store.py'
+        shutil.copy2(Path(release_store.__file__),tool)
+        store=self.root/'store';store.mkdir()
+        (store/'active.json').write_text(json.dumps(dict(schema=release_store.SCHEMA,
+            inventory_id=release_store.INVENTORY,version=None)))
+        result=subprocess.run([sys.executable,'-I',str(tool),'--root',str(store),'status'],
+            cwd=str(self.root),capture_output=True,text=True,timeout=15)
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertIsNone(json.loads(result.stdout)['version'])

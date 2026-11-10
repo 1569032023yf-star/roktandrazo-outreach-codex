@@ -76,14 +76,45 @@ def checked_manifest(raw):
 
 
 @contextmanager
+def _pin_windows_parents(path):
+    """Keep checked ancestor handles open without FILE_SHARE_DELETE."""
+    import ctypes as c
+    from ctypes import wintypes as w
+    class AttributeTag(c.Structure):
+        _fields_ = [('attributes', w.DWORD), ('tag', w.DWORD)]
+    class FileIdentity(c.Structure):
+        _fields_ = [('volume', c.c_ulonglong), ('identifier', c.c_ubyte * 16)]
+    api = c.WinDLL('kernel32', use_last_error=True)
+    api.CreateFileW.argtypes = [w.LPCWSTR,w.DWORD,w.DWORD,c.c_void_p,w.DWORD,w.DWORD,w.HANDLE]
+    api.CreateFileW.restype = w.HANDLE
+    api.GetFileInformationByHandleEx.argtypes = [w.HANDLE,c.c_int,c.c_void_p,w.DWORD]
+    api.GetFileInformationByHandleEx.restype = w.BOOL
+    api.CloseHandle.argtypes = [w.HANDLE];api.CloseHandle.restype = w.BOOL
+    handles = []
+    try:
+        for parent in (*reversed(path.parent.parents),path.parent):
+            handle = api.CreateFileW(str(parent),0x81,3,None,3,0x02200000,None)
+            if handle == c.c_void_p(-1).value: raise c.WinError(c.get_last_error())
+            handles.append(handle)
+            tag=AttributeTag();identity=FileIdentity()
+            for kind,info in ((9,tag),(18,identity)):
+                if not api.GetFileInformationByHandleEx(handle,kind,c.byref(info),c.sizeof(info)):
+                    raise c.WinError(c.get_last_error())
+            if tag.attributes & 0x400 or not tag.attributes & 0x10:
+                raise ValueError('REPARSE_PATH')
+        yield
+    finally:
+        failed = [handle for handle in reversed(handles) if not api.CloseHandle(handle)]
+        if failed: raise ValueError('HANDLE_CLOSE_UNVERIFIED')
+
+
+@contextmanager
 def _open_checked_file(path):
     """Open the final component without following links and inspect that handle."""
     with ExitStack() as guards:
         if os.name == 'nt':
             # Pin each ordinary ancestor against replacement for the read lifetime.
-            from publisher_channel.install_inputs import InstallInputPins
-            pins = guards.enter_context(InstallInputPins())
-            pins._parents(path)
+            guards.enter_context(_pin_windows_parents(path))
             yield from _open_final_file(path)
         else:
             # An open directory fd anchors each lookup even if its name is renamed.
