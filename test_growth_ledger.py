@@ -218,6 +218,49 @@ class GrowthTests(unittest.TestCase):
                 self.assertEqual(row['claim_hash'],digest(token));self.assertIn('slot',row['binding'])
             with self.assertRaises(GrowthError):self.l.reserve_then_claim(e,ledger,'slot',se,now=T+10,epoch=1,owner='owner')
 
+    def _claim_ack_tamper(self, sql):
+        from unittest.mock import patch
+        from autonomy.lock_recovery import exclusive_lock
+        self.caps(n=1); ledger,e,se=self.slot_fixture()
+        original=ledger.claim
+        def claim_and_mutate(*args, **kwargs):
+            token=original(*args, **kwargs)
+            with self.l.tx() as c:
+                c.execute(sql)
+            return token
+        with exclusive_lock(Path(self.temp.name)/'lock'):
+            with patch.object(ledger, 'claim', side_effect=claim_and_mutate):
+                with self.assertRaisesRegex(GrowthError, 'CLAIM_ACKNOWLEDGEMENT_CONFLICT'):
+                    self.l.reserve_then_claim(e,ledger,'slot',se,now=T+10,epoch=1,owner='owner')
+        self.assertEqual(ledger.snapshot()[0][2], 'claimed')
+        with self.l.tx() as c:
+            row=c.execute('SELECT * FROM reservations').fetchone()
+            if row is not None:
+                return dict(row)
+        return None
+
+    def test_claim_ack_rejects_deleted_reservation(self):
+        self.assertIsNone(self._claim_ack_tamper('DELETE FROM reservations'))
+
+    def test_claim_ack_rejects_state_change(self):
+        row=self._claim_ack_tamper("UPDATE reservations SET state='unknown'")
+        self.assertEqual(row['state'], 'unknown')
+        self.assertIsNone(row['claim_hash'])
+
+    def test_claim_ack_does_not_overwrite_other_claim(self):
+        row=self._claim_ack_tamper("UPDATE reservations SET claim_hash='other'")
+        self.assertEqual(row['claim_hash'], 'other')
+
+    def test_claim_ack_rejects_changed_binding(self):
+        row=self._claim_ack_tamper("UPDATE reservations SET binding='{}'")
+        self.assertEqual(row['binding'], '{}')
+        self.assertIsNone(row['claim_hash'])
+
+    def test_claim_ack_rejects_changed_amount(self):
+        row=self._claim_ack_tamper("UPDATE reservations SET charged='{}'")
+        self.assertEqual(row['charged'], '{}')
+        self.assertIsNone(row['claim_hash'])
+
     def test_real_claim_failure_keeps_budget(self):
         from autonomy.lock_recovery import exclusive_lock
         from autonomy.durable_slots import LedgerError

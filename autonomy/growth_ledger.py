@@ -420,6 +420,15 @@ class GrowthLedger:
         token=slot_ledger.claim(slot,slot_evidence,now=now,epoch=epoch,owner=owner)
         # If this acknowledgement write fails, both sides retain uncertain state
         # and the reservation cannot authorize another claim.
+        amount=vector(p['amount'])
+        expected_request=digest({'day':p['day'],'run':run,'amount':amount,
+                                 'cache_hit':p['cache_hit'],'binding':expected})
         with self.tx() as c:
-            c.execute('UPDATE reservations SET claim_hash=? WHERE id=?',(digest(token),p['request_id']))
+            updated=c.execute("UPDATE reservations SET claim_hash=? WHERE id=? AND day=? AND run=? "
+                "AND amount=? AND charged=? AND state='reserved' AND request_hash=? "
+                "AND receipt_hash IS NULL AND binding=? AND claim_hash IS NULL",
+                (digest(token),p['request_id'],p['day'],run,canonical(amount),canonical(amount),
+                 expected_request,canonical(expected)))
+            if updated.rowcount != 1:
+                raise GrowthError('CLAIM_ACKNOWLEDGEMENT_CONFLICT')
         return token
