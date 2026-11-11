@@ -164,16 +164,21 @@ class HostFileTransaction:
                     f.write(raw);f.flush();os.fsync(f.fileno())
                 if read(target)!=raw:raise ValueError('STOP_AND_PRESERVE_BLOB_READBACK')
             return {'sha256':key}
-        folded = []
+        folded = {}
         plan = []
         backup_total = 0
         payload_total = 0
         for n in names:
             name(n)
             lower = n.casefold()
-            if any(lower == x or lower.startswith(x+'/') or x.startswith(lower+'/') for x in folded):
+            node = folded
+            for part in lower.split('/'):
+                if None in node:
+                    raise ValueError('OWNED_PATH_COLLISION')
+                node = node.setdefault(part, {})
+            if node:
                 raise ValueError('OWNED_PATH_COLLISION')
-            folded.append(lower)
+            node[None] = True
             old = read(self.root/n)
             backup_total += 0 if old is None else len(old)
             if backup_total > (1024*1024*1024 if blob_backed else 16*1024*1024):

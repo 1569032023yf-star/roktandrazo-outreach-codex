@@ -137,6 +137,21 @@ class FileTransactionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'STOP_AND_PRESERVE'):t.rollback()
         self.assertTrue((self.root/'config/obsolete.json').exists())
 
+    def test_collision_prefix_and_sibling_boundaries(self):
+        for index, files in enumerate((
+                {'service/a': b'a', 'service/a/b': b'b'},
+                {'service/A': b'a', 'service/a/b': b'b'},
+                {'service/X/a': b'a', 'service/x': b'b'},
+                {'service/X': b'a', 'service/x': b'b'})):
+            with self.subTest(files=files), self.assertRaisesRegex(ValueError, 'OWNED_PATH_COLLISION'):
+                self.tx(str(index)).prepare(files, manifest_sha256='a'*64)
+        self.tx('siblings').prepare({'service/a-x': b'a', 'service/a/b': b'b'}, manifest_sha256='a'*64)
+
+    def test_collision_validation_rejects_unsafe_names(self):
+        for index, bad in enumerate(('service/NUL.txt', 'service/name.', 'service/naïve', 'service/a\\b')):
+            with self.subTest(path=bad), self.assertRaisesRegex(ValueError, 'OWNED_PATH_REQUIRED'):
+                self.tx('unsafe'+str(index)).prepare({bad: b'x'}, manifest_sha256='a'*64)
+
     def test_reserved_staging_and_case_collisions_rejected(self):
         for files in ({'config/a':b'a','config/a.u1-new':b'b'},{'config/a':b'a','config/a.u1-new/b':b'b'},{'config/a':b'a','config/A':b'b'},{'config/a':b'a','config/a/b':b'b'},{'config/../x':b'x'}):
             with self.assertRaises(ValueError):self.tx().prepare(files,manifest_sha256='a'*64)
