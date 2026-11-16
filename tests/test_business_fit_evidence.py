@@ -52,6 +52,22 @@ class BusinessFitPipelineTests(unittest.TestCase):
                     self.assertIn(description, row['business_evidence_snippet'])
                     self.assertEqual(row['business_evidence_url'], website)
 
+    def test_existing_verified_contact_receives_product_proof_on_recheck(self):
+        from tests.test_phase3d_existing_linkage import ExistingLinkageTests
+        with _fixture.DiscoveryDb() as conn:
+            conn.execute('ALTER TABLE leads ADD COLUMN business_evidence_url TEXT')
+            conn.execute('ALTER TABLE leads ADD COLUMN business_evidence_snippet TEXT')
+            service, city, row, _, lead_id = ExistingLinkageTests().setup_case(conn)
+            conn.execute("UPDATE leads SET email='sales@example-retail.test', email_verified_on_official_site=1, "
+                         "review_reason_code='business_fit_unknown' WHERE id=?", (lead_id,))
+            fetch = _fixture.MockFetcher({row['website']: 'Nashville Board Game Depot. We sell board games and puzzles. '
+                                           'Contact sales@example-retail.test'})
+            service._postprocess_staged_result(row, city, fetch)
+            lead = dict(conn.execute('SELECT * FROM leads WHERE id=?', (lead_id,)).fetchone())
+            self.assertEqual(lead['email'], 'sales@example-retail.test')
+            self.assertIn('board games', lead['business_evidence_snippet'])
+            self.assertEqual(lead['status'], 'new')
+
     def test_search_keywords_and_untrusted_pages_are_not_product_proof(self):
         from business_fit import classify_business_fit, evidence_from_official_pages
         lead = {'official_website': 'https://shop.example', 'source_keyword': 'toy store',
