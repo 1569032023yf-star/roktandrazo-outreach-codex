@@ -10538,5 +10538,30 @@
     "cross_database_host_concurrency_and_timeout": "UNKNOWN",
     "delivery_state": "unchanged",
     "BUSINESS_GROWTH": "UNKNOWN"
+  },
+  "u1_review_e01c4c7_20261116": {
+    "recorded_at": "2026-11-16T06:48:06.775579+00:00",
+    "source_sha": "e01c4c7ed148661422447b38492cf59ca1c3387b",
+    "base_sha": "7e966d2",
+    "source_branch_pushed": "PASS per controller",
+    "independent_review": "FAIL: concurrent reconciliations can reopen a closed owner tree",
+    "integrated": false,
+    "tests": "97 executed: 94 passed, 3 errors due to development_safety subprocess guard",
+    "host_offline_measurement": {
+      "files": [
+        10,
+        20,
+        40
+      ],
+      "seconds": [
+        5.195,
+        11.055,
+        20.538
+      ],
+      "run_id": "45d64562-61c6-4f56-b6bd-111611220010",
+      "source": "host agent report; not root cause"
+    },
+    "delivery_state": "unchanged",
+    "BUSINESS_GROWTH": "UNKNOWN"
   }
 }

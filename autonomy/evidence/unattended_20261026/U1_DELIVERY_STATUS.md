@@ -1,3 +1,11 @@
+## 补充审核与测量 / Review and measurement update
+
+Provider 候选代码 `e01c4c7ed148661422447b38492cf59ca1c3387b` 据主控回报已推送独立分支，独立审核未通过，未合并。两个并发对账可先后通过未闭合检查；第一个完成闭合后，第二个仍可能重新标记未验证，并在冲突或异常退出后保留错误状态。现有 owner 状态检查与状态转换未在同一事务完成。受控测试 97 项中 94 项通过，3 项因 development_safety 子进程限制报错，不能视为全绿。
+
+Host 工作线报告小规模离线测量：10、20、40 个文件分别耗时 5.195、11.055、20.538 秒，受控运行 ID `45d64562-61c6-4f56-b6bd-111611220010`。这些测量尚不能确定启动超时根因。保留所有既有任务和生产门禁；开发、发布、部署及验收状态不升级，业务增长 UNKNOWN。
+
+Provider candidate was pushed to its separate branch according to the controller; independent review failed and it was not merged. Concurrent reconciliation can check an open tree twice, then reopen an already closed owner tree; the check and transition are not atomic. Of 97 controlled tests, 94 passed and three errored because the development_safety subprocess guard blocked them. Host agent reports offline measurements of 5.195, 11.055 and 20.538 seconds for 10, 20 and 40 files respectively; these do not establish the startup-timeout root cause. Existing tasks, gates and delivery states remain unchanged; business growth is UNKNOWN.
+
 ## 2026-11-16 手动开发轮次 / Manual development cycle
 
 用户手动触发，开始 14:17:55 +08；主树起始版本 9a98f67，固定集成版本 c724ad3e6bf2279cb6715aecaa19ed296a5492f7。据主控回报，Provider 395533a 和 Host f9fe6e0 分支已推送核验并独审通过，主线代码已推送核验；固定集成独审及离线组合测试 93/93 通过。
