@@ -146,7 +146,7 @@ class OriginalOwnerAuthority:
             finally:
                 conn.rollback()
 
-    def mark_tree(self, state):
+    def mark_tree(self, state, *, claim=None):
         if state not in ('unverified', 'verified_closed'):
             raise ValueError('ORIGINAL_OWNER_TREE_STATE_REJECTED')
         with closing(self.connect()) as conn:
@@ -154,6 +154,14 @@ class OriginalOwnerAuthority:
             conn.execute('BEGIN IMMEDIATE')
             try:
                 session = self._check(conn)
+                if state == 'verified_closed' and (
+                        session['tree_state'] != 'unverified' or
+                        session['event_digest'] is None or
+                        session['claim'] is None or
+                        type(claim) is not dict or claim != session['claim']):
+                    raise ValueError('ORIGINAL_OWNER_CLOSURE_CLAIM_REQUIRED')
+                if state == 'unverified' and claim is not None:
+                    raise ValueError('ORIGINAL_OWNER_UNEXPECTED_CLAIM')
                 session['tree_state'] = state
                 conn.execute("UPDATE system_config SET value=?,updated_at=datetime('now') WHERE key=?",
                              (json.dumps(session, sort_keys=True, separators=(',', ':')),

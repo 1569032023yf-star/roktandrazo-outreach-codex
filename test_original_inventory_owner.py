@@ -135,6 +135,29 @@ class OriginalOwnerTests(unittest.TestCase):
         self.assertFalse(bd_db.release_run_lock(self.day,self.holder))
         self.assertTrue(self.release(new_capture))
 
+    def test_tree_closure_requires_event_and_exact_bound_claim(self):
+        with self.assertRaisesRegex(ValueError, 'CLOSURE_CLAIM_REQUIRED'):
+            self.authority.mark_tree('verified_closed')
+        self.f.adapter.prepare_event(self.event())
+        with self.assertRaisesRegex(ValueError, 'CLOSURE_CLAIM_REQUIRED'):
+            self.authority.mark_tree('verified_closed')
+        self.assertEqual(self.session()['tree_state'], 'unverified')
+        self.assertFalse(self.release())
+
+    def test_tree_closure_rejects_wrong_or_missing_claim_after_binding(self):
+        event = self.event()
+        self.f.adapter.prepare_event(event)
+        self.f.backend.mode = 'lost'
+        self.assertEqual(self.f.run_one(event['admission'])['outcome'],
+                         'UNKNOWN_RECONCILE_ONLY')
+        claim = self.session()['claim']
+        self.assertIsNotNone(claim)
+        for candidate in (None, dict(claim, owner='wrong-owner')):
+            with self.assertRaisesRegex(ValueError, 'CLOSURE_CLAIM_REQUIRED'):
+                self.authority.mark_tree('verified_closed', claim=candidate)
+            self.assertEqual(self.session()['tree_state'], 'unverified')
+            self.assertFalse(self.release())
+
     def test_pid_incarnation_or_corrupted_session_cannot_release(self):
         for changes in ({'process_identity':'unknown'}, {'nonce':'x'*64}, {'pid':True}):
             original=self.session()

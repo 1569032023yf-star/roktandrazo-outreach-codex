@@ -147,7 +147,7 @@ class SingleSlotAdapter:
         except AdapterError:raise
         except Exception:raise AdapterError('LOCK_IDENTITY_UNAVAILABLE') from None
 
-    def _mark_tree(self, state):
+    def _mark_tree(self, state, claim=None):
         lock_recovery.mark_tree(state)
 
     def _protected_paths(self):
@@ -350,7 +350,7 @@ class SingleSlotAdapter:
             return {'outcome':'UNKNOWN_RECONCILE_ONLY','slot_result':state,'budget_result':settled,'production_execution':False}
         # Keep the recovery fence until both durable ledgers acknowledge the
         # receipt. A storage failure must not release an unresolved reservation.
-        self._mark_tree('verified_closed')
+        self._mark_tree('verified_closed',dict(common,claim_token_hash=digest(token)))
         return {'outcome':sr['state'].upper(),'slot_result':state,'budget_result':settled,'production_execution':False}
 
 
@@ -388,8 +388,8 @@ class OriginalOwnerSlotAdapter(SingleSlotAdapter):
         except Exception:
             raise AdapterError('ORIGINAL_OWNER_LOST') from None
 
-    def _mark_tree(self, state):
-        self.original_owner.mark_tree(state)
+    def _mark_tree(self, state, claim=None):
+        self.original_owner.mark_tree(state, claim=claim)
 
     def _protected_paths(self):
         return (self.slots.path, self.budget.path, self.original_owner.database_path)
