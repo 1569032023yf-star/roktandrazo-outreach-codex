@@ -411,6 +411,9 @@ class DiscoveryRunSummary:
     leads_created: int = 0
     existing_leads_linked: int = 0
     provider_errors: int = 0
+    requests_made: int = 0
+    batches_processed: int = 0
+    cached_batches: int = 0
     validation_statuses: dict[str, int] = field(default_factory=dict)
     error: str = ""
 
@@ -440,13 +443,13 @@ class DiscoveryService:
 
         query_family, query, page_cursor = active
         query_state = self._query_row(city_id, self.provider.provider_name, query_family)
-        if query_state["status"] == "provider_outcome_unknown":
+        if query_state["status"] in {"provider_outcome_unknown", "sample_finished", "pagination_stalled", "provider_cursor_mismatch"}:
             # A persisted transport ambiguity requires external reconciliation;
             # neither a new service object nor a scheduler cycle may replay it.
             return DiscoveryRunSummary(
-                status="provider_outcome_unknown", city=city, state=state,
+                status=query_state["status"], city=city, state=state,
                 provider=self.provider.provider_name, query_family=query_family,
-                page_cursor=page_cursor, error="provider_unknown_requires_reconciliation",
+                page_cursor=page_cursor, error="query_requires_reconciliation",
             )
         if not self.provider.configured:
             self._record_provider_failure(city_id, query_family, page_cursor, "configuration_blocked", "provider_not_configured")
@@ -473,11 +476,20 @@ class DiscoveryService:
         while pages_processed < max_pages:
             page = self.provider.search_places(query, city, state, current_cursor, self.page_size)
             self._audit_request(city_id, query_family, page)
+            summary.requests_made += max(0, int(page.request_count or 0))
             if not page.ok:
                 self._record_provider_failure(city_id, query_family, current_cursor, page.status, page.error)
                 summary.status = page.status
                 summary.error = page.error
                 summary.provider_errors += 1
+                return summary
+
+            if str(page.page_cursor or '') != str(current_cursor or ''):
+                self._record_provider_failure(city_id, query_family, current_cursor, 'provider_cursor_mismatch', 'response_cursor_does_not_match_request')
+                summary.status = 'provider_cursor_mismatch'
+                summary.error = 'response_cursor_does_not_match_request'
+                summary.provider_errors += 1
+                self.conn.commit()
                 return summary
 
             page_new = 0
@@ -500,18 +512,22 @@ class DiscoveryService:
                     summary.validation_statuses["duplicate_place"] = summary.validation_statuses.get("duplicate_place", 0) + 1
 
             pages_processed += 1
+            summary.batches_processed += 1
+            summary.cached_batches += int(page.from_cache)
             summary.results_seen += len(page.results)
             summary.new_unique_places += page_new
             summary.duplicate_places += page_dup
             summary.next_page_cursor = page.next_page_cursor
             self._checkpoint_after_page(city_id, query_family, current_cursor, page, page_new, page_dup)
-            # A provider cursor is only a continuation hint, not proof of new
-            # inventory.  Browser-backed providers can repeat a completed page
-            # while returning a non-empty cursor.  After two consecutive pages
-            # with no new place, complete this query family so the existing
-            # city/query state machine can advance normally.
-            exhausted_by_duplicates = self._query_consecutive_empty_pages(city_id, query_family) >= 2
-            if not page.next_page_cursor or exhausted_by_duplicates:
+            if page.coverage == 'sample':
+                self._hold_query(city_id, query_family, 'sample_finished')
+                summary.status = 'sample_finished'
+                break
+            if page.next_page_cursor and page.next_page_cursor == current_cursor:
+                self._hold_query(city_id, query_family, 'pagination_stalled')
+                summary.status = 'pagination_stalled'
+                break
+            if not page.next_page_cursor:
                 self._complete_query(city_id, query_family)
                 summary.status = "query_completed"
                 break
@@ -1747,6 +1763,13 @@ class DiscoveryService:
                WHERE id=?""",
             (city_id,),
         )
+
+    def _hold_query(self, city_id: int, query_family: str, status: str) -> None:
+        self.conn.execute(
+            "UPDATE lead_discovery_query_state SET status=? WHERE active_city_id=? AND provider=? AND query_family=?",
+            (status, city_id, self.provider.provider_name, query_family),
+        )
+        self.conn.execute("UPDATE retail_city_queue SET resume_state=? WHERE id=?", (status, city_id))
 
     def _record_provider_failure(self, city_id: int, query_family: str, page_cursor: str, status: str, error: str) -> None:
         now = utc_now()

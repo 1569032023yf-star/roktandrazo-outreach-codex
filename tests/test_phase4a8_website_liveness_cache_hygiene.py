@@ -78,6 +78,7 @@ class BrowserMapsCacheHygieneTests(unittest.TestCase):
             try:
                 raw = {
                     "status": "ok",
+                    "query": query, "city": city, "state": state, "page_cursor": page,
                     "results": [{
                         "provider": "browser_maps", "provider_result_id": "x", "place_id": "x",
                         "business_name": "Store\ue0c8\nName", "formatted_address": "1 Main\ue0b0\nSt",

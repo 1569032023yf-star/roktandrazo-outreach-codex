@@ -74,6 +74,9 @@ def _load_cache(query: str, city: str, state: str, page: str, *, cache_dir: Path
         with open(cache_path, 'r', encoding='utf-8') as f:
             raw = json.load(f)
 
+        if not _matches_request(raw, query, city, state, page):
+            return None
+
         results = []
         for r in raw.get('results', []):
             results.append(PlaceSearchResult(**{
@@ -89,12 +92,15 @@ def _load_cache(query: str, city: str, state: str, page: str, *, cache_dir: Path
             state=state,
             page_cursor=page,
             results=results,
-            next_page_cursor=raw.get('next_page_cursor', ''),
+            # Browser scraper only collects a bounded sample; its old numeric
+            # "cursor" was a count and cannot resume an external search.
+            next_page_cursor='',
             status=raw.get('status', 'ok'),
             error=raw.get('error', ''),
-            request_count=raw.get('request_count', 1),
-            cost_units=raw.get('cost_units', 0),
+            request_count=0,
+            cost_units=0,
             fetched_at=raw.get('collected_at', utc_now()),
+            coverage='sample', from_cache=True,
         )
     except Exception as e:
         return ProviderPage(
@@ -104,6 +110,16 @@ def _load_cache(query: str, city: str, state: str, page: str, *, cache_dir: Path
             status='cache_read_error',
             error=f'failed to read cache: {e}',
         )
+
+
+def _matches_request(raw: dict, query: str, city: str, state: str, cursor: str) -> bool:
+    if not isinstance(raw, dict):
+        return False
+    normalize = lambda value: '' if value in ('', '0', None) else str(value)
+    return (raw.get('query') == query and
+            str(raw.get('city', '')).casefold() == city.casefold() and
+            str(raw.get('state', '')).casefold() == state.casefold() and
+            normalize(raw.get('page_cursor', '')) == normalize(cursor))
 
 
 def _save_cache(page: ProviderPage, *, cache_dir: Path | None = None) -> None:
@@ -204,10 +220,10 @@ def _scrape_direct(query: str, city: str, state: str, max_results: int, headless
             query=query, city=city, state=state,
             page_cursor='',
             results=results,
-            next_page_cursor=str(len(results)),
+            next_page_cursor='',
             status=raw.get('status', 'ok'),
             error=raw.get('error', ''),
-            request_count=1, cost_units=0,
+            request_count=1, cost_units=0, coverage='sample',
             fetched_at=utc_now(),
         )
 
@@ -270,7 +286,7 @@ class BrowserMapsProvider(SearchProvider):
             # Check if we have any cached data as fallback
             return bool(list(self._cache_dir.glob('*.json')))
 
-    def _load_from_json_file(self, json_path: str, query: str, city: str, state: str) -> ProviderPage:
+    def _load_from_json_file(self, json_path: str, query: str, city: str, state: str, page_cursor: str = '') -> ProviderPage:
         """Load results from a specific JSON output file."""
         path = Path(json_path)
         if not path.is_absolute():
@@ -287,6 +303,11 @@ class BrowserMapsProvider(SearchProvider):
         try:
             with open(path, 'r', encoding='utf-8') as f:
                 raw = json.load(f)
+
+            if not _matches_request(raw, query, city, state, page_cursor):
+                return ProviderPage(provider=self.provider_name, query=query, city=city, state=state,
+                                    page_cursor=page_cursor, status='cache_identity_mismatch',
+                                    error='file does not match requested query and cursor')
 
             results = []
             for r in raw.get('results', []):
@@ -319,10 +340,11 @@ class BrowserMapsProvider(SearchProvider):
 
             return ProviderPage(
                 provider=self.provider_name, query=query, city=city, state=state,
-                page_cursor='', results=results,
-                next_page_cursor=raw.get('next_page_cursor', ''),
+                page_cursor=page_cursor, results=results,
+                next_page_cursor='',
                 status=raw.get('status', 'ok'), error=raw.get('error', ''),
-                request_count=1, cost_units=0, fetched_at=utc_now(),
+                request_count=0, cost_units=0, fetched_at=raw.get('collected_at', utc_now()),
+                coverage='sample', from_cache=True,
             )
 
         except Exception as e:
@@ -357,6 +379,7 @@ class BrowserMapsProvider(SearchProvider):
         cache_key_page = page_cursor or '0'
         cached = _load_cache(query, city, state, cache_key_page, cache_dir=self._cache_dir)
         if cached and cached.ok and cached.results:
+            cached.page_cursor = page_cursor
             return cached
 
         # Check for specific JSON file path
@@ -364,23 +387,26 @@ class BrowserMapsProvider(SearchProvider):
         if json_file_env is None:
             json_file_env = os.getenv("BROWSER_MAPS_JSON_FILE", "") if self._use_environment else ""
         if json_file_env:
-            return self._load_from_json_file(json_file_env, query, city, state)
+            return self._load_from_json_file(json_file_env, query, city, state, page_cursor)
 
         # Check cache directory for any matching file
         for cache_file in sorted(self._cache_dir.glob('*.json')):
             try:
                 with open(cache_file, 'r', encoding='utf-8') as f:
                     raw = json.load(f)
-                if (raw.get('query') == query and
-                    raw.get('city', '').lower() == city.lower() and
-                    raw.get('state', '').upper() == state.upper()):
-                    return self._load_from_json_file(str(cache_file), query, city, state)
+                if _matches_request(raw, query, city, state, page_cursor):
+                    return self._load_from_json_file(str(cache_file), query, city, state, page_cursor)
             except Exception:
                 continue
 
         # Direct mode: scrape now
         if self._mode in ('direct', 'auto'):
+            if page_cursor not in ('', '0'):
+                return ProviderPage(provider=self.provider_name, query=query, city=city, state=state,
+                                    page_cursor=page_cursor, status='pagination_unavailable',
+                                    error='browser scraper supports a bounded sample only')
             page = _scrape_direct(query, city, state, page_size, headless=self._headless)
+            page.page_cursor = page_cursor
             if page.ok:
                 _save_cache(page, cache_dir=self._cache_dir)
             return page

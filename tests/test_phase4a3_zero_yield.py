@@ -41,20 +41,17 @@ class Phase4A3ZeroYieldTests(unittest.TestCase):
             self.assertEqual(conn.execute('SELECT validation_status FROM lead_discovery_results WHERE id=?', (row['id'],)).fetchone()[0], 'website_not_found')
             self.assertEqual(service.run_linked_backlog(city, resolver, fetcher=fetcher)['processed'], 0)
 
-    def test_two_duplicate_pages_complete_query_and_advance_family(self):
+    def test_mismatched_duplicate_page_does_not_complete_query(self):
         with DiscoveryDb() as conn:
             city = activate_next_city(conn)
             page = ProviderPage('mock', 'toy store Nashville TN', 'Nashville', 'TN', '', [result('Repeated Store', result_id='repeat')], next_page_cursor='same')
             service = DiscoveryService(conn, provider=MockPlacesProvider({('toy store Nashville TN', ''): page, ('toy store Nashville TN', 'same'): page}))
             service.run_places_batch(city)
-            service.run_places_batch(activate_next_city(conn))
-            third = service.run_places_batch(activate_next_city(conn))
-            self.assertEqual(third.status, 'query_completed')
+            second = service.run_places_batch(activate_next_city(conn))
+            self.assertEqual(second.status, 'provider_cursor_mismatch')
             state = conn.execute("SELECT status FROM lead_discovery_query_state WHERE query_family='toy store'").fetchone()[0]
-            self.assertEqual(state, 'completed')
-            next_city = activate_next_city(conn)
-            self.assertEqual(next_city['active_query_family'], None)
-            self.assertEqual(service._active_query(next_city['id'], 'mock', list(zip(('toy store', 'board game store'), ('toy store Nashville TN', 'board game store Nashville TN'))), next_city)[0], 'board game store')
+            self.assertEqual(state, 'provider_cursor_mismatch')
+            self.assertEqual(service.run_places_batch(activate_next_city(conn)).status, 'provider_cursor_mismatch')
 
     def test_inventory_target_defaults_to_send_quota_plus_buffer(self):
         self.assertEqual(NEW_OUTREACH_TARGET, 40)

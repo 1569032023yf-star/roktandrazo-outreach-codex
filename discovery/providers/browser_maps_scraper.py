@@ -561,7 +561,7 @@ def scrape_google_maps(
         'city': city,
         'state': state,
         'page_cursor': '',
-        'next_page_cursor': str(len(enriched)),
+        'next_page_cursor': '',
         'status': 'ok' if not errors else 'partial',
         'error': '; '.join(errors) if errors else '',
         'results': enriched,

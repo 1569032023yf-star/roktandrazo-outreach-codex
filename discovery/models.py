@@ -53,6 +53,9 @@ class ProviderPage:
     # Local reservation/accounting units, never an authoritative billed amount.
     cost_units: int = 0
     fetched_at: str = field(default_factory=utc_now)
+    # A bounded sample is not evidence that a search space was exhausted.
+    coverage: str = "provider"
+    from_cache: bool = False
 
     @property
     def ok(self) -> bool:
