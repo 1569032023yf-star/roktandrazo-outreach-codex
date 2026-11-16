@@ -10563,5 +10563,18 @@
     },
     "delivery_state": "unchanged",
     "BUSINESS_GROWTH": "UNKNOWN"
+  },
+  "u1_integration_e79deae_20261116": {
+    "recorded_at": "2026-11-16T06:55:39.463186+00:00",
+    "source_sha": "e79deae6402a21b84a9bdbc1f44418c4db08cc1c",
+    "provider_candidate_sha": "90b05036fc7a896ac99566a8088bfaf7dfa7fa86",
+    "provider_independent_review": "PASS scoped",
+    "integrated": true,
+    "integration_combined_test": "56/56 PASS run a27f1e45-5199-4b14-8df8-e491e7910a12",
+    "new_owner_two_settlements": "1/1 PASS on 90b per controller run d734d1bc-81e7-4878-b933-159d76d72f0d",
+    "existing_package_sha": "c724ad3e6bf2279cb6715aecaa19ed296a5492f7",
+    "final_package": "PENDING: rebuild and review required for e79deae",
+    "delivery_state": "unchanged",
+    "BUSINESS_GROWTH": "UNKNOWN"
   }
 }

@@ -1,3 +1,11 @@
+## 集成修复与包版本 / Integrated fix and package version
+
+Provider 修复 `90b05036fc7a896ac99566a8088bfaf7dfa7fa86` 经限定范围独立审核通过，已合并至固定源码 `e79deae6402a21b84a9bdbc1f44418c4db08cc1c`。该主线版本离线组合验证 56/56 通过（受控运行 `a27f1e45-5199-4b14-8df8-e491e7910a12`）。据主控回报，前次释放后新 owner 两次结算端到端测试在 90b 通过 1/1（受控运行 `d734d1bc-81e7-4878-b933-159d76d72f0d`）。
+
+现存安装包仅绑定旧源码 `c724ad3e6bf2279cb6715aecaa19ed296a5492f7`，不可作为 e79deae 的最终交付包；新版包须重建并审核。开发、发布、生产部署和生产验收状态均不升级，业务增长 UNKNOWN；保留全部原有任务和门禁。
+
+Provider fix 90b passed scoped independent review and was integrated into fixed source e79deae; 56/56 targeted integrated offline tests passed. Controller reports the new-owner two-settlement end-to-end test passed 1/1 against 90b. The existing package is bound only to c724ad3 and is not a final package for e79deae; rebuild and review remain pending. Development, release, production deployment and acceptance states are not promoted; business growth is UNKNOWN, and existing tasks and gates are preserved.
+
 ## 补充审核与测量 / Review and measurement update
 
 Provider 候选代码 `e01c4c7ed148661422447b38492cf59ca1c3387b` 据主控回报已推送独立分支，独立审核未通过，未合并。两个并发对账可先后通过未闭合检查；第一个完成闭合后，第二个仍可能重新标记未验证，并在冲突或异常退出后保留错误状态。现有 owner 状态检查与状态转换未在同一事务完成。受控测试 97 项中 94 项通过，3 项因 development_safety 子进程限制报错，不能视为全绿。
