@@ -1,3 +1,9 @@
+## 2026-11-16 商家发现复审进度 / Business discovery review progress
+
+本轮手动继续开发；主工作树起点 fd3200dfcb67c8b3ecaf887b1ff68c20e9d15ae3。搜索分页固定提交 d08313b451b3f12f709d4dac6c5e3c4d7b2b33bd 本地测试通过、范围独审未发现新增阻塞，但真实网络请求数 UNKNOWN。业务匹配固定提交 df96667 本地组合测试 24/24 通过，独审未通过：CSS 隐藏的网页文字可能被错误视为可见证据。两个新版本仅在本地开发分支，未推送、未合并、未部署；推送因自动权限审核无法确认远端可信身份被拒。下一步先解决可见性证据，再固定版本独审；受阻推送不能绕过。业务增长、自然续跑及生产验收未证明。既有生产门禁不变。
+
+Manual development continued from main fd3200df. Search pagination d08313b passed local tests and scoped independent review found no new blocker; actual network request counts remain UNKNOWN. Business fit df96667 passed 24/24 local combined tests but failed independent review: CSS-hidden text may be treated as visible evidence. Both new versions remain on local development branches, unpushed, unmerged and undeployed; automated approval rejected the push because the remote's trusted identity could not be verified. Resolve visible evidence and review a fixed version before integration; do not bypass the rejected push. Business growth, natural reruns and production acceptance remain unproven; existing production gates remain in force.
+
 ## 2026-11-16 商家发现代码收尾 / Business discovery code closure
 
 业务匹配 c76bfef、搜索分页 01513bf 已推送独立分支；最终独审 PENDING，未合并、未部署、未完成真实获客验收。业务匹配样例 3/3、发现回归 20/20；分页 2/2、零新增回归 4/4。网站重试测试 1 项失败，主线可复现。上轮超出 45 分钟，详见业务匹配分支 BUSINESS_DISCOVERY_CHECKPOINT_20261116.md。
