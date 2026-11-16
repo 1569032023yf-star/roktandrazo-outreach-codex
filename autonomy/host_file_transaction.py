@@ -40,10 +40,10 @@ def ordinary(path):
     return path
 
 
-def read(path):
+def read(path, *, return_identity=False):
     p = ordinary(path)
     if not p.exists():
-        return None
+        return (None, None) if return_identity else None
     s = p.stat()
     if not stat.S_ISREG(s.st_mode) or s.st_nlink != 1 or s.st_size > 256*1024*1024:
         raise ValueError('ORDINARY_FILE_REQUIRED')
@@ -63,7 +63,7 @@ def read(path):
             raise ValueError('FILE_CHANGED')
     if len(raw) > 256*1024*1024:
         raise ValueError('FILE_TOO_LARGE')
-    return raw
+    return (raw, identity(after)) if return_identity else raw
 
 
 def fingerprint(raw):
@@ -83,26 +83,34 @@ class HostFileTransaction:
             raise ValueError('PREPROVISIONED_ROOT_REQUIRED')
         self.fault = fault
 
-    def _rows(self):
-        raw = read(self.journal)
+    def _rows(self, *, return_identity=False):
+        raw, identity = read(self.journal, return_identity=True)
         if raw is None:
-            return []
+            return ([], None) if return_identity else []
         if not raw.endswith(b'\n'):
             raise ValueError('STOP_AND_PRESERVE_TORN_JOURNAL')
         rows = [json.loads(line) for line in raw.splitlines()]
         for i, row in enumerate(rows):
             if row.get('sequence') != i or row.get('previous') != (digest(canonical(rows[i-1])) if i else None):
                 raise ValueError('STOP_AND_PRESERVE_JOURNAL_CHAIN')
-        return rows
+        return (rows, identity) if return_identity else rows
 
     def _append(self, **fields):
-        rows = self._rows()
+        rows, identity = self._rows(return_identity=True)
         row = dict(sequence=len(rows), previous=digest(canonical(rows[-1])) if rows else None, **fields)
         ordinary(self.journal)
         with self.journal.open('ab' if rows else 'xb') as f:
             s = os.fstat(f.fileno())
-            if s.st_nlink != 1:
+            if not stat.S_ISREG(s.st_mode) or s.st_nlink != 1:
                 raise ValueError('JOURNAL_HARDLINK')
+            # Bind the append handle to the file whose chain was validated.
+            # Caller must still hold installation exclusion.
+            actual = (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_nlink)
+            named = ordinary(self.journal).stat()
+            named_identity = (named.st_dev, named.st_ino, named.st_size,
+                              named.st_mtime_ns, named.st_nlink)
+            if actual != named_identity or (rows and actual != identity):
+                raise ValueError('STOP_AND_PRESERVE_JOURNAL_CHANGED')
             f.write(canonical(row)+b'\n'); f.flush(); os.fsync(f.fileno())
         if self._rows()[-1] != row:
             raise ValueError('STOP_AND_PRESERVE_JOURNAL_READBACK')
