@@ -286,25 +286,9 @@ def prepare_lead_data(contact_info: Dict, city: str, state: str, source_keyword:
         return None
     
     # 确定产品适配性
-    product_fit = "both"  # 默认两者都适配
+    product_fit = "unknown"  # Search type or a name does not establish product evidence.
     store_type = contact_info.get("store_type", "").lower()
     store_name = contact_info.get("store_name", "").lower()
-    
-    # 根据门店类型判断产品适配性
-    if "puzzle" in store_type or "puzzle" in store_name:
-        product_fit = "puzzles"
-    elif "game" in store_type or "game" in store_name:
-        product_fit = "card_games"
-    elif "toy" in store_type or "toy" in store_name:
-        product_fit = "both"
-    elif "gift" in store_type or "gift" in store_name:
-        product_fit = "both"
-    elif "museum" in store_type or "museum" in store_name:
-        product_fit = "puzzles"
-    elif "book" in store_type or "book" in store_name:
-        product_fit = "both"
-    elif "educational" in store_type or "learning" in store_type:
-        product_fit = "both"
     
     # 确定置信度分数
     confidence_score = "C"  # 默认C级

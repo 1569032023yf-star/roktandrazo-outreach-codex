@@ -85,6 +85,10 @@ def init_db():
 
     # --- 安全迁移：添加 manual_ 列（如果不存在） ---
     _migrate_manual_columns(c)
+    existing_lead_columns = {row[1] for row in c.execute('PRAGMA table_info(leads)')}
+    for column in ('business_evidence_url', 'business_evidence_snippet'):
+        if column not in existing_lead_columns:
+            c.execute(f'ALTER TABLE leads ADD COLUMN {column} TEXT')
 
     c.execute("""
     CREATE TABLE IF NOT EXISTS suppression_list (
@@ -317,6 +321,8 @@ def insert_lead(lead: dict, conn: sqlite3.Connection | None = None) -> int | Non
             "email_source_type": lead.get("email_source_type", "unknown"),
             "email_verified_on_official_site": int(bool(lead.get("email_verified_on_official_site", 0))),
             "evidence_snippet": lead.get("evidence_snippet", ""),
+            "business_evidence_url": lead.get("business_evidence_url", ""),
+            "business_evidence_snippet": lead.get("business_evidence_snippet", ""),
             "evidence_method": lead.get("evidence_method", ""),
             "review_status": lead.get("review_status", "pending"),
             "review_reason_code": lead.get("review_reason_code", ""),

@@ -27,6 +27,7 @@ from typing import Any, Mapping, Optional
 
 from email_hygiene import hygiene_check
 from broad_ready import is_broad_outreach_ready
+from business_fit import classify_business_fit
 from broad_ready import FREE_MAILBOX_DOMAINS, _email_domain
 
 
@@ -132,6 +133,12 @@ def review_campaign_eligible(lead: Mapping[str, Any], ctx: Optional[Mapping[str,
     checks["broad_ready"] = {"pass": bool(br.get("ready")), "detail": br.get("blockers") or []}
     if not br.get("ready"):
         blockers.extend([f"broad_ready:{b}" for b in (br.get("blockers") or [])])
+
+    # Business fit is independent from site ownership and email hygiene.
+    fit = classify_business_fit(lead)
+    checks['business_fit'] = {'pass': fit['status'] == 'matched', 'detail': fit}
+    if fit['status'] != 'matched':
+        blockers.append('business_fit:' + fit['status'])
 
     # 2. Hygiene
     h = hygiene_check(email) if email else {"valid": False, "reason": "no_email"}

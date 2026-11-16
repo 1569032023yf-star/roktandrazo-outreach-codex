@@ -31,6 +31,7 @@ from discovery.normalizer import (
 from discovery.providers.base import SearchProvider, load_provider
 from history_crosscheck import cross_check, normalize_email, host
 from lead_hygiene_gate import evaluate_a0
+from business_fit import classify_business_fit, evidence_from_official_pages
 from outreach_control import RETAIL_QUERY_FAMILIES
 from retail_city_queue import search_queries, automatic_recovery_deferred, NETWORK_RECOVERY_ATTEMPT_LIMIT, NETWORK_RECOVERY_RETRY_SECONDS, network_recovery_due
 from broad_outreach_gate import _gen_organization_key
@@ -1157,12 +1158,25 @@ class DiscoveryService:
                 official_match=True,
                 notes_suffix="website_postprocess=email_found",
             )
+            candidate.update(evidence_from_official_pages(website, pages))
             candidate["email_source_type"] = _email_source_type(email_evidence["method"], email_evidence["snippet"])
             candidate["email_verified_on_official_site"] = True
             candidate["official_email_evidence"] = {
                 **email_evidence["evidence"],
                 "email_source_type": candidate["email_source_type"],
             }
+            fit = classify_business_fit(candidate)
+            columns = {item[1] for item in self.conn.execute('PRAGMA table_info(leads)')}
+            if not {'business_evidence_url', 'business_evidence_snippet'} <= columns:
+                fit = {'status': 'unknown', 'reason': 'business_evidence_storage_unavailable'}
+            if fit['status'] != 'matched':
+                candidate.update(confidence_score='B', status='manual_review_needed',
+                                 auto_sendable=0, manual_sendable=0, review_status='pending',
+                                 review_reason_code='business_fit_' + fit['status'],
+                                 review_reason_detail=fit['reason'])
+                lead_id = self._insert_review_candidate(discovery_id, candidate, 'manual_review_needed',
+                                                        'business_fit_' + fit['status'])
+                return 'manual_review_needed', lead_id
             hygiene = evaluate_a0({**candidate, "official_match": True})
             if hygiene.a0_eligible:
                 candidate["auto_sendable"] = 1
@@ -1350,13 +1364,26 @@ class DiscoveryService:
             if existing_email:
                 if not lead.get("email_verified_on_official_site"):
                     return finish("identity_review", "existing_unverified_email")
+                # Refresh product proof without replacing verified contact details.
+                # Only the specific business-fit review state may be recovered automatically.
+                cols = {r[1] for r in self.conn.execute("PRAGMA table_info(leads)")}
+                if (classify_business_fit(candidate)["status"] == "matched"
+                        and {"business_evidence_url", "business_evidence_snippet"} <= cols):
+                    updates = {k: candidate[k] for k in ("business_evidence_url", "business_evidence_snippet")}
+                    if (lead.get("review_reason_code") == "business_fit_unknown"
+                            and candidate.get("status") == "new" and candidate.get("auto_sendable")):
+                        updates.update({k: candidate.get(k) for k in ("confidence_score", "status", "auto_sendable",
+                            "manual_sendable", "review_status", "review_reason_code", "review_reason_detail")})
+                    updates = {k: v for k, v in updates.items() if k in cols}
+                    self.conn.execute("UPDATE leads SET " + ",".join(k + "=?" for k in updates) + " WHERE id=?",
+                                      (*updates.values(), lead["id"]))
                 return finish("existing_lead_linked", "same_verified_email", lead["id"])
             if lead.get("review_reason_code") not in (None, "", "identity_review", "identity_duplicate_new_email",
-                    "website_lookup_required", "no_public_email_or_form", "review_recovery"):
+                    "website_lookup_required", "no_public_email_or_form", "review_recovery", "business_fit_unknown"):
                 return finish("identity_review", "existing_review_requires_operator")
             updates = {k: candidate.get(k) for k in ("email", "email_source_type", "evidence_url",
                 "evidence_snippet", "evidence_method", "email_verified_on_official_site", "confidence_score",
-                "auto_sendable", "manual_sendable", "review_status", "status")}
+                "business_evidence_url", "business_evidence_snippet", "auto_sendable", "manual_sendable", "review_status", "status")}
             updates.update(evidence_checked_at=ev["fetched_at"], last_checked_at=ev["fetched_at"],
                            review_reason_code=candidate.get("review_reason_code", ""),
                            review_reason_detail=candidate.get("review_reason_detail", ""))
@@ -1471,8 +1498,8 @@ class DiscoveryService:
             "status": status,
             "source_keyword": row.get("source_query") or "",
             "source_platform": row.get("provider") or "",
-            "product_fit": raw.get("product_fit") or "retail_games_gifts",
-            "fit_reason": raw.get("fit_reason") or f"Discovered via {row.get('provider') or 'places'} for {row.get('source_query') or ''}",
+            "product_fit": raw.get("product_fit") or "unknown",
+            "fit_reason": raw.get("fit_reason") or "",
             "notes": f"discovery_result_id={row.get('id')}; provider={row.get('provider')}; {notes_suffix}".strip(),
             "review_reason_code": review_reason_code,
             "review_reason_detail": notes_suffix,

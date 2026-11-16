@@ -266,6 +266,8 @@ class DiscoveryServiceTests(unittest.TestCase):
 
     def test_staged_places_without_email_extracts_official_email_to_a0(self):
         with DiscoveryDb() as conn:
+            conn.execute("ALTER TABLE leads ADD COLUMN business_evidence_url TEXT")
+            conn.execute("ALTER TABLE leads ADD COLUMN business_evidence_snippet TEXT")
             city = activate_next_city(conn)
             staged = result(
                 "Nashville Board Game Depot",
@@ -278,7 +280,7 @@ class DiscoveryServiceTests(unittest.TestCase):
             first = service.run_places_batch(city)
             self.assertEqual(first.validation_statuses.get("email_extraction_pending"), 1)
             fetcher = MockFetcher({
-                "https://nashvilleboardgames.example": "<html><title>Nashville Board Game Depot</title></html>",
+                "https://nashvilleboardgames.example": "<html><title>Nashville Board Game Depot</title> We sell board games and puzzles.</html>",
                 "https://nashvilleboardgames.example/contact": "Nashville Board Game Depot contact: sales@nashvilleboardgames.example",
             })
             post = service.run_staging_postprocess(city, fetcher=fetcher)
