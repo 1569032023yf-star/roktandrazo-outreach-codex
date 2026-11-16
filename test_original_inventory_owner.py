@@ -94,6 +94,33 @@ class OriginalOwnerTests(unittest.TestCase):
         self.assertTrue(self.release())
         with self.assertRaises(ValueError):self.observe()
 
+    def test_closed_retry_preserves_owner_for_matching_and_conflicting_receipts(self):
+        from test_growth_ledger import signed, amounts
+        from autonomy.growth_ledger import digest
+        event = self.event()
+        self.f.adapter.prepare_event(event)
+        self.assertEqual(self.f.run_one(event['admission'])['outcome'], 'COMPLETED')
+        original = self.f.backend.receipts
+        again = self.f.adapter.reconcile(event['admission'], **original)
+        self.assertEqual((again['slot_result'], again['budget_result']),
+                         ('DUPLICATE_RECEIPT', 'DUPLICATE'))
+        operation = self.f.backend.operation
+        common = {k: operation[k] for k in ('slot','epoch','owner','run_id','request_id',
+                  'original_event_digest','original_claim_digest','lock_token_hash',
+                  'process_identity_hash')}
+        bad_slot = signed('receipt', T+10, **common, token=operation['token'],
+                          state='failed', receipt='conflict', external_drained=True)
+        bad_budget = signed('budget_receipt', T+10, **common,
+                            claim_token_hash=digest(operation['token']), outcome='known',
+                            actual=amounts(0), externally_reconciled=True)
+        for receipts in (dict(slot_receipt=bad_slot, budget_receipt=original['budget_receipt']),
+                         dict(slot_receipt=original['slot_receipt'], budget_receipt=bad_budget)):
+            with self.assertRaises(Exception):
+                self.f.adapter.reconcile(event['admission'], **receipts)
+            self.assertEqual(self.session()['tree_state'], 'verified_closed')
+        self.assertEqual(self.f.backend.calls, 1)
+        self.assertTrue(self.release())
+
     def test_lost_backend_result_blocks_release_maintenance_and_other_date(self):
         self.f.backend.mode='lost'
         with self.host() as bridge:
