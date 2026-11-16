@@ -507,3 +507,15 @@ English: Business branch `321fa00738d9b0552355a8223b5f611f36ddceb8` rejects tran
 中文：独审未通过：白底白字、背景图片及遮挡仍不能可靠判断；实际 HTTP 请求预算、Windows Job 和网络限制未验收。代码及本记录未推送，未合并；不得升级生产或业务状态。
 
 English: Independent review did not pass: same-color text and background, background images and occlusion are not reliably assessed; actual HTTP budgets, Windows Job and network restrictions remain unaccepted. Code and this record are unpushed and unmerged; no production or business status is promoted.
+
+
+---
+# 2026-11-16 HTTP 尝试统计 / HTTP attempt accounting
+
+中文：分页分支固定 `7d56a0e4b193c1d6e0b52b0be287f74ade84a5e3`；Google HTTP 客户端尝试、缓存零次和无法确认的 UNKNOWN 分开统计，并输出到运行标准输出，21 项离线测试通过。独审认可作为离线改进；主线未合并、代码及报告未推送。
+
+English: Pagination branch pinned at `7d56a0e4b193c1d6e0b52b0be287f74ade84a5e3` separates Google HTTP client attempts, zero-attempt cache reads and unknown counts, emitting them to standard output. Twenty-one offline tests passed. Independent review accepts the offline improvement; neither mainline integration nor code/report push has occurred.
+
+中文：次数不代表已送达、实际费用或完整 HTTP 流量；正式宿主是否保存并关联日志、批次中途退出后的持久记录、生产预算及完整组合版本仍待验证。业务可见性候选仍有未通过审核的问题。
+
+English: Attempts do not prove delivery, billed cost or complete HTTP traffic. Official host log retention and run association, crash-safe per-batch records, production budgets and the complete integrated version remain unverified. The business visibility candidate still has an open review blocker.
