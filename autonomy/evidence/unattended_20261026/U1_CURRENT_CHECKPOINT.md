@@ -481,3 +481,17 @@ English: No service was installed/started and no production ACL, DB, ledger or I
 
 DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=false; PRODUCTION_ACCEPTED=false.
 allow_install=false; allow_dispatch=false; allow_cancel_dispatch=false; SMTP=false.
+
+
+---
+# 2026-11-16 业务发现续作 / Business discovery continuation
+
+中文：独立开发分支固定版本 `8e35ac8d28f85e5c43e05d96b51762d0800d0304`；增加受监督浏览器可见文本判断，修复离屏、字号为零和裁剪误判。离线定向测试 50 项通过；独立无网络浏览器夹具验证正常、离屏及裁剪情形。该夹具不是受 Job 监督的生产验收。
+
+English: Independent development branch fixed at `8e35ac8d28f85e5c43e05d96b51762d0800d0304`. Visibility checks reject offscreen, zero-size and clipped claims. Fifty targeted offline tests and standalone no-network DOM fixtures passed; these do not establish Job-supervised production acceptance.
+
+中文：独立审核未通过：透明文字仍可能误判；实际 HTTP 请求计数、网络预算及 Windows Job 进程树未验证。两条开发分支均未推送、未合并；正式运行及业务增长状态不升级。开发槽曾超时，期间一次离线文件编辑后已重新取得槽；未证明该间隙无其他参与者，未覆盖任何已知他人修改。
+
+English: Independent review did not pass: transparent text can be misclassified; actual HTTP counts, network budgets and Windows Job process-tree controls remain unverified. Both development branches remain unpushed and unmerged; no production or business-growth status is upgraded. A coordination slot expired before one offline edit and was reacquired; absence of another participant during that interval is not established, and no known external change was overwritten.
+
+Pagination candidate `d08313b451b3f12f709d4dac6c5e3c4d7b2b33bd`: provider-call counts are not actual HTTP counts. DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=UNKNOWN; PRODUCTION_ACCEPTED=UNKNOWN; BUSINESS_GROWTH=UNKNOWN.
