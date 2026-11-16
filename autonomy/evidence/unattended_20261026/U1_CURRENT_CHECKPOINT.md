@@ -1,3 +1,9 @@
+## 2026-11-16 商家发现代码收尾 / Business discovery code closure
+
+业务匹配 c76bfef、搜索分页 01513bf 已推送独立分支；最终独审 PENDING，未合并、未部署、未完成真实获客验收。业务匹配样例 3/3、发现回归 20/20；分页 2/2、零新增回归 4/4。网站重试测试 1 项失败，主线可复现。上轮超出 45 分钟，详见业务匹配分支 BUSINESS_DISCOVERY_CHECKPOINT_20261116.md。
+
+Business fit c76bfef and pagination 01513bf were pushed on isolated branches. Fixed-version independent review is PENDING; integration, deployment and live acceptance remain incomplete. The matching fixtures passed 3/3 and discovery regression 20/20; pagination passed 2/2 and zero-yield regression 4/4. One website retry test also fails on main. The prior cycle exceeded 45 minutes; see the branch checkpoint.
+
 ## 最新离线包与周期记录 / Current offline package and cycle record
 
 固定源码 e79deae6402a21b84a9bdbc1f44418c4db08cc1c 的禁用离线包已构建，包含 5059 个文件。安装包 SHA256 f1dcd2be27737779e9ec9069dcee7f9e57d86ed43d995d8d288f6200fcf53e2a；回滚包 SHA256 d5d55c9db3113a284b3a318a2e72ca5f2fcaad5ea9da4775af21c5d2d8727406。已读取回执：受控运行 45d64562-61c6-4f56-b6bd-111611220012 结果 VERIFIED，六阶段、四探针、4960 个 Host 文件一致性及隔离指针夹具通过；运行 ID 据构建方回报。包独立审核 PENDING；正式安装、正式回滚和生产验收未证明。
