@@ -1,3 +1,11 @@
+## 最新离线包与周期记录 / Current offline package and cycle record
+
+固定源码 e79deae6402a21b84a9bdbc1f44418c4db08cc1c 的禁用离线包已构建，包含 5059 个文件。安装包 SHA256 f1dcd2be27737779e9ec9069dcee7f9e57d86ed43d995d8d288f6200fcf53e2a；回滚包 SHA256 d5d55c9db3113a284b3a318a2e72ca5f2fcaad5ea9da4775af21c5d2d8727406。已读取回执：受控运行 45d64562-61c6-4f56-b6bd-111611220012 结果 VERIFIED，六阶段、四探针、4960 个 Host 文件一致性及隔离指针夹具通过；运行 ID 据构建方回报。包独立审核 PENDING；正式安装、正式回滚和生产验收未证明。
+
+Disabled offline package for e79deae contains 5059 files. Receipt confirms VERIFIED across six phases and four probes, 4960 Host file parity and the isolated pointer fixture; run ID is reported by the builder. Independent package review is PENDING; formal installation, rollback and production acceptance remain unproven. Delivery gates remain unchanged and business growth is UNKNOWN.
+
+记录截止 / Record cutoff: 2026-11-16T15:01:29+08:00. 此时间为记录完成时间，主控周期的实际结束时间待主控记录。 / This is the record completion time; the controller records the actual cycle end.
+
 ## 集成修复与包版本 / Integrated fix and package version
 
 Provider 修复 `90b05036fc7a896ac99566a8088bfaf7dfa7fa86` 经限定范围独立审核通过，已合并至固定源码 `e79deae6402a21b84a9bdbc1f44418c4db08cc1c`。该主线版本离线组合验证 56/56 通过（受控运行 `a27f1e45-5199-4b14-8df8-e491e7910a12`）。据主控回报，前次释放后新 owner 两次结算端到端测试在 90b 通过 1/1（受控运行 `d734d1bc-81e7-4878-b933-159d76d72f0d`）。

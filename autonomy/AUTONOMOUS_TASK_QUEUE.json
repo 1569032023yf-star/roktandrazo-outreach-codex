@@ -10576,5 +10576,19 @@
     "final_package": "PENDING: rebuild and review required for e79deae",
     "delivery_state": "unchanged",
     "BUSINESS_GROWTH": "UNKNOWN"
+  },
+  "u1_package_e79deae_20261116": {
+    "recorded_at": "2026-11-16T15:01:29+08:00",
+    "source_sha": "e79deae6402a21b84a9bdbc1f44418c4db08cc1c",
+    "package_build": "PASS per builder; 5059 files",
+    "install_sha256": "f1dcd2be27737779e9ec9069dcee7f9e57d86ed43d995d8d288f6200fcf53e2a",
+    "rollback_sha256": "d5d55c9db3113a284b3a318a2e72ca5f2fcaad5ea9da4775af21c5d2d8727406",
+    "offline_verification": "VERIFIED six phases and four probes; 4960 Host parity and isolated pointer fixture",
+    "verification_run": "45d64562-61c6-4f56-b6bd-111611220012",
+    "independent_package_review": "PENDING",
+    "formal_installation": "UNKNOWN",
+    "production_acceptance": "UNKNOWN",
+    "delivery_state": "unchanged",
+    "BUSINESS_GROWTH": "UNKNOWN"
   }
 }
