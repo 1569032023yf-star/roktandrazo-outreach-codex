@@ -519,3 +519,15 @@ English: Pagination branch pinned at `7d56a0e4b193c1d6e0b52b0be287f74ade84a5e3` 
 中文：次数不代表已送达、实际费用或完整 HTTP 流量；正式宿主是否保存并关联日志、批次中途退出后的持久记录、生产预算及完整组合版本仍待验证。业务可见性候选仍有未通过审核的问题。
 
 English: Attempts do not prove delivery, billed cost or complete HTTP traffic. Official host log retention and run association, crash-safe per-batch records, production budgets and the complete integrated version remain unverified. The business visibility candidate still has an open review blocker.
+
+
+---
+# 2026-11-16 同色文本及运行编号 / Text contrast and run ID
+
+中文：业务分支 `ef14c3f186eeaea3b19574a4ec28f552df88482f` 修复白底白字，保留白字黑底正向；50 项离线测试及 12 个无网络浏览器情形通过。独审未通过：覆盖层及近似颜色仍可误判，真实网站覆盖、Job 和网络门禁未知。
+
+English: Business branch `ef14c3f186eeaea3b19574a4ec28f552df88482f` rejects same-color text while retaining the contrasting positive fixture; 50 offline tests and 12 no-network DOM cases passed. Independent review remains failed because occlusion and near-identical colors can still be misclassified; real-site coverage, Job and network gates are unknown.
+
+中文：搜索分支 `5e52cef78529b91e40e5ede7cf0e040d4531833f` 将安全格式的 Inventory 运行编号写入尝试次数日志；21 项组合测试及 16 项分页测试通过，独审在离线范围通过。日志仅为 stdout；正式保存、关联、异常退出完整性及远端费用仍未验证。两分支未合并、未推送。
+
+English: Search branch `5e52cef78529b91e40e5ede7cf0e040d4531833f` adds a validated Inventory run ID to HTTP attempt output; 21 combined and 16 pagination tests passed, with scoped independent review passed. Logging remains stdout only; official retention, association, crash completeness and remote costs remain unverified. Neither branch is merged or pushed.
