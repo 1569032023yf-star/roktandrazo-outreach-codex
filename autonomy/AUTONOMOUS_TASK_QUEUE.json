@@ -10513,5 +10513,30 @@
     "production_accepted": "UNKNOWN",
     "business_growth": "UNKNOWN",
     "report": "autonomy/evidence/u1_heartbeat_collaboration_20261108/REPORT_HEARTBEAT_20261110T2129.md"
+  },
+  "u1_manual_20261116T061755Z": {
+    "task_id": "manual-20261116T061755Z",
+    "start": "2026-11-16T14:17:55+08:00",
+    "recorded_at": "2026-11-16T06:35:58.309429+00:00",
+    "workdir": "D:\\CODEX\\roktandrazo-workspace\\roktandrazo-outreach-autonomy",
+    "start_sha": "9a98f67",
+    "integrated_sha": "c724ad3e6bf2279cb6715aecaa19ed296a5492f7",
+    "provider_sha": "395533a16cfe7983c8cd7e6eb117e29e2f3f68b4",
+    "host_sha": "f9fe6e0e7fb7021b2d3d14153c0d8d1c9cf662ae",
+    "SCHEDULE_TRIGGERED": false,
+    "C_EXECUTED": true,
+    "AGENT_DELEGATED": true,
+    "AGENT_RESULT_RECEIVED": true,
+    "CODE_INTEGRATED": true,
+    "source_push_and_reviews": "PASS per controller",
+    "integration_review": "PASS scoped",
+    "combined_tests": "93/93 PASS",
+    "main_code_pushed_verified": "PASS per controller",
+    "package": "offline six phases and four probes PASS; independent spot check PASS; full independent review PENDING",
+    "install_sha256": "2477bcfb18b09eb6918eb0ef26b7bf8602b6db341edd7498c552ab83df46f445",
+    "rollback_sha256": "4d36bc83386544839eef1026798018ee66e40f8bedbb1c44cac86db89ff499cb",
+    "cross_database_host_concurrency_and_timeout": "UNKNOWN",
+    "delivery_state": "unchanged",
+    "BUSINESS_GROWTH": "UNKNOWN"
   }
 }
