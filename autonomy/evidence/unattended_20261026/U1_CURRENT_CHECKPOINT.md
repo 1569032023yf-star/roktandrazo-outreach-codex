@@ -531,3 +531,10 @@ English: Business branch `ef14c3f186eeaea3b19574a4ec28f552df88482f` rejects same
 中文：搜索分支 `5e52cef78529b91e40e5ede7cf0e040d4531833f` 将安全格式的 Inventory 运行编号写入尝试次数日志；21 项组合测试及 16 项分页测试通过，独审在离线范围通过。日志仅为 stdout；正式保存、关联、异常退出完整性及远端费用仍未验证。两分支未合并、未推送。
 
 English: Search branch `5e52cef78529b91e40e5ede7cf0e040d4531833f` adds a validated Inventory run ID to HTTP attempt output; 21 combined and 16 pagination tests passed, with scoped independent review passed. Logging remains stdout only; official retention, association, crash completeness and remote costs remain unverified. Neither branch is merged or pushed.
+
+---
+# 2026-11-17 覆盖层及对比度检查点恢复 / Occlusion and contrast checkpoint recovery
+
+中文：业务分支 `9dcfbfd54d8de02d090f713a567de47c93ab44ab` 增加低对比度、覆盖层及伪元素的保守检查；17 个独立无网络浏览器情形通过。父版本 `c65dcf1` 的 50 项离线组合测试通过；末次后代覆盖层修正另经浏览器夹具验证。固定版本独审：后代覆盖层样例已覆盖，但伪元素全页拒绝及无条件重叠拒绝损害召回，不能合并。未推送、未合并；正式 Job、网络和真实网站验收未知。上轮因自动审核额度限制未能保存检查点，现予补记。
+
+English: Business branch `9dcfbfd54d8de02d090f713a567de47c93ab44ab` adds conservative low-contrast, overlay and pseudo-element checks; 17 standalone network-free browser cases passed. Fifty offline combined tests passed at parent `c65dcf1`; the final descendant-overlay fix was verified separately by the browser fixture. Fixed-version independent review found the descendant example addressed but whole-page pseudo-element rejection and unconditional overlap rejection impair recall; do not integrate. Not pushed or integrated; formal Job, network and real-site acceptance remain unknown. This checkpoint recovers a prior write blocked by the automatic-review usage limit.
