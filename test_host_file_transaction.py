@@ -83,6 +83,39 @@ class FileTransactionTests(unittest.TestCase):
             with patch.object(Path,'open',linked):
                 with self.assertRaisesRegex(ValueError,'FILE_CHANGED'):read(target)
 
+    def test_journal_replacement_before_append_is_preserved(self):
+        t=self.tx();t.prepare({'service/a':b'new'},manifest_sha256='a'*64)
+        before=t.journal.read_bytes()
+        replacement=self.audit/'replacement'
+        replacement.write_bytes(before)
+        original_open=Path.open
+        def swapped(path,*args,**kwargs):
+            if path == t.journal and args and args[0] == 'ab':
+                os.replace(replacement,t.journal)
+            return original_open(path,*args,**kwargs)
+        with patch.object(Path,'open',swapped):
+            with self.assertRaisesRegex(ValueError,'STOP_AND_PRESERVE_JOURNAL_CHANGED'):
+                t.apply()
+        self.assertEqual(t.journal.read_bytes(),before)
+        self.assertFalse((self.root/'service/a').exists())
+
+    def test_journal_in_place_append_before_append_is_preserved(self):
+        t=self.tx();t.prepare({'service/a':b'new'},manifest_sha256='a'*64)
+        original=t.journal.read_bytes()
+        original_open=Path.open
+        changed=[]
+        def mutate(path,*args,**kwargs):
+            if path == t.journal and args and args[0] == 'ab' and not changed:
+                changed.append(True)
+                with original_open(path,'ab') as f:
+                    f.write(b'altered')
+            return original_open(path,*args,**kwargs)
+        with patch.object(Path,'open',mutate):
+            with self.assertRaisesRegex(ValueError,'STOP_AND_PRESERVE_JOURNAL_CHANGED'):
+                t.apply()
+        self.assertEqual(t.journal.read_bytes(),original+b'altered')
+        self.assertFalse((self.root/'service/a').exists())
+
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory(prefix='u1-owned-files-');self.addCleanup(self.temp.cleanup)
         self.root=Path(self.temp.name)/'code';self.root.mkdir()
