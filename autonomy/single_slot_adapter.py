@@ -433,4 +433,25 @@ class OriginalOwnerSlotAdapter(SingleSlotAdapter):
             raise AdapterError('INVALID_TERMINAL_RECEIPT')
         expected=self.original_owner.receipt_binding(dict(common,claim_token_hash=digest(token)))
         self._bound(sr,expected); self._bound(br,expected)
+        if self._terminal_tree_closed(common, digest(token)):
+            # Already-closed work must not be reopened by a conflicting retry.
+            # Require the independent projection to join both settled ledgers
+            # and the exact owner claim before invoking their duplicate checks.
+            status = self.request_status(admission)
+            if (sr.get('state') not in ('completed', 'failed') or
+                    status['business_state'] != sr['state'].upper()):
+                raise AdapterError('CLOSED_RECEIPT_CONFLICT')
+            self._bound(sr, dict(common, external_drained=True))
+            self._bound(br, dict(common, externally_reconciled=True, outcome='known',
+                                 claim_token_hash=digest(token)))
+            slot_result = self.slots.reconcile(p['slot'], sr['state'], slot_receipt,
+                now=self._now(), epoch=p['epoch'], owner=p['owner'])
+            if slot_result != 'DUPLICATE_RECEIPT':
+                raise AdapterError('CLOSED_RECEIPT_CONFLICT')
+            budget_result = self.budget.settle(budget_receipt, now=self._now())
+            if budget_result != 'DUPLICATE':
+                raise AdapterError('CLOSED_RECEIPT_CONFLICT')
+            self._lock()
+            return dict(outcome=sr['state'].upper(), slot_result=slot_result,
+                        budget_result=budget_result, production_execution=False)
         return super().reconcile(admission,slot_receipt,budget_receipt)

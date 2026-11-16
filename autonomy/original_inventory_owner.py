@@ -162,6 +162,10 @@ class OriginalOwnerAuthority:
                     raise ValueError('ORIGINAL_OWNER_CLOSURE_CLAIM_REQUIRED')
                 if state == 'unverified' and claim is not None:
                     raise ValueError('ORIGINAL_OWNER_UNEXPECTED_CLAIM')
+                # Check under BEGIN IMMEDIATE: a stale pre-check may not reopen
+                # an already closed incarnation after a concurrent settlement.
+                if state == 'unverified' and session['tree_state'] == 'verified_closed':
+                    raise ValueError('ORIGINAL_OWNER_ALREADY_CLOSED')
                 session['tree_state'] = state
                 conn.execute("UPDATE system_config SET value=?,updated_at=datetime('now') WHERE key=?",
                              (json.dumps(session, sort_keys=True, separators=(',', ':')),
