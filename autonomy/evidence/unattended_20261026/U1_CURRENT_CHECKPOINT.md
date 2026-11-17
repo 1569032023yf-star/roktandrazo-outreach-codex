@@ -545,3 +545,14 @@ English: Business branch `9dcfbfd54d8de02d090f713a567de47c93ab44ab` adds conserv
 中文：业务分支 `8bfc1ba6dc3744aaa12788a5209b79624e20db1e` 对无绘制的空白伪元素放行，带阴影遮挡仍拒绝；19 个独立无网络浏览器情形及 50 项离线组合测试通过。独审未发现该例外的明确遮挡绕过，但全页可见伪元素和重叠背景仍会误排除，真实网站召回、Job 和网络预算待验证。代码未推送、未合并，生产未验收。
 
 English: Business branch `8bfc1ba6dc3744aaa12788a5209b79624e20db1e` permits empty unpainted pseudo-elements while retaining rejection for shadow overlays; 19 standalone no-network browser cases and 50 offline combined tests passed. Independent review found no concrete painted-overlay bypass in this exception, but painted pseudo-elements anywhere and overlapping background elements still impair recall. Representative sites, Job and network budgets remain unverified. Code is unpushed, unmerged and not production accepted.
+
+---
+# 2026-11-17 供应商线索先核实 / Verify provider clues first
+
+中文：业务分支固定 `c71ce37f127822f0e670614f1aa1223e01e47334`。供应商原始邮箱及表单只作为暂存线索，进入官网核验；核验前不创建可发送线索。51 项离线组合测试与新增的表单定向测试通过。独立审核针对固定提交，未发现本次变更的新阻塞；未独立重跑测试。已有身份冲突线索的发送标志仍需审查；前序可见性召回问题仍阻止整支分支合并。
+
+English: Business branch pinned at `c71ce37f127822f0e670614f1aa1223e01e47334`. Provider emails and forms remain staged clues for official-site verification; no sendable lead is created beforehand. Fifty-one offline combined tests and an additional targeted form test passed. Independent review of the fixed commit found no new blocker in this change; tests were not independently rerun. Send flags on existing identity conflicts still require review; the prior visibility recall blocker prevents integration of the branch.
+
+中文：代码与本记录未推送、未合并；正式 Job、网络预算和真实生产验收未知。DEVELOPMENT_COMPLETE=false；RELEASE_READY=false；PRODUCTION_DEPLOYED=UNKNOWN；PRODUCTION_ACCEPTED=UNKNOWN；BUSINESS_GROWTH=UNKNOWN。
+
+English: Code and this record are unpushed and unmerged; formal Job, network budgets and real production acceptance are unknown. DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=UNKNOWN; PRODUCTION_ACCEPTED=UNKNOWN; BUSINESS_GROWTH=UNKNOWN.
