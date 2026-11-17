@@ -1,3 +1,9 @@
+## 2026-11-17 停业待核实保护 / Closure review protection
+
+手动续开发：业务工作树从 2dcd849 推进至 b6515b54bbb79725c7aa198086b772102a1214ec。本地修复无当前邮箱时已有客户停业线索、已关联但缺地址、迟到正向结果重新写入及最终候选未阻止的问题。仅对名称、官网和地址一致，或已有明确关联且地址不可比较的单一身份处理；保留既有更严格审核和终态。独立复审限定范围 PASS：离线复现及写入失败回滚通过；真实双连接并发未验证，零个或多个身份匹配仍需处理。130/130 离线组合测试通过；此前扩大组合 138 项中 4 项失败且在 c58c5e7 可复现。当前候选未推送、未合并、未部署；官网扫描覆盖、抓取失败和预算耗尽的证明仍未完成，整个业务判断未验收。生产验收和业务增长 UNKNOWN。
+
+Manual continuation advanced the business worktree from 2dcd849 to b6515b5. The offline fix handles closure clues with no current email, explicitly linked identities with missing addresses, late positive results and final-candidate screening. It acts on one strongly matched location or an explicit existing link when addresses cannot be compared, preserving stricter review and terminal states. Scoped independent review PASS included offline cases and injected-write rollback; real two-connection concurrency is unverified and zero or multiple identity matches need handling. All 130 targeted combined tests passed; four failures from the earlier expanded 138-test run reproduced on c58c5e7. The candidate remains unpushed, unmerged and undeployed. Website scan coverage and failure/budget completeness remain unproven, so the full business gate is not accepted. Production acceptance and business growth remain UNKNOWN.
+
 ## 2026-11-17 官网停业线索续修 / Official closure-clue follow-up
 
 手动继续开发，D:\CODEX\roktandrazo-workspace\roktandrazo-outreach-autonomy\u1-business-fit-20261116；起点 c345682499b3d1b7f78771cef53100f0d7797abf；固定候选 2dcd849746303a4b6407c2a672cce24b065051c5。本地新增官网停业线索保守判断；同一已验证邮箱的已有商家出现线索时，清除旧商品证据、关闭联系标志，保留更严格终态。独审对 c58c5e7 发现旧商家依然可发送，修复后 2dcd849 同邮箱复现通过；独审仍未通过：当前官网无法取得邮箱时，旧客户仍可保留旧正向证据和联系标志。下一步必须在可信同址、同身份和事务锁条件下处理无邮箱路径；不可仅按域名冻结。网页未扫描或抓取失败造成的覆盖不完整仍未解决。
