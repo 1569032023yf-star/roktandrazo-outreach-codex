@@ -538,3 +538,10 @@ English: Search branch `5e52cef78529b91e40e5ede7cf0e040d4531833f` adds a validat
 中文：业务分支 `9dcfbfd54d8de02d090f713a567de47c93ab44ab` 增加低对比度、覆盖层及伪元素的保守检查；17 个独立无网络浏览器情形通过。父版本 `c65dcf1` 的 50 项离线组合测试通过；末次后代覆盖层修正另经浏览器夹具验证。固定版本独审：后代覆盖层样例已覆盖，但伪元素全页拒绝及无条件重叠拒绝损害召回，不能合并。未推送、未合并；正式 Job、网络和真实网站验收未知。上轮因自动审核额度限制未能保存检查点，现予补记。
 
 English: Business branch `9dcfbfd54d8de02d090f713a567de47c93ab44ab` adds conservative low-contrast, overlay and pseudo-element checks; 17 standalone network-free browser cases passed. Fifty offline combined tests passed at parent `c65dcf1`; the final descendant-overlay fix was verified separately by the browser fixture. Fixed-version independent review found the descendant example addressed but whole-page pseudo-element rejection and unconditional overlap rejection impair recall; do not integrate. Not pushed or integrated; formal Job, network and real-site acceptance remain unknown. This checkpoint recovers a prior write blocked by the automatic-review usage limit.
+
+---
+# 2026-11-17 空白装饰与召回 / Empty layout pseudo-elements and recall
+
+中文：业务分支 `8bfc1ba6dc3744aaa12788a5209b79624e20db1e` 对无绘制的空白伪元素放行，带阴影遮挡仍拒绝；19 个独立无网络浏览器情形及 50 项离线组合测试通过。独审未发现该例外的明确遮挡绕过，但全页可见伪元素和重叠背景仍会误排除，真实网站召回、Job 和网络预算待验证。代码未推送、未合并，生产未验收。
+
+English: Business branch `8bfc1ba6dc3744aaa12788a5209b79624e20db1e` permits empty unpainted pseudo-elements while retaining rejection for shadow overlays; 19 standalone no-network browser cases and 50 offline combined tests passed. Independent review found no concrete painted-overlay bypass in this exception, but painted pseudo-elements anywhere and overlapping background elements still impair recall. Representative sites, Job and network budgets remain unverified. Code is unpushed, unmerged and not production accepted.
