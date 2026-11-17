@@ -1,3 +1,13 @@
+## 2026-11-17 官网停业线索续修 / Official closure-clue follow-up
+
+手动继续开发，D:\CODEX\roktandrazo-workspace\roktandrazo-outreach-autonomy\u1-business-fit-20261116；起点 c345682499b3d1b7f78771cef53100f0d7797abf；固定候选 2dcd849746303a4b6407c2a672cce24b065051c5。本地新增官网停业线索保守判断；同一已验证邮箱的已有商家出现线索时，清除旧商品证据、关闭联系标志，保留更严格终态。独审对 c58c5e7 发现旧商家依然可发送，修复后 2dcd849 同邮箱复现通过；独审仍未通过：当前官网无法取得邮箱时，旧客户仍可保留旧正向证据和联系标志。下一步必须在可信同址、同身份和事务锁条件下处理无邮箱路径；不可仅按域名冻结。网页未扫描或抓取失败造成的覆盖不完整仍未解决。
+
+定向测试 2/2 通过。扩展组合 138 项中 134 通过、4 失败；四项相同失败在前一固定版本 c58c5e7 动态复现，不宣称全部通过。四类业务样例位于组合测试，但候选整体独审失败，未满足交付验收。代码已本地提交，未推送、未合并、未部署；远端主线 fd3200dfcb67c8b3ecaf887b1ff68c20e9d15ae3，业务分支远端 687081f62b9d68244c9018a54a34d26d55985df0。此前推送自动审批因不能确认远端可信身份而拒绝。生产验收和业务增长 UNKNOWN。
+
+Manual continuation in the D: business worktree, from c345682 to candidate 2dcd849. Added conservative closure-clue detection and protection for an existing lead with the same verified email. Independent review failed c58c5e7 because the old lead remained sendable. At 2dcd849 the same-email reproduction passed, but review still failed: when no current official email is found the old positive evidence and send flags can persist. Next fix the no-email path only under trustworthy same-location identity and transaction locking; domain alone is insufficient. Incomplete page coverage and fetch failures remain unresolved.
+
+Two focused tests passed. The extended suite ran 138 tests: 134 passed and four failed; the same failures were dynamically reproduced on c58c5e7. Four business fixture categories were exercised, but the candidate failed independent review and is not accepted. Code is committed locally, not pushed, integrated or deployed. The remote main and business SHAs are recorded above; previous automated approval rejected push because remote trusted identity could not be confirmed. Production acceptance and business growth remain UNKNOWN.
+
 ## 2026-11-17 业务发现状态冲突修复 / Business discovery conflict fix
 
 定时周期开始 05:49 UTC，记录于 05:55 UTC；实际开发目录 D:\CODEX\roktandrazo-workspace\u1-business-fit-20261116，起点 39b2f67abeb7b260bd2c429c214a943d4534fa39，固定代码 c345682499b3d1b7f78771cef53100f0d7797abf。修复身份冲突时含特殊空白的拒绝状态及理由被覆盖：保守保留异常终态并关闭发送标志。离线组合测试 127/127 通过；固定版本独立审核在身份冲突与终态保护范围通过，另有 5 项定向测试通过。该结论不涵盖完整业务判断和生产验收。
