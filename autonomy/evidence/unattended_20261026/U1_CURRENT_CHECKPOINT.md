@@ -1,3 +1,9 @@
+## 2026-11-17 官网无法核实保护 / Unverifiable site protection
+
+手动续开发，D 盘业务工作树固定版本 0d3a3220bb40e8c65e2d5ee378d02427caa7d310：官网不可达或身份无法确认时，对唯一强身份匹配的已有商家清除旧正向证据、关闭发送标记并进入待核实，不将不可达判定为停业。独立复审对唯一匹配、终态保护和调用方事务回滚限定范围 PASS；地址缺失且无既有关联的身份歧义、真实多连接并发 PENDING。组合测试 109 项中 105 项通过、4 项失败；在变更前固定版本 cd5c74d 的隔离副本中，同 4 项以相同方式失败，不能报告全绿。官网正文完整性证明及人工复核解除路径仍未完成。代码本地提交，未推送、未合并、未部署；生产验收与业务增长 UNKNOWN。自动权限审核此前因无法确认远端可信归属拒绝推送。下一步处理歧义匹配与可信完整性证明，在固定版本审查后整合。
+
+Manual continuation fixed at 0d3a3220bb40e8c65e2d5ee378d02427caa7d310 in the D: business worktree. An unavailable or unidentified site now removes stale positive evidence and disables contact for a uniquely strong identity match, without declaring closure. Independent review passed within that scope for identity, terminal-state preservation and caller rollback; ambiguous missing addresses without a prior link and real multi-connection concurrency remain PENDING. Combined tests: 105 of 109 passed; the same four failures reproduced on the isolated pre-change cd5c74d baseline, so the suite is not all green. Complete page-coverage proof and an authorized review-clearance path remain open. Code is committed locally, not pushed, integrated or deployed; production acceptance and business growth remain UNKNOWN. Automatic approval previously rejected push because trusted remote ownership could not be confirmed. Next address ambiguous matches and trustworthy bounded coverage before fixed-version review and integration.
+
 ## 2026-11-17 动态网页覆盖保护 / Dynamic content coverage protection
 
 手动续开发，D 盘业务工作树固定版本 cd5c74d467ac2be1db3373f8d63acef5017e56b9。对成功抓到的页面和浏览器确认页，脚本、嵌入页等未检查内容触发覆盖待核实并冻结可信单一身份的旧线索；确认页新增的普通链接继续按预算检查。21a4bb8 独审发现浏览器响应可能不同导致绕过，cd5c74d 已修复；固定版本 99/99 离线组合测试通过，独审仅对本次脚本、嵌入与确认页链接修复 PASS。不能据此宣称整站覆盖：首屏以外、非段落元素、截断、图像、未知动态方式和既有旧证据恢复仍待处理。代码本地提交，未推送、未合并、未部署；报告本地提交后待推送。此前自动权限审核因无法确认远端可信归属拒绝推送。生产验收及业务增长 UNKNOWN，保持原有生产门禁。下一步验证官网不可达或身份无法核实时已有正向线索是否仍可被消费，并完成有边界的浏览器覆盖证明。
