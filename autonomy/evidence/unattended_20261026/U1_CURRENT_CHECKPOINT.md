@@ -556,3 +556,14 @@ English: Business branch pinned at `c71ce37f127822f0e670614f1aa1223e01e47334`. P
 中文：代码与本记录未推送、未合并；正式 Job、网络预算和真实生产验收未知。DEVELOPMENT_COMPLETE=false；RELEASE_READY=false；PRODUCTION_DEPLOYED=UNKNOWN；PRODUCTION_ACCEPTED=UNKNOWN；BUSINESS_GROWTH=UNKNOWN。
 
 English: Code and this record are unpushed and unmerged; formal Job, network budgets and real production acceptance are unknown. DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=UNKNOWN; PRODUCTION_ACCEPTED=UNKNOWN; BUSINESS_GROWTH=UNKNOWN.
+
+---
+# 2026-11-17 身份冲突门禁 / Identity conflict gates
+
+中文：业务分支固定 `0c894a032ef73bd8aba4241060fc14b82be5ca19`。身份冲突时清除发送标记，候选资格与发送预留检查冲突；缺少审核字段时关闭，通过旧备注识别历史冲突，并修正同域多门店和同址新邮箱的标记。109 项隔离组合测试通过；不代表真实发送或生产验收。
+
+English: Business branch pinned at `0c894a032ef73bd8aba4241060fc14b82be5ca19`. Identity conflicts clear send flags and block candidate eligibility and send reservation; missing review fields fail closed, historical notes retain conflicts, and shared-domain and same-address matching are corrected. 109 isolated combined tests passed; no live sending or production acceptance is implied.
+
+中文：独立审核未通过完整闭环：新邮箱被抑制、退信或发送历史优先拦截时，原线索仍可能未标记冲突；预留提交后到 SMTP 发送前仍有竞态。官网可见性召回问题仍待解决。不得合并或部署；代码和报告未推送，生产和业务增长未知。
+
+English: Independent review did not pass the full closure: when a new email is blocked first by suppression, bounce or send history, the old lead may remain unmarked; a race persists between reservation commit and SMTP. Website visibility recall is also unresolved. Do not integrate or deploy; code and report are unpushed, and production and business growth remain unknown.
