@@ -1,3 +1,9 @@
+## 2026-11-17 商品矛盾线索保护 / Product contradiction protection
+
+手动续开发：D:\CODEX\roktandrazo-workspace\roktandrazo-outreach-autonomy\u1-business-fit-20261116，固定版本 80e5fd40c9d93b353fbc4949129dfb9cc104bf83。在已核验官网全文发现不销售目标商品或明确否认销售时，将可信单一身份的旧商家设为待核实，清除旧正向证据并关闭联系标志；较晚的正向结果不能自动恢复。e847df7 的独审失败后已修复，80e5fd4 的限定范围独立审核通过；132/132 定向组合测试通过。扫描完整性、未抓取页面、预算耗尽、身份歧义、真实并发及完整语义仍未验证；不得声称整体业务验收。分页固定版本 5e52cef 的只读审核表明真实浏览器第二页仍不可用或未验证，真实网络请求数未知。代码和报告本地提交，未推送、未合并、未部署，生产验收及业务增长 UNKNOWN；此前自动权限审核因无法确认远端可信归属拒绝推送。下一步实现可验证的站点覆盖状态及失败传播，并处理既有客户的覆盖不全保护。
+
+Manual continuation in the D: business worktree fixed source at 80e5fd40c9d93b353fbc4949129dfb9cc104bf83. Verified-site product contradictions now put a uniquely identified existing lead into persistent review, remove stale positive proof and disable contact; a late positive cannot automatically clear review. The e847df7 review failed and the corrected fixed version passed scoped independent review; 132/132 combined offline tests passed. Site coverage, missing pages, exhausted budgets, ambiguous identity, real concurrency and complete semantics remain unverified. Pagination review of 5e52cef found real browser second-page behavior unavailable or unverified and real network requests UNKNOWN. Code and report are locally committed, not pushed, integrated or deployed; production acceptance and business growth remain UNKNOWN. Automatic approval previously rejected push because the remote trusted ownership could not be established. Next propagate verifiable site coverage and failures and protect existing leads when coverage is incomplete.
+
 ## 2026-11-17 停业待核实保护 / Closure review protection
 
 手动续开发：业务工作树从 2dcd849 推进至 b6515b54bbb79725c7aa198086b772102a1214ec。本地修复无当前邮箱时已有客户停业线索、已关联但缺地址、迟到正向结果重新写入及最终候选未阻止的问题。仅对名称、官网和地址一致，或已有明确关联且地址不可比较的单一身份处理；保留既有更严格审核和终态。独立复审限定范围 PASS：离线复现及写入失败回滚通过；真实双连接并发未验证，零个或多个身份匹配仍需处理。130/130 离线组合测试通过；此前扩大组合 138 项中 4 项失败且在 c58c5e7 可复现。当前候选未推送、未合并、未部署；官网扫描覆盖、抓取失败和预算耗尽的证明仍未完成，整个业务判断未验收。生产验收和业务增长 UNKNOWN。
