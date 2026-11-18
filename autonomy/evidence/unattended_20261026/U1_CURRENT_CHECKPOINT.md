@@ -1,3 +1,9 @@
+## 2026-11-18 中性导航与跨行反证 / Neutral navigation and multiline counterevidence
+
+手动续开发，D 盘业务工作树从 d8b5563 推进至固定提交 2766e08b83935b812df1e6d1adae663a0276691f。仅可见且无歧义的固定中性导航词可计入覆盖；其他标题、隐藏或不可读内容仍待核实。官网反证扫描归一化空白，防止跨行停业和否认销售漏检。独审先后否决 38d5c26、2a08048 的关店漏判，最终版本对本次变更限定范围 PASS，不代表整站语义完整。最终源码离线浏览器样例 3/3、组合测试 104/104 通过。代码仅本地提交，未推送、合并或部署；此前自动审批因远端可信归属未确认拒绝推送。生产验收、业务增长 UNKNOWN；下一步完成固定版本组合复验，处理普通官网的未覆盖内容与真实搜索分页，并在推送条件满足后审查整合。
+
+Manual continuation advanced the D: business worktree from d8b5563 to fixed commit 2766e08b83935b812df1e6d1adae663a0276691f. Only visible unambiguous neutral navigation labels count toward coverage; other headings and hidden or unreadable content remain pending review. Counterevidence normalizes whitespace to catch multiline closure and denial. Independent review rejected 38d5c26 and 2a08048 for missed closure cases; the final change passed scoped code review, not complete site semantics. Three offline browser fixtures and 104 combined tests passed on the final source. Code is committed locally, not pushed, merged or deployed; automatic approval previously rejected push because trusted remote ownership was not established. Production acceptance and business growth remain UNKNOWN. Next complete fixed-version verification, address ordinary-site coverage and actual search pagination, and integrate only after push conditions and review gates are met.
+
 ## 2026-11-18 官网覆盖保护 / Site coverage safeguards
 
 手动续开发，D 盘业务工作树从 0d3a322 到固定提交 d8b5563dd41c2b67edf249d5ed454b199f2194fc：正文节点未检查、图像和表单等不透明内容及固定页面探测不确定时，保留覆盖待核实。独审发现背景图、表单、503 探测及无来源证明的 404 异常问题，已补充保护；为保留正向通路，标准 HTTPS 抓取器对同源 404/410 提供回执。独审在标准 HTTPS 校验前提下对回执分类限定范围通过，两个独立离线测试通过；完整覆盖和正向路径独审 PENDING。104 项离线组合测试通过；2 项隔离本地浏览器测试针对前序 3f75f56 通过。测试不证明整站覆盖或普通商业网站正向通路：导航、图片、脚本和表单可能使商家待核实。代码已本地提交，尚未推送、合并或部署；上次自动审批拒绝推送，远端可信归属未确认。生产验收与业务增长 UNKNOWN；保留现有安全门禁。下一步复审固定版本，改善常见官网的可核实正向通路并核实推送条件。
