@@ -1,3 +1,13 @@
+## 2026-11-18 搜索游标循环与崩溃边界 / Cursor cycles and crash boundary
+
+手动续开发：D 盘分页工作树从 5e52cef 推进至固定提交 41a5c9baa9544819d9d544a26e7f70ade716de5f。成功页面的已用游标通过审计记录检查，A→B→A 在重取 A 前停止；测试使用独立 SQLite 连接验证持久状态。响应 Provider 与所选 Provider 不一致时持久停止，不处理商家。最终固定源码 48/48 离线测试通过；独立代码审核限定上述范围 PASS，独审环境的临时 SQLite 无法创建，未取得独立测试结果。真实浏览器第二页与远端实际请求量仍 UNKNOWN。
+
+重大剩余阻塞：请求发出后、结果和审计提交前崩溃，重启仍可能重放。独立设计审核要求由明确拥有连接的入口逐页 BEGIN IMMEDIATE、持久领取并确认提交后才发请求，结果/审计/游标原子提交；未知及历史不确定状态禁止重放。需处理调用方事务、并发领取、迟到结果、提交失败及跨进程故障注入，不能只加状态标志。此防护尚未实现，代码未推送、合并或部署；不得将本次结果视为正式采集许可。此前自动审批因远端可信归属未确认拒绝推送。生产验收、自然续跑及业务增长 UNKNOWN。
+
+Manual continuation advanced the D: pagination worktree from 5e52cef to fixed commit 41a5c9baa9544819d9d544a26e7f70ade716de5f. Successful cursor history stops A→B→A before A is requested again; an independent SQLite connection verifies persistent state. A response from a different provider enters a persistent hold without processing businesses. All 48 combined offline tests passed against the fixed source. Independent code review passed within that scope, but the reviewer's temporary SQLite creation failed, so no independent test pass is claimed. Real browser page two and remote request counts remain UNKNOWN.
+
+Critical remaining gap: a crash after dispatch but before result/audit commit may replay the request. Independent design review requires an explicitly owned connection, per-page BEGIN IMMEDIATE and durable claim committed before dispatch, then atomic result/audit/cursor settlement; unknown and historical ambiguous states must never be replayed. Caller transactions, competing claims, late responses, commit failures and multi-process fault injection remain to be implemented; a status flag alone is insufficient. Code is not pushed, merged or deployed, and does not authorize production collection. Automatic approval previously rejected push because trusted remote ownership was not established. Production acceptance, natural rerun and business growth remain UNKNOWN.
+
 ## 2026-11-18 中性导航与跨行反证 / Neutral navigation and multiline counterevidence
 
 手动续开发，D 盘业务工作树从 d8b5563 推进至固定提交 2766e08b83935b812df1e6d1adae663a0276691f。仅可见且无歧义的固定中性导航词可计入覆盖；其他标题、隐藏或不可读内容仍待核实。官网反证扫描归一化空白，防止跨行停业和否认销售漏检。独审先后否决 38d5c26、2a08048 的关店漏判，最终版本对本次变更限定范围 PASS，不代表整站语义完整。最终源码离线浏览器样例 3/3、组合测试 104/104 通过。代码仅本地提交，未推送、合并或部署；此前自动审批因远端可信归属未确认拒绝推送。生产验收、业务增长 UNKNOWN；下一步完成固定版本组合复验，处理普通官网的未覆盖内容与真实搜索分页，并在推送条件满足后审查整合。
