@@ -1,3 +1,13 @@
+## 2026-11-18 持久领取候选未通过审核 / Durable claim candidate not approved
+
+手动续开发，分页工作树从 41a5c9b 到 c239ffff96aa102830e72be4a15d96417c49f851：逐页请求前持久领取，结果和游标逐页结算；保留调用方未提交事务，响应身份和来源不匹配或结果未知时停止。8 项故障与并发离线测试及 9 项分页测试通过（17/17）；较早组合回归 51 项出现 24 错误、1 失败，主要涉及调用方事务和旧失败重试预期，未通过。分页测试后来调整了准备事务；其余组合回归尚未重跑，不得按全绿报告。
+
+固定代码提交 f6348a31bd8d3f00e7d9d22d12b6c8d072fd75b7 独立审核不通过：旧版本在首个状态提交之前发出请求并崩溃时，新代码可能将空白历史误认为未发送；旧执行器隔离和可信切换对账尚缺。分页参数、跨进程强杀及提交失败验证、其他调用方事务也未完成。c239fff 仅调整测试，不改变被审核代码；整体尚未独审通过。禁止合并、部署、生产派发或重复未知操作。代码和报告仅本地提交；远端推送先前遭自动审批拒绝，理由是远端可信归属未确认。生产验收及业务增长 UNKNOWN。
+
+Manual continuation advanced the pagination worktree from 41a5c9b to c239ffff96aa102830e72be4a15d96417c49f851. Each page is durably claimed before dispatch and its results/cursor are settled per page; caller-owned uncommitted transactions are preserved, and uncertain or mismatched results stop. Eight offline fault/concurrency tests and nine pagination tests passed (17/17). An earlier 51-test combined run had 24 errors and one failure, primarily transaction ownership and legacy failure retry assumptions. Only the pagination fixtures were subsequently adapted; the remaining combined suite was not rerun and is not green.
+
+Independent review of fixed code f6348a31bd8d3f00e7d9d22d12b6c8d072fd75b7 rejected integration: a legacy process can dispatch and crash before its first state commit, leaving an empty history that the candidate may mistake for a never-sent request. Old-executor isolation and trustworthy migration reconciliation are missing. Request-parameter binding, cross-process kill and commit-failure verification, and other caller transactions remain open. c239fff only changes fixtures, not the reviewed code; overall independent approval remains pending. Do not merge, deploy, dispatch, or replay unknown operations. Code and report are local only; earlier automatic approval rejected push because remote ownership could not be verified. Production acceptance and business growth remain UNKNOWN.
+
 ## 2026-11-18 搜索游标循环与崩溃边界 / Cursor cycles and crash boundary
 
 手动续开发：D 盘分页工作树从 5e52cef 推进至固定提交 41a5c9baa9544819d9d544a26e7f70ade716de5f。成功页面的已用游标通过审计记录检查，A→B→A 在重取 A 前停止；测试使用独立 SQLite 连接验证持久状态。响应 Provider 与所选 Provider 不一致时持久停止，不处理商家。最终固定源码 48/48 离线测试通过；独立代码审核限定上述范围 PASS，独审环境的临时 SQLite 无法创建，未取得独立测试结果。真实浏览器第二页与远端实际请求量仍 UNKNOWN。
