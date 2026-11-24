@@ -104,7 +104,7 @@ class RollbackGuard(unittest.TestCase):
                             copy_dacl=lambda src, dst: None, _record=lambda *a: None, audit=lambda *a: True,
                             load_operations=unreadable):
             result = executor.op_apply_multi(cfg, "offline-release", "test", True)
-        self.assertEqual(result["state"], "failed")
+        self.assertEqual(result["state"], "unknown")
         self.assertEqual(self.target.read_bytes(), self.before)
         self.assertEqual(len(releases), 1)
 
@@ -122,11 +122,29 @@ class RollbackGuard(unittest.TestCase):
                             inventory_acquire=lambda cfg, holder: (True, {"holder": holder}),
                             inventory_release=lambda cfg, holder, **kw: False,
                             _record=lambda cfg, result, caller: records.update({result["operation_id"]: dict(result)}),
+                            load_operations=lambda cfg: {"operations": records},
                             audit=lambda *a: True):
             result = executor.op_apply_multi(cfg, "offline-release", "test", True)
         self.assertEqual(result["state"], "unknown")
         self.assertEqual(result["lock_release"], "unknown")
         self.assertEqual(records[result["operation_id"]]["state"], "unknown")
+        self.assertEqual(self.target.read_bytes(), self.before)
+
+    def test_silently_lost_failure_record_is_unknown(self):
+        self.target.write_bytes(self.before)
+        item = dict(self.prep["item"], before_sha256="mismatch")
+        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline"}
+        with patch.multiple(executor,
+                            _assert_seal=lambda cfg: None, get_release=lambda cfg, rid: {},
+                            live_gates_multi=lambda *a, **k: {}, gates_summary=lambda gates: {"all_pass": True},
+                            resolve_targets=lambda cfg, rel: [(item, self.target)],
+                            business_date_shanghai=lambda: "2026-11-25",
+                            inventory_acquire=lambda cfg, holder: (True, {"holder": holder}),
+                            inventory_release=lambda cfg, holder, **kw: True,
+                            _record=lambda *a: None,
+                            load_operations=lambda cfg: {"operations": {}}, audit=lambda *a: True):
+            result = executor.op_apply_multi(cfg, "offline-release", "test", True)
+        self.assertEqual(result["verdict"], "APPLY_STATUS_UNKNOWN")
         self.assertEqual(self.target.read_bytes(), self.before)
 
     def test_audit_failure_reports_unknown_without_undoing_files(self):

@@ -1192,9 +1192,19 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
             result["verdict"] = "APPLY_STATUS_UNKNOWN"
         try:
             _record(cfg, result, caller)
+            stored = load_operations(cfg)
+            entries = stored.get("operations") if isinstance(stored, dict) else None
+            saved_failure = entries.get(operation_id) if isinstance(entries, dict) else None
+            if not isinstance(saved_failure, dict) or any(
+                saved_failure.get(key) != result.get(key)
+                for key in ("state", "verdict", "lock_release", "rollback_complete", "restored")
+            ):
+                raise GateError("FAILURE_RECORD_UNVERIFIED", operation_id)
         except (OSError, ValueError, GateError):
             result["state"] = "unknown"
             result["verdict"] = "APPLY_STATUS_UNKNOWN"
+            result["note_zh"] = "失败记录未能核实；保留操作号并禁止重放。"
+            result["note_en"] = "Failure record could not be verified; retain the operation ID and do not replay."
         audit(cfg, {"op": "apply", "release_id": release_id, "operation_id": operation_id,
                     "caller": caller, "result": f"FAILED:{code}", "restored": restored})
         return result
