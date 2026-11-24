@@ -21,6 +21,7 @@ import re
 
 HEADER_OLD = re.compile(rb"^--- a/(.+)$")
 HEADER_NEW = re.compile(rb"^\+\+\+ b/(.+)$")
+HEADER_ABSENT = b"--- /dev/null"
 HUNK = re.compile(rb"^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@")
 
 
@@ -49,7 +50,11 @@ def parse_sections(patch: bytes) -> list[dict]:
     sections: list[dict] = []
     i = 0
     while i < n:
-        path = _header_path(lines[i], HEADER_OLD)
+        absent = lines[i].rstrip(b"\r\n") == HEADER_ABSENT
+        path = (_header_path(lines[i + 1], HEADER_NEW)
+                if absent and i + 1 < n else _header_path(lines[i], HEADER_OLD))
+        if absent and path is None:
+            raise PatchError("PATCH_HEADER_MISMATCH", "/dev/null without new target")
         if path is not None:
             nxt = _header_path(lines[i + 1], HEADER_NEW) if i + 1 < n else None
             if nxt != path:
@@ -91,7 +96,9 @@ def parse_sections(patch: bytes) -> list[dict]:
                                      f"{path} {consumed}/{old_count} {produced}/{new_count}")
                 continue
             # not inside a hunk: either the next file header or metadata
-            nxt_path = _header_path(line, HEADER_OLD)
+            next_absent = line.rstrip(b"\r\n") == HEADER_ABSENT
+            nxt_path = (_header_path(lines[i + 1], HEADER_NEW)
+                        if next_absent and i + 1 < n else _header_path(line, HEADER_OLD))
             if nxt_path is not None and i + 1 < n and \
                     _header_path(lines[i + 1], HEADER_NEW) == nxt_path:
                 break
@@ -103,7 +110,8 @@ def parse_sections(patch: bytes) -> list[dict]:
             raise PatchError("PATCH_SECTION_EMPTY", path)
         sections.append({"path": path,
                          "section": b"".join(header) + b"".join(body),
-                         "hunk_count": hunks, "metadata_lines": metadata})
+                         "hunk_count": hunks, "metadata_lines": metadata,
+                         "before_absent": absent})
 
     if not sections:
         raise PatchError("PATCH_NO_SECTIONS", "")

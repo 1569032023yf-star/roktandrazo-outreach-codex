@@ -223,8 +223,13 @@ def resolve_targets(cfg: dict, rel: dict) -> list[tuple[dict, Path]]:
 def apply_unified(source: bytes, patch: bytes, expected_file: str, *, reverse: bool = False,
                   expected_hunks: int = 3) -> bytes:
     lines = patch.splitlines(keepends=True)
-    if lines[:2] != [f"--- a/{expected_file}\n".encode(), f"+++ b/{expected_file}\n".encode()]:
+    existing_header = [f"--- a/{expected_file}\n".encode(), f"+++ b/{expected_file}\n".encode()]
+    new_header = [b"--- /dev/null\n", f"+++ b/{expected_file}\n".encode()]
+    if lines[:2] not in (existing_header, new_header):
         raise GateError("PATCH_SCOPE_INVALID", "patch header does not match target file")
+    new_file = lines[:2] == new_header
+    if new_file and not reverse and source:
+        raise GateError("PATCH_SOURCE_NOT_EMPTY", expected_file)
     original = source.splitlines(keepends=True)
     output, cursor, index, hunks = [], 0, 2, 0
     while index < len(lines):
@@ -240,12 +245,13 @@ def apply_unified(source: bytes, patch: bytes, expected_file: str, *, reverse: b
         if reverse:
             old_start, new_start = new_start, old_start
             old_count, new_count = new_count, old_count
-        start = old_start - 1
+        start = 0 if old_start == 0 and old_count == 0 else old_start - 1
         if start < cursor or start > len(original):
             raise GateError("PATCH_OFFSET_INVALID", f"start={start} cursor={cursor}")
         output.extend(original[cursor:start])
         cursor = start
-        if len(output) != new_start - 1:
+        new_offset = 0 if new_start == 0 and new_count == 0 else new_start - 1
+        if len(output) != new_offset:
             raise GateError("PATCH_NEW_OFFSET_INVALID", "")
         index += 1
         consumed = produced = 0
@@ -271,7 +277,10 @@ def apply_unified(source: bytes, patch: bytes, expected_file: str, *, reverse: b
     if hunks != expected_hunks:
         raise GateError("PATCH_HUNK_COUNT_INVALID", f"{hunks} != {expected_hunks}")
     output.extend(original[cursor:])
-    return b"".join(output)
+    result = b"".join(output)
+    if new_file and reverse and result:
+        raise GateError("PATCH_REVERSE_NOT_EMPTY", expected_file)
+    return result
 
 
 # ------------------------------------------------------------------ ACL
