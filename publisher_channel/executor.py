@@ -1196,8 +1196,8 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
             entries = stored.get("operations") if isinstance(stored, dict) else None
             saved_failure = entries.get(operation_id) if isinstance(entries, dict) else None
             if not isinstance(saved_failure, dict) or any(
-                saved_failure.get(key) != result.get(key)
-                for key in ("state", "verdict", "lock_release", "rollback_complete", "restored")
+                key not in saved_failure or saved_failure[key] != value
+                for key, value in result.items()
             ):
                 raise GateError("FAILURE_RECORD_UNVERIFIED", operation_id)
         except (OSError, ValueError, GateError):
