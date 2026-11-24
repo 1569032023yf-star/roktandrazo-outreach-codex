@@ -142,6 +142,20 @@ class CityQueueAdvancementTests(unittest.TestCase):
         self.assertTrue(checks["all_candidates_classified"])
         self.assertTrue(complete_active_city_if_exhausted(self.conn, self.provider, state="NY"))
 
+    def test_social_url_not_retryable_and_lead_remains_for_review(self):
+        self._complete_query_matrix()
+        self.conn.execute(
+            """INSERT INTO leads (id, email, status, review_status, review_reason_code, review_reason_detail)
+               VALUES (9003, '', 'manual_review_needed', 'pending',
+                       'review_recovery', 'review_recovery=official_site_unavailable')""")
+        self._insert_discovery("review_recovery", linked_lead_id=9003)
+        self.conn.execute("UPDATE lead_discovery_results SET website=? WHERE linked_lead_id=9003",
+                          ("https://www.facebook.com/example",))
+        before = tuple(self.conn.execute("SELECT status, review_status FROM leads WHERE id=9003").fetchone())
+        self.assertTrue(city_completion_checks(self.conn, self.city['id'], self.provider)['no_unprocessed_candidates'])
+        self.assertTrue(complete_active_city_if_exhausted(self.conn, self.provider, state="NY"))
+        self.assertEqual(tuple(self.conn.execute("SELECT status, review_status FROM leads WHERE id=9003").fetchone()), before)
+
     def test_duplicate_only_exhaustion_does_not_require_zero_raw_provider_results(self):
         self._complete_query_matrix(duplicate_only=True)
         self._record_duplicate_only_batches()

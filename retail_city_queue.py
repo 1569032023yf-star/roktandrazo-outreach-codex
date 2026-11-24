@@ -325,6 +325,12 @@ def _linked_backlog_retryable(row: dict) -> bool:
     website = str(row.get("website") or "").strip()
     if website and urlsplit(website).scheme not in {"http", "https"}:
         return False
+    # The linked recovery worker refuses social and directory URLs.  Do not
+    # keep a city open for work that this same worker can never select.
+    if website:
+        from discovery.website_resolver import _official_url
+        if not _official_url(website):
+            return False
     if (row.get("linked_review_reason_code") == "review_recovery"
             and row.get("linked_review_reason_detail") != "review_recovery=official_site_unavailable"):
         return False
