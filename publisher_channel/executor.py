@@ -984,6 +984,29 @@ def _backup_name(relpath: str, single: bool) -> str:
     return relpath.replace("/", "__").replace("\\", "__") + ".before.bak"
 
 
+def _restore_replaced_file(prep: dict, backup: dict, operation_id: str) -> dict:
+    """Restore only the exact candidate from the exact verified backup."""
+    target, item = prep["target"], prep["item"]
+    current = fingerprint(target.read_bytes())
+    if current["sha256"] != item["after_sha256"] or current["bytes"] != item["after_bytes"]:
+        raise GateError("ROLLBACK_TARGET_CHANGED", item["path"])
+    original = Path(backup["backup"]).read_bytes()
+    before = fingerprint(original)
+    if before["sha256"] != item["before_sha256"] or before["bytes"] != item["before_bytes"]:
+        raise GateError("ROLLBACK_BACKUP_CHANGED", item["path"])
+    tmp = target.with_name(f".{target.name}.rollback-tmp-{operation_id}")
+    with open(tmp, "xb") as f:
+        f.write(original)
+        f.flush()
+        os.fsync(f.fileno())
+    copy_dacl(target, tmp)
+    os.replace(tmp, target)
+    restored = fingerprint(target.read_bytes())
+    if restored != before:
+        raise GateError("ROLLBACK_VERIFY_FAILED", item["path"])
+    return {"path": item["path"], "sha256": restored["sha256"]}
+
+
 def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> dict:
     if confirm is not True:
         raise GateError("CONFIRM_REQUIRED", "apply requires explicit confirm=true")
@@ -1097,20 +1120,17 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
     except (GateError, OSError) as e:
         code = getattr(e, "code", None) or ("IO_ERROR" if isinstance(e, OSError) else "UNKNOWN")
         restored = []
-        for prep in reversed(replaced):
+        rollback_complete = not (replaced and (not lock_info or lock_info.get("released")))
+        for prep in reversed(replaced if rollback_complete else []):
             try:
                 b = next(x for x in backups if x["path"] == prep["item"]["path"])
-                target = prep["target"]
-                t2 = target.with_name(f".{target.name}.rollback-tmp-{operation_id}")
-                t2.write_bytes(Path(b["backup"]).read_bytes())
-                copy_dacl(target, t2)
-                os.replace(t2, target)
-                restored.append({"path": prep["item"]["path"],
-                                 "sha256": fingerprint(target.read_bytes())["sha256"]})
+                restored.append(_restore_replaced_file(prep, b, operation_id))
             except Exception:
+                rollback_complete = False
                 restored.append({"path": prep["item"]["path"], "sha256": "ROLLBACK_WRITE_FAILED"})
+                break
         try:
-            if lock_info and lock_info.get("holder") == holder:
+            if rollback_complete and lock_info and lock_info.get("holder") == holder:
                 inventory_release(cfg, holder)
         except Exception:
             pass
@@ -1121,11 +1141,10 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
             "file_count": len(targets),
             "target": str(targets[0][1]), "backup": str(bdir) if bdir.is_dir() else None,
             "files": [{"path": i["path"], "target": str(p)} for i, p in targets],
-            "error": str(e), "restored": restored,
+            "error": str(e), "restored": restored, "rollback_complete": rollback_complete,
             "gates": gates, "summary": summary, "verdict": f"APPLY_FAILED:{code}",
-            "note_zh": "应用失败；已替换的文件已按字节级备份整体回滚并复核。",
-            "note_en": "Apply failed; every replaced file was rolled back from its byte-exact "
-                       "backup and re-verified.",
+            "note_zh": "应用失败；请根据 rollback_complete 和逐文件结果确认恢复状态。",
+            "note_en": "Apply failed; inspect rollback_complete and each file result for recovery status.",
         }
         _record(cfg, result, caller)
         audit(cfg, {"op": "apply", "release_id": release_id, "operation_id": operation_id,
