@@ -1076,7 +1076,6 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
                   "verdict": "APPLY_STATUS_UNKNOWN", "started_at": started,
                   "files": [{"path": p["item"]["path"], "target": str(p["target"]),
                              "backup": b} for p, b in zip(prepared, backups)]}
-        applied_record_attempted = True
         _record(cfg, intent, caller)
         saved_intent = load_operations(cfg).get("operations", {}).get(operation_id)
         if not isinstance(saved_intent, dict) or saved_intent.get("state") != "unknown" or \
@@ -1127,6 +1126,7 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
                        "byte-exact backup; atomic replace; post-replace SHA verified; any "
                        "failure rolls the whole release back.",
         }
+        applied_record_attempted = True
         audit_ok = audit(cfg, {"op": "apply", "release_id": release_id, "operation_id": operation_id,
                     "caller": caller, "result": "APPLIED", "file_count": len(prepared),
                     "after_sha256": {k: v["sha256"] for k, v in after_all.items()}})

@@ -84,12 +84,12 @@ class RollbackGuard(unittest.TestCase):
                             business_date_shanghai=lambda: "2026-11-24",
                             inventory_acquire=lambda cfg, holder: (True, {"holder": holder}),
                             inventory_release=lambda cfg, holder: releases.append(holder),
-                            copy_dacl=lambda src, dst: None, _record=lambda *a: None,
+                            copy_dacl=lambda src, dst: None, _record=lambda *a: None, audit=lambda *a: True,
                             load_operations=unreadable):
             result = executor.op_apply_multi(cfg, "offline-release", "test", True)
-        self.assertEqual(result["state"], "unknown")
+        self.assertEqual(result["state"], "failed")
         self.assertEqual(self.target.read_bytes(), self.before)
-        self.assertEqual(releases, [])
+        self.assertEqual(len(releases), 1)
 
     def test_audit_failure_reports_unknown_without_undoing_files(self):
         self.target.write_bytes(self.before)
