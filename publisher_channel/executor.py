@@ -1161,11 +1161,12 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
                 rollback_complete = False
                 restored.append({"path": prep["item"]["path"], "sha256": "ROLLBACK_WRITE_FAILED"})
                 break
+        lock_release = "not_acquired" if not lock_info else "not_attempted"
         try:
             if rollback_complete and lock_info and lock_info.get("holder") == holder:
-                inventory_release(cfg, holder)
+                lock_release = "released" if inventory_release(cfg, holder) else "unknown"
         except Exception:
-            pass
+            lock_release = "unknown"
         result = {
             "operation": "apply", "operation_id": operation_id, "release_id": release_id,
             "state": "failed", "started_at": started, "finished_at": iso_now(),
@@ -1174,11 +1175,19 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
             "target": str(targets[0][1]), "backup": str(bdir) if bdir.is_dir() else None,
             "files": [{"path": i["path"], "target": str(p)} for i, p in targets],
             "error": str(e), "restored": restored, "rollback_complete": rollback_complete,
+            "lock_release": lock_release,
             "gates": gates, "summary": summary, "verdict": f"APPLY_FAILED:{code}",
             "note_zh": "应用失败；请根据 rollback_complete 和逐文件结果确认恢复状态。",
             "note_en": "Apply failed; inspect rollback_complete and each file result for recovery status.",
         }
-        _record(cfg, result, caller)
+        if lock_release == "unknown" or not rollback_complete:
+            result["state"] = "unknown"
+            result["verdict"] = "APPLY_STATUS_UNKNOWN"
+        try:
+            _record(cfg, result, caller)
+        except (OSError, ValueError, GateError):
+            result["state"] = "unknown"
+            result["verdict"] = "APPLY_STATUS_UNKNOWN"
         audit(cfg, {"op": "apply", "release_id": release_id, "operation_id": operation_id,
                     "caller": caller, "result": f"FAILED:{code}", "restored": restored})
         return result
