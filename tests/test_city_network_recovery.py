@@ -27,7 +27,8 @@ class CityNetworkRecoveryTests(unittest.TestCase):
             @classmethod
             def now(cls, tz=None):
                 return owner.now if tz else owner.now.replace(tzinfo=None)
-        for module in ('discovery.discovery_service', 'retail_city_queue'):
+        for module in ('discovery.discovery_service', 'discovery.models',
+                       'retail_city_queue', 'tests.test_discovery_service'):
             clock = patch(module + '.datetime', Clock)
             clock.start()
             self.addCleanup(clock.stop)
