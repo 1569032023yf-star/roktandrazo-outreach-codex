@@ -1041,6 +1041,7 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
     bd_before = business_date_shanghai()
     holder = f"deploy:{operation_id}"
     lock_info = None
+    acquire_state = "unknown"
     bdir = Path(cfg["_paths"]["backups"]) / operation_id
     backups: list[dict] = []
     replaced: list[dict] = []
@@ -1048,7 +1049,9 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
     try:
         ok, lock_info = inventory_acquire(cfg, holder)
         if not ok:
+            acquire_state = "not_acquired"
             raise GateError("LOCK_CONFLICT", json.dumps(lock_info))
+        acquire_state = "acquired"
 
         prepared = []
         for item, target in targets:
@@ -1148,7 +1151,7 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
                 saved.get("files") != result["files"]:
             raise GateError("APPLIED_RECORD_UNVERIFIED", operation_id)
         return result
-    except (GateError, OSError, ValueError) as e:
+    except (GateError, OSError, ValueError, sqlite3.Error) as e:
         code = getattr(e, "code", None) or ("IO_ERROR" if isinstance(e, OSError) else "UNKNOWN")
         if applied_record_attempted:
             # Preserve the applied receipt and backups. A later bookkeeping or
@@ -1168,9 +1171,10 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
                 rollback_complete = False
                 restored.append({"path": prep["item"]["path"], "sha256": "ROLLBACK_WRITE_FAILED"})
                 break
-        lock_release = "not_acquired" if not lock_info else "not_attempted"
+        lock_release = ("not_acquired" if acquire_state == "not_acquired" else
+                        "not_attempted" if acquire_state == "acquired" else "unknown")
         try:
-            if rollback_complete and lock_info and lock_info.get("holder") == holder:
+            if rollback_complete and acquire_state == "acquired" and lock_info and lock_info.get("holder") == holder:
                 lock_release = "released" if inventory_release(cfg, holder, lock_key=lock_info.get("lock_key")) else "unknown"
         except Exception:
             lock_release = "unknown"

@@ -130,6 +130,41 @@ class RollbackGuard(unittest.TestCase):
         self.assertEqual(records[result["operation_id"]]["state"], "unknown")
         self.assertEqual(self.target.read_bytes(), self.before)
 
+    def test_lock_conflict_is_not_reported_as_acquired(self):
+        self.target.write_bytes(self.before)
+        records, releases = {}, []
+        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline"}
+        with patch.multiple(executor,
+                            _assert_seal=lambda cfg: None, get_release=lambda cfg, rid: {},
+                            live_gates_multi=lambda *a, **k: {}, gates_summary=lambda gates: {"all_pass": True},
+                            resolve_targets=lambda cfg, rel: [(self.prep["item"], self.target)],
+                            business_date_shanghai=lambda: "2026-11-25",
+                            inventory_acquire=lambda cfg, holder: (False, {"held_by": "other"}),
+                            inventory_release=lambda *a, **kw: releases.append(True),
+                            _record=lambda cfg, result, caller: records.update({result["operation_id"]: dict(result)}),
+                            load_operations=lambda cfg: {"operations": records}, audit=lambda *a: True):
+            result = executor.op_apply_multi(cfg, "offline-release", "test", True)
+        self.assertEqual(result["lock_release"], "not_acquired")
+        self.assertEqual(releases, [])
+        self.assertEqual(self.target.read_bytes(), self.before)
+
+    def test_acquire_database_error_does_not_claim_lock_was_free(self):
+        self.target.write_bytes(self.before)
+        records = {}
+        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline"}
+        def uncertain(*args):
+            raise sqlite3.OperationalError("commit outcome unknown")
+        with patch.multiple(executor,
+                            _assert_seal=lambda cfg: None, get_release=lambda cfg, rid: {},
+                            live_gates_multi=lambda *a, **k: {}, gates_summary=lambda gates: {"all_pass": True},
+                            resolve_targets=lambda cfg, rel: [(self.prep["item"], self.target)],
+                            business_date_shanghai=lambda: "2026-11-25", inventory_acquire=uncertain,
+                            _record=lambda cfg, result, caller: records.update({result["operation_id"]: dict(result)}),
+                            load_operations=lambda cfg: {"operations": records}, audit=lambda *a: True):
+            result = executor.op_apply_multi(cfg, "offline-release", "test", True)
+        self.assertEqual(result["state"], "unknown")
+        self.assertEqual(result["lock_release"], "unknown")
+
     def test_silently_lost_failure_record_is_unknown(self):
         self.target.write_bytes(self.before)
         item = dict(self.prep["item"], before_sha256="mismatch")
