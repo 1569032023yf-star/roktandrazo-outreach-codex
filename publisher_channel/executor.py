@@ -823,9 +823,16 @@ def inventory_acquire(cfg: dict, holder: str) -> tuple[bool, dict]:
         conn.close()
 
 
-def inventory_release(cfg: dict, holder: str) -> bool:
-    bd = business_date_shanghai()
-    lock_key = cfg["lock"]["key_prefix"] + bd
+def inventory_release(cfg: dict, holder: str, *, lock_key: str | None = None) -> bool:
+    prefix = cfg["lock"]["key_prefix"]
+    if not isinstance(lock_key, str) or not lock_key.startswith(prefix):
+        return False
+    date_part = lock_key[len(prefix):]
+    try:
+        if datetime.strptime(date_part, "%Y-%m-%d").strftime("%Y-%m-%d") != date_part:
+            return False
+    except ValueError:
+        return False
     conn = rw_conn(cfg["production"]["db_path"])
     try:
         with conn:
@@ -924,7 +931,7 @@ def op_apply(cfg: dict, release_id: str, caller: str, confirm: bool) -> dict:
         if bd_after != bd_before:
             raise GateError("BUSINESS_DATE_RACE", f"{bd_before} -> {bd_after}")
 
-        inventory_release(cfg, holder)
+        inventory_release(cfg, holder, lock_key=lock_info.get("lock_key"))
         lock_info = {**lock_info, "released": True}
         result = {
             "operation": "apply", "operation_id": operation_id, "release_id": release_id,
@@ -961,7 +968,7 @@ def op_apply(cfg: dict, release_id: str, caller: str, confirm: bool) -> dict:
                 rollback_note = "ROLLBACK_WRITE_FAILED"
         try:
             if lock_info and lock_info.get("holder") == holder:
-                inventory_release(cfg, holder)
+                inventory_release(cfg, holder, lock_key=lock_info.get("lock_key"))
         except Exception:
             pass
         result = {
@@ -1132,7 +1139,7 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
                     "after_sha256": {k: v["sha256"] for k, v in after_all.items()}})
         if not audit_ok:
             raise GateError("AUDIT_WRITE_FAILED", operation_id)
-        if not inventory_release(cfg, holder):
+        if not inventory_release(cfg, holder, lock_key=lock_info.get("lock_key")):
             raise GateError("LOCK_RELEASE_UNVERIFIED", operation_id)
         result["lock"] = {**lock_info, "released": True}
         _record(cfg, result, caller)
@@ -1164,7 +1171,7 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
         lock_release = "not_acquired" if not lock_info else "not_attempted"
         try:
             if rollback_complete and lock_info and lock_info.get("holder") == holder:
-                lock_release = "released" if inventory_release(cfg, holder) else "unknown"
+                lock_release = "released" if inventory_release(cfg, holder, lock_key=lock_info.get("lock_key")) else "unknown"
         except Exception:
             lock_release = "unknown"
         result = {
@@ -1270,7 +1277,7 @@ def op_rollback_multi(cfg: dict, operation_id: str, rec: dict, caller: str) -> d
                 restored.append({"path": c["path"], "sha256": got["sha256"]})
         finally:
             try:
-                inventory_release(cfg, holder)
+                inventory_release(cfg, holder, lock_key=lock_info.get("lock_key"))
             except Exception:
                 pass
     except (GateError, OSError, KeyError, TypeError, ValueError) as e:
@@ -1390,7 +1397,7 @@ def op_rollback(cfg: dict, operation_id: str, caller: str) -> dict:
                 raise GateError("ROLLBACK_POST_SHA_MISMATCH", after["sha256"])
         finally:
             try:
-                inventory_release(cfg, holder)
+                inventory_release(cfg, holder, lock_key=lock_info.get("lock_key"))
             except Exception:
                 pass
     except (GateError, OSError) as e:

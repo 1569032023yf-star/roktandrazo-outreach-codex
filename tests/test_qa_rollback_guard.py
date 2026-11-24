@@ -1,5 +1,7 @@
 """Exercise rollback identity checks with isolated files only."""
 import sys
+import sqlite3
+from contextlib import closing
 import tempfile
 import unittest
 from pathlib import Path
@@ -26,6 +28,21 @@ class RollbackGuard(unittest.TestCase):
     def restore(self):
         with patch.object(executor, "copy_dacl"):
             return executor._restore_replaced_file(self.prep, {"backup": str(self.backup)}, "test")
+
+    def test_release_uses_original_date_and_holder(self):
+        db = Path(self.tmp.name) / "locks.sqlite"
+        with closing(sqlite3.connect(db)) as conn, conn:
+            conn.execute("CREATE TABLE system_config (key TEXT PRIMARY KEY, value TEXT, updated_at TEXT)")
+            conn.executemany("INSERT INTO system_config(key,value) VALUES(?,?)",
+                             [("lock:2026-11-24", "holder"), ("lock:2026-11-25", "holder")])
+        cfg = {"lock": {"key_prefix": "lock:"}, "production": {"db_path": str(db)}}
+        self.assertFalse(executor.inventory_release(cfg, "holder"))
+        self.assertFalse(executor.inventory_release(cfg, "other", lock_key="lock:2026-11-24"))
+        self.assertFalse(executor.inventory_release(cfg, "holder", lock_key="lock:invalid"))
+        self.assertTrue(executor.inventory_release(cfg, "holder", lock_key="lock:2026-11-24"))
+        with closing(sqlite3.connect(db)) as conn:
+            self.assertEqual(dict(conn.execute("SELECT key,value FROM system_config")),
+                             {"lock:2026-11-24": "released", "lock:2026-11-25": "holder"})
 
     def test_restores_verified_backup(self):
         self.restore()
@@ -59,7 +76,7 @@ class RollbackGuard(unittest.TestCase):
                             resolve_targets=lambda cfg, rel: [(src, self.target)],
                             business_date_shanghai=lambda: "2026-11-24",
                             inventory_acquire=lambda cfg, holder: (True, {"holder": holder}),
-                            inventory_release=lambda cfg, holder: False,
+                            inventory_release=lambda cfg, holder, **kw: False,
                             copy_dacl=lambda src, dst: None,
                             audit=lambda cfg, event: True,
                             _record=record,
@@ -83,7 +100,7 @@ class RollbackGuard(unittest.TestCase):
                             resolve_targets=lambda cfg, rel: [(item, self.target)],
                             business_date_shanghai=lambda: "2026-11-24",
                             inventory_acquire=lambda cfg, holder: (True, {"holder": holder}),
-                            inventory_release=lambda cfg, holder: (releases.append(holder) or True),
+                            inventory_release=lambda cfg, holder, **kw: (releases.append(holder) or True),
                             copy_dacl=lambda src, dst: None, _record=lambda *a: None, audit=lambda *a: True,
                             load_operations=unreadable):
             result = executor.op_apply_multi(cfg, "offline-release", "test", True)
@@ -103,7 +120,7 @@ class RollbackGuard(unittest.TestCase):
                             resolve_targets=lambda cfg, rel: [(item, self.target)],
                             business_date_shanghai=lambda: "2026-11-25",
                             inventory_acquire=lambda cfg, holder: (True, {"holder": holder}),
-                            inventory_release=lambda cfg, holder: False,
+                            inventory_release=lambda cfg, holder, **kw: False,
                             _record=lambda cfg, result, caller: records.update({result["operation_id"]: dict(result)}),
                             audit=lambda *a: True):
             result = executor.op_apply_multi(cfg, "offline-release", "test", True)
@@ -126,7 +143,7 @@ class RollbackGuard(unittest.TestCase):
                             resolve_targets=lambda cfg, rel: [(item, self.target)],
                             business_date_shanghai=lambda: "2026-11-24",
                             inventory_acquire=lambda cfg, holder: (True, {"holder": holder}),
-                            inventory_release=lambda cfg, holder: True,
+                            inventory_release=lambda cfg, holder, **kw: True,
                             copy_dacl=lambda src, dst: None, _record=record,
                             load_operations=lambda cfg: {"operations": records},
                             audit=lambda cfg, event: False):
