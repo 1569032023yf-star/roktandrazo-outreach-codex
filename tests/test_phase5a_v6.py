@@ -290,8 +290,35 @@ class InternalTests(unittest.TestCase):
                     self.assertIn('Reply-To:', call.args[2])
                 with self.assertRaises(sqlite3.IntegrityError):
                     internal.send_internal_tests(send=True)
+                policy["test_run_id"] = "DIFFERENT-RUN"
+                with self.assertRaisesRegex(sqlite3.IntegrityError, "CONTROLLED_TEST_TEMPLATE_ALREADY_RESERVED"):
+                    internal.send_internal_tests(send=True)
                 self.assertEqual(server.sendmail.call_count,4)
                 self.assertFalse((Path(root)/'bd_leads.db').exists())
+
+    def test_unknown_smtp_result_cannot_be_replayed_with_new_run_id(self):
+        from contextlib import ExitStack
+        from unittest.mock import Mock
+        import bd_sender
+        with tempfile.TemporaryDirectory() as root:
+            policy = {"internal_test_only": True, "allow_internal_without_postal_address": True,
+                "controlled_test_recipients": ["qa@example.invalid"], "test_ownership_reference": "FIXTURE",
+                "authorized_at": datetime.now(s.SH).isoformat(), "test_run_id": "FIRST",
+                "verified_from_email": "sender@example.invalid"}
+            server = Mock()
+            server.sendmail.side_effect = TimeoutError("result unknown")
+            with ExitStack() as stack:
+                stack.enter_context(patch.object(internal, 'ROOT', Path(root)))
+                stack.enter_context(patch.object(internal, 'AUDIT_PATH', Path(root)/'audit.sqlite3'))
+                stack.enter_context(patch.object(internal, 'load_test_policy', return_value=policy))
+                stack.enter_context(patch('env_loader.get_sender_info',return_value={'email':'sender@example.invalid'}))
+                stack.enter_context(patch.object(bd_sender,'_create_connection',return_value=server))
+                with self.assertRaises(TimeoutError):
+                    internal.send_internal_tests(send=True)
+                policy["test_run_id"] = "SECOND"
+                with self.assertRaisesRegex(sqlite3.IntegrityError, "CONTROLLED_TEST_TEMPLATE_ALREADY_RESERVED"):
+                    internal.send_internal_tests(send=True)
+                self.assertEqual(server.sendmail.call_count, 1)
 
     def test_internal_ready_rejects_expired_or_sender_mismatch(self):
         p = {"internal_test_only":True,"allow_internal_without_postal_address":True,

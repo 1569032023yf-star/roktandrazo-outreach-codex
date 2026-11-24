@@ -58,8 +58,13 @@ def send_internal_tests(*, send=False):
     for item in messages:
         # Durable reservation survives ambiguous SMTP outcomes; no automatic retries.
         with closing(sqlite3.connect(AUDIT_PATH)) as conn, conn:
+            conn.execute("BEGIN IMMEDIATE")
             conn.execute("CREATE TABLE IF NOT EXISTS internal_tests (test_run_id TEXT, template_id TEXT, "
                 "content_sha256 TEXT, reserved_at TEXT, smtp_accepted_at TEXT, message_id TEXT, PRIMARY KEY(test_run_id,template_id))")
+            # The one-shot authorization covers each template across all run IDs,
+            # including unresolved reservations from older versions.
+            if conn.execute("SELECT 1 FROM internal_tests WHERE template_id=? LIMIT 1", (item["template_id"],)).fetchone():
+                raise sqlite3.IntegrityError("CONTROLLED_TEST_TEMPLATE_ALREADY_RESERVED")
             conn.execute("INSERT INTO internal_tests VALUES (?,?,?,?,NULL,NULL)", (policy["test_run_id"], item["template_id"],
                 hashlib.sha256(json.dumps([item['subject'],item['body_text'],item['body_html']]).encode()).hexdigest(), datetime.now(timezone.utc).isoformat()))
         current_policy = load_test_policy()
