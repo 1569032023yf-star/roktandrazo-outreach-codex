@@ -1069,6 +1069,20 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
             backups.append({"path": prep["item"]["path"], "backup": str(bp),
                             "backup_sha256": bfp["sha256"]})
 
+        # Persist a conservative receipt before the first target replacement.
+        # A crash or a later bookkeeping failure must not look like success.
+        intent = {"operation": "apply", "operation_id": operation_id,
+                  "release_id": release_id, "state": "unknown",
+                  "verdict": "APPLY_STATUS_UNKNOWN", "started_at": started,
+                  "files": [{"path": p["item"]["path"], "target": str(p["target"]),
+                             "backup": b} for p, b in zip(prepared, backups)]}
+        applied_record_attempted = True
+        _record(cfg, intent, caller)
+        saved_intent = load_operations(cfg).get("operations", {}).get(operation_id)
+        if not isinstance(saved_intent, dict) or saved_intent.get("state") != "unknown" or \
+                saved_intent.get("files") != intent["files"]:
+            raise GateError("INTENT_RECORD_UNVERIFIED", operation_id)
+
         for prep in prepared:
             target = prep["target"]
             tmp = target.with_name(f".{target.name}.deploy-tmp-{operation_id}")
@@ -1113,23 +1127,19 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
                        "byte-exact backup; atomic replace; post-replace SHA verified; any "
                        "failure rolls the whole release back.",
         }
-        applied_record_attempted = True
-        _record(cfg, result, caller)
-        # save_operations has a best-effort fallback; do not release the lock
-        # or report success unless the applied record is actually readable.
-        saved = load_operations(cfg).get("operations", {}).get(operation_id)
-        if not isinstance(saved, dict) or saved.get("state") != "applied" or \
-                saved.get("files") != result["files"]:
-            raise GateError("APPLIED_RECORD_UNVERIFIED", operation_id)
-        if not inventory_release(cfg, holder):
-            raise GateError("LOCK_RELEASE_UNVERIFIED", operation_id)
-        lock_info = {**lock_info, "released": True}
-        result["lock"] = lock_info
         audit_ok = audit(cfg, {"op": "apply", "release_id": release_id, "operation_id": operation_id,
                     "caller": caller, "result": "APPLIED", "file_count": len(prepared),
                     "after_sha256": {k: v["sha256"] for k, v in after_all.items()}})
         if not audit_ok:
             raise GateError("AUDIT_WRITE_FAILED", operation_id)
+        if not inventory_release(cfg, holder):
+            raise GateError("LOCK_RELEASE_UNVERIFIED", operation_id)
+        result["lock"] = {**lock_info, "released": True}
+        _record(cfg, result, caller)
+        saved = load_operations(cfg).get("operations", {}).get(operation_id)
+        if not isinstance(saved, dict) or saved.get("state") != "applied" or \
+                saved.get("files") != result["files"]:
+            raise GateError("APPLIED_RECORD_UNVERIFIED", operation_id)
         return result
     except (GateError, OSError, ValueError) as e:
         code = getattr(e, "code", None) or ("IO_ERROR" if isinstance(e, OSError) else "UNKNOWN")

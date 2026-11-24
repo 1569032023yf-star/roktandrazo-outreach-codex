@@ -61,11 +61,12 @@ class RollbackGuard(unittest.TestCase):
                             inventory_acquire=lambda cfg, holder: (True, {"holder": holder}),
                             inventory_release=lambda cfg, holder: False,
                             copy_dacl=lambda src, dst: None,
+                            audit=lambda cfg, event: True,
                             _record=record,
                             load_operations=lambda cfg: {"operations": records}):
             result = executor.op_apply_multi(cfg, "offline-release", "test", True)
         self.assertEqual(result["state"], "unknown")
-        self.assertEqual(records[result["operation_id"]]["state"], "applied")
+        self.assertEqual(records[result["operation_id"]]["state"], "unknown")
         self.assertEqual(self.target.read_bytes(), self.after)
 
     def test_receipt_read_error_does_not_rollback_or_release(self):
@@ -87,7 +88,7 @@ class RollbackGuard(unittest.TestCase):
                             load_operations=unreadable):
             result = executor.op_apply_multi(cfg, "offline-release", "test", True)
         self.assertEqual(result["state"], "unknown")
-        self.assertEqual(self.target.read_bytes(), self.after)
+        self.assertEqual(self.target.read_bytes(), self.before)
         self.assertEqual(releases, [])
 
     def test_audit_failure_reports_unknown_without_undoing_files(self):
@@ -110,8 +111,12 @@ class RollbackGuard(unittest.TestCase):
                             audit=lambda cfg, event: False):
             result = executor.op_apply_multi(cfg, "offline-release", "test", True)
         self.assertEqual(result["verdict"], "APPLY_STATUS_UNKNOWN")
-        self.assertEqual(records[result["operation_id"]]["state"], "applied")
+        self.assertEqual(records[result["operation_id"]]["state"], "unknown")
         self.assertEqual(self.target.read_bytes(), self.after)
+        with patch.object(executor, "load_operations", return_value={"operations": records}), \
+                patch.object(executor, "audit", return_value=True):
+            status = executor.op_status(cfg, result["operation_id"], "test")
+        self.assertEqual(status["state"], "unknown")
 
 
 if __name__ == "__main__":
