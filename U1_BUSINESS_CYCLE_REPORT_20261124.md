@@ -15,3 +15,9 @@
 - Next, address only the minimum authorized support for controlled file creation and the internal QA entry point. Complete fixed-version independent review, backup, verification and rollback before proceeding through existing authority and gates; do not bypass permissions or modify the sealed production channel directly.
 - 历史只读观察：2026-11-24 11:19 台北时间 SMTP 关闭、无发信授权，8791 无监听；这些是当时观测，并非当前状态断言。生产部署、客户发送及验收均未证明完成。
 - Historical read-only observation at 2026-11-24 11:19 Taipei: SMTP was disabled, no sending authorization was active, and port 8791 had no listener. These are time-bound observations, not claims about the current state. Production deployment, customer sending and acceptance are unproven.
+
+## 补充审核 / Review update
+- 固定提交 `c565e47c8de33ad0aca099985e1a0fb778c9e079` 的城市结束判定与测试时钟改动经独立只读审核，所审差异未发现阻断；29 项相关组合测试通过。审核不覆盖整版或生产部署。
+- An independent read-only review found no blocking issue in the city-completion and test-clock changes at `c565e47c8de33ad0aca099985e1a0fb778c9e079`; 29 relevant combined tests passed. This is not a whole-release or production review.
+- 2026-11-24 11:40 台北时间只读检查：发送前检查与外发计划任务均为 Disabled，8791 无监听。完整真实采集、发信与同批汇总仍未完成；旧发布通道对新增文件的限制未解除。
+- At 11:40 Taipei on 2026-11-24, read-only checks showed the pre-send and outreach scheduled tasks disabled and no listener on port 8791. A real acquisition, send, and same-batch summary remain incomplete; the existing publisher's new-file limitation remains.
