@@ -43,6 +43,31 @@ class RollbackGuard(unittest.TestCase):
             self.restore()
         self.assertEqual(self.target.read_bytes(), self.after)
 
+    def test_release_failure_preserves_applied_receipt(self):
+        self.target.write_bytes(self.before)
+        src = self.prep["item"]
+        src.update({"section": b"--- a/target.py\n+++ b/target.py\n@@ -1 +1 @@\n-before\n+after\n", "hunk_count": 1})
+        records = {}
+        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline"}
+        def record(_cfg, result, caller):
+            records[result["operation_id"]] = dict(result)
+        with patch.multiple(executor,
+                            _assert_seal=lambda cfg: None,
+                            get_release=lambda cfg, rid: {},
+                            live_gates_multi=lambda *a, **k: {},
+                            gates_summary=lambda gates: {"all_pass": True},
+                            resolve_targets=lambda cfg, rel: [(src, self.target)],
+                            business_date_shanghai=lambda: "2026-11-24",
+                            inventory_acquire=lambda cfg, holder: (True, {"holder": holder}),
+                            inventory_release=lambda cfg, holder: False,
+                            copy_dacl=lambda src, dst: None,
+                            _record=record,
+                            load_operations=lambda cfg: {"operations": records}):
+            result = executor.op_apply_multi(cfg, "offline-release", "test", True)
+        self.assertEqual(result["state"], "unknown")
+        self.assertEqual(records[result["operation_id"]]["state"], "applied")
+        self.assertEqual(self.target.read_bytes(), self.after)
+
 
 if __name__ == "__main__":
     unittest.main()
