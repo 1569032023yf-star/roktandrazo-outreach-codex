@@ -68,6 +68,28 @@ class RollbackGuard(unittest.TestCase):
         self.assertEqual(records[result["operation_id"]]["state"], "applied")
         self.assertEqual(self.target.read_bytes(), self.after)
 
+    def test_receipt_read_error_does_not_rollback_or_release(self):
+        self.target.write_bytes(self.before)
+        item = self.prep["item"]
+        item.update({"section": b"--- a/target.py\n+++ b/target.py\n@@ -1 +1 @@\n-before\n+after\n", "hunk_count": 1})
+        releases = []
+        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline"}
+        def unreadable(_cfg):
+            raise ValueError("damaged operation store")
+        with patch.multiple(executor,
+                            _assert_seal=lambda cfg: None, get_release=lambda cfg, rid: {},
+                            live_gates_multi=lambda *a, **k: {}, gates_summary=lambda gates: {"all_pass": True},
+                            resolve_targets=lambda cfg, rel: [(item, self.target)],
+                            business_date_shanghai=lambda: "2026-11-24",
+                            inventory_acquire=lambda cfg, holder: (True, {"holder": holder}),
+                            inventory_release=lambda cfg, holder: releases.append(holder),
+                            copy_dacl=lambda src, dst: None, _record=lambda *a: None,
+                            load_operations=unreadable):
+            result = executor.op_apply_multi(cfg, "offline-release", "test", True)
+        self.assertEqual(result["state"], "unknown")
+        self.assertEqual(self.target.read_bytes(), self.after)
+        self.assertEqual(releases, [])
+
 
 if __name__ == "__main__":
     unittest.main()

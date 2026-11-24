@@ -1035,7 +1035,7 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
     bdir = Path(cfg["_paths"]["backups"]) / operation_id
     backups: list[dict] = []
     replaced: list[dict] = []
-    applied_recorded = False
+    applied_record_attempted = False
     try:
         ok, lock_info = inventory_acquire(cfg, holder)
         if not ok:
@@ -1111,6 +1111,7 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
                        "byte-exact backup; atomic replace; post-replace SHA verified; any "
                        "failure rolls the whole release back.",
         }
+        applied_record_attempted = True
         _record(cfg, result, caller)
         # save_operations has a best-effort fallback; do not release the lock
         # or report success unless the applied record is actually readable.
@@ -1118,7 +1119,6 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
         if not isinstance(saved, dict) or saved.get("state") != "applied" or \
                 saved.get("files") != result["files"]:
             raise GateError("APPLIED_RECORD_UNVERIFIED", operation_id)
-        applied_recorded = True
         if not inventory_release(cfg, holder):
             raise GateError("LOCK_RELEASE_UNVERIFIED", operation_id)
         lock_info = {**lock_info, "released": True}
@@ -1127,16 +1127,16 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
                     "caller": caller, "result": "APPLIED", "file_count": len(prepared),
                     "after_sha256": {k: v["sha256"] for k, v in after_all.items()}})
         return result
-    except (GateError, OSError) as e:
+    except (GateError, OSError, ValueError) as e:
         code = getattr(e, "code", None) or ("IO_ERROR" if isinstance(e, OSError) else "UNKNOWN")
-        if applied_recorded:
+        if applied_record_attempted:
             # Preserve the applied receipt and backups. A later bookkeeping or
             # release error cannot prove the file operation failed.
             return {"operation": "apply", "operation_id": operation_id,
                     "release_id": release_id, "state": "unknown",
                     "verdict": "APPLY_STATUS_UNKNOWN", "error": str(e),
-                    "note_zh": "文件已写入并登记；锁或审计结果不明，请查询状态，禁止重放。",
-                    "note_en": "Files were written and recorded; lock or audit outcome is unknown. Query status; do not replay."}
+                    "note_zh": "文件已写入；登记、锁或审计结果不明，请查询状态，禁止重放。",
+                    "note_en": "Files were written; record, lock or audit outcome is unknown. Query status; do not replay."}
         restored = []
         rollback_complete = not (replaced and (not lock_info or lock_info.get("released")))
         for prep in reversed(replaced if rollback_complete else []):
