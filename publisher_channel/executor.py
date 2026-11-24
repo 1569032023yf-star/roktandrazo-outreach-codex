@@ -306,14 +306,16 @@ def copy_dacl(src: Path, dst: Path) -> None:
 
 
 # ------------------------------------------------------------- audit log
-def audit(cfg: dict, event: dict) -> None:
+def audit(cfg: dict, event: dict) -> bool:
     rec = {"ts": iso_now(), **event}
     p = Path(cfg["_paths"]["audit"])
     try:
         with open(p, "a", encoding="utf-8") as f:
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+        return True
     except OSError as e:
         print(f"AUDIT_WRITE_FAILED: {e}", file=sys.stderr)
+        return False
 
 
 # ------------------------------------------------------- operation store
@@ -1123,9 +1125,11 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
             raise GateError("LOCK_RELEASE_UNVERIFIED", operation_id)
         lock_info = {**lock_info, "released": True}
         result["lock"] = lock_info
-        audit(cfg, {"op": "apply", "release_id": release_id, "operation_id": operation_id,
+        audit_ok = audit(cfg, {"op": "apply", "release_id": release_id, "operation_id": operation_id,
                     "caller": caller, "result": "APPLIED", "file_count": len(prepared),
                     "after_sha256": {k: v["sha256"] for k, v in after_all.items()}})
+        if not audit_ok:
+            raise GateError("AUDIT_WRITE_FAILED", operation_id)
         return result
     except (GateError, OSError, ValueError) as e:
         code = getattr(e, "code", None) or ("IO_ERROR" if isinstance(e, OSError) else "UNKNOWN")
