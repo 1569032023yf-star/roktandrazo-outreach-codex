@@ -36,4 +36,10 @@ SCHEDULE_TRIGGERED=true; C_EXECUTED=true; AGENT_DELEGATED=true; AGENT_RESULT_REC
 
 English: Cycle started 2026-11-25 01:04 +08 in the isolated clone at `b3e52a86666c2567de3afeeb4d10934052dc8c18`; code fixed at `f76fc75`. Failure handling now reports file recovery and lock release separately and returns unknown when release fails or throws. Nine isolated tests passed. Independent review found the direction sound but only pre-replacement release failure was simulated; failed-record readback, lock-conflict classification, cross-date lock keys, actual rollback and durability remain open. Do not deploy. No 8791 listener was observed; canonical was not changed because shared locking and active cycles were not established. No installation, collection or sending occurred.
 
+## 03:10 周期 / 03:10 cycle
+
+中文：2026-11-25 03:10 +08 在隔离副本从 `1ba69ce69becd6cd74bde8f369883522715e9184` 开始，代码固定 `537bbb1`。释放锁改用领取时记录的准确日期键和持有人；未提供合法键时拒绝释放。十项隔离测试通过，包含临时 SQLite 不同日期同一持有人验证。独立审核确认六处调用传键，但旧外部调用兼容性未核实；单文件与两条回滚路径仍忽略释放失败，记录持久性、旧锁和四文件安装仍未闭合。禁止部署。8791 未发现监听，canonical 因共享锁和活跃周期未确定而未改；未安装、采集或发送。
+
+English: Cycle started 2026-11-25 03:10 +08 in the isolated clone from `1ba69ce69becd6cd74bde8f369883522715e9184`, code fixed at `537bbb1`. Lock release now uses the exact acquired date key and holder and refuses a missing or invalid key. Ten isolated tests passed, including same-holder different-date SQLite verification. Independent review confirmed six callers pass the key but external compatibility is unverified; single-file apply and both rollback paths still ignore release failure, and record durability, old-lock safety and four-file installation remain incomplete. Do not deploy. No 8791 listener was observed; canonical was not changed because shared locking and active cycles were not established. No installation, collection or sending occurred.
+
 SCHEDULE_TRIGGERED=true; C_EXECUTED=true; AGENT_DELEGATED=true; AGENT_RESULT_RECEIVED=true; CODE_INTEGRATED=false; DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=UNKNOWN; PRODUCTION_ACCEPTED=UNKNOWN; BUSINESS_GROWTH=UNKNOWN.
