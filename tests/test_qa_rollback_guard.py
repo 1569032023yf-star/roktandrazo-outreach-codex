@@ -65,7 +65,7 @@ class RollbackGuard(unittest.TestCase):
         src = self.prep["item"]
         src.update({"section": b"--- a/target.py\n+++ b/target.py\n@@ -1 +1 @@\n-before\n+after\n", "hunk_count": 1})
         records = {}
-        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline"}
+        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline", "lock": {"key_prefix": "lock:"}}
         def record(_cfg, result, caller):
             records[result["operation_id"]] = dict(result)
         with patch.multiple(executor,
@@ -75,7 +75,7 @@ class RollbackGuard(unittest.TestCase):
                             gates_summary=lambda gates: {"all_pass": True},
                             resolve_targets=lambda cfg, rel: [(src, self.target)],
                             business_date_shanghai=lambda: "2026-11-24",
-                            inventory_acquire=lambda cfg, holder: (True, {"holder": holder}),
+                            inventory_acquire=lambda cfg, holder: (True, {"holder": holder, "lock_key": "lock:" + executor.business_date_shanghai()}),
                             inventory_release=lambda cfg, holder, **kw: False,
                             copy_dacl=lambda src, dst: None,
                             audit=lambda cfg, event: True,
@@ -91,7 +91,7 @@ class RollbackGuard(unittest.TestCase):
         item = self.prep["item"]
         item.update({"section": b"--- a/target.py\n+++ b/target.py\n@@ -1 +1 @@\n-before\n+after\n", "hunk_count": 1})
         releases = []
-        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline"}
+        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline", "lock": {"key_prefix": "lock:"}}
         def unreadable(_cfg):
             raise ValueError("damaged operation store")
         with patch.multiple(executor,
@@ -99,7 +99,7 @@ class RollbackGuard(unittest.TestCase):
                             live_gates_multi=lambda *a, **k: {}, gates_summary=lambda gates: {"all_pass": True},
                             resolve_targets=lambda cfg, rel: [(item, self.target)],
                             business_date_shanghai=lambda: "2026-11-24",
-                            inventory_acquire=lambda cfg, holder: (True, {"holder": holder}),
+                            inventory_acquire=lambda cfg, holder: (True, {"holder": holder, "lock_key": "lock:" + executor.business_date_shanghai()}),
                             inventory_release=lambda cfg, holder, **kw: (releases.append(holder) or True),
                             copy_dacl=lambda src, dst: None, _record=lambda *a: None, audit=lambda *a: True,
                             load_operations=unreadable):
@@ -113,13 +113,13 @@ class RollbackGuard(unittest.TestCase):
         item = dict(self.prep["item"])
         item["before_sha256"] = "not-the-current-hash"
         records = {}
-        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline"}
+        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline", "lock": {"key_prefix": "lock:"}}
         with patch.multiple(executor,
                             _assert_seal=lambda cfg: None, get_release=lambda cfg, rid: {},
                             live_gates_multi=lambda *a, **k: {}, gates_summary=lambda gates: {"all_pass": True},
                             resolve_targets=lambda cfg, rel: [(item, self.target)],
                             business_date_shanghai=lambda: "2026-11-25",
-                            inventory_acquire=lambda cfg, holder: (True, {"holder": holder}),
+                            inventory_acquire=lambda cfg, holder: (True, {"holder": holder, "lock_key": "lock:" + executor.business_date_shanghai()}),
                             inventory_release=lambda cfg, holder, **kw: False,
                             _record=lambda cfg, result, caller: records.update({result["operation_id"]: dict(result)}),
                             load_operations=lambda cfg: {"operations": records},
@@ -133,7 +133,7 @@ class RollbackGuard(unittest.TestCase):
     def test_lock_conflict_is_not_reported_as_acquired(self):
         self.target.write_bytes(self.before)
         records, releases = {}, []
-        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline"}
+        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline", "lock": {"key_prefix": "lock:"}}
         with patch.multiple(executor,
                             _assert_seal=lambda cfg: None, get_release=lambda cfg, rid: {},
                             live_gates_multi=lambda *a, **k: {}, gates_summary=lambda gates: {"all_pass": True},
@@ -151,7 +151,7 @@ class RollbackGuard(unittest.TestCase):
     def test_acquire_database_error_does_not_claim_lock_was_free(self):
         self.target.write_bytes(self.before)
         records = {}
-        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline"}
+        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline", "lock": {"key_prefix": "lock:"}}
         def uncertain(*args):
             raise sqlite3.OperationalError("commit outcome unknown")
         with patch.multiple(executor,
@@ -165,16 +165,37 @@ class RollbackGuard(unittest.TestCase):
         self.assertEqual(result["state"], "unknown")
         self.assertEqual(result["lock_release"], "unknown")
 
+    def test_invalid_acquisition_evidence_never_touches_target(self):
+        self.target.write_bytes(self.before)
+        for evidence in (None, {}, {"holder": "wrong", "lock_key": "lock:2026-11-25"}):
+            records, releases = {}, []
+            cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline",
+                   "lock": {"key_prefix": "lock:"}}
+            with self.subTest(evidence=evidence), patch.multiple(executor,
+                    _assert_seal=lambda cfg: None, get_release=lambda cfg, rid: {},
+                    live_gates_multi=lambda *a, **k: {}, gates_summary=lambda gates: {"all_pass": True},
+                    resolve_targets=lambda cfg, rel: [(self.prep["item"], self.target)],
+                    business_date_shanghai=lambda: "2026-11-25",
+                    inventory_acquire=lambda cfg, holder: (True, evidence),
+                    inventory_release=lambda *a, **kw: releases.append(True),
+                    _record=lambda cfg, result, caller: records.update({result["operation_id"]: dict(result)}),
+                    load_operations=lambda cfg: {"operations": records}, audit=lambda *a: True):
+                result = executor.op_apply_multi(cfg, "offline-release", "test", True)
+                self.assertEqual(result["state"], "unknown")
+                self.assertEqual(result["lock_release"], "unknown")
+                self.assertEqual(releases, [])
+                self.assertEqual(self.target.read_bytes(), self.before)
+
     def test_silently_lost_failure_record_is_unknown(self):
         self.target.write_bytes(self.before)
         item = dict(self.prep["item"], before_sha256="mismatch")
-        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline"}
+        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline", "lock": {"key_prefix": "lock:"}}
         with patch.multiple(executor,
                             _assert_seal=lambda cfg: None, get_release=lambda cfg, rid: {},
                             live_gates_multi=lambda *a, **k: {}, gates_summary=lambda gates: {"all_pass": True},
                             resolve_targets=lambda cfg, rel: [(item, self.target)],
                             business_date_shanghai=lambda: "2026-11-25",
-                            inventory_acquire=lambda cfg, holder: (True, {"holder": holder}),
+                            inventory_acquire=lambda cfg, holder: (True, {"holder": holder, "lock_key": "lock:" + executor.business_date_shanghai()}),
                             inventory_release=lambda cfg, holder, **kw: True,
                             _record=lambda *a: None,
                             load_operations=lambda cfg: {"operations": {}}, audit=lambda *a: True):
@@ -187,7 +208,7 @@ class RollbackGuard(unittest.TestCase):
         item = self.prep["item"]
         item.update({"section": b"--- a/target.py\n+++ b/target.py\n@@ -1 +1 @@\n-before\n+after\n", "hunk_count": 1})
         records = {}
-        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline"}
+        cfg = {"_paths": {"backups": self.tmp.name}, "channel_id": "offline", "lock": {"key_prefix": "lock:"}}
         def record(_cfg, result, caller):
             records[result["operation_id"]] = dict(result)
         with patch.multiple(executor,
@@ -195,7 +216,7 @@ class RollbackGuard(unittest.TestCase):
                             live_gates_multi=lambda *a, **k: {}, gates_summary=lambda gates: {"all_pass": True},
                             resolve_targets=lambda cfg, rel: [(item, self.target)],
                             business_date_shanghai=lambda: "2026-11-24",
-                            inventory_acquire=lambda cfg, holder: (True, {"holder": holder}),
+                            inventory_acquire=lambda cfg, holder: (True, {"holder": holder, "lock_key": "lock:" + executor.business_date_shanghai()}),
                             inventory_release=lambda cfg, holder, **kw: True,
                             copy_dacl=lambda src, dst: None, _record=record,
                             load_operations=lambda cfg: {"operations": records},

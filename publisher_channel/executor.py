@@ -1048,9 +1048,13 @@ def op_apply_multi(cfg: dict, release_id: str, caller: str, confirm: bool) -> di
     applied_record_attempted = False
     try:
         ok, lock_info = inventory_acquire(cfg, holder)
-        if not ok:
+        if ok is False:
             acquire_state = "not_acquired"
             raise GateError("LOCK_CONFLICT", json.dumps(lock_info))
+        if (ok is not True or not isinstance(lock_info, dict) or
+                lock_info.get("holder") != holder or
+                lock_info.get("lock_key") != cfg["lock"]["key_prefix"] + bd_before):
+            raise GateError("LOCK_ACQUISITION_UNVERIFIED", operation_id)
         acquire_state = "acquired"
 
         prepared = []
