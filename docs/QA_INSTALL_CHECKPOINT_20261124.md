@@ -54,4 +54,10 @@ English: Cycle started 2026-11-25 05:13 +08 in the isolated clone from `6efcc88d
 
 English: Cycle started 2026-11-25 07:16 +08 in the isolated clone from `cc349b81f171310c7e674bdac6027b46fc6b461f`; code fixed at `f31eb7c`. Lock conflict and acquisition uncertainty are distinguished; a database error returns unknown. Thirteen offline tests passed. Independent review found successful acquisition evidence is not strictly validated for holder and key, so malformed evidence could reach replacement; actual post-commit errors, rollback, expired locks and durability remain open. Do not deploy. No 8791 listener was observed; canonical was not changed because shared locking and active cycles remain unverified. No installation, collection or sending occurred.
 
+## 09:17 周期 / 09:17 cycle
+
+中文：2026-11-25 09:17 +08 隔离副本从 `52e8894c63ca1b357802eb11285b3d231ceefce2` 开始，代码固定 `95b191a`。多文件安装读取目标前检查领取结果、持有人及原业务日期锁键；无效凭据保留未知且不猜测释放。十四项隔离测试通过。独立审核认可局部处理，但错误日期、非布尔返回及真实数据库异常仍待验证；旧锁过期、真实运行版本、记录持久性及四文件安装门禁仍未闭合。禁止部署。8791 未发现监听；共享锁和活跃周期不明，未改 canonical。未安装、采集或发送。
+
+English: Cycle started 2026-11-25 09:17 +08 in the isolated clone from `52e8894c63ca1b357802eb11285b3d231ceefce2`; code fixed at `95b191a`. Multi-file apply checks the acquisition result, holder and original business-date key before reading the target; invalid evidence remains unknown and is not guessed for release. Fourteen isolated tests passed. Independent review accepted the narrow handling but wrong dates, non-boolean returns and real database failures remain untested; expiring locks, the live runtime version, receipt durability and four-file installation gates remain open. Do not deploy. No 8791 listener was observed; canonical was not changed because shared locking and active cycles remain unverified. No installation, collection or sending occurred.
+
 SCHEDULE_TRIGGERED=true; C_EXECUTED=true; AGENT_DELEGATED=true; AGENT_RESULT_RECEIVED=true; CODE_INTEGRATED=false; DEVELOPMENT_COMPLETE=false; RELEASE_READY=false; PRODUCTION_DEPLOYED=UNKNOWN; PRODUCTION_ACCEPTED=UNKNOWN; BUSINESS_GROWTH=UNKNOWN.
