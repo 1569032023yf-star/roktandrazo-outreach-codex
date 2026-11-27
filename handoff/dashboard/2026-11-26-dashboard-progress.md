@@ -33,3 +33,22 @@ English: The user manually disabled WorkBuddy daily automations; none were resta
 中文：定位三项回归失败，检查生产补丁兼容性，完成候选看板本机验收，然后继续按城市保存线索和正式任务链路。自动上传后续任务结果及自动触发判断尚未实现。
 
 English: Investigate the three regression failures, check production patch compatibility, complete local dashboard acceptance, then continue city-scoped lead retention and the formal task chain. Automatic upload of future task results and automatic evaluation have not yet been implemented.
+
+
+## 2026-11-27 更新：本机验收与生产修复状态 / Update: local acceptance and production repair
+
+中文：以下更新取代上文关于“候选看板未完成浏览器验收”和“本机 HTTP 测试受限”的旧状态。本机只读看板已在 http://127.0.0.1:8792/ 启动，连接 8791 既有桥接和生产数据库只读视图；已通过浏览器检查首页、刷新和城市详情。11 月 27 日重新启动看板和已有桥接后，页面显示桥接读取成功。服务未设置新的开机自启。
+
+English: This update supersedes the earlier statements that browser acceptance was incomplete and loopback HTTP verification was blocked. The local read-only dashboard was started at http://127.0.0.1:8792/ using the existing 8791 bridge and a read-only production database view. The home page, refresh and city details were checked in a browser. On November 27 the dashboard and existing bridge were restarted and the page reported a successful bridge read. No new startup automation was configured.
+
+中文：Lake Placid 的 LDR 653 网址判断修复仅存在开发代码中。对当时生产记录进行只读模拟，原规则将 653 列为关联重试，调整判断后现有完成检查通过，Oneonta 是下一候选；653 原始线索保留。生产代码未部署，未执行真实关城或切城；一城一次和资料补充独立的完整流程仍未完成。
+
+English: The LDR 653 URL-gate fix exists only in development. A read-only evaluation of then-current production records showed that the old rule listed 653 for linked retry; with the adjusted rule the existing completion checks passed and Oneonta was the next candidate, while the original lead remained intact. No production fix, actual city closure or transition was performed. The complete one-search-per-city and separate enrichment workflow remains unfinished.
+
+中文：看板没有可靠的执行器实时心跳或本轮新增归属，相关项目显示未知。正式任务提交未接通，保留线索为只读视图，手动补充邮箱和受控发送链仍未交付。原有业务数据库未修改，未执行真实商家搜索或客户邮件发送；用户关闭的 WorkBuddy 每日自动任务未恢复。
+
+English: The dashboard lacks reliable live executor heartbeat and per-run new-merchant attribution, which remain unknown. Formal task submission is disconnected; retained leads are a read-only view, and manual email enrichment and the controlled sending chain are not yet delivered. The business database was not modified, and no real merchant discovery or customer email was performed. The user's disabled WorkBuddy daily automation was not restored.
+
+中文：本机看板代码和城市修复工作当时仍为本地未提交文件；本报告更新不代表代码已经上传或生产部署。之前扩展回归的三项失败原因仍未查明。
+
+English: The local dashboard code and city fix were still uncommitted local files at the time of acceptance; this report update does not mean the code was uploaded or deployed to production. The causes of the three earlier broader regression failures remain unresolved.
