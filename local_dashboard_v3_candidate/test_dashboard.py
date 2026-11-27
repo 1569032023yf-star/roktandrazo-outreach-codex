@@ -41,6 +41,14 @@ class DashboardTests(unittest.TestCase):
         self.assertEqual({p.get('queue_id') for p in same_name}, {None, 1, 2})
         self.assertTrue(all(p['history'] == 'ambiguous' for p in same_name))
 
+    def test_candidate_and_progress_are_not_labeled_as_search_records(self):
+        rows = [dict(id=1, city='Lake Placid', state='NY', candidates=3),
+                dict(id=2, city='Ithaca', state='NY', last_success_at='2026-01-01'),
+                dict(id=3, city='Oneonta', state='NY', started_at='2026-01-01'),
+                dict(id=4, city='Corning', state='NY', query_recorded=1)]
+        classified = {p['queue_id']: p['history'] for p in places.for_state('NY', rows) if p.get('queue_id')}
+        self.assertEqual(classified, {1: 'candidates', 2: 'activity', 3: 'task', 4: 'recorded'})
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)

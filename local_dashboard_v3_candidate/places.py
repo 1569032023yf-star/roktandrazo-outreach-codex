@@ -52,7 +52,11 @@ def for_state(code, catalog):
             p['query_recorded'] = c.get('query_recorded')
             p['candidates'] = c.get('candidates')
             p['last_success_at'] = c.get('last_success_at')
-            p['history'] = ('recorded' if c.get('query_completed') or c.get('last_success_at') or c.get('candidates')
+            # A candidate row or a generic progress timestamp cannot establish
+            # that a real search ran. Keep each observed evidence type distinct.
+            p['history'] = ('recorded' if c.get('query_recorded') or c.get('query_completed')
+                            else 'candidates' if c.get('candidates')
+                            else 'activity' if c.get('last_success_at')
                             else 'task' if c.get('started_at') else 'unknown')
         else:
             p['history'] = 'ambiguous' if matches else 'unknown'
